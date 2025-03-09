@@ -1,5 +1,6 @@
 <div class='skill-container'>
 
+  {{log skillTray.currentSkills}}
   {{#each skillTray.currentSkills as |skill|}}
     <div
       class='skill-button'
@@ -7,6 +8,8 @@
       data-type='{{skill.type}}'
       data-action='useSkillSave'
     >
+
+      {{{skill.icon}}}-
       {{skill.abbreviation}}
     </div>
   {{/each}}

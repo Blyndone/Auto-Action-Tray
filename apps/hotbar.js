@@ -94,9 +94,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.refresh();
   }
   _onControlToken = (event, controlled) => {
-    console.log(event);
 
-    if (event == null) {
+    if (event == null || controlled== false) {
       return;
     }
     if (event.actor != this.actor || this.actor == event) {

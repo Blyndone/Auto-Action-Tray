@@ -7,24 +7,75 @@ export class SkillTray {
     this.inCombat = true;
     this.currentSkills = [];
     this.skillAbbr = {
-      acrobatics: "acr",
-      animalHandling: "ani",
-      arcana: "arc",
-      athletics: "ath",
-      deception: "dec",
-      history: "his",
-      insight: "ins",
-      intimidation: "itm",
-      investigation: "inv",
-      medicine: "med",
-      nature: "nat",
-      perception: "prc",
-      performance: "prf",
-      persuasion: "per",
-      religion: "rel",
-      sleightOfHand: "slt",
-      stealth: "ste",
-      survival: "sur"
+      acrobatics: {
+        abbreviation: "acr",
+        icon: '<i class="fa-solid fa-wreath-laurel"></i>'
+      },
+      animalHandling: {
+        abbreviation: "ani",
+        icon: '<i class="fa-solid fa-squirrel"></i>'
+      },
+      arcana: {
+        abbreviation: "arc",
+        icon: '<i class="fa-solid fa-book-sparkles"></i>'
+      },
+      athletics: {
+        abbreviation: "ath",
+        icon: '<i class="fa-solid fa-person-running-fast"></i>'
+      },
+      deception: {
+        abbreviation: "dec",
+        icon: '<i class="fa-solid fa-eye-evil"></i>'
+      },
+      history: {
+        abbreviation: "his",
+        icon: '<i class="fa-solid fa-book-atlas"></i>'
+      },
+      insight: {
+        abbreviation: "ins",
+        icon: '<i class="fa-solid fa-thought-bubble"></i>'
+      },
+      intimidation: {
+        abbreviation: "itm",
+        icon: '<i class="fa-solid fa-scarecrow"></i>'
+      },
+      investigation: {
+        abbreviation: "inv",
+        icon: '<i class="fa-solid fa-magnifying-glass"></i>'
+      },
+      medicine: {
+        abbreviation: "med",
+        icon: '<i class="fa-solid fa-book-atlas"></i>'
+      },
+      nature: { abbreviation: "nat", icon: '<i class="fa-solid fa-leaf"></i>' },
+      perception: {
+        abbreviation: "prc",
+        icon: '<i class="fa-solid fa-eye"></i>'
+      },
+      performance: {
+        abbreviation: "prf",
+        icon: '<i class="fa-solid fa-music"></i>'
+      },
+      persuasion: {
+        abbreviation: "per",
+        icon: '<i class="fa-solid fa-handshake"></i>'
+      },
+      religion: {
+        abbreviation: "rel",
+        icon: '<i class="fa-solid fa-book-journal-whills"></i>'
+      },
+      sleightOfHand: {
+        abbreviation: "slt",
+        icon: '<i class="fa-solid fa-bag-seedling"></i>'
+      },
+      stealth: {
+        abbreviation: "ste",
+        icon: '<i class="fa-solid fa-hood-cloak"></i>'
+      },
+      survival: {
+        abbreviation: "sur",
+        icon: '<i class="fa-solid fa-campfire"></i>'
+      }
     };
 
     this.savesNames = {
@@ -69,10 +120,10 @@ export class SkillTray {
 
   generateSkillData(name = null, abbreviation = null, actor = null) {
     let skillAbbr = this.skillAbbr;
-    if (!abbreviation) abbreviation = skillAbbr[abbreviation];
+    if (!abbreviation) abbreviation = skillAbbr[name].abbrrviation;
     if (!name)
       name = Object.keys(skillAbbr).find(
-        key => skillAbbr[key] === abbreviation
+        key => skillAbbr[key].abbreviation === abbreviation
       );
     if (!actor) {
       actor = fromUuidSync(this.actorUuid);
@@ -85,7 +136,8 @@ export class SkillTray {
       type: "skill",
       ability: skills.ability,
       modifier: skills.total,
-      proficient: skills.proficient
+      proficient: skills.proficient,
+      icon: skillAbbr[name].icon
     };
     return skill;
   }
