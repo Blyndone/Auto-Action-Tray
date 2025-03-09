@@ -231,12 +231,18 @@ $app-background: rgba(117, 117, 117, 0.7);
 @mixin button-style {
   text-align: center;
   color: white;
-  background: linear-gradient(180deg, #8b7700, #b8860b);
-  border: 2px solid #b3830b;
+  background: linear-gradient(180deg, #1e3a5f, #355c7d);
+  border: 2px solid #4a6fa5;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
   font-family: serif;
+  &:hover {
+    border-color: #c9593f; // Warmer highlight color
+    box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
+      0 0 4px rgba(201, 89, 63, 0.6) inset;
+    transform: scale(1.05); // Slight enlargement effect
+  }
 }
 
 .small-button {
@@ -250,20 +256,34 @@ $app-background: rgba(117, 117, 117, 0.7);
 .small-button-skill {
   @include center;
   @include button-style;
-  width: $small-button-width - $main-tray-padding * 2;
-  height: $small-button-height - 3;
+  width: $small-button-width - $main-tray-padding;
+  height: $small-button-height - 2;
   font-size: 14px;
 }
 .small-button-save {
   @include center;
   @include button-style;
-  background: linear-gradient(180deg, #005e05, #23ad00);
-  border: 2px solid #2e5001;
-  width: $small-button-width - $main-tray-padding * 2;
-  height: $small-button-height - 3;
+  background: linear-gradient(180deg, #5b9fa4, #0f5753);
+  border: 2px solid #004a74; /* Darker border color */
+  width: $small-button-width - $main-tray-padding;
+  height: $small-button-height - 2;
   font-size: 14px;
 }
 
+.proficient {
+  border: 2px solid #92cdff;
+  // box-shadow: 0 0 15px rgba(255, 120, 0, 1),
+  //   /* Orange glow */ 0 0 10px rgba(255, 120, 0, 0.8) inset; /* Orange inset glow */
+  text-decoration: underline;
+  text-decoration-color: #1e70b9; // Darker blue underline
+}
+
+.expertise {
+  border: 2px solid #bca4eb;
+
+  text-decoration: underline double;
+  text-decoration-color: #005b8d; // Even deeper blue underline
+}
 .center-tray-container {
   @include center;
   flex-direction: column;

@@ -5,7 +5,13 @@
     small-button-save
     {{else}}
     small-button-skill
-    {{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave'>
+    {{/if}}
+    {{#if (eq skill.proficient 1)}}
+proficient
+{{/if}}
+{{#if (eq skill.proficient 2)}}
+expertise
+{{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave'>
 
   {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
 </div>
@@ -17,7 +23,13 @@
     small-button-save
     {{else}}
     small-button-skill
-    {{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave'>
+    {{/if}}
+    {{#if (eq skill.proficient 1)}}
+proficient
+{{/if}}
+{{#if (eq skill.proficient 2)}}
+expertise
+{{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave'>
 
   {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
 </div>

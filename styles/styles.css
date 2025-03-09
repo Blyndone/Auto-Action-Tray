@@ -217,8 +217,8 @@
   align-items: center;
   text-align: center;
   color: white;
-  background: linear-gradient(180deg, #8b7700, #b8860b);
-  border: 2px solid #b3830b;
+  background: linear-gradient(180deg, #1e3a5f, #355c7d);
+  border: 2px solid #4a6fa5;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
@@ -227,6 +227,11 @@
   height: 20px;
   font-size: 12px;
 }
+.small-button:hover {
+  border-color: #c9593f;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
+  transform: scale(1.05);
+}
 
 .small-button-skill {
   display: flex;
@@ -234,15 +239,20 @@
   align-items: center;
   text-align: center;
   color: white;
-  background: linear-gradient(180deg, #8b7700, #b8860b);
-  border: 2px solid #b3830b;
+  background: linear-gradient(180deg, #1e3a5f, #355c7d);
+  border: 2px solid #4a6fa5;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
   font-family: serif;
-  width: 45px;
-  height: 22px;
+  width: 50px;
+  height: 23px;
   font-size: 14px;
+}
+.small-button-skill:hover {
+  border-color: #c9593f;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
+  transform: scale(1.05);
 }
 
 .small-button-save {
@@ -251,17 +261,34 @@
   align-items: center;
   text-align: center;
   color: white;
-  background: linear-gradient(180deg, #8b7700, #b8860b);
-  border: 2px solid #b3830b;
+  background: linear-gradient(180deg, #1e3a5f, #355c7d);
+  border: 2px solid #4a6fa5;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
   font-family: serif;
-  background: linear-gradient(180deg, #005e05, #23ad00);
-  border: 2px solid #2e5001;
-  width: 45px;
-  height: 22px;
+  background: linear-gradient(180deg, #5b9fa4, #0f5753);
+  border: 2px solid #004a74; /* Darker border color */
+  width: 50px;
+  height: 23px;
   font-size: 14px;
+}
+.small-button-save:hover {
+  border-color: #c9593f;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
+  transform: scale(1.05);
+}
+
+.proficient {
+  border: 2px solid #92cdff;
+  text-decoration: underline;
+  text-decoration-color: #1e70b9;
+}
+
+.expertise {
+  border: 2px solid #bca4eb;
+  text-decoration: underline double;
+  text-decoration-color: #005b8d;
 }
 
 .center-tray-container {

@@ -48,7 +48,10 @@ export class SkillTray {
         abbreviation: "med",
         icon: '<i class="fa-solid fa-book-atlas"></i>'
       },
-      nature: { abbreviation: "nat", icon: '<i class="fa-solid fa-leaf"></i>' },
+      nature: {
+        abbreviation: "nat",
+        icon: '<i class="fa-solid fa-leaf"></i>'
+      },
       perception: {
         abbreviation: "prc",
         icon: '<i class="fa-solid fa-eye"></i>'
