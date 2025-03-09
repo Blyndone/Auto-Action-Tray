@@ -463,7 +463,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgb(136, 135, 135);
+  background: rgb(97, 97, 95);
   display: flex;
   border: none;
   padding: 10px;
@@ -471,6 +471,10 @@
   border-radius: 5px;
   box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6); /* Inner glow */
   transition: all 0.3s ease; /* Smooth transition for hover and active states */
+  font-family: serif;
+  font-size: 16px;
+  color: white;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
 }
 .custom-tray-button:hover {
   box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8); /* Warm inner glow on hover */
@@ -485,10 +489,14 @@
   padding: 10px;
   margin: 1px;
   border-radius: 5px;
-  box-shadow: inset 0 0 15px rgba(139, 77, 1, 0.9);
-  background: rgb(191, 131, 78);
+  box-shadow: inset 0 0 15px rgba(255, 140, 0, 0.9);
+  background: rgb(120, 60, 40);
   color: white;
   border: 2px rgba(255, 140, 0, 0.9);
+  font-family: serif;
+  font-size: 16px;
+  color: white;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
 }
 
 .transparent-box {

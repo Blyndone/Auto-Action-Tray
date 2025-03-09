@@ -1,8 +1,11 @@
 
 {{#each customTrays as |tray|}}
+{{log tray}}
+{{log @root}}
 <div
   class=
-  {{#if tray.active}} 'custom-tray-active'
+  {{#if tray.active}} 
+  {{#if (eq @root.currentTray.id tray.id)}}'custom-tray-active' {{/if}}
   {{else}}
   'custom-tray-button'
   {{/if}}

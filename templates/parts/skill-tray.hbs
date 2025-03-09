@@ -11,7 +11,7 @@ proficient
 {{/if}}
 {{#if (eq skill.proficient 2)}}
 expertise
-{{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave'>
+{{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave' data-tooltip={{capitalize skill.name}} data-tooltip-direction='UP'>
 
   {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
 </div>
