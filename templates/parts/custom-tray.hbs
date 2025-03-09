@@ -1,13 +1,13 @@
 
 {{#each customTrays as |tray|}}
-<button
+<div
   class=
-  {{#if tray.active}} 'type-bar-active'
+  {{#if tray.active}} 'custom-tray-active'
   {{else}}
-  'type-btn'
+  'custom-tray-button'
   {{/if}}
   data-id={{tray.id}}
   data-action='setTray'
   data-type='custom'
->{{capitalize tray.id}}</button>
+>{{capitalize tray.id}}</div>
 {{/each}}

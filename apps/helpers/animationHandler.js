@@ -5,8 +5,6 @@ export class AnimationHandler {
 
   static animateSwapTrays(tray1, tray2, hotbar) {
     hotbar.animating = true;
-    debugger;
-
     var tl = gsap.timeline();
     tl
       .add("start")

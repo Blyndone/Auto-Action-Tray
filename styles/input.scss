@@ -1,15 +1,19 @@
-$app-width: 1400px;
-$main-tray-height: 150px;
+$app-width: 1425px;
+$app-height: 170px;
+$main-tray-padding: 5px;
+$main-tray-height: 150px + $main-tray-padding * 2+2px;
 $total-item-width: 75px;
 $total-item-height: 75px;
+$inset-border: 2px;
 $item-margin: 1px;
 $item-width: $total-item-width - ($item-margin * 2);
 $item-height: $total-item-height - ($item-margin * 2);
-$small-button-width: 65px;
-$small-button-height: $main-tray-height / 6;
+$small-button-width: $total-item-width - 20px;
+$small-button-height: $total-item-height / 3;
 $static-tray-size: 50px;
 $item-tray-item-width-count: 10;
 $item-tray-item-height-count: 2;
+
 @mixin center {
   display: flex;
   justify-content: center;
@@ -47,22 +51,39 @@ $item-tray-item-height-count: 2;
   margin: $item-margin;
 }
 
+@mixin inset-tray {
+  background: #5b5b5b;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
+    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+
+  border: $inset-border solid #2f2f2f;
+  border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .auto-action-tray-container {
   @include center;
   flex-direction: column;
   background: rgba(117, 117, 117, 0.7);
-  border-radius: 8px;
+  border-radius: 100px 8px 8px 100px;
   position: absolute;
-  bottom: 40px;
+  bottom: 45px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
   width: $app-width;
+  height: $app-height;
+  background-blend-mode: multiply;
 }
 
 .static-tray-container {
   position: absolute;
-  top: -55px;
+  top: -57px;
+  border-radius: 10px 10px 0 0;
+  background: rgba(117, 117, 117, 0.7);
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
 
   @include center;
 }
@@ -164,22 +185,30 @@ $item-tray-item-height-count: 2;
   @include main-tray-height;
 
   img {
-    width: 150px;
-    height: 150px;
+    @include inset-tray;
+    padding: $main-tray-padding;
+    width: 170px;
+    height: 170px;
     border-radius: 50%;
     align-items: center;
     vertical-align: middle;
+    margin-right: 10px;
   }
 }
 
 .equipment-misc-tray-container {
   @include main-tray-height;
   @include center;
+
   flex-direction: column;
-  width: $total-item-width * 2;
+  width: $total-item-width * 2 + $main-tray-padding * 2;
+  margin: 5px;
 }
 .equipment-tray-container {
   @include center;
+  @include inset-tray;
+  padding: $main-tray-padding;
+  width: $total-item-width * 2 + $main-tray-padding * 2;
   img {
     @include hover;
     @include item;
@@ -187,21 +216,19 @@ $item-tray-item-height-count: 2;
 }
 
 .misc-tray-container {
-  width: $total-item-width * 2;
+  @include inset-tray;
+  width: $small-button-width * 2 + $main-tray-padding * 2;
+  height: $main-tray-height - $total-item-height - $main-tray-padding;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  padding: 6px;
+  padding: $main-tray-padding;
   gap: 2px;
 }
 
-.small-button {
-  @include center;
-  width: $small-button-width;
-  height: $small-button-height;
-  font-size: 16px;
+@mixin button-style {
   text-align: center;
   color: white;
   background: linear-gradient(180deg, #8b7700, #b8860b);
@@ -211,28 +238,43 @@ $item-tray-item-height-count: 2;
   transition: all 0.3s ease-in-out;
   font-family: serif;
 }
-// .current-tray {
-//   overflow: hidden;
-//   width: 710px;
-//   height: 170px;
-//   position: relative;
-//   display: flex;
-//   justify-content: center;
-//   background: #5b5b5b;
-// }
+
+.misc-tray-container {
+  .small-button {
+    @include center;
+    @include button-style;
+    width: $small-button-width - $main-tray-padding;
+    height: $small-button-height - $main-tray-padding;
+    font-size: 12px;
+  }
+}
+
+.skill-tray-container {
+  .small-button {
+    @include center;
+    @include button-style;
+    width: $small-button-width - $main-tray-padding * 2;
+    height: $small-button-height - 3;
+    font-size: 12px;
+  }
+}
+
 .center-tray-container {
   @include center;
   flex-direction: column;
 }
 .ability-tray-container {
-  margin-right: 20px;
-  margin-left: 20px;
+  @include main-tray-height;
+  @include inset-tray;
+  $tray-width: $total-item-width * $item-tray-item-width-count +
+    $main-tray-padding * 2 + 5px;
+
+  padding: $main-tray-padding;
+  width: $tray-width;
+  margin: 5px;
   display: flex;
   overflow: hidden;
-  background: #5b5b5b;
   align-items: center;
-  @include main-tray-height;
-  width: $total-item-width * $item-tray-item-width-count;
   position: relative;
 
   img {
@@ -240,8 +282,8 @@ $item-tray-item-height-count: 2;
     @include hover;
   }
   ol {
+    width: $total-item-height * $item-tray-item-height-count;
     height: $total-item-height * $item-tray-item-height-count;
-    width: $total-item-width * $item-tray-item-width-count;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -301,7 +343,6 @@ $item-tray-item-height-count: 2;
 }
 
 .main-tray-controls-container {
-  position: absolute;
   right: 291px;
   top: 13px;
   display: flex;
@@ -309,18 +350,21 @@ $item-tray-item-height-count: 2;
   justify-content: center;
   flex-direction: column;
   flex-wrap: nowrap;
+  margin-right: 5px;
   div {
+    @include center;
     border-radius: 50%;
     background: linear-gradient(135deg, #81593d, #c59e7d);
     width: 30px;
     height: 30px;
     border: 2px solid #663a10;
-    margin: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
     font-size: 18px;
     font-weight: bold;
     color: #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    text-align: center;
+
     font-family: Arial, sans-serif;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -328,24 +372,55 @@ $item-tray-item-height-count: 2;
 }
 .skill-tray-container {
   @include center;
+  @include inset-tray;
   display: flex;
   grid-template-columns: repeat(2, auto);
   gap: 2px;
   justify-content: center;
-  padding: 0px;
   flex-direction: column;
   flex-wrap: wrap;
-  height: 170px;
-  margin: 10px;
-  width: $small-button-width * 2;
+  height: $main-tray-height;
+  width: $small-button-width * 2 + $main-tray-padding * 2;
+  height: $main-tray-height;
+  padding: $main-tray-padding;
+  gap: 2px;
 }
 .end-turn-container {
   @include center;
 }
 .custom-tray-container {
-  position: absolute;
-  top: $main-tray-height + 3px;
   @include center;
+  position: absolute;
+  top: $main-tray-height + 10px;
+  border-radius: 0 0 10px 10px;
+  background: rgba(117, 117, 117, 0.7);
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+}
+
+.custom-tray-button {
+  @include center;
+  @include static-hover;
+  background: rgb(136, 135, 135);
+  display: flex;
+
+  border: none;
+  padding: 10px;
+  margin: 1px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6); /* Inner glow */
+  transition: all 0.3s ease; /* Smooth transition for hover and active states */
+}
+.custom-tray-active {
+  @include center;
+  padding: 10px;
+  margin: 1px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 15px rgba(139, 77, 1, 0.9);
+  background: rgb(191 131 78);
+  color: white;
+  border: 2px rgba(255, 140, 0, 0.9);
 }
 
 .transparent-box {
@@ -456,31 +531,33 @@ $item-tray-item-height-count: 2;
     rgb(0, 0, 0) 0px 0px 6px;
 }
 .swap-skill-tray-button {
+  @include center;
   position: absolute;
-  display: flex;
-  bottom: 0px;
+  bottom: -1 * $total-item-height;
   left: 0px;
   width: 25px;
   height: 25px;
+
+  margin: 5px;
   border-radius: 50%; /* Makes it round */
   background: linear-gradient(135deg, #a1c4fd, #c2e9fb); /* Pleasant gradient */
   border: 4px solid #5a91e6; /* Soft blue border */
   display: flex;
-  align-items: center;
-  justify-content: center;
+
   font-size: 18px;
   font-weight: bold;
   color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
-  text-align: center;
   font-family: Arial, sans-serif;
 }
 .end-turn-btn {
+  @include inset-tray;
+  padding: $main-tray-padding;
   background: red;
   height: 130px;
   width: 130px;
   border-radius: 100%;
   font-size: 20px;
   border: 10px, #333;
-  margin-left: 20px;
+  margin: 10px;
 }
