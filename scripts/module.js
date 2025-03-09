@@ -1,15 +1,14 @@
-import { AutoActionTray } from "../apps/hotbar.js";
+import { AutoActionTray } from "../apps/autoActionTray.js";
 // import { registerHooks } from "./hooks.js";
 
 export async function preloadHandlebarsTemplates() {
   const partials = [
-    "modules/auto-action-tray/templates/parts/character-tray.hbs",
+    "modules/auto-action-tray/templates/auto-action-tray.hbs",
     "modules/auto-action-tray/templates/parts/effect-tray.hbs",
     "modules/auto-action-tray/templates/parts/equip-tray.hbs",
-    "modules/auto-action-tray/templates/parts/resource-tray.hbs",
+    "modules/auto-action-tray/templates/parts/static-tray.hbs",
     "modules/auto-action-tray/templates/parts/turn-tray.hbs",
-    "modules/auto-action-tray/templates/parts/type-tray.hbs",
-    "modules/auto-action-tray/templates/parts/ability-tray.hbs",
+    "modules/auto-action-tray/templates/parts/custom-tray.hbs",
     "modules/auto-action-tray/templates/parts/item.hbs",
     "modules/auto-action-tray/templates/parts/item-spell.hbs",
     "modules/auto-action-tray/templates/parts/full-tray.hbs",
@@ -17,7 +16,8 @@ export async function preloadHandlebarsTemplates() {
     "modules/auto-action-tray/templates/parts/character-hp.hbs",
     "modules/auto-action-tray/templates/parts/skill-tray.hbs",
     "modules/auto-action-tray/templates/parts/utility-tray.hbs",
-    "modules/auto-action-tray/templates/parts/tray-controls.hbs"
+    "modules/auto-action-tray/templates/parts/tray-controls.hbs",
+    "modules/auto-action-tray/templates/parts/character-tray.hbs"
   ];
   const paths = {};
   for (const path of partials) {

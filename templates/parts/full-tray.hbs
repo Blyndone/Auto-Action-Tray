@@ -1,17 +1,12 @@
 
-<div class="ability-sections  .{{{tray.id}}} " data-data-id="{{{tray.id}}}" >
-  
- 
-    <div style = "width: {{totalWidthPx}}px">
+<div  data-data-id="{{{tray.id}}}" >
+ {{log tray}}
   <ol>
     {{#each tray.abilities as |item|}}
         {{#indexRange '0' @index @root.totalabilities }}
       {{> AAT.item item=item tray=../tray index=@index}} 
         {{/indexRange}}
     {{/each}}
-    
+
   </ol>
-    </div>
-
-
 </div>

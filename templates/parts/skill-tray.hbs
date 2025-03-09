@@ -1,9 +1,8 @@
-<div class='skill-container'>
+<div class='skill-tray-container'>
 
-  {{log skillTray.currentSkills}}
   {{#each skillTray.currentSkills as |skill|}}
     <div
-      class='skill-button'
+      class='small-button'
       data-skill='{{skill.abbreviation}}'
       data-type='{{skill.type}}'
       data-action='useSkillSave'

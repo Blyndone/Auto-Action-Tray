@@ -22,7 +22,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     this.abilityHeight = 2;
 
-    this.section1Width = 3;
+    this.section1Width = 4;
     this.section2Width = 4;
     this.section3Width = 2;
     this.abilityHeight = 2;
@@ -163,8 +163,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
    */
 
   static PARTS = {
-    part1: {
-      template: 'modules/auto-action-tray/templates/character-tray.hbs',
+    autoActionTray: {
+      template: 'modules/auto-action-tray/templates/auto-action-tray.hbs',
       id: 'tray',
     },
   };
@@ -326,13 +326,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.currentTray == this.targetTray) return;
 
     await this.render(true);
-
-    await AnimationHandler.animateSwapTrays(
+    AnimationHandler.animateSwapTrays(
       this.targetTray,
       this.currentTray,
       this
     );
   }
+  
 
   static async useItem(event, target) {
     game.tooltip.deactivate();

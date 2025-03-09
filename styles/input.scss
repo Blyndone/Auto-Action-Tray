@@ -1,7 +1,54 @@
-.auto-action-tray-container {
+$app-width: 1400px;
+$main-tray-height: 150px;
+$total-item-width: 75px;
+$total-item-height: 75px;
+$item-margin: 1px;
+$item-width: $total-item-width - ($item-margin * 2);
+$item-height: $total-item-height - ($item-margin * 2);
+$small-button-width: 65px;
+$small-button-height: $main-tray-height / 6;
+$static-tray-size: 50px;
+$item-tray-item-width-count: 10;
+$item-tray-item-height-count: 2;
+@mixin center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+@mixin main-tray-height {
+  height: $main-tray-height;
+}
+@mixin hover {
+  &:hover {
+    border: 2px solid #c9593f;
+    box-shadow: 0 0 5px #c9593f;
+  }
+}
+
+@mixin static-hover {
+  &:hover {
+    box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8); /* Warm inner glow on hover */
+    cursor: pointer; /* Changes the cursor to a pointer */
+    transform: scale(1.1); /* Slightly enlarges the container */
+  }
+}
+
+@mixin item {
+  background: #333;
+  color: white;
+  border: 2px solid #333;
+  border-radius: 5px;
+  cursor: pointer;
+  width: $item-width;
+  height: $item-height;
+  position: relative;
+  vertical-align: middle;
+  align-self: center;
+  margin: $item-margin;
+}
+
+.auto-action-tray-container {
+  @include center;
   flex-direction: column;
   background: rgba(117, 117, 117, 0.7);
   border-radius: 8px;
@@ -10,24 +57,22 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
-  width: 1400px;
+  width: $app-width;
 }
 
 .static-tray-container {
   position: absolute;
   top: -55px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+  @include center;
 }
 
 .static-tray-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include center;
+  @include static-hover;
   background: rgb(97, 97, 95);
-  width: 50px;
-  height: 50px;
+  width: $static-tray-size;
+  height: $static-tray-size;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -42,19 +87,12 @@
   box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6); /* Inner glow */
   transition: all 0.3s ease; /* Smooth transition for hover and active states */
 }
-.static-tray-button:hover {
-  box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8); /* Warm inner glow on hover */
-  cursor: pointer; /* Changes the cursor to a pointer */
-  transform: scale(1.1); /* Slightly enlarges the container */
-}
-
 .static-tray-active {
   box-shadow: inset 0 0 15px rgba(255, 140, 0, 0.9);
   background: rgb(120, 60, 40);
   color: white;
   border: 2px rgba(255, 140, 0, 0.9);
 }
-
 .icon-action {
   color: rgb(179, 99, 1);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
@@ -101,13 +139,11 @@
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
 }
-
 .static-spell-level-container {
   position: relative;
 }
-
 .static-spell-level {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   position: absolute;
   top: 0;
   left: 50%;
@@ -120,60 +156,38 @@
 }
 
 .main-tray-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 150px;
+  @include center;
+  @include main-tray-height;
 }
-
 .character-image-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 150px;
-}
-.character-image-container img {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  align-items: center;
-  vertical-align: middle;
+  @include center;
+  @include main-tray-height;
+
+  img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    align-items: center;
+    vertical-align: middle;
+  }
 }
 
 .equipment-misc-tray-container {
-  height: 150px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include main-tray-height;
+  @include center;
   flex-direction: column;
-  width: 150px;
+  width: $total-item-width * 2;
 }
-
 .equipment-tray-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.equipment-tray-container img {
-  background: #333;
-  color: white;
-  border: 2px solid #333;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 73px;
-  height: 73px;
-  position: relative;
-  vertical-align: middle;
-  align-self: center;
-  margin: 1px;
-}
-.equipment-tray-container img:hover {
-  border: 2px solid #c9593f;
-  box-shadow: 0 0 5px #c9593f;
+  @include center;
+  img {
+    @include hover;
+    @include item;
+  }
 }
 
 .misc-tray-container {
-  width: 150px;
+  width: $total-item-width * 2;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -184,11 +198,9 @@
 }
 
 .small-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 65px;
-  height: 25px;
+  @include center;
+  width: $small-button-width;
+  height: $small-button-height;
   font-size: 16px;
   text-align: center;
   color: white;
@@ -199,14 +211,19 @@
   transition: all 0.3s ease-in-out;
   font-family: serif;
 }
-
+// .current-tray {
+//   overflow: hidden;
+//   width: 710px;
+//   height: 170px;
+//   position: relative;
+//   display: flex;
+//   justify-content: center;
+//   background: #5b5b5b;
+// }
 .center-tray-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include center;
   flex-direction: column;
 }
-
 .ability-tray-container {
   margin-right: 20px;
   margin-left: 20px;
@@ -214,38 +231,25 @@
   overflow: hidden;
   background: #5b5b5b;
   align-items: center;
-  height: 150px;
-  width: 750px;
+  @include main-tray-height;
+  width: $total-item-width * $item-tray-item-width-count;
   position: relative;
-}
-.ability-tray-container img {
-  background: #333;
-  color: white;
-  border: 2px solid #333;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 73px;
-  height: 73px;
-  position: relative;
-  vertical-align: middle;
-  align-self: center;
-  margin: 1px;
-}
-.ability-tray-container img:hover {
-  border: 2px solid #c9593f;
-  box-shadow: 0 0 5px #c9593f;
-}
-.ability-tray-container ol {
-  height: 150px;
-  width: 750px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  list-style-type: none;
-  padding: 0px;
-  align-items: center;
-}
 
+  img {
+    @include item;
+    @include hover;
+  }
+  ol {
+    height: $total-item-height * $item-tray-item-height-count;
+    width: $total-item-width * $item-tray-item-width-count;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    list-style-type: none;
+    padding: 0px;
+    align-items: center;
+  }
+}
 .abilities-tray {
   position: absolute;
 }
@@ -260,7 +264,8 @@
   min-width: 20px;
   text-align: right;
   height: 0px;
-  text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;
+  text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black,
+    1px 1px 0px black;
 }
 
 .spell-item-container {
@@ -268,19 +273,20 @@
 }
 
 .spell-item-container-text {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   position: absolute;
   bottom: 0;
   right: 0;
   padding: 5px 10px;
   font-size: 22px;
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
+    rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
 
 .spell-item-container-text-upcast {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-weight: bold;
   position: absolute;
   transform: translateY(-5%);
@@ -289,7 +295,8 @@
   padding: 0px 5px;
   font-size: 20px;
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
+    rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
 
@@ -302,28 +309,25 @@
   justify-content: center;
   flex-direction: column;
   flex-wrap: nowrap;
+  div {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #81593d, #c59e7d);
+    width: 30px;
+    height: 30px;
+    border: 2px solid #663a10;
+    margin: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    font-family: Arial, sans-serif;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
 }
-.main-tray-controls-container div {
-  border-radius: 50%;
-  background: linear-gradient(135deg, #81593d, #c59e7d);
-  width: 30px;
-  height: 30px;
-  border: 2px solid #663a10;
-  margin: 5px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  font-family: Arial, sans-serif;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-
 .skill-tray-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include center;
   display: flex;
   grid-template-columns: repeat(2, auto);
   gap: 2px;
@@ -333,37 +337,20 @@
   flex-wrap: wrap;
   height: 170px;
   margin: 10px;
-  width: 130px;
+  width: $small-button-width * 2;
 }
-
 .end-turn-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include center;
 }
-
 .custom-tray-container {
   position: absolute;
-  top: 153px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  top: $main-tray-height + 3px;
+  @include center;
 }
 
 .transparent-box {
-  background: #333;
-  color: white;
-  border: 2px solid #333;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 73px;
-  height: 73px;
-  position: relative;
-  vertical-align: middle;
-  align-self: center;
-  margin: 1px;
+  @include item;
 }
-
 .tooltip-container {
   background: #2c1f12;
   border: 2px solid #704214;
@@ -457,16 +444,17 @@
   font-weight: bold;
   font-size: 20px;
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
+    rgb(0, 0, 0) 0px 0px 6px;
 }
-
 .temp-hp-text {
   color: #5bc0de; /* Light blue */
   font-weight: bold;
   font-size: 18px;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
-}
 
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
+    rgb(0, 0, 0) 0px 0px 6px;
+}
 .swap-skill-tray-button {
   position: absolute;
   display: flex;
@@ -487,7 +475,6 @@
   text-align: center;
   font-family: Arial, sans-serif;
 }
-
 .end-turn-btn {
   background: red;
   height: 130px;
@@ -497,5 +484,3 @@
   border: 10px, #333;
   margin-left: 20px;
 }
-
-/*# sourceMappingURL=styles.css.map */

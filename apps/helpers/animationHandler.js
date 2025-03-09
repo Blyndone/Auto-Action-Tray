@@ -5,37 +5,45 @@ export class AnimationHandler {
 
   static animateSwapTrays(tray1, tray2, hotbar) {
     hotbar.animating = true;
-    gsap.fromTo(
-      "." + tray1.id,
-      {
-        opacity: 0,
-        y: tray1.type == "static" ? -200 : 0,
-        x: tray1.type == "custom" ? 1000 : 0
-      },
-      {
-        opacity: 1,
-        y: 0,
-        x: 0,
-        duration: hotbar.animationDuration,
-        onStart: () => {}
-      }
-    );
+    debugger;
 
-    gsap.to("." + tray2.id, {
-      opacity: 0,
-      y: tray2.type == "static" ? -200 : 0,
-      x: tray2.type == "custom" ? 1000 : 0,
-      duration: hotbar.animationDuration,
-      onStart: () => {},
-      onComplete: () => {
-        hotbar.currentTray.active = false;
-        hotbar.targetTray.active = true;
-        hotbar.currentTray = hotbar.targetTray;
-        hotbar.animating = false;
-
-        hotbar.refresh();
-      }
-    });
+    var tl = gsap.timeline();
+    tl
+      .add("start")
+      .fromTo(
+        "." + tray1.id,
+        {
+          opacity: 0,
+          y: tray1.type == "static" ? -200 : 0,
+          x: tray1.type == "custom" ? 1000 : 0
+        },
+        {
+          opacity: 1,
+          y: 0,
+          x: 0,
+          duration: hotbar.animationDuration,
+          onStart: () => {}
+        },
+        "start"
+      )
+      .to(
+        "." + tray2.id,
+        {
+          opacity: 0,
+          y: tray2.type == "static" ? -200 : 0,
+          x: tray2.type == "custom" ? 1000 : 0,
+          duration: hotbar.animationDuration,
+          onStart: () => {},
+          onComplete: () => {
+            hotbar.animating = false;
+            hotbar.currentTray.active = false;
+            hotbar.targetTray.active = true;
+            hotbar.currentTray = hotbar.targetTray;
+            hotbar.refresh();
+          }
+        },
+        "start"
+      );
   }
 
   static animateTray(tray, active) {

@@ -1,49 +1,29 @@
 <li>
   {{#if item}}
-    <div
-    {{#if (eq tray.type 'static')}}
-      {{else}}
-      data-drag='true'
-{{/if}}
-      data-item-id='{{item._id}}'
-      data-index='{{@index}}'
-      data-tooltip= "{{> 'AAT.item-tooltip' }}"
-      data-action='useItem'
-      data-tooltip-direction='UP'
-      class='ability-button'
-    >
- 
+  <div {{#if (eq tray.type 'static' )}} {{else}} data-drag='true' {{/if}} data-item-id='{{item._id}}'
+    data-index='{{@index}}' data-tooltip="{{> 'AAT.item-tooltip' }}" data-action='useItem' data-tooltip-direction='UP'
+    class='ability-button'>
+
     {{#if (eq item.type 'spell')}}
+    {{> AAT.item-spell item=item index=@index tray=tray}}
 
-                                                
+    {{else}}
+    <img src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item._id}}' data-index='{{@index}}' />
+    {{/if}}
+    {{#if (eq item.type 'consumable')}}
+    <div class='consumable-count'> {{item.system.quantity}}</div>
+    {{else}}
+    {{#if (eq item.system.uses.max '')}}
+    {{else}}
+    <div class='consumable-count'>
+      {{item.system.uses.value}}
+      /
+      {{item.system.uses.max}}</div>
+    {{/if}}
+    {{/if}}
+  </div>
 
-     {{> AAT.item-spell item=item index=@index tray=tray}}  
-                                                                            
-        {{else}}
-          <img
-            src='{{item.img}}'
-            alt='{{item.name}}'
-            data-item-id='{{item._id}}'
-            data-index='{{@index}}'
-          />
-        {{/if}}
-
-
-
-      {{#if (eq item.type 'consumable')}}
-            <div class='consumable-count'> {{item.system.quantity}}</div>
-      {{else}}
-          {{#if (eq item.system.uses.max '')}}
-          {{else}}
-              <div class='consumable-count'>
-                {{item.system.uses.value}}
-                /
-                {{item.system.uses.max}}</div>
-          {{/if}}
-      {{/if}}
-     </div>
-
-{{else}}
-    <div class='transparent-box' data-index='{{@index}}'></div>
-{{/if}}
+  {{else}}
+  <div class='transparent-box' data-index='{{@index}}'></div>
+  {{/if}}
 </li>
