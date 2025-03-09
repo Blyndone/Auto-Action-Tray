@@ -80,6 +80,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.currentTray.active = true;
     this.render();
   }
+  //
+  // locked: Boolean
+  // skillTrayPage: 1, 2
+  
+  setTrayConfig({config}) { 
+    this.actor.setFlag('auto-action-tray', 'config', {config});
+  }
+
+  getTrayConfig() { 
+    return this.actor.getFlag('auto-action-tray', 'config');
+  }
 
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;
@@ -94,8 +105,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.refresh();
   }
   _onControlToken = (event, controlled) => {
-
-    if (event == null || controlled== false) {
+    if (event == null || controlled == false) {
       return;
     }
     if (event.actor != this.actor || this.actor == event) {
@@ -144,6 +154,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       setTray: AutoActionTray.setTray,
       endTurn: AutoActionTray.endTurn,
       useSkillSave: AutoActionTray.useSkillSave,
+      swapSkillTray: AutoActionTray.swapSkillTray,
     },
   };
 
@@ -326,13 +337,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.currentTray == this.targetTray) return;
 
     await this.render(true);
-    AnimationHandler.animateSwapTrays(
-      this.targetTray,
-      this.currentTray,
-      this
-    );
+    AnimationHandler.animateSwapTrays(this.targetTray, this.currentTray, this);
   }
-  
+
+  static swapSkillTray() {
+ 
+    this.skillTray.swapSkillTrays();
+    this.render(true);
+  }
 
   static async useItem(event, target) {
     game.tooltip.deactivate();

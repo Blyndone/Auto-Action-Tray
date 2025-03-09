@@ -6,6 +6,7 @@ export class SkillTray {
     this.characterClass = null;
     this.inCombat = true;
     this.currentSkills = [];
+    this.secondarySkills = [];
     this.skillAbbr = {
       acrobatics: {
         abbreviation: "acr",
@@ -86,6 +87,15 @@ export class SkillTray {
       wis: "Wisdom",
       cha: "Charisma"
     };
+    this.saveIcons = {
+      str: '<i class="fa-solid fa-dumbbell"></i>',
+      dex: '<i class="fa-solid fa-bullseye"></i>',
+      con: '<i class="fa-solid fa-heart"></i>',
+      int: '<i class="fa-solid fa-brain"></i>',
+      wis: '<i class="fa-solid fa-eye"></i>',
+      cha: '<i class="fa-solid fa-handshake"></i>'
+    };
+
     this.generateTray();
   }
 
@@ -105,17 +115,18 @@ export class SkillTray {
 
   generateTray() {
     let actor = fromUuidSync(this.actorUuid);
-    this.currentSkills = this.getSkillSets(
+
+    let { skills, secondarySkills } = this.getSkillSets(
       actor,
       this.inCombat,
       this.characterClass
     );
+    this.currentSkills = skills;
+    this.secondarySkills = secondarySkills;
   }
 
   static generateCustomTrays(actor) {
-    return new SkillTray({
-      actorUuid: actor.uuid
-    });
+    return new SkillTray({ actorUuid: actor.uuid });
   }
 
   generateSkillData(name = null, abbreviation = null, actor = null) {
@@ -153,7 +164,8 @@ export class SkillTray {
       type: "save",
       ability: abbreviation,
       modifier: saves.value,
-      proficient: saves.proficient
+      proficient: saves.proficient,
+      icon: this.saveIcons[abbreviation]
     };
     return save;
   }
@@ -171,6 +183,7 @@ export class SkillTray {
     let classSkills = defaultClassSkills;
 
     let skills = [];
+    let secondarySkills = [];
 
     switch (true) {
       case !incombat && !characterClass:
@@ -219,6 +232,30 @@ export class SkillTray {
         );
         break;
     }
-    return skills;
+
+    let availableSkills = this.getSecondarySkills(skills);
+
+    availableSkills.forEach(skill =>
+      secondarySkills.push(this.generateSkillData(null, skill, actor))
+    );
+
+    return { skills, secondarySkills };
+  }
+
+  getSecondarySkills(skills) {
+    return Object.keys(this.skillAbbr)
+      .filter(
+        skill =>
+          !skills
+            .map(e => e.abbreviation)
+            .includes(this.skillAbbr[skill].abbreviation)
+      )
+      .map(skill => this.skillAbbr[skill].abbreviation);
+  }
+
+  swapSkillTrays() {
+    let tmp = this.currentSkills;
+    this.currentSkills = this.secondarySkills;
+    this.secondarySkills = tmp;
   }
 }

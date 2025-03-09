@@ -1,12 +1,17 @@
 {{#each skillTray.currentSkills as |skill|}}
   <div
-    class='small-button'
+
+    class="
+    {{#if (eq skill.type 'save')}}
+    small-button-save
+    {{else}}
+    small-button-skill
+    {{/if}}"
     data-skill='{{skill.abbreviation}}'
     data-type='{{skill.type}}'
     data-action='useSkillSave'
   >
 
-    {{{skill.icon}}}-
-    {{skill.abbreviation}}
+    {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
   </div>
 {{/each}}

@@ -13,7 +13,7 @@ $small-button-height: $total-item-height / 3;
 $static-tray-size: 50px;
 $item-tray-item-width-count: 10;
 $item-tray-item-height-count: 2;
-
+$app-background: rgba(117, 117, 117, 0.7);
 @mixin center {
   display: flex;
   justify-content: center;
@@ -64,13 +64,13 @@ $item-tray-item-height-count: 2;
 .auto-action-tray-container {
   @include center;
   flex-direction: column;
-  background: rgba(117, 117, 117, 0.7);
+  background: $app-background;
   border-radius: 100px 8px 8px 100px;
   position: absolute;
   bottom: 45px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 100;
+  z-index: 0;
   width: $app-width;
   height: $app-height;
   background-blend-mode: multiply;
@@ -80,7 +80,7 @@ $item-tray-item-height-count: 2;
   position: absolute;
   top: -57px;
   border-radius: 10px 10px 0 0;
-  background: rgba(117, 117, 117, 0.7);
+  background: $app-background;
   padding-left: 5px;
   padding-right: 5px;
   padding-top: 5px;
@@ -239,24 +239,29 @@ $item-tray-item-height-count: 2;
   font-family: serif;
 }
 
-.misc-tray-container {
-  .small-button {
-    @include center;
-    @include button-style;
-    width: $small-button-width - $main-tray-padding;
-    height: $small-button-height - $main-tray-padding;
-    font-size: 12px;
-  }
+.small-button {
+  @include center;
+  @include button-style;
+  width: $small-button-width - $main-tray-padding;
+  height: $small-button-height - $main-tray-padding;
+  font-size: 12px;
 }
 
-.skill-tray-container {
-  .small-button {
-    @include center;
-    @include button-style;
-    width: $small-button-width - $main-tray-padding * 2;
-    height: $small-button-height - 3;
-    font-size: 12px;
-  }
+.small-button-skill {
+  @include center;
+  @include button-style;
+  width: $small-button-width - $main-tray-padding * 2;
+  height: $small-button-height - 3;
+  font-size: 14px;
+}
+.small-button-save {
+  @include center;
+  @include button-style;
+  background: linear-gradient(180deg, #005e05, #23ad00);
+  border: 2px solid #2e5001;
+  width: $small-button-width - $main-tray-padding * 2;
+  height: $small-button-height - 3;
+  font-size: 14px;
 }
 
 .center-tray-container {
@@ -391,9 +396,9 @@ $item-tray-item-height-count: 2;
 .custom-tray-container {
   @include center;
   position: absolute;
-  top: $main-tray-height + 10px;
+  top: $main-tray-height + 8px;
   border-radius: 0 0 10px 10px;
-  background: rgba(117, 117, 117, 0.7);
+  background: $app-background;
   padding-left: 5px;
   padding-right: 5px;
   padding-bottom: 5px;
@@ -511,8 +516,8 @@ $item-tray-item-height-count: 2;
   align-items: center;
   justify-content: center;
   text-align: center;
-  bottom: 0px;
-  width: 150px;
+  bottom: 15px;
+  width: 170px;
 }
 
 .hp-text {
