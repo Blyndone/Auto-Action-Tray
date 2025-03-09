@@ -253,7 +253,7 @@ export class SkillTray {
       .map(skill => this.skillAbbr[skill].abbreviation);
   }
 
-  swapSkillTrays() {
+  toggleSkillTrayPage() {
     let tmp = this.currentSkills;
     this.currentSkills = this.secondarySkills;
     this.secondarySkills = tmp;

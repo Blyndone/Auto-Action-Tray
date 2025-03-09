@@ -62,6 +62,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.staticTrays = [];
     this.equipmentTray = null;
     this.skillTray = null;
+    this.trayOptions = {locked:false, skillTrayPage: 0, currentTray: 'common'};
+    
 
     this.abilities = new Array(this.totalabilities).fill(null);
     this.init = false;
@@ -83,13 +85,20 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   //
   // locked: Boolean
   // skillTrayPage: 1, 2
+  //currentTray: id
   
-  setTrayConfig({config}) { 
-    this.actor.setFlag('auto-action-tray', 'config', {config});
+  setTrayConfig(config) { 
+    this.actor.setFlag('auto-action-tray', 'config', config);
   }
 
   getTrayConfig() { 
-    return this.actor.getFlag('auto-action-tray', 'config');
+
+    let data = this.actor.getFlag('auto-action-tray', 'config');
+    if (data) {
+      return data;
+    } else { 
+      return null
+    }
   }
 
   _onUpdateItem(item, change, options, userId) {
@@ -117,6 +126,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
       this.rangedWeapon = this.equipmentTray.getRangedWeapon();
       this.skillTray = SkillTray.generateCustomTrays(this.actor);
+      let config = this.getTrayConfig()
+      if (config) {
+        this.trayOptions = Object.assign({}, this.trayOptions, config);
+      } else { 
+        this.trayOptions = {locked:false, skillTrayPage: 0, currentTray: 'common'};
+      }
+    
+
     }
     this.refresh();
   };
@@ -154,7 +171,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       setTray: AutoActionTray.setTray,
       endTurn: AutoActionTray.endTurn,
       useSkillSave: AutoActionTray.useSkillSave,
-      swapSkillTray: AutoActionTray.swapSkillTray,
+      swapSkillTray: AutoActionTray.toggleSkillTrayPage,
+      toggleLock: AutoActionTray.toggleLock,
     },
   };
 
@@ -236,6 +254,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       customTrays: this.customTrays,
       equipmentTray: this.equipmentTray,
       skillTray: this.skillTray,
+      locked: this.trayOptions['locked'],
+      skillTrayPage: this.trayOptions['skillTrayPage'],
     };
 
     return context;
@@ -323,6 +343,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
   static async endTurn(event, target) {
     this.actor.unsetFlag('auto-action-tray', 'data');
+    this.actor.unsetFlag('auto-action-tray', 'config');
   }
 
   static async setTray(event, target) {
@@ -339,10 +360,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     await this.render(true);
     AnimationHandler.animateSwapTrays(this.targetTray, this.currentTray, this);
   }
-
-  static swapSkillTray() {
+  static toggleLock() { 
+    this.trayOptions['locked'] = !this.trayOptions['locked'];
+    this.setTrayConfig({locked: this.trayOptions['locked']});
+    this.render(true);
+  }
+  static toggleSkillTrayPage() {
  
-    this.skillTray.swapSkillTrays();
+    // this.skillTray.toggleSkillTrayPage();
+    this.trayOptions['skillTrayPage'] = (this.trayOptions['skillTrayPage'] == 0) ? 1 : 0;
+    this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] });
+  
     this.render(true);
   }
 
@@ -396,7 +424,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   _canDragStart(selector) {
-    return this.isEditable;
+    return this.isEditable && !this.trayOptions['locked'];
   }
 
   _canDragDrop(selector) {
