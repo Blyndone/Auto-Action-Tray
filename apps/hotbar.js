@@ -6,6 +6,8 @@ import { StaticTray } from './components/staticTray.js';
 import { EquipmentTray } from './components/equipmentTray.js';
 import { SkillTray } from './components/skillTray.js';
 import { registerHandlebarsHelpers } from './helpers/handlebars.js';
+import { AnimationHandler } from './helpers/animationHandler.js';
+import { DragDropHandler } from './helpers/dragDropHandler.js';
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(
   ApplicationV2
@@ -61,13 +63,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.equipmentTray = null;
     this.skillTray = null;
 
-
     this.abilities = new Array(this.totalabilities).fill(null);
     this.init = false;
     Hooks.on('controlToken', this._onControlToken);
     Hooks.on('updateActor', this._onUpdateActor.bind(this));
     Hooks.on('updateItem', this._onUpdateItem.bind(this));
-    Hooks.on("dropCanvasData", (canvas, data) => this._onDropCanvas(data));
+    Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data));
 
     ui.hotbar.collapse();
     registerHandlebarsHelpers();
@@ -92,7 +93,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
     this.refresh();
   }
-  _onControlToken = (event) => {
+  _onControlToken = (event, controlled) => {
+    console.log(event);
+
     if (event == null) {
       return;
     }
@@ -141,7 +144,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       useItem: AutoActionTray.useItem,
       setTray: AutoActionTray.setTray,
       endTurn: AutoActionTray.endTurn,
-      useSkillSave: AutoActionTray.useSkillSave
+      useSkillSave: AutoActionTray.useSkillSave,
     },
   };
 
@@ -264,7 +267,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         icon: '<i class="fa-solid fa-delete-right"></i>',
         callback: (li) => {
           this.actor.unsetFlag('auto-action-tray', 'data');
-        this.refresh();
+          this.refresh();
         },
       },
     ];
@@ -308,83 +311,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.actor.sheet.render(true);
   }
 
-  animateSwapTrays(tray1, tray2) {
-    this.animating = true;
-
-    gsap.fromTo(
-      '.' + tray1.id,
-      {
-        opacity: 0,
-        y: tray1.type == 'static' ? -200 : 0,
-        x: tray1.type == 'custom' ? 1000 : 0,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        x: 0,
-        duration: this.animationDuration,
-        onStart: () => {},
-      }
-    );
-
-    gsap.to('.' + tray2.id, {
-      opacity: 0,
-      y: tray2.type == 'static' ? -200 : 0,
-      x: tray2.type == 'custom' ? 1000 : 0,
-      duration: this.animationDuration,
-      onStart: () => {},
-      onComplete: () => {
-        this.animating = false;
-        this.currentTray.active = false;
-        this.targetTray.active = true;
-        this.currentTray = this.targetTray;
-        this.refresh();
-      },
-    });
-  }
-
-  animateTray(tray, active) {
-    tray.active = true;
-    switch (true) {
-      case tray == '.static-tray' || tray.type == 'static':
-        gsap.set(`.${tray.id}`, {
-          opacity: active ? 0 : 1,
-          y: active ? -200 : 0,
-        });
-
-        gsap.to(`.${tray.id}`, {
-          opacity: active ? 1 : 0,
-          y: active ? 0 : -200,
-          duration: 1,
-          onStart: () => {
-            this.animating = true;
-          },
-          onComplete: () => {
-            this.animating = false;
-            tray.active = active;
-            this.refresh();
-          },
-        });
-        break;
-
-      case tray == '.custom-tray' || tray.type == 'custom':
-        gsap.to('.custom-tray', {
-          opacity: active ? 1 : 0,
-          x: active ? 0 : 1000,
-          duration: 1,
-          onStart: () => {
-            this.animating = true;
-          },
-          onComplete: () => {
-            this.animating = false;
-            tray.active = false;
-            this.refresh();
-          },
-        });
-        break;
-    }
-  }
-
   static async endTurn(event, target) {
     this.actor.unsetFlag('auto-action-tray', 'data');
   }
@@ -401,7 +327,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.currentTray == this.targetTray) return;
 
     await this.render(true);
-    this.animateSwapTrays(this.targetTray, this.currentTray);
+
+    await AnimationHandler.animateSwapTrays(
+      this.targetTray,
+      this.currentTray,
+      this
+    );
   }
 
   static async useItem(event, target) {
@@ -416,8 +347,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     let skillsave = target.dataset.skill;
     if (type == 'skill') {
       this.actor.rollSkill(skillsave);
-    }
-    else {
+    } else {
       this.actor.rollAbilitySave(skillsave);
     }
   }
@@ -446,163 +376,34 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
   #dragDrop;
 
-  // Optional: Add getter to access the private property
-
-  /**
-   * Returns an array of DragDrop instances
-   * @type {DragDrop[]}
-   */
   get dragDrop() {
     return this.#dragDrop;
   }
-  /**
-   * Actions performed after any render of the Application.
-   * Post-render steps are not awaited by the render process.
-   * @param {ApplicationRenderContext} context      Prepared context data
-   * @param {RenderOptions} options                 Provided render options
-   * @protected
-   */
+
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element));
   }
 
-  /**
-   * Define whether a user is able to begin a dragstart workflow for a given drag selector
-   * @param {string} selector       The candidate HTML selector for dragging
-   * @returns {boolean}             Can the current user drag this selector?
-   * @protected
-   */
   _canDragStart(selector) {
-    // game.user fetches the current user
-
     return this.isEditable;
   }
 
-  /**
-   * Define whether a user is able to conclude a drag-and-drop workflow for a given drop selector
-   * @param {string} selector       The candidate HTML selector for the drop target
-   * @returns {boolean}             Can the current user drop on this selector?
-   * @protected
-   */
   _canDragDrop(selector) {
-    // game.user fetches the current user
-
     return this.isEditable;
   }
 
-  /**
-   * Callback actions which occur at the beginning of a drag start workflow.
-   * @param {DragEvent} event       The originating DragEvent
-   * @protected
-   */
   _onDragStart(event) {
-    game.tooltip.deactivate();
-    const li = event.currentTarget;
-
-    if (event.target.classList.contains('content-link')) return;
-
-    // Extract the data you need
-    // let dragData = null;
-    // if (!dragData) return;
-
-    if (li.dataset.itemId === undefined) return;
-    const effect = this.actor.items.get(li.dataset.itemId);
-    let data = effect.toDragData();
-    data.section = li.dataset.section;
-    data.index = li.dataset.index;
-    data.src = 'AAT'
-    if (effect) event.dataTransfer.setData('text/plain', JSON.stringify(data));
-
-    return;
-    // Set data transfer
-    // event.dataTransfer.setData('text/plain', JSON.stringify(dragData));
+    DragDropHandler._onDragStart(event, this);
   }
 
-  /**
-   * Callback actions which occur when a dragged element is over a drop target.
-   * @param {DragEvent} event       The originating DragEvent
-   * @protected
-   */
-  _onDragOver(event) {}
-
-  /**
-   * Callback actions which occur when a dragged element is dropped on a target.
-   * @param {DragEvent} event       The originating DragEvent
-   * @protected
-   */
-
-  async _onDropCanvas(event) {
-    debugger
+  _onDragOver(event) {
+    DragDropHandler._onDragOver(event, this);
   }
-
-
 
   async _onDrop(event) {
-    // Try to extract the data
-
-    const dragData =
-      event.dataTransfer.getData('application/json') ||
-      event.dataTransfer.getData('text/plain');
-    if (!dragData) return;
-    //super._onDrop(event);
-    let data;
-    try {
-      data = JSON.parse(dragData);
-    } catch (e) {
-      console.error(e);
-      return;
-    }
-
-    let target =
-      this.actor.items.get(event.target.dataset.itemId) ||
-      this.actor.items.get(event.target.parentElement.dataset.itemId);
-
-    let index = event.target.dataset.index;
-    if (event.target.parentElement.dataset.index === 'meleeWeapon') {
-      this.equipmentTray.setMeleeWeapon(fromUuidSync(data.uuid));
-      this.refresh();
-      return;
-    } else if (event.target.parentElement.dataset.index === 'rangedWeapon') {
-      this.equipmentTray.setRangedWeapon(fromUuidSync(data.uuid));
-      this.refresh();
-      return;
-    }
-
-    if (!index) return;
-    if (index == 'meleeWeapon') {
-      let item = fromUuidSync(data.uuid);
-      this.equipmentTray.setMeleeWeapon(item);
-      this.refresh();
-      return;
-    }
-    if (index == 'rangedWeapon') {
-      let item = fromUuidSync(data.uuid);
-      this.equipmentTray.setRangedWeapon(item);
-      this.refresh();
-      return;
-    }
-
-    // Handle different data types
-    switch (data.type) {
-      case 'Item':
-        let item = fromUuidSync(data.uuid);
-        this.currentTray.setAbility(index, item);
-        this.currentTray.setAbility(data.index, null);
-        this.abilities = this.padArray(
-          this.currentTray.getAbilities(),
-          this.totalabilities
-        );
-        this.render(true);
-        break;
-
-      default:
-        return;
-    }
+    DragDropHandler._onDrop(event, this);
   }
   _onDropCanvas(data) {
-    if (data.src != 'AAT') return;
-    this.currentTray.setAbility(data.index, null);
-    this.render(true);
-    
+    DragDropHandler._onDropCanvas(data, this);
   }
 }
