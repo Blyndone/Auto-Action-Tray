@@ -18,7 +18,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     super(options);
 
     this.animating = false;
-    this.animationDuration = 0.8;
+    this.animationDuration = 0.7;
 
     this.abilityHeight = 2;
 
@@ -357,8 +357,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     if (this.currentTray == this.targetTray) return;
 
+    let tmp = this.currentTray;
+    this.currentTray = this.targetTray;
+    this.targetTray = tmp;
     await this.render(true);
-    AnimationHandler.animateSwapTrays(this.targetTray, this.currentTray, this);
+
+
+    AnimationHandler.animateSwapTrays(this.currentTray, this.targetTray, this);
   }
   static toggleLock() { 
     this.trayOptions['locked'] = !this.trayOptions['locked'];

@@ -1,18 +1,10 @@
 {{#each staticTrays as |tray|}}
-  <div class='static-spell-level-container'>
+<div class='static-spell-level-container'>
 
-    <div
-      class='static-tray-button
-    {{#if tray.active}}static-tray-active{{/if}}'
-      
-      data-id='{{this.id}}'
-      data-action='setTray'
-      data-index={{@index}}
-      data-type='static'
-    {{#if tray.active}}{{/if}}
-
-    >{{{getIcon tray}}}
-    </div>
-    <div class='static-spell-level '>{{@root.spellLevel}}</div>
+  <div class={{#if (eq @root.currentTray.id tray.id)}}'static-tray-button
+    static-tray-active'{{else}}'static-tray-button'{{/if}} data-id='{{this.id}}' data-action='setTray'
+    data-index={{@index}} data-type='static' {{#if tray.active}}{{/if}}>{{{getIcon tray}}}
   </div>
+  <div class='static-spell-level '>{{@root.spellLevel}}</div>
+</div>
 {{/each}}

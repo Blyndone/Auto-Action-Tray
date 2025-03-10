@@ -52,7 +52,6 @@
 .static-tray-button:hover {
   box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8); /* Warm inner glow on hover */
   cursor: pointer; /* Changes the cursor to a pointer */
-  transform: scale(1.1); /* Slightly enlarges the container */
 }
 
 .static-tray-active {
@@ -230,7 +229,6 @@
 .small-button:hover {
   border-color: #c9593f;
   box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
-  transform: scale(1.05);
 }
 
 .small-button-skill {
@@ -252,7 +250,6 @@
 .small-button-skill:hover {
   border-color: #c9593f;
   box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
-  transform: scale(1.05);
 }
 
 .small-button-save {
@@ -276,7 +273,6 @@
 .small-button-save:hover {
   border-color: #c9593f;
   box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
-  transform: scale(1.05);
 }
 
 .proficient {
@@ -479,7 +475,6 @@
 .custom-tray-button:hover {
   box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8); /* Warm inner glow on hover */
   cursor: pointer; /* Changes the cursor to a pointer */
-  transform: scale(1.1); /* Slightly enlarges the container */
 }
 
 .custom-tray-active {

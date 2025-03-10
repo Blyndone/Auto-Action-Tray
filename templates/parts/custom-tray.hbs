@@ -1,12 +1,13 @@
+  {{log "VVV"}}
+{{log tray.id}}
+{{log @root.currentTray.id}}
+{{log "^^^"}}  
 
 {{#each customTrays as |tray|}}
-{{log tray}}
-{{log @root}}
 <div
   class=
-  {{#if tray.active}} 
-  {{#if (eq @root.currentTray.id tray.id)}}'custom-tray-active' {{/if}}
-  {{else}}
+  {{#if (eq @root.currentTray.id tray.id)}} 'custom-tray-active' 
+    {{else}}
   'custom-tray-button'
   {{/if}}
   data-id={{tray.id}}

@@ -34,9 +34,9 @@ export class AnimationHandler {
           onStart: () => {},
           onComplete: () => {
             hotbar.animating = false;
-            hotbar.currentTray.active = false;
-            hotbar.targetTray.active = true;
-            hotbar.currentTray = hotbar.targetTray;
+            hotbar.currentTray.active = true;
+            hotbar.targetTray.active = false;
+            // hotbar.currentTray = hotbar.targetTray;
             hotbar.refresh();
           }
         },
