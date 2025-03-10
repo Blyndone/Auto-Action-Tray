@@ -27,6 +27,7 @@ export function registerHandlebarsHelpers() {
     options.data.root['diceFormula'] = '';
     options.data.root['actionType'] = '';
     options.data.root['saveType'] = '';
+    let currentTray = options.data.root.currentTray;
     let min = 0,
       dieSize = 0,
       max = 0,
@@ -36,7 +37,7 @@ export function registerHandlebarsHelpers() {
       damageType = '';
 
     let actionType = item.system?.activities?.contents[0].type;
-
+    
     switch (true) {
       case item.type == 'weapon': {
         const baseDamage = item.system.damage.base;
@@ -87,13 +88,27 @@ export function registerHandlebarsHelpers() {
         (actionType == 'attack' ||
           actionType == 'save' ||
           actionType == 'damage'): {
+          let scaling ={ }
+          if (item.system.activities.contents[0].canScaleDamage) { 
+            scaling = getScaling(item, currentTray.spellLevel)
+          }
         const baseDamage = item.system.activities.contents[0].damage.parts[0];
-        if (baseDamage?.number && baseDamage?.denomination) {
+          if (baseDamage?.number && baseDamage?.denomination) {
+        
+
+
+      
           min = baseDamage.number; // Minimum healing (1 * number of dice)
           max = baseDamage.number * baseDamage.denomination; // Maximum healing
           dieSize = baseDamage.denomination; // Die size
           bonus = baseDamage.bonus; // Bonus healing
-
+          let numberDice
+            if (scaling['scaling'] ) { 
+              numberDice = scaling['scaling'] * scaling['number'] 
+            
+              min += numberDice
+              max += numberDice*baseDamage.denomination
+            }
           if (actionType == 'save') {
             saveType = item.system.activities.contents[0].save.ability.first();
             saveDc = item.system.activities.contents[0].save.dc.value;
@@ -139,6 +154,33 @@ export function registerHandlebarsHelpers() {
     return `${min} ~ ${max}  Damage`;
   });
   
+   function getScaling(item, castLevel){ 
+    let mode = item.system.activities.contents[0].damage.parts[0]?.scaling.mode;
+    let scaling
+    let number = item.system.activities.contents[0].damage.parts[0]?.scaling.number;
+    let formula = item.system.activities.contents[0].damage.parts[0]?.scaling.formula;
+    let itemLevel = item.system.level;
+    let lvl =0
+     Object.keys(item.actor.classes).forEach(e => lvl += item.actor.classes[e].system.levels)
+    if (item.system.level == 0) { 
+      if (lvl >= 17) {
+        scaling = 3
+      } else if (lvl >= 11) {
+        scaling = 2
+      } else if (lvl >= 5) {
+        scaling = 1
+      }
+    }else if (mode == 'whole') {
+      scaling = castLevel - itemLevel
+    } else if (mode == 'half') {
+      scaling = Math.floor((itemLevel-castLevel)/2)
+    }
+    return {scaling: scaling, number: number, formula: formula}
+
+  }
+
+
+
   Handlebars.registerHelper('getRomanNumeral', function (spellLvl) {
   let romanNumeral = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];     
     return romanNumeral[spellLvl - 1];

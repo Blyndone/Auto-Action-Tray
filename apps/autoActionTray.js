@@ -327,7 +327,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   _onOpenContextMenu(event) {
-    debugger
+   
     return;
   }
 
@@ -409,7 +409,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     ) {
       activity.use({ spell: { slot: "spell"+this.currentTray.spellLevel } }, fast);
     } else {
-      activity.use(args);
+      activity.use();
     }
   }
 
