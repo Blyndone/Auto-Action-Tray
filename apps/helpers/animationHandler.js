@@ -33,7 +33,6 @@ export class AnimationHandler {
           duration: hotbar.animationDuration,
           onStart: () => {},
           onComplete: () => {
-            hotbar.trayInformation = "";
             hotbar.animating = false;
             hotbar.currentTray.active = true;
             hotbar.targetTray.active = false;

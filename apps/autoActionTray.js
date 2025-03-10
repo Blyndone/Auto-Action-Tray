@@ -19,6 +19,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     super(options);
 
     this.animating = false;
+    this.selectingActivity = false;
     this.animationDuration = 0.7;
 
     this.abilityHeight = 2;
@@ -190,6 +191,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
       useActivity: ActivityTray.useActivity,
+      cancelSelection: ActivityTray.cancelSelection,
     },
   };
 
@@ -367,7 +369,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   static async setTray(event, target) {
-    if (this.animating == true) return;
+    if (this.animating == true || this.selectingActivity == true) return;
 
     this.targetTray = this.staticTrays.find((e) => e.id == target.dataset.id)
       ? this.staticTrays.find((e) => e.id == target.dataset.id)
@@ -380,7 +382,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     let tmp = this.currentTray;
     this.currentTray = this.targetTray;
     this.targetTray = tmp;
-    this.trayInformation = this.currentTray.id;
+   
     await this.render(true);
 
     AnimationHandler.animateSwapTrays(this.currentTray, this.targetTray, this);
@@ -419,6 +421,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           this.actor,
           this
         );
+        if (activity == null) return;
       } else {
         activity = item.system.activities[0];
       }

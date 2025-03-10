@@ -112,6 +112,23 @@
   margin: 3px;
 }
 
+/* Base styles for the cancel icon */
+.icon-cancel {
+  font-size: 25px;
+  color: #eb7676;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: color 0.3s, transform 0.2s;
+}
+.icon-cancel:hover {
+  color: #e60000;
+  transform: scale(1.1);
+}
+.icon-cancel:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 77, 77, 0.6);
+}
+
 .static-spell-level-container {
   position: relative;
 }
@@ -342,6 +359,16 @@
   align-items: center;
   position: relative;
 }
+.ability-tray-container .activity-selection-text {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 23px;
+  color: white;
+  font-family: serif;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
 .ability-tray-container img {
   background: #333;
   color: white;
@@ -384,6 +411,49 @@
 }
 .ability-tray-container .activity-ol li {
   margin: 5px;
+}
+
+.activity-button {
+  position: relative;
+  border: 2px solid #00aaff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+  transition: box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+.activity-button:hover {
+  box-shadow: 0 0 20px rgb(0, 170, 255), 0 0 10px rgba(0, 170, 255, 0.8) inset;
+  transform: scale(1.05);
+}
+.activity-button img {
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+}
+
+.activity-button-inactive {
+  position: relative;
+  filter: 100%;
+  filter: brightness(0.45);
+}
+.activity-button-inactive img {
+  width: 60px;
+  height: 60px;
+}
+
+.activity-slot-icon-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.activity-slot-icon-container i {
+  position: absolute;
+  top: -9px;
+  left: 46%;
+  transform: translateX(-50%);
+}
+.activity-slot-icon-container .icon-slot-spent {
+  opacity: 1;
 }
 
 .abilities-tray {
@@ -566,16 +636,16 @@
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
   background: rgb(97, 97, 95);
-  margin: 1px;
+  margin: -1px;
   border-radius: 50px;
-  padding: 2px;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding: 4px;
+  padding-left: 20px;
+  padding-right: 10px;
   transition: all 0.3s ease; /* Smooth transition for hover and active states */
   font-family: serif;
-  font-size: 28px;
+  font-size: 26px;
   color: white;
-  text-shadow: 0 0 10px rgb(0, 0, 0), 0 0 10px rgb(0, 0, 0), 0 0 10px rgb(0, 0, 0);
+  text-shadow: 0 0 10px rgb(0, 0, 0);
 }
 
 .transparent-box {

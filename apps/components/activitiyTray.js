@@ -4,14 +4,13 @@ export class ActivityTray extends AbilityTray {
   constructor(options = {}) {
     super(options);
     this.id = "activity";
-    this.abilities = game.actors
-      .getName("Zeran")
-      .items.getName("Longsword").system.activities;
+    this.abilities = [];
     this.actorUuid = options.actorUuid || null;
     this.active = false;
     this.type = "activity";
     this.generateTray();
     this.selectedActivity = null;
+    this.rejectActivity = null;
   }
 
   generateTray() {}
@@ -48,17 +47,27 @@ export class ActivityTray extends AbilityTray {
   }
 
   async selectAbility(item, actor, hotbar) {
-    // let activities = item.system.activities;
-    // this.activities = activities.map(e => e);
     hotbar.currentTray.active = false;
     this.active = true;
-    hotbar.trayInformation = "Select an activity";
+    if (item.type == "spell") {
+      hotbar.trayInformation = `${item.name}`;
+    } else {
+      hotbar.trayInformation = `${item.name}`;
+    }
     hotbar.render(true);
+    hotbar.selectingActivity = true;
 
-    let act = await new Promise(resolve => (this.selectedActivity = resolve));
-
-    console.log("activity selected");
-    console.log(act);
+    let act;
+    try {
+      act = await new Promise((resolve, reject) => {
+        this.selectedActivity = resolve;
+        this.rejectActivity = reject; // Store the reject function
+      });
+    } catch (error) {
+      console.log("AAT - Activity selection canceled");
+      act = null; // Handle rejection gracefully
+    }
+    hotbar.selectingActivity = false;
     hotbar.trayInformation = "";
     this.active = false;
     hotbar.refresh();
@@ -83,5 +92,12 @@ export class ActivityTray extends AbilityTray {
       });
       this.activityTray.selectedActivity = null;
     }
+  }
+
+  static cancelSelection(event, target) {
+    this.activityTray.rejectActivity(
+      new Error("User canceled activity selection")
+    );
+    this.activityTray.rejectActivity = null;
   }
 }
