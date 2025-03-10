@@ -15,8 +15,14 @@ export function registerHandlebarsHelpers() {
     return str.charAt(0).toUpperCase() + str.slice(1);
   });
 
-  //min damage
+  
+  Handlebars.registerHelper('concentration', function (actor) {
 
+    return (actor?.system?.parent?.statuses.filter(e=>e == 'concentrating').size>0)
+
+  });
+    
+    
   Handlebars.registerHelper('damageCal', function (item, options) {
     options.data.root['diceFormula'] = '';
     options.data.root['actionType'] = '';

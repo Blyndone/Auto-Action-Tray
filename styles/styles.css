@@ -152,6 +152,12 @@
   vertical-align: middle;
   margin-right: 10px;
 }
+.character-image-container .concentrating {
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 15px #9600d1;
+  border: 2px solid #2f2f2f;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid #8500a0;
+}
 
 .equipment-misc-tray-container {
   height: 162px;
