@@ -92,14 +92,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
   setDefaultTray() {
     this.currentTray = this.customTrays.find((e) => e.id == 'common');
-    // this.abilities = this.currentTray.getAbilities();
+
     this.currentTray.active = true;
     this.render();
   }
-  //
-  // locked: Boolean
-  // skillTrayPage: 1, 2
-  //currentTray: id
+
 
   setTrayConfig(config) {
     this.actor.setFlag('auto-action-tray', 'config', config);
@@ -160,7 +157,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.currentTray = this.staticTrays.find((e) => e.id == this.currentTray.id)
       ? this.staticTrays.find((e) => e.id == this.currentTray.id)
       : this.customTrays.find((e) => e.id == this.currentTray.id);
-    // this.abilities = this.currentTray.getAbilities();
+
     this.currentTray.active = true;
     this.render(true);
   };
@@ -168,7 +165,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   static DEFAULT_OPTIONS = {
     tag: 'div',
     dragDrop: [{ dragSelector: '[data-drag]', dropSelector: null }],
-    // dragDrop: [{ dragSelector: '.item-button', dropSelector: null }],
+
     form: {
       handler: AutoActionTray.myFormHandler,
       submitOnChange: false,
@@ -179,7 +176,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       positioned: false,
     },
 
-    // position: { width: 1500, height: 250, top: 1000, zIndex: 1000 },
+
     actions: {
       openSheet: AutoActionTray.openSheet,
       selectWeapon: AutoActionTray.selectWeapon,
@@ -195,20 +192,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     },
   };
 
-  /**
-   * @typedef {Object} HandlebarsTemplatePart
-   * @property {string} template                      The template entry-point for the part
-   * @property {string} [id]                          A CSS id to assign to the top-level element of the rendered part.
-   *                                                  This id string is automatically prefixed by the application id.
-   * @property {string[]} [classes]                   An array of CSS classes to apply to the top-level element of the
-   *                                                  rendered part.
-   * @property {string[]} [templates]                 An array of templates that are required to render the part.
-   *                                                  If omitted, only the entry-point is inferred as required.
-   * @property {string[]} [scrollable]                An array of selectors within this part whose scroll positions should
-   *                                                  be persisted during a re-render operation. A blank string is used
-   *                                                  to denote that the root level of the part is scrollable.
-   * @property {Record<string, ApplicationFormConfiguration>} [forms]  A registry of forms selectors and submission handlers.
-   */
+
 
   static PARTS = {
     autoActionTray: {
@@ -217,30 +201,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     },
   };
 
-  /**
-   * Process form submission for the sheet
-   * @this {AutoActionTray}                      The handler is called with the application as its bound scope
-   * @param {SubmitEvent} event                   The originating form submission event
-   * @param {HTMLFormElement} form                The form element that was submitted
-   * @param {FormDataExtended} formData           Processed data for the submitted form
-   * @returns {Promise<void>}
-   */
+
   static async myFormHandler(event, form, formData) {
-    // Do things with the returned FormData
+
   }
 
-  /**
-   * Prepare context that is specific to only a single rendered part.
-   *
-   * It is recommended to augment or mutate the shared context so that downstream methods like _onRender have
-   * visibility into the data that was used for rendering. It is acceptable to return a different context object
-   * rather than mutating the shared context at the expense of this transparency.
-   *
-   * @param {string} partId                         The part being rendered
-   * @param {ApplicationRenderContext} context      Shared context provided by _prepareContext
-   * @returns {Promise<ApplicationRenderContext>}   Context data for a specific part
-   * @protected
-   */
+
   async _preparePartContext(partId, context) {
     context = {
       partId: `${this.id}-${partId}`,
@@ -250,9 +216,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       spells: this.spells,
       consumables: this.consumables,
       abilities: this.abilities,
-      // section1: this.section1,
-      // section2: this.section2,
-      // section3: this.section3,
       section1Px: this.section1Px,
       section2Px: this.section2Px,
       section3Px: this.section3Px,
@@ -395,7 +358,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
   static toggleSkillTrayPage() {
     if(this.selectingActivity) return;
-    // this.skillTray.toggleSkillTrayPage();
     this.trayOptions['skillTrayPage'] =
       this.trayOptions['skillTrayPage'] == 0 ? 1 : 0;
     this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] });
@@ -441,15 +403,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       skipDialog
     );
 
-    // if (this.currentTray?.category == 'spell') {
-    //   item.system.activities.get(activity.itemId || activity._id).use(
-    //     // { spell: { slot: 'spell' + this.currentTray.spellLevel } },
-    //     { spell: { slot: 'spell' + selectedSpellLevel } },
-    //     skipDialog
-    //   );
-    // } else {
-    //   item.system.activities.get(activity.itemId || activity._id).use();
-    // }
+
   }
 
   static useSkillSave(event, target) {

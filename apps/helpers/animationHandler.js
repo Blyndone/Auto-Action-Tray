@@ -36,7 +36,6 @@ export class AnimationHandler {
             hotbar.animating = false;
             hotbar.currentTray.active = true;
             hotbar.targetTray.active = false;
-            // hotbar.currentTray = hotbar.targetTray;
             hotbar.refresh();
           }
         },

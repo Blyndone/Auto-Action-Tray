@@ -61,11 +61,11 @@ export class ActivityTray extends AbilityTray {
     try {
       act = await new Promise((resolve, reject) => {
         this.selectedActivity = resolve;
-        this.rejectActivity = reject; // Store the reject function
+        this.rejectActivity = reject;
       });
     } catch (error) {
       console.log("AAT - Activity selection canceled");
-      act = null; // Handle rejection gracefully
+      act = null;
     }
     hotbar.selectingActivity = false;
     hotbar.trayInformation = "";
