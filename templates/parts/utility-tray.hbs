@@ -3,4 +3,14 @@
 <button class='small-button'>Act. 3</button>
 <button class='small-button'>Act. 4</button>
 <button class='small-button'>Act. 5</button>
-<button class='small-button'>Act. 6</button>
+<button
+{{log @root}}
+  class={{#if trayOptions.fastForward}}
+  'small-button-active'{{else}}
+  'small-button'
+    {{/if}}
+
+  data-action='toggleFastForward'
+  data-tooltip='Fast Forward Ability Uses'
+  data-tooltip-direction='UP'
+><i class='fa-solid fa-forward'></i></button>

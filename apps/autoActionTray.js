@@ -66,6 +66,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       locked: false,
       skillTrayPage: 0,
       currentTray: 'common',
+      fastForward: true,
     };
 
     this.abilities = new Array(this.totalabilities).fill(null);
@@ -183,6 +184,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       useSkillSave: AutoActionTray.useSkillSave,
       swapSkillTray: AutoActionTray.toggleSkillTrayPage,
       toggleLock: AutoActionTray.toggleLock,
+      toggleFastForward: AutoActionTray.toggleFastForward,
     },
   };
 
@@ -266,6 +268,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       skillTray: this.skillTray,
       locked: this.trayOptions['locked'],
       skillTrayPage: this.trayOptions['skillTrayPage'],
+      trayOptions:this.trayOptions,
     };
 
     return context;
@@ -387,13 +390,28 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     this.render(true);
   }
+  static toggleFastForward() { 
+    this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
+    this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
+    this.render(true);
+  }
 
   static async useItem(event, target) {
     game.tooltip.deactivate();
     let itemId = target.dataset.itemId;
     let item = this.actor.items.get(itemId);
-    await item.use();
+    const activity = item.system.activities.contents[0];
+    let fast = { configure: !this.trayOptions['fastForward'] };
+    if (
+      this.currentTray?.type == 'static' &&
+      this.currentTray?.category == 'spell'
+    ) {
+      activity.use({ spell: { slot: "spell"+this.currentTray.spellLevel } }, fast);
+    } else {
+      activity.use(args);
+    }
   }
+
 
   static useSkillSave(event, target) {
     let type = target.dataset.type;
