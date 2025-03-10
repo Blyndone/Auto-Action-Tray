@@ -23,6 +23,7 @@ export function registerHandlebarsHelpers() {
   });
 
   Handlebars.registerHelper('damageCal', function (item, options) {
+    
     options.data.root['diceFormula'] = '';
     options.data.root['actionType'] = '';
     options.data.root['saveType'] = '';
@@ -162,6 +163,9 @@ export function registerHandlebarsHelpers() {
   });
 
   function getScaling(item, castLevel) {
+    if (item.actorSpellData) { 
+      castLevel = item.actorSpellData.level;
+    }
     let mode = item.system.activities.contents[0]?.damage?.parts[0]?.scaling.mode || item.system.activities.contents[0]?.healing?.scaling.mode;
     let scaling;
     let number =

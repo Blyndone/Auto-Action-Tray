@@ -29,7 +29,11 @@ export class ActivityTray extends AbilityTray {
       Object.keys(actor.system.spells).forEach(spell => {
         if (item.system.level <= actor.system.spells[spell].level) {
           let spellData = { actorSpellData: actor.system.spells[spell] };
-          this.abilities.push({ ...item, _id: item._id, ...spellData });
+          let tempitem = item.clone();
+          tempitem.itemId = item.id;
+          mergeObject(tempitem, spellData);
+
+          this.abilities.push(tempitem);
         }
       });
     } else {
@@ -75,7 +79,7 @@ export class ActivityTray extends AbilityTray {
   }
 
   static useActivity(event, target) {
-    let sepectedSpellLevel = target.dataset.selectedspelllevel;
+    let selectedSpellLevel = target.dataset.selectedspelllevel;
 
     let itemId;
     if (target.dataset.type == "spell") {
@@ -88,7 +92,7 @@ export class ActivityTray extends AbilityTray {
     if (this.activityTray.selectedActivity) {
       this.activityTray.selectedActivity({
         itemId: itemId,
-        selectedSpellLevel: sepectedSpellLevel
+        selectedSpellLevel: selectedSpellLevel
       });
       this.activityTray.selectedActivity = null;
     }
