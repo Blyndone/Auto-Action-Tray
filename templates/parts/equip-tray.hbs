@@ -1,6 +1,5 @@
 {{#if equipmentTray.meleeWeapon}}
   <img
-    data-drag='true'
     data-item-id='{{equipmentTray.meleeWeapon._id}}'
     data-action='useItem'
     data-index='meleeWeapon'
@@ -8,7 +7,7 @@
     alt='{{equipmentTray.meleeWeapon.name}}'
   />
 {{else}}
-  <div class='transparent-box' data-index='{{@index}}'></div>
+  <div class='transparent-box' data-drag='true' data-index='meleeWeapon'></div>
 {{/if}}
 {{#if equipmentTray.rangedWeapon}}
   <img
@@ -21,5 +20,5 @@
     alt='{{equipmentTray.rangedWeapon.name}}'
   />
 {{else}}
-  <div class='transparent-box' data-index='{{@index}}'></div>
+  <div class='transparent-box' data-drag='true' data-index='rangedWeapon'></div>
 {{/if}}

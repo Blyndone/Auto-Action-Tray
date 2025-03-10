@@ -355,7 +355,7 @@
   border: 2px solid #c9593f;
   box-shadow: 0 0 5px #c9593f;
 }
-.ability-tray-container ol {
+.ability-tray-container .ability-ol {
   width: 150px;
   height: 150px;
   display: flex;

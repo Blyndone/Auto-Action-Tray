@@ -1,9 +1,8 @@
  
-<a data-action="openSheet" >
+<a data-action="openSheet" class="character-image" >
 
   <img src="{{this.actor.img}}" alt="{{this.actor.name}}" 
   {{#if (concentration this.actor)}}
-class = "concentrating"
-{{/if}} />
+class = "concentrating "{{/if}}/>
   {{>  "AAT.character-hp" actor=actor}}
 </a>

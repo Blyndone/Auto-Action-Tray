@@ -327,6 +327,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   _onOpenContextMenu(event) {
+    debugger
     return;
   }
 

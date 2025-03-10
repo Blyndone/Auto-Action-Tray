@@ -86,6 +86,16 @@ export class DragDropHandler {
   }
   static _onDropCanvas(data, hotbar) {
     if (data.src != "AAT") return;
+    if (data.index == "meleeWeapon") {
+      hotbar.equipmentTray.setMeleeWeapon(null);
+      hotbar.refresh();
+      return;
+    }
+    if (data.index == "rangedWeapon") {
+      hotbar.equipmentTray.setRangedWeapon(null);
+      hotbar.refresh();
+      return;
+    }
     hotbar.currentTray.setAbility(data.index, null);
     hotbar.render(true);
   }

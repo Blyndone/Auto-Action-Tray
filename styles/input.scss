@@ -324,7 +324,7 @@ $tray-button-background: rgb(97, 97, 95);
     @include item;
     @include hover;
   }
-  ol {
+  .ability-ol {
     width: $total-item-height * $item-tray-item-height-count;
     height: $total-item-height * $item-tray-item-height-count;
     display: flex;
