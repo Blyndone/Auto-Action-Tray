@@ -388,11 +388,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     AnimationHandler.animateSwapTrays(this.currentTray, this.targetTray, this);
   }
   static toggleLock() {
+    if(this.selectingActivity) return;
     this.trayOptions['locked'] = !this.trayOptions['locked'];
     this.setTrayConfig({ locked: this.trayOptions['locked'] });
     this.render(true);
   }
   static toggleSkillTrayPage() {
+    if(this.selectingActivity) return;
     // this.skillTray.toggleSkillTrayPage();
     this.trayOptions['skillTrayPage'] =
       this.trayOptions['skillTrayPage'] == 0 ? 1 : 0;
@@ -401,6 +403,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.render(true);
   }
   static toggleFastForward() {
+    if(this.selectingActivity) return;
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
     this.render(true);
