@@ -2,15 +2,13 @@
 <button class='small-button'>Act. 2</button>
 <button class='small-button'>Act. 3</button>
 <button class='small-button'>Act. 4</button>
-<button class='small-button'>Act. 5</button>
-<button
-{{log @root}}
-  class={{#if trayOptions.fastForward}}
-  'small-button-active'{{else}}
-  'small-button'
-    {{/if}}
-
-  data-action='toggleFastForward'
-  data-tooltip='Fast Forward Ability Uses'
-  data-tooltip-direction='UP'
-><i class='fa-solid fa-forward'></i></button>
+<button class={{#if trayOptions.fastForward}} 'small-button-active' {{else}} 'small-button' {{/if}}
+  data-action='toggleFastForward' data-tooltip='Fast Forward Ability Uses' data-tooltip-direction='UP'><i
+    class='fa-solid fa-forward'></i></button>
+<div data-action='toggleLock' data-tooltip='Lock/Unlock Tray' data-tooltip-direction='UP' class="small-button">
+  {{#if @root.locked}}
+  <i class='fa-solid fa-lock'></i>
+  {{else}}
+  <i class='fa-solid fa-lock-open'></i>
+  {{/if}}
+</div>

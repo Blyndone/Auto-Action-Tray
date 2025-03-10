@@ -33,6 +33,7 @@ export class AnimationHandler {
           duration: hotbar.animationDuration,
           onStart: () => {},
           onComplete: () => {
+            hotbar.trayInformation = "";
             hotbar.animating = false;
             hotbar.currentTray.active = true;
             hotbar.targetTray.active = false;
@@ -44,45 +45,45 @@ export class AnimationHandler {
       );
   }
 
-  static animateTray(tray, active) {
-    tray.active = true;
-    switch (true) {
-      case tray == ".static-tray" || tray.type == "static":
-        gsap.set(`.${tray.id}`, {
-          opacity: active ? 0 : 1,
-          y: active ? -200 : 0
-        });
+  // static animateTray(tray, active) {
+  //   tray.active = true;
+  //   switch (true) {
+  //     case tray == ".static-tray" || tray.type == "static":
+  //       gsap.set(`.${tray.id}`, {
+  //         opacity: active ? 0 : 1,
+  //         y: active ? -200 : 0
+  //       });
 
-        gsap.to(`.${tray.id}`, {
-          opacity: active ? 1 : 0,
-          y: active ? 0 : -200,
-          duration: 1,
-          onStart: () => {
-            this.animating = true;
-          },
-          onComplete: () => {
-            this.animating = false;
-            tray.active = active;
-            this.refresh();
-          }
-        });
-        break;
+  //       gsap.to(`.${tray.id}`, {
+  //         opacity: active ? 1 : 0,
+  //         y: active ? 0 : -200,
+  //         duration: 1,
+  //         onStart: () => {
+  //           this.animating = true;
+  //         },
+  //         onComplete: () => {
+  //           this.animating = false;
+  //           tray.active = active;
+  //           this.refresh();
+  //         }
+  //       });
+  //       break;
 
-      case tray == ".custom-tray" || tray.type == "custom":
-        gsap.to(".custom-tray", {
-          opacity: active ? 1 : 0,
-          x: active ? 0 : 1000,
-          duration: 1,
-          onStart: () => {
-            this.animating = true;
-          },
-          onComplete: () => {
-            this.animating = false;
-            tray.active = false;
-            this.refresh();
-          }
-        });
-        break;
-    }
-  }
+  //     case tray == ".custom-tray" || tray.type == "custom":
+  //       gsap.to(".custom-tray", {
+  //         opacity: active ? 1 : 0,
+  //         x: active ? 0 : 1000,
+  //         duration: 1,
+  //         onStart: () => {
+  //           this.animating = true;
+  //         },
+  //         onComplete: () => {
+  //           this.animating = false;
+  //           tray.active = false;
+  //           this.refresh();
+  //         }
+  //       });
+  //       break;
+  //   }
+  // }
 }

@@ -3,6 +3,7 @@ const { api, sheets } = foundry.applications;
 import { AbilityTray } from './components/abilityTray.js';
 import { CustomTray } from './components/customTray.js';
 import { StaticTray } from './components/staticTray.js';
+import { ActivityTray } from './components/activitiyTray.js';
 import { EquipmentTray } from './components/equipmentTray.js';
 import { SkillTray } from './components/skillTray.js';
 import { registerHandlebarsHelpers } from './helpers/handlebars.js';
@@ -60,8 +61,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     this.customTrays = [];
     this.staticTrays = [];
+    this.activityTray = null;
     this.equipmentTray = null;
     this.skillTray = null;
+    this.trayInformation = '';
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
@@ -131,6 +134,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.staticTrays = StaticTray.generateStaticTrays(this.actor);
       this.customTrays = CustomTray.generateCustomTrays(this.actor);
       this.equipmentTray = EquipmentTray.generateCustomTrays(this.actor);
+      this.activityTray = ActivityTray.generateActivityTray(this.actor);
       this.setDefaultTray();
       this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
       this.rangedWeapon = this.equipmentTray.getRangedWeapon();
@@ -185,6 +189,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       swapSkillTray: AutoActionTray.toggleSkillTrayPage,
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
+      useActivity: ActivityTray.useActivity,
     },
   };
 
@@ -268,7 +273,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       skillTray: this.skillTray,
       locked: this.trayOptions['locked'],
       skillTrayPage: this.trayOptions['skillTrayPage'],
-      trayOptions:this.trayOptions,
+      trayOptions: this.trayOptions,
+      trayInformation: this.trayInformation,
+      activityTray: this.activityTray,
     };
 
     return context;
@@ -327,7 +334,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   _onOpenContextMenu(event) {
-   
     return;
   }
 
@@ -374,6 +380,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     let tmp = this.currentTray;
     this.currentTray = this.targetTray;
     this.targetTray = tmp;
+    this.trayInformation = this.currentTray.id;
     await this.render(true);
 
     AnimationHandler.animateSwapTrays(this.currentTray, this.targetTray, this);
@@ -391,7 +398,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     this.render(true);
   }
-  static toggleFastForward() { 
+  static toggleFastForward() {
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
     this.render(true);
@@ -401,18 +408,43 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     game.tooltip.deactivate();
     let itemId = target.dataset.itemId;
     let item = this.actor.items.get(itemId);
-    const activity = item.system.activities.contents[0];
-    let fast = { configure: !this.trayOptions['fastForward'] };
-    if (
-      this.currentTray?.type == 'static' &&
-      this.currentTray?.category == 'spell'
-    ) {
-      activity.use({ spell: { slot: "spell"+this.currentTray.spellLevel } }, fast);
-    } else {
-      activity.use();
-    }
-  }
+    this.activityTray.getActivities(item, this.actor);
+    let selectedSpellLevel, activity;
+    let fast = this.trayOptions['fastForward'];
+    let skipDialog = { configure: false };
+    if (!fast) {
+      if (this.activityTray?.abilities?.length > 1) {
+        activity = await this.activityTray.selectAbility(
+          item,
+          this.actor,
+          this
+        );
+      } else {
+        activity = item.system.activities[0];
+      }
 
+      selectedSpellLevel = activity['selectedSpellLevel'];
+    } else {
+      activity = item.system.activities.contents[0];
+      selectedSpellLevel = this.currentTray.spellLevel;
+    }
+
+
+    item.system.activities.get(activity.itemId || activity._id).use(
+      { spell: { slot: 'spell' + selectedSpellLevel } },
+      skipDialog
+    );
+
+    // if (this.currentTray?.category == 'spell') {
+    //   item.system.activities.get(activity.itemId || activity._id).use(
+    //     // { spell: { slot: 'spell' + this.currentTray.spellLevel } },
+    //     { spell: { slot: 'spell' + selectedSpellLevel } },
+    //     skipDialog
+    //   );
+    // } else {
+    //   item.system.activities.get(activity.itemId || activity._id).use();
+    // }
+  }
 
   static useSkillSave(event, target) {
     let type = target.dataset.type;

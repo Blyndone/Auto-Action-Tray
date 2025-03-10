@@ -1,3 +1,9 @@
+
+{{#if trayInformation}}
+<div class="tray-information">{{trayInformation}}</div>
+{{else}}
+
+
 {{#each customTrays as |tray|}}
 <div
   class=
@@ -10,3 +16,4 @@
   data-type='custom'
 >{{capitalize tray.id}}</div>
 {{/each}}
+{{/if}}

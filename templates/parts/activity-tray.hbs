@@ -1,0 +1,28 @@
+<div data-data-id='{{{tray.id}}}'>
+
+  <ol class='activity-ol'>
+    {{#each activities as |activity|}}
+      <li>
+        <div
+          {{log activity}}
+          data-item-id='{{activity._id}}'
+          data-index='{{@index}}'
+          data-type='{{activity.type}}'
+          data-selectedSpellLevel='{{activity.actorSpellData.level}}'
+          {{!-- data-tooltip="{{> 'AAT.item-tooltip' }}" --}}
+          data-action='useActivity'
+          data-tooltip-direction='UP'
+          class='ability-button'
+        >
+          <img
+            src='{{activity.img}}'
+            alt='{{activity.name}}'
+            data-item-id='{{activity._id}}'
+            data-index='{{@index}}'
+          />
+        </div>
+
+      </li>
+    {{/each}}
+  </ol>
+</div>
