@@ -2,9 +2,30 @@ export class AnimationHandler {
   constructor() {
     this.animations = [];
   }
+  static findTray(trayId, hotbar) {
+    return (
+      hotbar.staticTrays.find(tray => tray.id == trayId) ||
+      hotbar.customTrays.find(tray => tray.id == trayId) ||
+      [hotbar.activityTray].find(tray => tray.id == trayId)
+    );
+  }
 
-  static animateSwapTrays(tray1, tray2, hotbar) {
+  static async animateTrays(tray1ID, tray2ID, hotbar) {
+    if (tray1ID == tray2ID) return;
+    let duration = hotbar.animationDuration;
+    if (tray1ID == "activity" || tray2ID == "activity") {
+      duration = 0.5;
+    }
+
+    let tray1 = this.findTray(tray1ID, hotbar);
+    let tray2 = this.findTray(tray2ID, hotbar);
+    tray1.active = true;
+    tray2.active = true;
+    hotbar.currentTray = tray1;
+    hotbar.targetTray = tray2;
+    await hotbar.render(true);
     hotbar.animating = true;
+
     var tl = gsap.timeline();
     tl
       .add("start")
@@ -12,25 +33,19 @@ export class AnimationHandler {
         "." + tray1.id,
         {
           opacity: 0,
-          y: tray1.type == "static" ? -200 : 0,
+          y: tray1.type == "static" ? -200 : tray1.type == "activity" ? 200 : 0,
           x: tray1.type == "custom" ? 1000 : 0
         },
-        {
-          opacity: 1,
-          y: 0,
-          x: 0,
-          duration: hotbar.animationDuration,
-          onStart: () => {}
-        },
+        { opacity: 1, y: 0, x: 0, duration: duration, onStart: () => {} },
         "start"
       )
       .to(
         "." + tray2.id,
         {
           opacity: 0,
-          y: tray2.type == "static" ? -200 : 0,
+          y: tray2.type == "static" ? -200 : tray2.type == "activity" ? 200 : 0,
           x: tray2.type == "custom" ? 1000 : 0,
-          duration: hotbar.animationDuration,
+          duration: duration,
           onStart: () => {},
           onComplete: () => {
             hotbar.animating = false;

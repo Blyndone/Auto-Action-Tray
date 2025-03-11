@@ -1,5 +1,5 @@
 import { AbilityTray } from "./abilityTray.js";
-
+import { AnimationHandler } from "./../helpers/animationHandler.js";
 export class ActivityTray extends AbilityTray {
   constructor(options = {}) {
     super(options);
@@ -51,15 +51,13 @@ export class ActivityTray extends AbilityTray {
   }
 
   async selectAbility(item, actor, hotbar) {
-    hotbar.currentTray.active = false;
-    this.active = true;
     if (item.type == "spell") {
       hotbar.trayInformation = `${item.name}`;
     } else {
       hotbar.trayInformation = `${item.name}`;
     }
-    hotbar.render(true);
-    hotbar.selectingActivity = true;
+
+    AnimationHandler.animateTrays("activity", hotbar.currentTray.id, hotbar);
 
     let act;
     try {
@@ -73,8 +71,8 @@ export class ActivityTray extends AbilityTray {
     }
     hotbar.selectingActivity = false;
     hotbar.trayInformation = "";
-    this.active = false;
-    hotbar.refresh();
+    AnimationHandler.animateTrays(hotbar.targetTray.id, "activity", hotbar);
+
     return act;
   }
 

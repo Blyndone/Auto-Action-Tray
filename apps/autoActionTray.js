@@ -3,7 +3,7 @@ const { api, sheets } = foundry.applications;
 import { AbilityTray } from './components/abilityTray.js';
 import { CustomTray } from './components/customTray.js';
 import { StaticTray } from './components/staticTray.js';
-import { ActivityTray } from './components/activitiyTray.js';
+import { ActivityTray } from './components/activityTray.js';
 import { EquipmentTray } from './components/equipmentTray.js';
 import { SkillTray } from './components/skillTray.js';
 import { registerHandlebarsHelpers } from './helpers/handlebars.js';
@@ -55,7 +55,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.currentTray = null;
     this.currentCustomTray = null;
     this.currentStaticTray = null;
-
+    this.targetTray = null; 
     this.currentTrayTemplate = 'AAT.full-tray';
 
     this.allAbilities = {};
@@ -154,10 +154,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   refresh = () => {
     if (this.animating == true || this.actor == null) return;
 
-    this.currentTray = this.staticTrays.find((e) => e.id == this.currentTray.id)
-      ? this.staticTrays.find((e) => e.id == this.currentTray.id)
-      : this.customTrays.find((e) => e.id == this.currentTray.id);
-
+    // this.currentTray = this.staticTrays.find((e) => e.id == this.currentTray.id)
+    //   ? this.staticTrays.find((e) => e.id == this.currentTray.id)
+    //   : this.customTrays.find((e) => e.id == this.currentTray.id);
+  
+    
+   
+    
     this.currentTray.active = true;
     this.render(true);
   };
@@ -334,21 +337,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   static async setTray(event, target) {
     if (this.animating == true || this.selectingActivity == true) return;
 
-    this.targetTray = this.staticTrays.find((e) => e.id == target.dataset.id)
-      ? this.staticTrays.find((e) => e.id == target.dataset.id)
-      : this.customTrays.find((e) => e.id == target.dataset.id);
-    this.targetTray.active = true;
-    this.currentTray.active = true;
 
-    if (this.currentTray == this.targetTray) return;
-
-    let tmp = this.currentTray;
-    this.currentTray = this.targetTray;
-    this.targetTray = tmp;
-   
-    await this.render(true);
-
-    AnimationHandler.animateSwapTrays(this.currentTray, this.targetTray, this);
+    AnimationHandler.animateTrays( target.dataset.id ,this.currentTray.id, this);
   }
   static toggleLock() {
     if(this.selectingActivity) return;

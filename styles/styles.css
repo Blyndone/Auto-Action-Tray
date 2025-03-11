@@ -358,6 +358,7 @@
   overflow: hidden;
   align-items: center;
   position: relative;
+  background: #5b5b5b;
 }
 .ability-tray-container .activity-selection-text {
   position: absolute;
