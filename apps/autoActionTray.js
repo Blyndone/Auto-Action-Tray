@@ -22,8 +22,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.selectingActivity = false;
     this.animationDuration = 0.7;
 
-    this.totalabilities = 20
-  
+    this.totalabilities = 20;
+
     this.#dragDrop = this.#createDragDropHandlers();
     this.isEditable = true;
 
@@ -32,7 +32,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.rangedWeapon = null;
 
     this.currentTray = null;
-    this.targetTray = null; 
+    this.targetTray = null;
     this.customTrays = [];
     this.staticTrays = [];
     this.activityTray = null;
@@ -61,7 +61,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     registerHandlebarsHelpers();
   }
 
-
   //#region Hooks
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;
@@ -80,6 +79,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       return;
     }
     if (event.actor != this.actor || this.actor == event) {
+      if (this.selectingActivity == true) {
+        this.activityTray.rejectActivity(
+          new Error('User canceled activity selection')
+        );
+        this.activityTray.rejectActivity = null;
+      }
+
       this.actor = event.actor ? event.actor : event;
       this.staticTrays = StaticTray.generateStaticTrays(this.actor);
       this.customTrays = CustomTray.generateCustomTrays(this.actor);
@@ -106,8 +112,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   refresh = () => {
     if (this.animating == true || this.actor == null) return;
     this.currentTray = this.getTray(this.currentTray.id);
-
-  
     this.currentTray.active = true;
     this.render(true);
   };
@@ -126,7 +130,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       positioned: false,
     },
 
-
     actions: {
       openSheet: AutoActionTray.openSheet,
       selectWeapon: AutoActionTray.selectWeapon,
@@ -142,8 +145,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     },
   };
 
-
-
   static PARTS = {
     autoActionTray: {
       template: 'modules/auto-action-tray/templates/auto-action-tray.hbs',
@@ -151,12 +152,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     },
   };
 
+  static async myFormHandler(event, form, formData) {}
 
-  static async myFormHandler(event, form, formData) {
-
-  }
-
- //#region Rendering
+  //#region Rendering
   async _preparePartContext(partId, context) {
     context = {
       partId: `${this.id}-${partId}`,
@@ -179,7 +177,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     return context;
   }
- //#region Frame Listeners
+  //#region Frame Listeners
   _configureRenderOptions(options) {
     super._configureRenderOptions(options);
   }
@@ -256,7 +254,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
   }
   //#region Actions
-  
 
   setDefaultTray() {
     this.currentTray = this.customTrays.find((e) => e.id == 'common');
@@ -264,7 +261,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.currentTray.active = true;
     this.render();
   }
-
 
   setTrayConfig(config) {
     this.actor.setFlag('auto-action-tray', 'config', config);
@@ -279,11 +275,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
   }
 
-  getTray(trayId) { 
-        return (
-      this.staticTrays.find(tray => tray.id == trayId) ||
-      this.customTrays.find(tray => tray.id == trayId) ||
-      [this.activityTray].find(tray => tray.id == trayId)
+  getTray(trayId) {
+    return (
+      this.staticTrays.find((tray) => tray.id == trayId) ||
+      this.customTrays.find((tray) => tray.id == trayId) ||
+      [this.activityTray].find((tray) => tray.id == trayId)
     );
   }
 
@@ -299,17 +295,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   static async setTray(event, target) {
     if (this.animating == true || this.selectingActivity == true) return;
 
-
-    AnimationHandler.animateTrays( target.dataset.id ,this.currentTray.id, this);
+    AnimationHandler.animateTrays(target.dataset.id, this.currentTray.id, this);
   }
   static toggleLock() {
-    if(this.selectingActivity) return;
+    if (this.selectingActivity) return;
     this.trayOptions['locked'] = !this.trayOptions['locked'];
     this.setTrayConfig({ locked: this.trayOptions['locked'] });
     this.render(true);
   }
   static toggleSkillTrayPage() {
-    if(this.selectingActivity) return;
+    if (this.selectingActivity) return;
     this.trayOptions['skillTrayPage'] =
       this.trayOptions['skillTrayPage'] == 0 ? 1 : 0;
     this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] });
@@ -317,7 +312,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.render(true);
   }
   static toggleFastForward() {
-    if(this.selectingActivity) return;
+    if (this.selectingActivity) return;
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
     this.render(true);
@@ -328,37 +323,40 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     let itemId = target.dataset.itemId;
     let item = this.actor.items.get(itemId);
     this.activityTray.getActivities(item, this.actor);
-    let selectedSpellLevel, activity;
-    let fast = this.trayOptions['fastForward'];
-    let skipDialog = { configure: false };
-    if (!fast) {
+    let selectedSpellLevel = null,
+      activity = null;
+
+    if (!this.trayOptions['fastForward']) {
       if (this.activityTray?.abilities?.length > 1) {
         activity = await this.activityTray.selectAbility(
           item,
           this.actor,
           this
         );
+        selectedSpellLevel = !selectedSpellLevel
+          ? activity['selectedSpellLevel']
+          : '';
         if (activity == null) return;
       } else {
         activity = item.system.activities[0];
       }
-      selectedSpellLevel = (!selectedSpellLevel) ? activity['selectedSpellLevel'] : '';
-
     } else {
       activity = item.system.activities.contents[0];
       selectedSpellLevel = this.currentTray.spellLevel;
     }
 
-    selectedSpellLevel =(item.system.preparation?.mode == 'pact') ? { slot: 'pact' }:{ slot: 'spell' + selectedSpellLevel }
-      
-    
+    selectedSpellLevel =
+      item.system.preparation?.mode == 'pact'
+        ? { slot: 'pact' }
+        : { slot: 'spell' + selectedSpellLevel };
 
-    item.system.activities.get(activity?.itemId || activity?._id ||item.system.activities.contents[0].id).use(
-      { spell: selectedSpellLevel },
-      skipDialog
-    );
-
-
+    item.system.activities
+      .get(
+        activity?.itemId ||
+          activity?._id ||
+          item.system.activities.contents[0].id
+      )
+      .use({ spell: selectedSpellLevel }, { configure: false });
   }
 
   static useSkillSave(event, target) {

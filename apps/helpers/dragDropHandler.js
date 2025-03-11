@@ -67,16 +67,14 @@ export class DragDropHandler {
       return;
     }
 
+    if (index == data.index) return;
+
     // Handle different data types
     switch (data.type) {
       case "Item":
         let item = fromUuidSync(data.uuid);
         hotbar.currentTray.setAbility(index, item);
         hotbar.currentTray.setAbility(data.index, null);
-        hotbar.abilities = hotbar.padArray(
-          hotbar.currentTray.getAbilities(),
-          hotbar.totalabilities
-        );
         hotbar.render(true);
         break;
 

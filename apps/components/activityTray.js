@@ -27,7 +27,10 @@ export class ActivityTray extends AbilityTray {
     this.abilities = [];
     if (item.type == "spell" && item.system.activities.size == 1) {
       Object.keys(actor.system.spells).forEach(spell => {
-        if (item.system.level <= actor.system.spells[spell].level) {
+        if (
+          item.system.level <= actor.system.spells[spell].level &&
+          actor.system.spells[spell].max > 0
+        ) {
           let spellData = { actorSpellData: actor.system.spells[spell] };
           let tempitem = item.clone();
           tempitem.itemId = item.id;
