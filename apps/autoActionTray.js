@@ -380,15 +380,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       } else {
         activity = item.system.activities[0];
       }
+      selectedSpellLevel = (selectedSpellLevel) ? activity['selectedSpellLevel'] : '';
 
-      selectedSpellLevel = activity['selectedSpellLevel'];
     } else {
       activity = item.system.activities.contents[0];
       selectedSpellLevel = this.currentTray.spellLevel;
     }
 
 
-    item.system.activities.get(activity.itemId || activity._id).use(
+    item.system.activities.get(activity?.itemId || activity?._id ||item.system.activities.contents[0].id).use(
       { spell: { slot: 'spell' + selectedSpellLevel } },
       skipDialog
     );

@@ -48,10 +48,7 @@ export class SkillTray {
         abbreviation: "med",
         icon: '<i class="fa-solid fa-book-atlas"></i>'
       },
-      nature: {
-        abbreviation: "nat",
-        icon: '<i class="fa-solid fa-leaf"></i>'
-      },
+      nature: { abbreviation: "nat", icon: '<i class="fa-solid fa-leaf"></i>' },
       perception: {
         abbreviation: "prc",
         icon: '<i class="fa-solid fa-eye"></i>'
@@ -62,7 +59,7 @@ export class SkillTray {
       },
       persuasion: {
         abbreviation: "per",
-        icon: '<i class="fa-solid fa-handshake"></i>'
+        icon: '<i class="fa-solid fa-comments"></i>'
       },
       religion: {
         abbreviation: "rel",
@@ -70,7 +67,7 @@ export class SkillTray {
       },
       sleightOfHand: {
         abbreviation: "slt",
-        icon: '<i class="fa-solid fa-bag-seedling"></i>'
+        icon: '<i class="fa-solid fa-sack-dollar"></i>'
       },
       stealth: {
         abbreviation: "ste",
