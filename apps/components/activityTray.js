@@ -56,7 +56,7 @@ export class ActivityTray extends AbilityTray {
     } else {
       hotbar.trayInformation = `${item.name}`;
     }
-
+    hotbar.selectingActivity = true;
     AnimationHandler.animateTrays("activity", hotbar.currentTray.id, hotbar);
 
     let act;

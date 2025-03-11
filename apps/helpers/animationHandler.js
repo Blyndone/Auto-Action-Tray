@@ -3,11 +3,7 @@ export class AnimationHandler {
     this.animations = [];
   }
   static findTray(trayId, hotbar) {
-    return (
-      hotbar.staticTrays.find(tray => tray.id == trayId) ||
-      hotbar.customTrays.find(tray => tray.id == trayId) ||
-      [hotbar.activityTray].find(tray => tray.id == trayId)
-    );
+    return hotbar.getTray(trayId);
   }
 
   static async animateTrays(tray1ID, tray2ID, hotbar) {

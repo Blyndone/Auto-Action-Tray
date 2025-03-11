@@ -111,6 +111,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
   }
 
+  getTray(trayId) { 
+        return (
+      this.staticTrays.find(tray => tray.id == trayId) ||
+      this.customTrays.find(tray => tray.id == trayId) ||
+      [this.activityTray].find(tray => tray.id == trayId)
+    );
+  }
+
+
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
@@ -118,6 +127,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   _onUpdateActor(actor, change, options, userId) {
+    debugger
     if (actor != this.actor) return;
     // if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
@@ -153,14 +163,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
   refresh = () => {
     if (this.animating == true || this.actor == null) return;
+    this.currentTray = this.getTray(this.currentTray.id);
 
-    // this.currentTray = this.staticTrays.find((e) => e.id == this.currentTray.id)
-    //   ? this.staticTrays.find((e) => e.id == this.currentTray.id)
-    //   : this.customTrays.find((e) => e.id == this.currentTray.id);
   
-    
-   
-    
     this.currentTray.active = true;
     this.render(true);
   };
