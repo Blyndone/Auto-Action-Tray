@@ -11,6 +11,7 @@ export async function preloadHandlebarsTemplates() {
     "modules/auto-action-tray/templates/parts/custom-tray.hbs",
     "modules/auto-action-tray/templates/parts/item.hbs",
     "modules/auto-action-tray/templates/parts/item-spell.hbs",
+    "modules/auto-action-tray/templates/parts/item-spell-pact.hbs",
     "modules/auto-action-tray/templates/parts/full-tray.hbs",
     "modules/auto-action-tray/templates/parts/item-tooltip.hbs",
     "modules/auto-action-tray/templates/parts/character-hp.hbs",

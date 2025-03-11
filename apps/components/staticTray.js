@@ -76,6 +76,17 @@ export class StaticTray extends AbilityTray {
 
         this.id = 'spell-' + this.spellLevel;
         break;
+      
+      case 'pact':
+        this.abilities = allItems
+          .filter(
+            (e) =>
+              e.system.preparation?.mode == 'pact'
+          )
+          .sort((a, b) => b.system.level - a.system.level);
+     
+        this.id = 'pact';
+        break;
 
       case 'ritual':
         this.abilities = allItems.filter(
@@ -130,9 +141,21 @@ export class StaticTray extends AbilityTray {
       );
     });
 
+    let pactTray = new StaticTray({
+       category: 'pact',
+      actorUuid: actor.uuid,
+      spellLevel: actor.system.spells.pact.level,
+      totalSlots: actor.system.spells.pact.max,
+      availableSlots: actor.system.spells.pact.value
+    })
+
+
+
     let ritualTray = new StaticTray({
       category: 'ritual',
       actorUuid: actor.uuid,
+      spellLevel: actor.system.spells.pact.level,
+      
     });
 
     this.staticTrays = [
@@ -140,6 +163,7 @@ export class StaticTray extends AbilityTray {
       bonusTray,
       classTray,
       ...spellTray,
+      pactTray,
       ritualTray,
     ];
 

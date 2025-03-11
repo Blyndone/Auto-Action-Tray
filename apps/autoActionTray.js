@@ -22,30 +22,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.selectingActivity = false;
     this.animationDuration = 0.7;
 
-    this.abilityHeight = 2;
-
-    this.section1Width = 4;
-    this.section2Width = 4;
-    this.section3Width = 2;
-    this.abilityHeight = 2;
-
-    this.section1Total = this.section1Width * this.abilityHeight;
-    this.section2Total = this.section2Width * this.abilityHeight;
-    this.section3Total = this.section3Width * this.abilityHeight;
-
-    this.section1End = this.section1Total;
-    this.section2End = this.section1End + this.section2Total;
-    this.section3End = this.section2End + this.section3Total;
-
-    this.totalabilities =
-      this.section1Total + this.section2Total + this.section3Total;
-
-    this.section1Px = this.section1Width * 78;
-    this.section2Px = this.section2Width * 78;
-    this.section3Px = this.section3Width * 78;
-    this.totalWidthPx = (this.totalabilities / this.abilityHeight) * 78;
+    this.totalabilities = 20
+  
     this.#dragDrop = this.#createDragDropHandlers();
-
     this.isEditable = true;
 
     this.actor = null;
@@ -53,13 +32,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.rangedWeapon = null;
 
     this.currentTray = null;
-    this.currentCustomTray = null;
-    this.currentStaticTray = null;
     this.targetTray = null; 
-    this.currentTrayTemplate = 'AAT.full-tray';
-
-    this.allAbilities = {};
-
     this.customTrays = [];
     this.staticTrays = [];
     this.activityTray = null;
@@ -73,8 +46,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       fastForward: true,
     };
 
-    this.abilities = new Array(this.totalabilities).fill(null);
-    this.init = false;
     Hooks.on('controlToken', this._onControlToken);
     Hooks.on('updateActor', this._onUpdateActor.bind(this));
     Hooks.on('updateItem', this._onUpdateItem.bind(this));
@@ -90,36 +61,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     registerHandlebarsHelpers();
   }
 
-  setDefaultTray() {
-    this.currentTray = this.customTrays.find((e) => e.id == 'common');
 
-    this.currentTray.active = true;
-    this.render();
-  }
-
-
-  setTrayConfig(config) {
-    this.actor.setFlag('auto-action-tray', 'config', config);
-  }
-
-  getTrayConfig() {
-    let data = this.actor.getFlag('auto-action-tray', 'config');
-    if (data) {
-      return data;
-    } else {
-      return null;
-    }
-  }
-
-  getTray(trayId) { 
-        return (
-      this.staticTrays.find(tray => tray.id == trayId) ||
-      this.customTrays.find(tray => tray.id == trayId) ||
-      [this.activityTray].find(tray => tray.id == trayId)
-    );
-  }
-
-
+  //#region Hooks
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
@@ -127,7 +70,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   _onUpdateActor(actor, change, options, userId) {
-    debugger
     if (actor != this.actor) return;
     // if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
@@ -214,33 +156,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
   }
 
-
+ //#region Rendering
   async _preparePartContext(partId, context) {
     context = {
       partId: `${this.id}-${partId}`,
       actor: this.actor,
+      totalabilities: this.totalabilities,
       meleeWeapon: this.meleeWeapon,
       rangedWeapon: this.rangedWeapon,
-      spells: this.spells,
-      consumables: this.consumables,
-      abilities: this.abilities,
-      section1Px: this.section1Px,
-      section2Px: this.section2Px,
-      section3Px: this.section3Px,
-      totalWidthPx: this.totalWidthPx,
-      section1Total: this.section1Total,
-      section2Total: this.section2Total,
-      section3Total: this.section3Total,
-      section1End: this.section1End,
-      section2End: this.section2End,
-      section3End: this.section3End,
-      totalabilities: this.totalabilities,
-      currentTrayTemplate: this.currentTrayTemplate,
       currentTray: this.currentTray,
       targetTray: this.targetTray,
-      allAbilities: this.allAbilities,
       staticTrays: this.staticTrays,
-      staticTray: this.staticTray,
       customTrays: this.customTrays,
       equipmentTray: this.equipmentTray,
       skillTray: this.skillTray,
@@ -253,7 +179,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     return context;
   }
-
+ //#region Frame Listeners
   _configureRenderOptions(options) {
     super._configureRenderOptions(options);
   }
@@ -329,6 +255,37 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         break;
     }
   }
+  //#region Actions
+  
+
+  setDefaultTray() {
+    this.currentTray = this.customTrays.find((e) => e.id == 'common');
+
+    this.currentTray.active = true;
+    this.render();
+  }
+
+
+  setTrayConfig(config) {
+    this.actor.setFlag('auto-action-tray', 'config', config);
+  }
+
+  getTrayConfig() {
+    let data = this.actor.getFlag('auto-action-tray', 'config');
+    if (data) {
+      return data;
+    } else {
+      return null;
+    }
+  }
+
+  getTray(trayId) { 
+        return (
+      this.staticTrays.find(tray => tray.id == trayId) ||
+      this.customTrays.find(tray => tray.id == trayId) ||
+      [this.activityTray].find(tray => tray.id == trayId)
+    );
+  }
 
   static openSheet(event, target) {
     this.actor.sheet.render(true);
@@ -385,16 +342,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       } else {
         activity = item.system.activities[0];
       }
-      selectedSpellLevel = (selectedSpellLevel) ? activity['selectedSpellLevel'] : '';
+      selectedSpellLevel = (!selectedSpellLevel) ? activity['selectedSpellLevel'] : '';
 
     } else {
       activity = item.system.activities.contents[0];
       selectedSpellLevel = this.currentTray.spellLevel;
     }
 
+    selectedSpellLevel =(item.system.preparation?.mode == 'pact') ? { slot: 'pact' }:{ slot: 'spell' + selectedSpellLevel }
+      
+    
 
     item.system.activities.get(activity?.itemId || activity?._id ||item.system.activities.contents[0].id).use(
-      { spell: { slot: 'spell' + selectedSpellLevel } },
+      { spell: selectedSpellLevel },
       skipDialog
     );
 
@@ -417,7 +377,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
     target.classList.add('selected');
   }
-
+  //#region DragDrop
   #createDragDropHandlers() {
     return this.options.dragDrop.map((d) => {
       d.permissions = {
