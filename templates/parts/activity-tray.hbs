@@ -1,0 +1,43 @@
+<div data-data-id='{{{tray.id}}}'>
+
+  <ol class='activity-ol'>
+    <div class='activity-selection-text'>
+      {{#if (eq activities.0.type 'spell')}}
+      Select a Spell Slot:
+      {{else}}
+      Select an Activity
+      {{/if}}
+
+    </div>
+    {{#each activities as |activity|}}
+    <li>
+
+      <div {{#if (eq activity.type 'spell') }} data-item-id='{{activity.itemId}}' {{else}} data-item-id='{{activity._id}}'
+        {{/if}} data-index='{{@index}}' data-type='{{activity.type}}'
+        data-selectedSpellLevel='{{activity.actorSpellData.level}}' data-tooltip-direction='UP' {{#if activity.system}}
+        data-tooltip="{{> 'AAT.item-tooltip' item=activity}}" {{else }}
+        data-tooltip="{{> 'AAT.item-tooltip' item=activity.item }}" {{/if}} {{#if (eq activity.actorSpellData.value 0)}}
+        class='ability-button activity-button-inactive' {{else}} data-action='useActivity'
+        class='ability-button activity-button' {{/if}}>
+        <img src='{{activity.img}}' alt='{{activity.name}}' data-item-id='{{activity._id}}' data-index='{{@index}}' />
+
+        <div class='spell-item-container-text'>{{getRomanNumeral
+          activity.actorSpellData.level
+          }}</div>
+      </div>
+      <div class="activity-slot-icon-container">
+        {{log activity}}
+        {{#if (eq activity.type 'spell')}}
+        {{#if (eq activity.actorSpellData.value 0)}}
+        <i class="fa-solid  fa-square icon-slot icon-slot-spent"></i>
+        {{else}}
+        <i class="fa-solid  fa-square icon-slot icon-slot"></i>
+        {{/if}}
+      </div>
+      {{/if}}
+    </li>
+    {{/each}}
+  </ol>
+</div>
+
+{{!-- {{ data-tooltip="{{> 'AAT.item-tooltip' }} --}}

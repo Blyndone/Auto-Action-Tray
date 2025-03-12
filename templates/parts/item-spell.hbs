@@ -1,4 +1,8 @@
 <div class='spell-item-container'>
+{{# if (eq item.system.preparation.mode 'pact')}}
+ {{> AAT.item-spell-pact item=item index=@index tray=tray}}
+ {{else}}
+
 
   {{#if (eq tray.id 'ritual')}}
     <img
@@ -45,5 +49,5 @@
       /
       {{item.system.uses.max}}</div>
   {{/if}}
-
+{{/if}}
 </div>
