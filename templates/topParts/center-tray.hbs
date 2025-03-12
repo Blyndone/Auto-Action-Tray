@@ -1,0 +1,29 @@
+<div class="center-tray-container">
+      <div class='static-tray-container'>{{> "AAT.static-tray" }}</div>
+      <div class='ability-tray-container'>
+        {{#each staticTrays as |tray|}}
+        {{#if tray.active}}
+        <div class="abilities-tray static-tray  {{tray.id}}">
+          {{> "AAT.full-tray" tray=tray}}
+        </div>
+        {{/if}}
+        {{/each}}
+
+        {{#each customTrays as |tray|}}
+        {{#if tray.active}}
+        <div class="abilities-tray custom-tray  {{tray.id}}">
+          {{> "AAT.full-tray" tray=tray}}
+        </div>
+        {{/if}}
+        {{/each}}
+
+        {{#if activityTray.active}}
+        <div class="abilities-tray activity-tray activity">
+          {{> "AAT.activity-tray" activities=activityTray.abilities}}
+        </div>
+          {{/if}}
+      </div>
+    
+      <div class='custom-tray-container'>{{> "AAT.custom-tray" customTrays=customTrays}}</div>
+      
+    </div>

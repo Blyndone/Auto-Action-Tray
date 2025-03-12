@@ -15,6 +15,7 @@ Auto Action Bar is a custom action bar and character tray for Foundry VTT, inspi
 ### 📥 Installation
 🔹 Foundry VTT (Manually)
 
+    https://github.com/Blyndone/Auto-Action-Tray/releases/latest/download/module.json
     Download the latest release from the Releases page.
     Extract the folder into FoundryVTT/Data/modules/.
     Enable the module in Game Settings > Manage Modules.
