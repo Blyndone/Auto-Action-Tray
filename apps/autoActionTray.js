@@ -10,7 +10,7 @@ import { CombatHandler } from './components/combatHandler.js';
 import { registerHandlebarsHelpers } from './helpers/handlebars.js';
 import { AnimationHandler } from './helpers/animationHandler.js';
 import { DragDropHandler } from './helpers/dragDropHandler.js';
-import { DrawSVGPlugin } from "/scripts/greensock/esm/all.js";
+import { DrawSVGPlugin } from '/scripts/greensock/esm/all.js';
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(
   ApplicationV2
@@ -18,7 +18,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   // Constructor
 
   constructor(options = {}) {
-    gsap.registerPlugin(DrawSVGPlugin)
+    gsap.registerPlugin(DrawSVGPlugin);
     super(options);
 
     this.animating = false;
@@ -66,12 +66,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     Hooks.on('updateItem', this._onUpdateItem.bind(this));
     Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data));
     Hooks.on('dnd5e.beginConcentrating', (actor) => {
-      if (actor == this.actor) this.render(true);
+      if (actor == this.actor)
+        this.render(this.render({ parts: ['characterImage'] }));
     });
     Hooks.on('dnd5e.endConcentration', (actor) => {
-      if (actor == this.actor) this.render(true);
+      if (actor == this.actor) this.render({ parts: ['characterImage'] });
     });
     Hooks.on('updateCombat', this._onUpdateCombat.bind(this));
+    Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this));
+    Hooks.on('createCombatant', this._onUpdateCombat.bind(this));
+    Hooks.on('updateCombatant', this._onUpdateCombat.bind(this));
+    Hooks.on('deleteCombat', this._onUpdateCombat.bind(this));
+    
     ui.hotbar.collapse();
     registerHandlebarsHelpers();
   }
@@ -87,10 +93,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (actor != this.actor) return;
     // if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
-    this.refresh();
+    this.render({ parts: ['centerTray'] });
   }
-  _onControlToken = (event, controlled) => {
-    
+   _onControlToken = (event, controlled) => {
     if (event == null || controlled == false) {
       return;
     }
@@ -112,6 +117,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.rangedWeapon = this.equipmentTray.getRangedWeapon();
       this.skillTray = SkillTray.generateCustomTrays(this.actor);
       this.combatHandler = new CombatHandler(this.actor, this);
+      // this.render({ parts: ['endTurn'] });
       let config = this.getTrayConfig();
       if (config) {
         this.trayOptions = Object.assign({}, this.trayOptions, config);
@@ -122,14 +128,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           currentTray: 'common',
         };
       }
+      
+      this.render({ parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'] });
     }
-
-    this.refresh();
-    AnimationHandler.animateCircle(0, 100, this);
   };
 
   _onUpdateCombat = (event) => {
-    if (this.combatHandler == null) return;
+    if (this.combatHandler == null || this.combatHandler.inCombat == false)
+      return;
     this.combatHandler.updateCombat(this.actor, event);
   };
 
@@ -137,7 +143,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.animating == true || this.actor == null) return;
     this.currentTray = this.getTray(this.currentTray.id);
     this.currentTray.active = true;
-    this.render(true);
+    if (this.combatHandler.inCombat) {
+      this.combatHandler.setCombat(this.actor);
+    }
+    this.render({ parts: ['centerTray'] });
   };
 
   static DEFAULT_OPTIONS = {
@@ -161,7 +170,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       setTray: AutoActionTray.setTray,
       endTurn: AutoActionTray.endTurn,
       useSkillSave: AutoActionTray.useSkillSave,
-      swapSkillTray: AutoActionTray.toggleSkillTrayPage,
+      toggleSkillTrayPage: AutoActionTray.toggleSkillTrayPage,
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
       useActivity: ActivityTray.useActivity,
@@ -170,13 +179,27 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   };
 
   static PARTS = {
-    autoActionTray: {
-      template: 'modules/auto-action-tray/templates/auto-action-tray.hbs',
-      id: 'tray',
+    characterImage: {
+      template:
+        'modules/auto-action-tray/templates/topParts/character-image.hbs',
+      id: 'character-image',
     },
-    test: {
-      template: 'modules/auto-action-tray/templates/parts/turn-tray.hbs',
-      id: 'test',
+    equipmentMiscTray: {
+      template:
+        'modules/auto-action-tray/templates/topParts/equipment-misc-tray.hbs',
+      id: 'equipment-misc-tray',
+    },
+    centerTray: {
+      template: 'modules/auto-action-tray/templates/topParts/center-tray.hbs',
+      id: 'center-tray',
+    },
+    skillTray: {
+      template: 'modules/auto-action-tray/templates/topParts/skill-tray.hbs',
+      id: 'skill-tray',
+    },
+    endTurn: {
+      template: 'modules/auto-action-tray/templates/topParts/end-turn.hbs',
+      id: 'end-turn',
     },
   };
 
@@ -288,7 +311,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.currentTray = this.customTrays.find((e) => e.id == 'common');
 
     this.currentTray.active = true;
-    this.render();
+    // this.render({ parts: ['centerTray'] });
   }
 
   setTrayConfig(config) {
@@ -317,8 +340,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   static async endTurn(event, target) {
-    this.actor.unsetFlag('auto-action-tray', 'data');
-    this.actor.unsetFlag('auto-action-tray', 'config');
+    if (this.combatHandler == null) return;
+    if (this.combatHandler.combat.current.combatantId =! this.actor.getActiveTokens()[0].combatant._id) {
+return}
+    this.combatHandler.combat.nextTurn();
+    // this.actor.unsetFlag('auto-action-tray', 'data');
+    // this.actor.unsetFlag('auto-action-tray', 'config');
   }
 
   static async setTray(event, target) {
@@ -330,7 +357,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.selectingActivity) return;
     this.trayOptions['locked'] = !this.trayOptions['locked'];
     this.setTrayConfig({ locked: this.trayOptions['locked'] });
-    this.render(true);
+    this.render({ parts:  ['equipmentMiscTray'] });;
   }
   static toggleSkillTrayPage() {
     if (this.selectingActivity) return;
@@ -338,13 +365,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.trayOptions['skillTrayPage'] == 0 ? 1 : 0;
     this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] });
 
-    this.render(true);
+    this.render({ parts:  ['skillTray'] });
   }
   static toggleFastForward() {
     if (this.selectingActivity) return;
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
-    this.render(true);
+    this.render({ parts:  ['equipmentMiscTray'] });
   }
 
   static async useItem(event, target) {

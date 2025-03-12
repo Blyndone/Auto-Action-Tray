@@ -2,28 +2,47 @@
   <div style='position: relative'>
     <div
       class='swap-skill-tray-button'
-      data-action='swapSkillTray'
+      data-action='toggleSkillTrayPage'
       data-tooltip='Swap Skill Tray'
       data-tooltip-direction='UP'
     >
       <i class='fa-solid fa-rotate-reverse'></i>
     </div>
-  </div><div>
-    <button class='end-turn-btn' style='font-size = 12px' data-action='endTurn'>
-      <svg width='200' height='200' viewBox='0 0 200 200'>
-        <circle
-          class='hp-circle'
-          cx='100'
-          cy='100'
-          r='80'
-          stroke='white'
-          stroke-width='5'
-          fill='none'
-          stroke-linecap='round'
-        />
-      </svg>
-
-    </button>
+  </div>
+  <div style='position: relative; pointer-events: none;'>
+    <svg width='200' height='200' viewBox='0 0 200 200' class='hp-circle'>
+      <circle
+        class='circle-svg'
+        cx='100'
+        cy='100'
+        r='80'
+        {{! stroke='#8500a0' }}
+        stroke-width='5'
+        fill='none'
+        stroke-linecap='round'
+        {{! style='filter: drop-shadow(rgb(209, 0, 59) 0px 0px 5px)' }}
+      />
+    </svg>
+    {{#if combatHandler.isTurn}}
+      <button class='end-turn-btn' data-action='endTurn'>
+        {{#if combatHandler.inCombat}}
+          <div class='end-turn-btn-text'>
+            End Turn<br />
+            <i class='fa-solid fa-hourglass-half'></i>
+          </div>
+        {{/if}}
+      </button>
+    {{else}}
+      <button class='end-turn-btn-nohover'>
+        {{#if combatHandler.inCombat}}
+          <div class='end-turn-btn-text'>
+            Next Turn:<br />
+            {{combatHandler.tillNextTurn}}
+            Turns
+          </div>
+        {{/if}}
+      </button>
+    {{/if}}
 
   </div>
 </div>

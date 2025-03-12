@@ -1,8 +1,9 @@
-.auto-action-tray-container {
+#auto-action-tray {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+  height: 162px;
+  flex-direction: row;
   background: rgba(117, 117, 117, 0.7);
   border-radius: 100px 8px 8px 100px;
   position: absolute;
@@ -146,38 +147,47 @@
   pointer-events: none;
 }
 
-.main-tray-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 162px;
-}
-
 .character-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 162px;
 }
-.character-image-container img {
-  background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
-  border: 2px solid #2f2f2f;
-  border-radius: 6px;
-  outline: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 5px;
+.character-image-container .image-container {
+  padding: 0;
   width: 170px;
   height: 170px;
+  overflow: hidden;
   border-radius: 50%;
+  margin-right: 10px;
   align-items: center;
   vertical-align: middle;
-  margin-right: 10px;
+  outline: 5px solid rgb(39, 39, 39);
+  position: relative;
+}
+.character-image-container .image-container .image-border {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  outline: 4px solid rgb(39, 39, 39);
 }
 .character-image-container .concentrating {
   box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 15px #9600d1;
   border: 2px solid #2f2f2f;
-  outline: 1px solid rgba(255, 255, 255, 0.1);
-  border: 2px solid #8500a0;
+  outline: 3px solid #8500a0;
+}
+.character-image-container img {
+  align-items: center;
+  vertical-align: middle;
+  border: none;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
 }
 
 .equipment-misc-tray-container {
@@ -779,7 +789,7 @@
   transition: all 0.3s ease-in-out;
   font-family: serif;
   position: absolute;
-  bottom: -75px;
+  bottom: -150px;
   left: 0px;
   width: 25px;
   height: 25px;
@@ -798,27 +808,61 @@
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
   padding: 5px;
-  background: red;
+  background: radial-gradient(#6fa3e7, #012747);
+  transition: 0.3s ease-in-out;
   height: 130px;
   width: 130px;
   border-radius: 100%;
   font-size: 20px;
-  border: 10px, #333;
   margin: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: all;
+}
+.end-turn-btn:active {
+  /* Slightly reduce the size for "pressing" effect */
+  box-shadow: inset 0 0 10px #b0e8f7; /* Add an inset shadow when pressed */
+  background: radial-gradient(#5f9fe5, #01111f); /* Darken background on press */
+}
+.end-turn-btn:hover {
+  border: 2px solid #3fc0c9;
+  box-shadow: 0 0 10px #3f96c9;
 }
 
-.circle-chart__circle {
-  animation: circle-chart-fill 2s reverse;
-  transform: rotate(90deg);
-  transform-origin: center;
+.end-turn-btn-nohover {
+  background: #5b5b5b;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  border: 2px solid #2f2f2f;
+  border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px;
+  background: radial-gradient(#6fa3e7, #012747);
+  transition: 0.3s ease-in-out;
   height: 130px;
   width: 130px;
+  border-radius: 100%;
+  font-size: 20px;
+  margin: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 
-@keyframes circle-chart-fill {
-  to {
-    stroke-dasharray: 0 100;
-  }
+.end-turn-btn-text {
+  font-size: 18px;
+  line-height: 22px;
+  font-family: serif;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) 0px 0px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+}
+
+.hp-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  transform: translate(-50%, -50%) rotate(90deg);
+  pointer-events: none;
 }
 
 /*# sourceMappingURL=styles.css.map */
