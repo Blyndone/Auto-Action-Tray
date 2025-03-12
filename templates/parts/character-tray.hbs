@@ -1,8 +1,11 @@
  
 <a data-action="openSheet" class="character-image" >
+<div class="image-container {{#if (concentration this.actor)}}
+concentrating {{/if}}">
+<div class="image-border"></div>
+  <img src={{#if this.actor.img}}{{actor.img}}{{else}}"./icons/svg/mystery-man.svg"{{/if}} alt="{{this.actor.name}}" 
+  />
+</div>
 
-  <img src="{{this.actor.img}}" alt="{{this.actor.name}}" 
-  {{#if (concentration this.actor)}}
-class = "concentrating "{{/if}}/>
   {{>  "AAT.character-hp" actor=actor}}
 </a>
