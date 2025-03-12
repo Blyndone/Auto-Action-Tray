@@ -135,7 +135,7 @@
 }
 
 .static-spell-level {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   position: absolute;
   top: 0;
   left: 50%;
@@ -173,13 +173,11 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   outline: 4px solid rgb(39, 39, 39);
 }
 .character-image-container .concentrating {
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 15px #9600d1;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 15px #9600d1;
   border: 2px solid #2f2f2f;
   outline: 3px solid #8500a0;
 }
@@ -207,8 +205,7 @@
   justify-content: center;
   align-items: center;
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   border: 2px solid #2f2f2f;
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
@@ -235,8 +232,7 @@
 
 .misc-tray-container {
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   border: 2px solid #2f2f2f;
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
@@ -269,8 +265,7 @@
 }
 .small-button:hover {
   border-color: #c9593f;
-  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
-    0 0 4px rgba(201, 89, 63, 0.6) inset;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
 }
 
 .small-button-active {
@@ -293,8 +288,7 @@
 }
 .small-button-active:hover {
   border-color: #c9593f;
-  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
-    0 0 4px rgba(201, 89, 63, 0.6) inset;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
 }
 
 .small-button-skill {
@@ -315,8 +309,7 @@
 }
 .small-button-skill:hover {
   border-color: #c9593f;
-  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
-    0 0 4px rgba(201, 89, 63, 0.6) inset;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
 }
 
 .small-button-save {
@@ -339,8 +332,7 @@
 }
 .small-button-save:hover {
   border-color: #c9593f;
-  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
-    0 0 4px rgba(201, 89, 63, 0.6) inset;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
 }
 
 .proficient {
@@ -365,8 +357,7 @@
 .ability-tray-container {
   height: 162px;
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   border: 2px solid #2f2f2f;
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
@@ -490,8 +481,7 @@
   min-width: 20px;
   text-align: right;
   height: 0px;
-  text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black,
-    1px 1px 0px black;
+  text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;
 }
 
 .spell-item-container {
@@ -506,20 +496,19 @@
 }
 
 .spell-item-container-text {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   position: absolute;
   bottom: 0;
   right: 0;
   padding: 5px 10px;
   font-size: 22px;
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
 
 .spell-item-container-text-upcast {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: bold;
   position: absolute;
   transform: translateY(-5%);
@@ -528,8 +517,7 @@
   padding: 0px 5px;
   font-size: 20px;
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
 
@@ -569,8 +557,7 @@
 }
 .main-tray-controls-container div:hover {
   border-color: #c9593f;
-  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
-    0 0 4px rgba(201, 89, 63, 0.6) inset;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
 }
 
 .skill-tray-container {
@@ -578,8 +565,7 @@
   justify-content: center;
   align-items: center;
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   border: 2px solid #2f2f2f;
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
@@ -656,8 +642,7 @@
 
 .tray-information {
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   border: 2px solid #2f2f2f;
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
@@ -781,16 +766,14 @@
   font-weight: bold;
   font-size: 20px;
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
 }
 
 .temp-hp-text {
   color: #5bc0de; /* Light blue */
   font-weight: bold;
   font-size: 18px;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
 }
 
 .swap-skill-tray-button {
@@ -815,14 +798,12 @@
 }
 .swap-skill-tray-button:hover {
   border-color: #c9593f;
-  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
-    0 0 4px rgba(201, 89, 63, 0.6) inset;
+  box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
 }
 
 .end-turn-btn {
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   border: 2px solid #2f2f2f;
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
@@ -840,10 +821,7 @@
 .end-turn-btn:active {
   /* Slightly reduce the size for "pressing" effect */
   box-shadow: inset 0 0 10px #b0e8f7; /* Add an inset shadow when pressed */
-  background: radial-gradient(
-    #5f9fe5,
-    #01111f
-  ); /* Darken background on press */
+  background: radial-gradient(#5f9fe5, #01111f); /* Darken background on press */
 }
 .end-turn-btn:hover {
   border: 2px solid #3fc0c9;
@@ -852,8 +830,7 @@
 
 .end-turn-btn-nohover {
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   border: 2px solid #2f2f2f;
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
