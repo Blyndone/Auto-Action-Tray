@@ -746,13 +746,44 @@ $tray-button-background: rgb(97, 97, 95);
   font-size: 20px;
   margin: 10px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: all;
+  &:active {
+    /* Slightly reduce the size for "pressing" effect */
+    box-shadow: inset 0 0 10px #b0e8f7; /* Add an inset shadow when pressed */
+    background: radial-gradient(
+      #5f9fe5,
+      #01111f
+    ); /* Darken background on press */
+  }
 
   &:hover {
-    border: 2px solid #c9593f;
-    box-shadow: 0 0 10px #c9593f;
+    border: 2px solid #3fc0c9;
+    box-shadow: 0 0 10px #3f96c9;
   }
 }
 
+.end-turn-btn-nohover {
+  @include inset-tray;
+  padding: $main-tray-padding;
+  background: radial-gradient(#6fa3e7, #012747);
+  transition: 0.3s ease-in-out;
+  height: 130px;
+  width: 130px;
+  border-radius: 100%;
+  font-size: 20px;
+  margin: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.end-turn-btn-text {
+  font-size: 18px;
+  line-height: 22px;
+  font-family: serif;
+  color: #fff; // Bright text for visibility
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) 0px 0px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+}
 .hp-circle {
   position: absolute;
   top: 50%;
@@ -760,6 +791,7 @@ $tray-button-background: rgb(97, 97, 95);
   width: 150px;
   height: 150px;
   transform: translate(-50%, -50%) rotate(90deg);
+  pointer-events: none;
   // filter: drop-shadow(0 0 3px #9600d1) drop-shadow(0 0 4px #8500a0);
   // stroke: #8500a0;
 }

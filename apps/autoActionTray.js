@@ -75,8 +75,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     Hooks.on('updateCombat', this._onUpdateCombat.bind(this));
     Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this));
     Hooks.on('createCombatant', this._onUpdateCombat.bind(this));
+    Hooks.on('updateCombatant', this._onUpdateCombat.bind(this));
     Hooks.on('deleteCombat', this._onUpdateCombat.bind(this));
-    Hooks.on('rollInitiative', this._onUpdateCombat.bind(this));
     
     ui.hotbar.collapse();
     registerHandlebarsHelpers();
@@ -170,7 +170,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       setTray: AutoActionTray.setTray,
       endTurn: AutoActionTray.endTurn,
       useSkillSave: AutoActionTray.useSkillSave,
-      swapSkillTray: AutoActionTray.toggleSkillTrayPage,
+      toggleSkillTrayPage: AutoActionTray.toggleSkillTrayPage,
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
       useActivity: ActivityTray.useActivity,
@@ -340,8 +340,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   static async endTurn(event, target) {
-    this.actor.unsetFlag('auto-action-tray', 'data');
-    this.actor.unsetFlag('auto-action-tray', 'config');
+    if (this.combatHandler == null) return;
+    if (this.combatHandler.combat.current.combatantId =! this.actor.getActiveTokens()[0].combatant._id) {
+return}
+    this.combatHandler.combat.nextTurn();
+    // this.actor.unsetFlag('auto-action-tray', 'data');
+    // this.actor.unsetFlag('auto-action-tray', 'config');
   }
 
   static async setTray(event, target) {
@@ -353,7 +357,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.selectingActivity) return;
     this.trayOptions['locked'] = !this.trayOptions['locked'];
     this.setTrayConfig({ locked: this.trayOptions['locked'] });
-    this.render(true);
+    this.render({ parts:  ['equipmentMiscTray'] });;
   }
   static toggleSkillTrayPage() {
     if (this.selectingActivity) return;
@@ -361,13 +365,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.trayOptions['skillTrayPage'] == 0 ? 1 : 0;
     this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] });
 
-    this.render(true);
+    this.render({ parts:  ['skillTray'] });
   }
   static toggleFastForward() {
     if (this.selectingActivity) return;
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
-    this.render(true);
+    this.render({ parts:  ['equipmentMiscTray'] });
   }
 
   static async useItem(event, target) {
