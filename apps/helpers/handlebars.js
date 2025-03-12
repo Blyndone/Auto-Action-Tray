@@ -61,13 +61,17 @@ export function registerHandlebarsHelpers() {
       pact: `<i class="fa-solid fa-square icon-pact"></i>`,
       pactSpent: `<i class="fa-solid fa-square icon-pact-spent"></i>`,
       ritual: `<i class="fa-solid fa-square icon-ritual"></i>`,
+      customStaticTray: `<i class="fa-solid fa-swords icon-custom"></i>`,
     };
     let trayIcon =
       tray.id == 'spell-0'
         ? 'cantrip'
         : tray.id.startsWith('spell-')
         ? 'slot'
-        : tray.id;
+          : tray.id.startsWith('customStaticTray') ?
+          'customStaticTray'
+          : tray.id;
+    
 
     switch (trayIcon) {
       case 'slot':
@@ -81,6 +85,8 @@ export function registerHandlebarsHelpers() {
         return icons.bonus;
       case 'cantrip':
         return icons.cantrip;
+      case 'customStaticTray':
+        return icons.customStaticTray;
       case 'pact':
          return (
           icons.pact.repeat(tray.availableSlots) +

@@ -3,7 +3,6 @@ import { AutoActionTray } from "../apps/autoActionTray.js";
 
 export async function preloadHandlebarsTemplates() {
   const partials = [
-    "modules/auto-action-tray/templates/auto-action-tray.hbs",
     "modules/auto-action-tray/templates/parts/effect-tray.hbs",
     "modules/auto-action-tray/templates/parts/equip-tray.hbs",
     "modules/auto-action-tray/templates/parts/static-tray.hbs",

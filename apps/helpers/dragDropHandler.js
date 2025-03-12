@@ -1,3 +1,4 @@
+import { StaticTray } from "../components/staticTray.js";
 export class DragDropHandler {
   static _onDragStart(event, hotbar) {
     game.tooltip.deactivate();
@@ -24,7 +25,9 @@ export class DragDropHandler {
 
   static async _onDrop(event, hotbar) {
     // Try to extract the data
-
+    if (hotbar.currentTray instanceof StaticTray) {
+      return;
+    }
     const dragData =
       event.dataTransfer.getData("application/json") ||
       event.dataTransfer.getData("text/plain");
@@ -43,13 +46,14 @@ export class DragDropHandler {
       hotbar.actor.items.get(event.target.parentElement.dataset.itemId);
 
     let index = event.target.dataset.index;
+
     if (event.target.parentElement.dataset.index === "meleeWeapon") {
       hotbar.equipmentTray.setMeleeWeapon(fromUuidSync(data.uuid));
-      hotbar.refresh();
+      hotbar.render({ parts: ["equipmentMiscTray"] });
       return;
     } else if (event.target.parentElement.dataset.index === "rangedWeapon") {
       hotbar.equipmentTray.setRangedWeapon(fromUuidSync(data.uuid));
-      hotbar.refresh();
+      hotbar.render({ parts: ["equipmentMiscTray"] });
       return;
     }
 
@@ -57,13 +61,20 @@ export class DragDropHandler {
     if (index == "meleeWeapon") {
       let item = fromUuidSync(data.uuid);
       hotbar.equipmentTray.setMeleeWeapon(item);
-      hotbar.refresh();
+      hotbar.render({ parts: ["equipmentMiscTray"] });
       return;
     }
     if (index == "rangedWeapon") {
       let item = fromUuidSync(data.uuid);
       hotbar.equipmentTray.setRangedWeapon(item);
-      hotbar.refresh();
+      hotbar.render({ parts: ["equipmentMiscTray"] });
+      return;
+    }
+    if (index == "abilitySelection") {
+      let itemUuid = fromUuidSync(data.uuid).id;
+      StaticTray.setCustomStaticTray(itemUuid, hotbar.actor);
+      hotbar.staticTrays = StaticTray.generateStaticTrays(hotbar.actor);
+      hotbar.render({ parts: ["centerTray"] });
       return;
     }
 
@@ -75,7 +86,7 @@ export class DragDropHandler {
         let item = fromUuidSync(data.uuid);
         hotbar.currentTray.setAbility(index, item);
         hotbar.currentTray.setAbility(data.index, null);
-        hotbar.render(true);
+        hotbar.render({ parts: ["centerTray"] });
         break;
 
       default:
@@ -86,15 +97,15 @@ export class DragDropHandler {
     if (data.src != "AAT") return;
     if (data.index == "meleeWeapon") {
       hotbar.equipmentTray.setMeleeWeapon(null);
-      hotbar.refresh();
+      hotbar.render({ parts: ["equipmentMiscTray"] });
       return;
     }
     if (data.index == "rangedWeapon") {
       hotbar.equipmentTray.setRangedWeapon(null);
-      hotbar.refresh();
+      hotbar.render({ parts: ["equipmentMiscTray"] });
       return;
     }
     hotbar.currentTray.setAbility(data.index, null);
-    hotbar.render(true);
+    hotbar.render({ parts: ["centerTray"] });
   }
 }

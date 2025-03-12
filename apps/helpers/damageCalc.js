@@ -12,7 +12,7 @@ export class DamageCalc {
       saveDc = 0,
       damageType = '';
 
-    let actionType = item.system?.activities?.contents[0].type;
+    let actionType = item.system?.activities?.contents[0]?.type;
 
     switch (true) {
       case item.type == 'weapon': {
@@ -118,7 +118,7 @@ export class DamageCalc {
     bonus = bonus != '' ? parseInt(bonus) : 0;
 
     options.data.root['actionType'] = this.capitalize(
-      item.system?.activities?.contents[0].activation.type
+      item.system?.activities?.contents[0]?.activation?.type
     );
 
     if (min == 0) return;

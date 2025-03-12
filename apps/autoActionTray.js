@@ -42,6 +42,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.equipmentTray = null;
     this.skillTray = null;
     this.skillTray = null;
+    this.itemSelectorEnabled = false;
     this.trayInformation = '';
     this.trayOptions = {
       locked: false,
@@ -77,7 +78,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     Hooks.on('createCombatant', this._onUpdateCombat.bind(this));
     Hooks.on('updateCombatant', this._onUpdateCombat.bind(this));
     Hooks.on('deleteCombat', this._onUpdateCombat.bind(this));
-    
+
     ui.hotbar.collapse();
     registerHandlebarsHelpers();
   }
@@ -93,12 +94,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (actor != this.actor) return;
     // if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
-    if (this.currentTray instanceof StaticTray) { 
-       this.staticTrays.find(e=> e.id == this.currentTray.id).active = true;
+    if (this.currentTray instanceof StaticTray) {
+      this.staticTrays.find((e) => e.id == this.currentTray.id).active = true;
     }
     this.render({ parts: ['centerTray'] });
   }
-   _onControlToken = (event, controlled) => {
+  _onControlToken = (event, controlled) => {
     if (event == null || controlled == false) {
       return;
     }
@@ -131,8 +132,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           currentTray: 'common',
         };
       }
-      
-      this.render({ parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'] });
+
+      this.render({
+        parts: [
+          'characterImage',
+          'centerTray',
+          'equipmentMiscTray',
+          'skillTray',
+        ],
+      });
     }
   };
 
@@ -176,6 +184,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       toggleSkillTrayPage: AutoActionTray.toggleSkillTrayPage,
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
+      toggleItemSelector: AutoActionTray.toggleItemSelector,
       useActivity: ActivityTray.useActivity,
       cancelSelection: ActivityTray.cancelSelection,
     },
@@ -228,6 +237,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       trayInformation: this.trayInformation,
       activityTray: this.activityTray,
       combatHandler: this.combatHandler,
+      itemSelectorEnabled: this.itemSelectorEnabled,
     };
 
     return context;
@@ -344,8 +354,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
   static async endTurn(event, target) {
     if (this.combatHandler == null) return;
-    if (this.combatHandler.combat.current.combatantId =! this.actor.getActiveTokens()[0].combatant._id) {
-return}
+    if (
+      (this.combatHandler.combat.current.combatantId =
+        !this.actor.getActiveTokens()[0].combatant._id)
+    ) {
+      return;
+    }
     this.combatHandler.combat.nextTurn();
     // this.actor.unsetFlag('auto-action-tray', 'data');
     // this.actor.unsetFlag('auto-action-tray', 'config');
@@ -360,7 +374,7 @@ return}
     if (this.selectingActivity) return;
     this.trayOptions['locked'] = !this.trayOptions['locked'];
     this.setTrayConfig({ locked: this.trayOptions['locked'] });
-    this.render({ parts:  ['equipmentMiscTray'] });;
+    this.render({ parts: ['equipmentMiscTray'] });
   }
   static toggleSkillTrayPage() {
     if (this.selectingActivity) return;
@@ -368,13 +382,18 @@ return}
       this.trayOptions['skillTrayPage'] == 0 ? 1 : 0;
     this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] });
 
-    this.render({ parts:  ['skillTray'] });
+    this.render({ parts: ['skillTray'] });
   }
   static toggleFastForward() {
     if (this.selectingActivity) return;
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
-    this.render({ parts:  ['equipmentMiscTray'] });
+    this.render({ parts: ['equipmentMiscTray'] });
+  }
+
+  static toggleItemSelector() {
+    this.itemSelectorEnabled = !this.itemSelectorEnabled;
+    this.render({ parts: ['equipmentMiscTray'] });
   }
 
   static async useItem(event, target) {
@@ -421,9 +440,10 @@ return}
   static useSkillSave(event, target) {
     let type = target.dataset.type;
     let skillsave = target.dataset.skill;
-    
-    
-    let skipDialog = (this.trayOptions['fastForward'])? {fastForward: true} : null;
+
+    let skipDialog = this.trayOptions['fastForward']
+      ? { fastForward: true }
+      : null;
 
     if (type == 'skill') {
       this.actor.rollSkill(skillsave, skipDialog);

@@ -1,5 +1,7 @@
 <div class="center-tray-container">
+      {{#if staticTrays}}
       <div class='static-tray-container'>{{> "AAT.static-tray" }}</div>
+      {{/if}}
       <div class='ability-tray-container'>
         {{#each staticTrays as |tray|}}
         {{#if tray.active}}
@@ -23,7 +25,7 @@
         </div>
           {{/if}}
       </div>
-    
+    {{#if customTrays}}
       <div class='custom-tray-container'>{{> "AAT.custom-tray" customTrays=customTrays}}</div>
-      
+      {{/if}}
     </div>

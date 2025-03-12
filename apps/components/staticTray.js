@@ -6,9 +6,10 @@ export class StaticTray extends AbilityTray {
     this.category = options.category;
     this.classResource = options.classResource;
     this.spellLevel = options.spellLevel;
-    this.itemUsesUUID = options.itemUsesUUID || null;
+    this.customStaticTrays = [options.customStaticTrays] ;
     this.totalSlots = options.totalSlots;
     this.availableSlots = options.availableSlots;
+    this.keyItemUuid = options.keyItemUuid;
     this.type = 'static';
     this.active = false;
     this.generateTray();
@@ -39,32 +40,32 @@ export class StaticTray extends AbilityTray {
         this.id = 'bonus';
         break;
 
-      case 'classFeatures':
-        if (this.itemUsesUUID) {
+      case 'customStaticTray':
+        if (this.keyItemUuid) {
           this.abilities = allItems.filter((e) =>
             e.system.activities?.some((activity) =>
               activity.consumption?.targets?.some(
-                (target) => target.target === itemUsesUUID
+                (target) => target.target === this.keyItemUuid
               )
             )
           );
+       
+          this.id = 'customStaticTray'+ '-' + this.keyItemUuid;
         }
-        this.id = 'classFeatures';
+      
         break;
 
       case 'spell':
         if (this.spellLevel == 0) {
-          this.abilities = allItems
-            .filter(
-              (e) =>
-                e.system.level == this.spellLevel &&
-                e.system.preparation?.prepared == true 
-      
-          )
+          this.abilities = allItems.filter(
+            (e) =>
+              e.system.level == this.spellLevel &&
+              e.system.preparation?.prepared == true
+          );
           this.id = 'spell-' + this.spellLevel;
           break;
         }
-        
+
         this.abilities = allItems
           .filter(
             (e) =>
@@ -76,15 +77,12 @@ export class StaticTray extends AbilityTray {
 
         this.id = 'spell-' + this.spellLevel;
         break;
-      
+
       case 'pact':
         this.abilities = allItems
-          .filter(
-            (e) =>
-              e.system.preparation?.mode == 'pact'
-          )
+          .filter((e) => e.system.preparation?.mode == 'pact')
           .sort((a, b) => b.system.level - a.system.level);
-     
+
         this.id = 'pact';
         break;
 
@@ -106,10 +104,28 @@ export class StaticTray extends AbilityTray {
       category: 'bonus',
       actorUuid: actor.uuid,
     });
-    let classTray = new StaticTray({
-      category: 'classFeatures',
-      actorUuid: actor.uuid,
-    });
+
+    let customStaticTraysUUID = this.getCustomStaticTrays(actor);
+    let customStaticTrays = [];
+    if (customStaticTraysUUID) {
+      customStaticTraysUUID.forEach((e) => {
+        customStaticTrays.push(
+          new StaticTray({
+            category: 'customStaticTray',
+            actorUuid: actor.uuid,
+            keyItemUuid: e,
+          })
+        );
+      });
+    } else {
+      customStaticTrays = [];
+    }
+
+    // let classTray = new StaticTray({
+    //   category: 'classFeatures',
+    //   actorUuid: actor.uuid,
+    // });
+
     let spellTray = [];
 
     let slots = actor.system.spells;
@@ -142,35 +158,70 @@ export class StaticTray extends AbilityTray {
     });
 
     let pactTray = new StaticTray({
-       category: 'pact',
+      category: 'pact',
       actorUuid: actor.uuid,
       spellLevel: actor.system.spells.pact.level,
       totalSlots: actor.system.spells.pact.max,
-      availableSlots: actor.system.spells.pact.value
-    })
-
-
+      availableSlots: actor.system.spells.pact.value,
+    });
 
     let ritualTray = new StaticTray({
       category: 'ritual',
       actorUuid: actor.uuid,
       spellLevel: actor.system.spells.pact.level,
-      
     });
 
     this.staticTrays = [
       actionTray,
       bonusTray,
-      classTray,
+      ...customStaticTrays,
       ...spellTray,
       pactTray,
       ritualTray,
     ];
 
-    this.staticTrays = this.staticTrays.filter((e) => ((e.abilities)  && e.abilities.length > 0))
-    this.staticTrays.forEach((e) => {e.abilities = AbilityTray.padArray(e.abilities, 20)})
+    this.staticTrays = this.staticTrays.filter(
+      (e) => e.abilities && e.abilities.length > 0
+    );
+    this.staticTrays.forEach((e) => {
+      e.abilities = AbilityTray.padArray(e.abilities, 20);
+    });
 
     return this.staticTrays;
+  }
+
+  static setCustomStaticTray(itemUuid, actor) {
+    if (actor != null) {
+      let data = actor.getFlag('auto-action-tray', 'data');
+    if (data) {
+      if (data.customStaticTrays != null) {
+        data = JSON.parse(data.customStaticTrays.trays);
+      } else { 
+        data=[]
+      }
+    }
+     
+      let temparr = [...new Set([...data, itemUuid])];
+      actor.setFlag('auto-action-tray', 'data', {
+        customStaticTrays: { trays: JSON.stringify(temparr) },
+      });
+    }
+    this.savedData = true;
+  }
+
+
+  static getCustomStaticTrays(actor) {
+    let data = actor.getFlag('auto-action-tray', 'data');
+    
+  
+    if(data != undefined && data.customStaticTrays != undefined) {
+      this.customStaticTrays = JSON.parse(data.customStaticTrays.trays);
+      this.savedData = true;
+      return this.customStaticTrays;
+    } else { 
+      return [];
+    }
+    
   }
 
   getAbilities() {

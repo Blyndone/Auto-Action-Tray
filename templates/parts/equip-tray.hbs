@@ -1,6 +1,15 @@
+{{#if itemSelectorEnabled}}
+  <div
+    class='transparent-box ability-selection-input'
+    style='position: absolute; '
+    data-drag='true'
+    data-index='abilitySelection'
+  ></div>
+{{/if}}
 {{#if equipmentTray.meleeWeapon}}
   <img
     data-item-id='{{equipmentTray.meleeWeapon._id}}'
+    data-drag='true'
     data-action='useItem'
     data-index='meleeWeapon'
     src='{{equipmentTray.meleeWeapon.img}}'

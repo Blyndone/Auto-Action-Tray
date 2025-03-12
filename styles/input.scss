@@ -125,12 +125,14 @@ $tray-button-background: rgb(97, 97, 95);
   color: rgb(179, 99, 1);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
+  font-size: 16px;
 }
 
 .icon-bonus {
   color: darkgreen;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
+  font-size: 16px;
 }
 
 .icon-slot {
@@ -166,6 +168,14 @@ $tray-button-background: rgb(97, 97, 95);
   text-shadow: 0 0 8px rgba(255, 170, 0, 0.8);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
+}
+
+.icon-custom {
+  color: #eb0a0a;
+  text-shadow: 0 0 8px rgba(230, 80, 80, 0.8);
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+  margin: 3px;
+  font-size: 18px;
 }
 
 /* Base styles for the cancel icon */
@@ -251,7 +261,7 @@ $tray-button-background: rgb(97, 97, 95);
 .equipment-misc-tray-container {
   @include main-tray-height;
   @include center;
-
+  position: relative;
   flex-direction: column;
   width: $total-item-width * 2 + $main-tray-padding * 2;
   margin: 5px;
@@ -278,6 +288,19 @@ $tray-button-background: rgb(97, 97, 95);
   align-items: flex-start;
   padding: $main-tray-padding;
   gap: 2px;
+}
+
+.ability-selection-input {
+  @include inset-tray;
+  position: absolute;
+  width: $total-item-width * $item-tray-item-width-count;
+  height: $total-item-height * $item-tray-item-height-count;
+  left: 50%;
+  bottom: 104%;
+  transform: translateX(-50%);
+  border: 3px solid #c9593f;
+  outline: 3px solid #c9593f;
+  box-shadow: (0 0 8px #c9593f), (0 0 8px #c9593f), (0 0 8px #c9593f);
 }
 
 @mixin button-style {

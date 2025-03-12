@@ -70,12 +70,14 @@
   color: rgb(179, 99, 1);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
+  font-size: 16px;
 }
 
 .icon-bonus {
   color: darkgreen;
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
+  font-size: 16px;
 }
 
 .icon-slot {
@@ -111,6 +113,14 @@
   text-shadow: 0 0 8px rgba(255, 170, 0, 0.8);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
+}
+
+.icon-custom {
+  color: #eb0a0a;
+  text-shadow: 0 0 8px rgba(230, 80, 80, 0.8);
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+  margin: 3px;
+  font-size: 18px;
 }
 
 /* Base styles for the cancel icon */
@@ -195,6 +205,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
   flex-direction: column;
   width: 160px;
   margin: 5px;
@@ -245,6 +256,23 @@
   align-items: flex-start;
   padding: 5px;
   gap: 2px;
+}
+
+.ability-selection-input {
+  background: #5b5b5b;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  border: 2px solid #2f2f2f;
+  border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  position: absolute;
+  width: 750px;
+  height: 150px;
+  left: 50%;
+  bottom: 104%;
+  transform: translateX(-50%);
+  border: 3px solid #c9593f;
+  outline: 3px solid #c9593f;
+  box-shadow: 0 0 8px #c9593f, 0 0 8px #c9593f, 0 0 8px #c9593f;
 }
 
 .small-button {
