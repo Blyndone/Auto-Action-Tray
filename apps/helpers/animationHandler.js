@@ -53,7 +53,7 @@ export class AnimationHandler {
   }
 
   static setCircle(value) {
-    let baseColor = value == 100 ? "#408c00" : "#9600d1";
+    let baseColor = value == 100 ? "#007f8c" : "#9600d1";
     let glowpx = value == 100 ? 8 : 4;
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
       baseColor,
@@ -75,7 +75,7 @@ export class AnimationHandler {
 
     // await hotbar.render({ parts: ["endTurn"] });
     // gsap.set(".circle-svg", { rotation: 90, transformOrigin: "50% 50%" });
-    let baseColor = end == 100 ? "#408c00" : "#9600d1";
+    let baseColor = end == 100 ? "#007f8c" : "#9600d1";
     let glowpx = end == 100 ? 8 : 4;
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
       baseColor,
