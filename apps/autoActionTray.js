@@ -93,6 +93,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (actor != this.actor) return;
     // if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
+    if (this.currentTray instanceof StaticTray) { 
+       this.staticTrays.find(e=> e.id == this.currentTray.id).active = true;
+    }
     this.render({ parts: ['centerTray'] });
   }
    _onControlToken = (event, controlled) => {
@@ -418,10 +421,14 @@ return}
   static useSkillSave(event, target) {
     let type = target.dataset.type;
     let skillsave = target.dataset.skill;
+    
+    
+    let skipDialog = (this.trayOptions['fastForward'])? {fastForward: true} : null;
+
     if (type == 'skill') {
-      this.actor.rollSkill(skillsave);
+      this.actor.rollSkill(skillsave, skipDialog);
     } else {
-      this.actor.rollAbilitySave(skillsave);
+      this.actor.rollAbilitySave(skillsave, skipDialog);
     }
   }
   static selectWeapon(event, target) {
