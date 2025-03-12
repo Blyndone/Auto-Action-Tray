@@ -1,13 +1,4 @@
-<div class='auto-action-tray-container'>
-  <div class='main-tray-container'>
-    <div class='character-image-container'>{{> "AAT.character-tray" }}</div>
-
-    <div class='equipment-misc-tray-container'>
-      <div class='equipment-tray-container'> {{> "AAT.equip-tray" }}</div>
-      <div class='misc-tray-container'>{{> "AAT.utility-tray" }}</div>
-    </div>
-
-    <div class="center-tray-container">
+<div class="center-tray-container">
       <div class='static-tray-container'>{{> "AAT.static-tray" }}</div>
       <div class='ability-tray-container'>
         {{#each staticTrays as |tray|}}
@@ -32,10 +23,7 @@
         </div>
           {{/if}}
       </div>
+    
       <div class='custom-tray-container'>{{> "AAT.custom-tray" customTrays=customTrays}}</div>
+      
     </div>
-    {{!-- <div class='main-tray-controls-container'>{{> "AAT.tray-controls" }}</div> --}}
-    <div class='skill-tray-container'>{{> "AAT.skill-tray" }}</div>
-    <div class='end-turn-container'> {{> "AAT.turn-tray" }}</div>
-  </div>
-</div>

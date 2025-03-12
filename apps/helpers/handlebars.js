@@ -94,6 +94,12 @@ export function registerHandlebarsHelpers() {
     }
   });
 
+//  Handlebars.registerHelper('getCircleColor', function (tillNextTurn) {
+//   if (tillNextTurn === 0) return '#9600d1'; // Brighter purple  
+//   if (tillNextTurn === 1) return '#a000c9'; // Slightly different purple  
+//   return '#8500a0'; // Default stroke color  
+// });
+
 
 }
 

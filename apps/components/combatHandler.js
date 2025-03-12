@@ -1,3 +1,4 @@
+import { AnimationHandler } from "../helpers/animationHandler.js";
 export class CombatHandler {
   constructor(actor, hotbar) {
     this.actor;
@@ -9,6 +10,7 @@ export class CombatHandler {
     this.isNext = false;
     this.tillNextTurn = 0;
     this.hotbar = hotbar;
+    this.previousCircleValue = null;
     this.setCombat(actor);
   }
 
@@ -22,6 +24,11 @@ export class CombatHandler {
       this.combat = this.token.combatant.combat;
       this.combatantId = this.token.combatant.id;
       this.getInitPlacement();
+      let value = 100 * (1 - this.tillNextTurn / this.combat.turns.length);
+      this.previousCircleValue = value;
+      AnimationHandler.setCircle(value);
+    } else {
+      AnimationHandler.setCircle(0);
     }
   }
 
@@ -31,7 +38,13 @@ export class CombatHandler {
     }
 
     this.getInitPlacement();
-    this.hotbar.refresh();
+    // this.hotbar.refresh();
+    let start = this.previousCircleValue
+      ? this.previousCircleValue
+      : 100 * (1 - (this.tillNextTurn + 1) / this.combat.turns.length);
+    let end = 100 * (1 - this.tillNextTurn / this.combat.turns.length);
+    AnimationHandler.animateCircle(start, end, this);
+    this.previousCircleValue = end >= 100 ? 0 : end;
   }
 
   getInitPlacement() {

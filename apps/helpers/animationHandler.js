@@ -1,7 +1,5 @@
 export class AnimationHandler {
-  constructor() {
-    this.animations = [];
-  }
+  constructor() {}
   static findTray(trayId, hotbar) {
     return hotbar.getTray(trayId);
   }
@@ -19,7 +17,7 @@ export class AnimationHandler {
     tray2.active = true;
     hotbar.currentTray = tray1;
     hotbar.targetTray = tray2;
-    await hotbar.render(true);
+    await hotbar.render({ parts: ["centerTray"] });
     hotbar.animating = true;
 
     var tl = gsap.timeline();
@@ -54,66 +52,113 @@ export class AnimationHandler {
       );
   }
 
-  static async animateCircle(start, end, hotbar) {
-    await hotbar.render(true);
-    hotbar.animating = true;
+  static setCircle(value) {
+    let baseColor = value == 100 ? "#408c00" : "#9600d1";
+    let glowpx = value == 100 ? 8 : 4;
+    let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
+      baseColor,
+      value
+    )}) drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
+      baseColor,
+      value
+    )}) `;
+    gsap.set(".circle-svg", {
+      drawSVG: `0%
+          ${value}%`,
+      stroke: this.getAdjustedColor(baseColor, value),
+      filter: filter
+    });
+  }
 
-    gsap.set(".hp-circle", { rotation: 90, transformOrigin: "50% 50%" });
+  static async animateCircle(start, end, hotbar) {
+    // hotbar.animating = true;
+
+    // await hotbar.render({ parts: ["endTurn"] });
+    // gsap.set(".circle-svg", { rotation: 90, transformOrigin: "50% 50%" });
+    let baseColor = end == 100 ? "#408c00" : "#9600d1";
+    let glowpx = end == 100 ? 8 : 4;
+    let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
+      baseColor,
+      end
+    )}) drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(baseColor, end)}) `;
 
     gsap.fromTo(
-      ".hp-circle",
+      ".circle-svg",
       { drawSVG: `0% ${start}%` },
       {
         drawSVG: `0% ${end}%`,
-        duration: 10,
+        duration: 3,
         ease: "power4.out",
+        stroke: `${this.getAdjustedColor(baseColor, end)}`,
+        filter: filter,
+
         onComplete: () => {
-          hotbar.animating = false;
-          hotbar.refresh();
+          gsap.set(".circle-svg", {
+            drawSVG: `0%
+          ${end}%`
+          });
         }
       }
     );
   }
 
-  // static animateTray(tray, active) {
-  //   tray.active = true;
-  //   switch (true) {
-  //     case tray == ".static-tray" || tray.type == "static":
-  //       gsap.set(`.${tray.id}`, {
-  //         opacity: active ? 0 : 1,
-  //         y: active ? -200 : 0
-  //       });
+  static getAdjustedColor(baseColor, percentage) {
+    // Convert HEX to HSL for easier brightness manipulation
+    function hexToHSL(hex) {
+      let r = parseInt(hex.substring(1, 3), 16) / 255;
+      let g = parseInt(hex.substring(3, 5), 16) / 255;
+      let b = parseInt(hex.substring(5, 7), 16) / 255;
 
-  //       gsap.to(`.${tray.id}`, {
-  //         opacity: active ? 1 : 0,
-  //         y: active ? 0 : -200,
-  //         duration: 1,
-  //         onStart: () => {
-  //           this.animating = true;
-  //         },
-  //         onComplete: () => {
-  //           this.animating = false;
-  //           tray.active = active;
-  //           this.refresh();
-  //         }
-  //       });
-  //       break;
+      let max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+      let h,
+        s,
+        l = (max + min) / 2;
 
-  //     case tray == ".custom-tray" || tray.type == "custom":
-  //       gsap.to(".custom-tray", {
-  //         opacity: active ? 1 : 0,
-  //         x: active ? 0 : 1000,
-  //         duration: 1,
-  //         onStart: () => {
-  //           this.animating = true;
-  //         },
-  //         onComplete: () => {
-  //           this.animating = false;
-  //           tray.active = false;
-  //           this.refresh();
-  //         }
-  //       });
-  //       break;
-  //   }
-  // }
+      if (max === min) {
+        h = s = 0; // Grayscale
+      } else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r:
+            h = (g - b) / d + (g < b ? 6 : 0);
+            break;
+          case g:
+            h = (b - r) / d + 2;
+            break;
+          case b:
+            h = (r - g) / d + 4;
+            break;
+        }
+        h *= 60;
+      }
+      return { h, s, l };
+    }
+
+    function hslToHex(h, s, l) {
+      function f(n) {
+        let k = (n + h / 30) % 12;
+        let a = s * Math.min(l, 1 - l);
+        let color = l - a * Math.max(-1, Math.min(k - 3, Math.min(9 - k, 1)));
+        return Math.round(255 * color).toString(16).padStart(2, "0");
+      }
+      return `#${f(0)}${f(8)}${f(4)}`;
+    }
+
+    let hsl = hexToHSL(baseColor);
+
+    // Limit the range of lightness modification (between 0.2 and 0.8) for more subtle changes
+    let minLightness = 0.4;
+    let maxLightness = 0.9;
+
+    // Adjust lightness based on percentage, without going to extremes (black or white)
+    let lightnessFactor = percentage / 100; // Scale percentage to a factor
+    let newLightness = hsl.l + (lightnessFactor - 0.5) * 0.6; // Adjust between -0.3 and +0.3
+
+    // Keep lightness in the range of 0.2 to 0.8 (avoiding too dark or too bright)
+    newLightness = Math.max(minLightness, Math.min(maxLightness, newLightness));
+
+    return hslToHex(hsl.h, hsl.s, newLightness);
+  }
 }

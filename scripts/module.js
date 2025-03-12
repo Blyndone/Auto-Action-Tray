@@ -53,7 +53,9 @@ Hooks.once("ready", async function() {
     /** Creates a select dropdown */
   });
   if (game.settings.get("auto-action-tray", "enable")) {
-    let hotbar = new AutoActionTray();
+    let hotbar = new AutoActionTray({
+      id: "auto-action-tray"
+    });
     hotbar.render(true);
   }
 });
