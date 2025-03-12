@@ -6,9 +6,11 @@ import { StaticTray } from './components/staticTray.js';
 import { ActivityTray } from './components/activityTray.js';
 import { EquipmentTray } from './components/equipmentTray.js';
 import { SkillTray } from './components/skillTray.js';
+import { CombatHandler } from './components/combatHandler.js';
 import { registerHandlebarsHelpers } from './helpers/handlebars.js';
 import { AnimationHandler } from './helpers/animationHandler.js';
 import { DragDropHandler } from './helpers/dragDropHandler.js';
+import { DrawSVGPlugin } from "/scripts/greensock/esm/all.js";
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(
   ApplicationV2
@@ -16,6 +18,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   // Constructor
 
   constructor(options = {}) {
+    gsap.registerPlugin(DrawSVGPlugin)
     super(options);
 
     this.animating = false;
@@ -38,6 +41,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.activityTray = null;
     this.equipmentTray = null;
     this.skillTray = null;
+    this.skillTray = null;
     this.trayInformation = '';
     this.trayOptions = {
       locked: false,
@@ -45,8 +49,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       currentTray: 'common',
       fastForward: true,
     };
+    this.styleSheet;
+    for (let sheet of document.styleSheets) {
+      if (
+        sheet.href &&
+        sheet.href.includes('auto-action-tray/styles/styles.css')
+      ) {
+        this.styleSheet = sheet;
 
-    Hooks.on('controlToken', this._onControlToken);
+        break;
+      }
+    }
+
+    Hooks.on('controlToken', this._onControlToken.bind(this));
     Hooks.on('updateActor', this._onUpdateActor.bind(this));
     Hooks.on('updateItem', this._onUpdateItem.bind(this));
     Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data));
@@ -56,7 +71,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     Hooks.on('dnd5e.endConcentration', (actor) => {
       if (actor == this.actor) this.render(true);
     });
-
+    Hooks.on('updateCombat', this._onUpdateCombat.bind(this));
     ui.hotbar.collapse();
     registerHandlebarsHelpers();
   }
@@ -75,6 +90,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.refresh();
   }
   _onControlToken = (event, controlled) => {
+    
     if (event == null || controlled == false) {
       return;
     }
@@ -95,6 +111,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
       this.rangedWeapon = this.equipmentTray.getRangedWeapon();
       this.skillTray = SkillTray.generateCustomTrays(this.actor);
+      this.combatHandler = new CombatHandler(this.actor, this);
       let config = this.getTrayConfig();
       if (config) {
         this.trayOptions = Object.assign({}, this.trayOptions, config);
@@ -106,7 +123,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         };
       }
     }
+
     this.refresh();
+    AnimationHandler.animateCircle(0, 100, this);
+  };
+
+  _onUpdateCombat = (event) => {
+    if (this.combatHandler == null) return;
+    this.combatHandler.updateCombat(this.actor, event);
   };
 
   refresh = () => {
@@ -150,6 +174,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       template: 'modules/auto-action-tray/templates/auto-action-tray.hbs',
       id: 'tray',
     },
+    test: {
+      template: 'modules/auto-action-tray/templates/parts/turn-tray.hbs',
+      id: 'test',
+    },
   };
 
   static async myFormHandler(event, form, formData) {}
@@ -173,6 +201,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       trayOptions: this.trayOptions,
       trayInformation: this.trayInformation,
       activityTray: this.activityTray,
+      combatHandler: this.combatHandler,
     };
 
     return context;

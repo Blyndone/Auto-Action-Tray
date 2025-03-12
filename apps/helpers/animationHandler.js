@@ -54,6 +54,27 @@ export class AnimationHandler {
       );
   }
 
+  static async animateCircle(start, end, hotbar) {
+    await hotbar.render(true);
+    hotbar.animating = true;
+
+    gsap.set(".hp-circle", { rotation: 90, transformOrigin: "50% 50%" });
+
+    gsap.fromTo(
+      ".hp-circle",
+      { drawSVG: `0% ${start}%` },
+      {
+        drawSVG: `0% ${end}%`,
+        duration: 10,
+        ease: "power4.out",
+        onComplete: () => {
+          hotbar.animating = false;
+          hotbar.refresh();
+        }
+      }
+    );
+  }
+
   // static animateTray(tray, active) {
   //   tray.active = true;
   //   switch (true) {

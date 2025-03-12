@@ -727,3 +727,17 @@ $tray-button-background: rgb(97, 97, 95);
   border: 10px, #333;
   margin: 10px;
 }
+
+.circle-chart__circle {
+  animation: circle-chart-fill 2s reverse;
+  transform: rotate(90deg);
+  transform-origin: center;
+  height: 130px;
+  width: 130px;
+}
+
+@keyframes circle-chart-fill {
+  to {
+    stroke-dasharray: 0 100;
+  }
+}
