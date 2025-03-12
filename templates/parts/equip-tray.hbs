@@ -1,24 +1,20 @@
-{{#if equipmentTray.meleeWeapon}}
-  <img
-    data-item-id='{{equipmentTray.meleeWeapon._id}}'
-    data-action='useItem'
-    data-index='meleeWeapon'
+<button
+  class='item-button'
+  data-drag='true'
+  data-item-id='{{equipmentTray.meleeWeapon._id}}'
+  data-action='useItem'
+  data-index='meleeWeapon'
+><img
     src='{{equipmentTray.meleeWeapon.img}}'
     alt='{{equipmentTray.meleeWeapon.name}}'
-  />
-{{else}}
-  <div class='transparent-box' data-drag='true' data-index='meleeWeapon'></div>
-{{/if}}
-{{#if equipmentTray.rangedWeapon}}
-  <img
-    class='item-button'
-    data-drag='true'
-    data-item-id='{{equipmentTray.rangedWeapon._id}}'
-    data-action='useItem'
-    data-index='rangedWeapon'
+  /></button>
+<button
+  class='item-button'
+  data-drag='true'
+  data-item-id='{{equipmentTray.rangedWeapon._id}}'
+  data-action='useItem'
+  data-index='rangedWeapon'
+><img
     src='{{equipmentTray.rangedWeapon.img}}'
     alt='{{equipmentTray.rangedWeapon.name}}'
-  />
-{{else}}
-  <div class='transparent-box' data-drag='true' data-index='rangedWeapon'></div>
-{{/if}}
+  /></button>

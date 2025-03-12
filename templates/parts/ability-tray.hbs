@@ -1,0 +1,40 @@
+<div class="ability-sections">
+ 
+    <div style = "width: {{section1Px}}px">
+  <ol>
+    {{#each abilities as |item|}}
+        {{#indexRange '0' @index @root.section1Total }}
+      {{> AAT.item item=item index=@index  }}
+        {{/indexRange}}
+    {{/each}}
+  </ol>
+    </div>
+
+
+    <div class="divider" data-drag="true"></div>
+
+
+        <div style = "width: {{section2Px}}px">
+  <ol>
+    {{#each abilities as |item|}}
+        {{#indexRange @root.section1End @index @root.section2End}}
+      {{> AAT.item item=item index=@index  }}
+ {{/indexRange}}
+    {{/each}}
+  </ol>
+    </div>
+
+
+    <div class="divider" data-drag="true"></div>
+
+
+        <div style = "width: {{section3Px}}px">
+  <ol>
+    {{#each abilities as |item|}}
+         {{#indexRange @root.section2End @index @root.section3End}}
+      {{> AAT.item item=item index=@index  }}
+ {{/indexRange}}
+    {{/each}}
+  </ol>
+    </div>
+</div>
