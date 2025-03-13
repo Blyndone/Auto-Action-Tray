@@ -48,6 +48,10 @@ export class CustomTray extends AbilityTray {
         this.abilities = allItems.filter((e) => e.type === 'consumable');
         this.id = 'items';
         break;
+      case 'passive':
+        this.abilities = actor.items.filter((e) => e.system?.activities?.size < 1)
+        this.id = 'passive';
+        break;
       case 'custom':
         this.id = 'custom';
         break;
@@ -169,13 +173,18 @@ export class CustomTray extends AbilityTray {
       id: 'items',
       actorUuid: actor.uuid,
     });
+    let passiveTray = new CustomTray({
+      category: 'passive',
+      id: 'passive',
+      actorUuid: actor.uuid,
+    });
 
     let customTray = new CustomTray({
       category: 'custom',
       id: 'custom',
       actorUuid: actor.uuid,
     });
-let trays = [commonTray, classTray, consumablesTray, customTray];
+let trays = [commonTray, classTray, consumablesTray, passiveTray, customTray];
       if (actor.type === 'npc') {
       trays = trays.filter(e => (e.abilities.some(e => e!= null)))
      

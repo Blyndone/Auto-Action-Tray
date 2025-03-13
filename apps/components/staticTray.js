@@ -168,7 +168,7 @@ export class StaticTray extends AbilityTray {
     let ritualTray = new StaticTray({
       category: 'ritual',
       actorUuid: actor.uuid,
-      spellLevel: actor.system.spells.pact.level,
+
     });
 
     this.staticTrays = [

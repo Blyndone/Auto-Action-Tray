@@ -177,7 +177,7 @@ export class DamageCalc {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     }
 
-    staticCheckMultiHit() { 
+    static CheckMultiHit() { 
         let items = [
     "Eldritch Blast",
     "Magic Missile",

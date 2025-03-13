@@ -178,6 +178,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       openSheet: AutoActionTray.openSheet,
       selectWeapon: AutoActionTray.selectWeapon,
       useItem: AutoActionTray.useItem,
+      viewItem: AutoActionTray.viewItem,
       setTray: AutoActionTray.setTray,
       endTurn: AutoActionTray.endTurn,
       useSkillSave: AutoActionTray.useSkillSave,
@@ -451,6 +452,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.actor.rollAbilitySave(skillsave, skipDialog);
     }
   }
+
+  static viewItem(event, target) {
+    let itemId = target.dataset.itemId;
+    let item = this.actor.items.get(itemId);
+    item.sheet.render(true);
+  }
+
   static selectWeapon(event, target) {
     if (target.classList.contains('selected')) {
       target.classList.remove('selected');

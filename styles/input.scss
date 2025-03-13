@@ -426,6 +426,12 @@ $tray-button-background: rgb(97, 97, 95);
   }
 }
 
+.ability-button-passive img {
+  border-radius: 50%;
+  @include center;
+  border: 2px solid #2c2d2e;
+  box-shadow: 0 0 2px #0d0d12;
+}
 .activity-button {
   position: relative;
   border: 2px solid #00aaff;
@@ -632,6 +638,7 @@ $tray-button-background: rgb(97, 97, 95);
 
 .transparent-box {
   @include item;
+  @include center;
 }
 .tooltip-container {
   background: #2c1f12;

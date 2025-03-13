@@ -452,6 +452,15 @@
   margin: 5px;
 }
 
+.ability-button-passive img {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #2c2d2e;
+  box-shadow: 0 0 2px #0d0d12;
+}
+
 .activity-button {
   position: relative;
   border: 2px solid #00aaff;
@@ -699,6 +708,9 @@
   vertical-align: middle;
   align-self: center;
   margin: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .tooltip-container {
