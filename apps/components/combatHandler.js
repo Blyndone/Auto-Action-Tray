@@ -3,7 +3,7 @@ export class CombatHandler {
   constructor(actor, hotbar) {
     this.actor;
     this.token;
-    this.combatantId;
+    this.combatantId = null;
     this.inCombat;
     this.combat;
     this.isTurn = false;
@@ -29,6 +29,7 @@ export class CombatHandler {
       await this.hotbar.render({ parts: ["endTurn"] });
       AnimationHandler.setCircle(value);
     } else {
+      await this.hotbar.render({ parts: ["endTurn"] });
       AnimationHandler.setCircle(0);
     }
   }

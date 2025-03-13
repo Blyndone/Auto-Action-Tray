@@ -157,6 +157,19 @@
   pointer-events: none;
 }
 
+.static-item-uses {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20%);
+  padding: 5px 10px;
+  font-size: 16px;
+  color: white;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  pointer-events: none;
+}
+
 .character-image-container {
   display: flex;
   justify-content: center;

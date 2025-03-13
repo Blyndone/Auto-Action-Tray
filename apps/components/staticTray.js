@@ -1,15 +1,13 @@
 import { AbilityTray } from './abilityTray.js';
+import { CustomStaticTray } from './customStaticTray.js';
 
 export class StaticTray extends AbilityTray {
   constructor(options = {}) {
     super(options);
     this.category = options.category;
-    this.classResource = options.classResource;
     this.spellLevel = options.spellLevel;
-    this.customStaticTrays = [options.customStaticTrays] ;
     this.totalSlots = options.totalSlots;
     this.availableSlots = options.availableSlots;
-    this.keyItemUuid = options.keyItemUuid;
     this.type = 'static';
     this.active = false;
     this.generateTray();
@@ -105,12 +103,12 @@ export class StaticTray extends AbilityTray {
       actorUuid: actor.uuid,
     });
 
-    let customStaticTraysUUID = this.getCustomStaticTrays(actor);
+    let customStaticTraysUUID = CustomStaticTray.getCustomStaticTrays(actor);
     let customStaticTrays = [];
     if (customStaticTraysUUID) {
       customStaticTraysUUID.forEach((e) => {
         customStaticTrays.push(
-          new StaticTray({
+          new CustomStaticTray({
             category: 'customStaticTray',
             actorUuid: actor.uuid,
             keyItemUuid: e,
@@ -121,10 +119,6 @@ export class StaticTray extends AbilityTray {
       customStaticTrays = [];
     }
 
-    // let classTray = new StaticTray({
-    //   category: 'classFeatures',
-    //   actorUuid: actor.uuid,
-    // });
 
     let spellTray = [];
 
@@ -171,7 +165,7 @@ export class StaticTray extends AbilityTray {
 
     });
 
-    this.staticTrays = [
+    let staticTrays = [
       actionTray,
       bonusTray,
       ...customStaticTrays,
@@ -180,48 +174,14 @@ export class StaticTray extends AbilityTray {
       ritualTray,
     ];
 
-    this.staticTrays = this.staticTrays.filter(
+    staticTrays = staticTrays.filter(
       (e) => e.abilities && e.abilities.length > 0
     );
-    this.staticTrays.forEach((e) => {
+    staticTrays.forEach((e) => {
       e.abilities = AbilityTray.padArray(e.abilities, 20);
     });
 
-    return this.staticTrays;
-  }
-
-  static setCustomStaticTray(itemUuid, actor) {
-    if (actor != null) {
-      let data = actor.getFlag('auto-action-tray', 'data');
-    if (data) {
-      if (data.customStaticTrays != null) {
-        data = JSON.parse(data.customStaticTrays.trays);
-      } else { 
-        data=[]
-      }
-    }
-     
-      let temparr = [...new Set([...data, itemUuid])];
-      actor.setFlag('auto-action-tray', 'data', {
-        customStaticTrays: { trays: JSON.stringify(temparr) },
-      });
-    }
-    this.savedData = true;
-  }
-
-
-  static getCustomStaticTrays(actor) {
-    let data = actor.getFlag('auto-action-tray', 'data');
-    
-  
-    if(data != undefined && data.customStaticTrays != undefined) {
-      this.customStaticTrays = JSON.parse(data.customStaticTrays.trays);
-      this.savedData = true;
-      return this.customStaticTrays;
-    } else { 
-      return [];
-    }
-    
+    return staticTrays;
   }
 
   getAbilities() {

@@ -9,9 +9,14 @@
   static-tray-no-slots
   {{/if}}
   '
+
    data-id='{{this.id}}' data-action='setTray'
-    data-index={{@index}} data-type='static' {{#if tray.active}}{{/if}}>{{{getIcon tray}}}
+    data-index={{@index}} data-type='static'>{{{getIcon tray}}}
   </div>
   <div class='static-spell-level '>{{@root.spellLevel}}</div>
+  {{#if (eq tray.category 'customStaticTray')}}
+  <div class='static-item-uses'>{{tray.keyItemUses}}</div>
+  {{/if}}
+  
 </div>
 {{/each}}

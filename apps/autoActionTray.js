@@ -10,7 +10,7 @@ import { CombatHandler } from './components/combatHandler.js';
 import { registerHandlebarsHelpers } from './helpers/handlebars.js';
 import { AnimationHandler } from './helpers/animationHandler.js';
 import { DragDropHandler } from './helpers/dragDropHandler.js';
-import { DrawSVGPlugin } from '/scripts/greensock/esm/all.js';
+import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js';
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(
   ApplicationV2
@@ -20,7 +20,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin);
     super(options);
-
+    
+    this.debugtime = 0
+    
     this.animating = false;
     this.selectingActivity = false;
     this.animationDuration = 0.7;
@@ -84,24 +86,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   //#region Hooks
-  _onUpdateItem(item, change, options, userId) {
-    if (item.actor != this.actor) return;
-    this.staticTrays = StaticTray.generateStaticTrays(this.actor);
-    this.refresh();
-  }
-
-  _onUpdateActor(actor, change, options, userId) {
-    if (actor != this.actor) return;
-    // if (item.actor != this.actor) return;
-    this.staticTrays = StaticTray.generateStaticTrays(this.actor);
-    if (this.currentTray instanceof StaticTray) {
-      this.staticTrays.find((e) => e.id == this.currentTray.id).active = true;
-    }
-    this.render({ parts: ['centerTray'] });
-  }
   _onControlToken = (event, controlled) => {
     if (event == null || controlled == false) {
       return;
+    }
+    if (this.actor = event.actor && controlled == false) {
+      this.actor = null;
+      return
     }
     if (event.actor != this.actor || this.actor == event) {
       if (this.selectingActivity == true) {
@@ -110,7 +101,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         );
         this.activityTray.rejectActivity = null;
       }
-
+      
       this.actor = event.actor ? event.actor : event;
       this.staticTrays = StaticTray.generateStaticTrays(this.actor);
       this.customTrays = CustomTray.generateCustomTrays(this.actor);
@@ -132,7 +123,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           currentTray: 'common',
         };
       }
-
+      
       this.render({
         parts: [
           'characterImage',
@@ -143,6 +134,22 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       });
     }
   };
+  
+  _onUpdateItem(item, change, options, userId) {
+    if (item.actor != this.actor) return;
+    this.staticTrays = StaticTray.generateStaticTrays(this.actor);
+    this.refresh();
+  }
+
+  _onUpdateActor(actor, change, options, userId) {
+    if (actor != this.actor) return;
+    // if (item.actor != this.actor) return;
+    this.staticTrays = StaticTray.generateStaticTrays(this.actor);
+    if (this.currentTray instanceof StaticTray) {
+      this.staticTrays.find((e) => e.id == this.currentTray.id).active = true;
+    }
+    this.render({ parts: ['centerTray'] });
+  }
 
   _onUpdateCombat = (event) => {
     if (this.combatHandler == null || this.combatHandler.inCombat == false)
@@ -490,6 +497,22 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element));
+
+    console.log('rendered', Date.now() - this.debugtime, context, options['parts'], options);
+    this.debugtime = Date.now();
+
+
+    // Draggable.create('.abilities-tray', {
+    //   bounds: { minX: 0, maxX: 700 },
+    //   inertia: true,
+    //   type: 'x',
+    //   snap: {
+    //     x: function (value) {
+    //       //snap to the closest increment of 50.
+    //       return Math.round(value / 75) * 75+5;
+    //     },
+    //   },
+    // });
   }
 
   _canDragStart(selector) {

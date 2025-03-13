@@ -71,10 +71,6 @@ export class AnimationHandler {
   }
 
   static async animateCircle(start, end, hotbar) {
-    // hotbar.animating = true;
-
-    // await hotbar.render({ parts: ["endTurn"] });
-    // gsap.set(".circle-svg", { rotation: 90, transformOrigin: "50% 50%" });
     let baseColor = end == 100 ? "#007f8c" : "#9600d1";
     let glowpx = end == 100 ? 8 : 4;
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
