@@ -1,4 +1,5 @@
 import { StaticTray } from "../components/staticTray.js";
+import { CustomStaticTray } from "../components/customStaticTray.js";
 export class DragDropHandler {
   static _onDragStart(event, hotbar) {
     game.tooltip.deactivate();
@@ -72,7 +73,7 @@ export class DragDropHandler {
     }
     if (index == "abilitySelection") {
       let itemUuid = fromUuidSync(data.uuid).id;
-      StaticTray.setCustomStaticTray(itemUuid, hotbar.actor);
+      CustomStaticTray.setCustomStaticTray(itemUuid, hotbar.actor);
       hotbar.staticTrays = StaticTray.generateStaticTrays(hotbar.actor);
       hotbar.render({ parts: ["centerTray"] });
       return;

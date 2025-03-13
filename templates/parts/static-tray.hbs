@@ -8,10 +8,18 @@
   {{#if (eq tray.availableSlots 0)}}
   static-tray-no-slots
   {{/if}}
+  {{#if (eq tray.keyItemUses 0)}}
+  static-tray-no-slots
+  {{/if}}
   '
 
    data-id='{{this.id}}' data-action='setTray'
-    data-index={{@index}} data-type='static'>{{{getIcon tray}}}
+    data-index={{@index}} data-type='static'>
+    {{#if tray.icon}}
+    {{{tray.icon}}}
+    {{else}}
+    {{{getIcon tray}}}
+    {{/if}}
   </div>
   <div class='static-spell-level '>{{@root.spellLevel}}</div>
   {{#if (eq tray.category 'customStaticTray')}}

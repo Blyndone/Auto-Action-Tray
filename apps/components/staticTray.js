@@ -47,10 +47,10 @@ export class StaticTray extends AbilityTray {
               )
             )
           );
-       
-          this.id = 'customStaticTray'+ '-' + this.keyItemUuid;
+
+          this.id = 'customStaticTray' + '-' + this.keyItemUuid;
         }
-      
+
         break;
 
       case 'spell':
@@ -103,22 +103,21 @@ export class StaticTray extends AbilityTray {
       actorUuid: actor.uuid,
     });
 
-    let customStaticTraysUUID = CustomStaticTray.getCustomStaticTrays(actor);
-    let customStaticTrays = [];
-    if (customStaticTraysUUID) {
-      customStaticTraysUUID.forEach((e) => {
-        customStaticTrays.push(
-          new CustomStaticTray({
-            category: 'customStaticTray',
-            actorUuid: actor.uuid,
-            keyItemUuid: e,
-          })
-        );
-      });
-    } else {
-      customStaticTrays = [];
-    }
 
+    let customStaticTraysUuids = new Set([
+      ...CustomStaticTray.getCustomStaticTrays(actor),
+      ...actor.items.filter(CustomStaticTray.checkOverride).map((e) => e.id),
+    ]);
+
+    let customStaticTrays = Array.from(
+      customStaticTraysUuids,
+      (e) =>
+        new CustomStaticTray({
+          category: 'customStaticTray',
+          actorUuid: actor.uuid,
+          keyItemUuid: e,
+        })
+    );
 
     let spellTray = [];
 
@@ -162,7 +161,6 @@ export class StaticTray extends AbilityTray {
     let ritualTray = new StaticTray({
       category: 'ritual',
       actorUuid: actor.uuid,
-
     });
 
     let staticTrays = [

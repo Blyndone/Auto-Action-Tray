@@ -3,6 +3,7 @@ const { api, sheets } = foundry.applications;
 import { AbilityTray } from './components/abilityTray.js';
 import { CustomTray } from './components/customTray.js';
 import { StaticTray } from './components/staticTray.js';
+import { CustomStaticTray } from './components/customStaticTray.js';
 import { ActivityTray } from './components/activityTray.js';
 import { EquipmentTray } from './components/equipmentTray.js';
 import { SkillTray } from './components/skillTray.js';
