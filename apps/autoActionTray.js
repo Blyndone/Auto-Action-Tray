@@ -11,7 +11,13 @@ import { CombatHandler } from './components/combatHandler.js';
 import { registerHandlebarsHelpers } from './helpers/handlebars.js';
 import { AnimationHandler } from './helpers/animationHandler.js';
 import { DragDropHandler } from './helpers/dragDropHandler.js';
-import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js';
+import { TargetHelper } from './helpers/targetHelper.js';
+import {
+  DrawSVGPlugin,
+  Draggable,
+  MotionPathPlugin,
+} from '/scripts/greensock/esm/all.js';
+
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(
   ApplicationV2
@@ -21,9 +27,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin);
     super(options);
-    
-    this.debugtime = 0
-    
+
+    this.debugtime = 0;
+
     this.animating = false;
     this.selectingActivity = false;
     this.animationDuration = 0.7;
@@ -91,9 +97,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (event == null || controlled == false) {
       return;
     }
-    if (this.actor = event.actor && controlled == false) {
+    if ((this.actor = event.actor && controlled == false)) {
       this.actor = null;
-      return
+      return;
     }
     if (event.actor != this.actor || this.actor == event) {
       if (this.selectingActivity == true) {
@@ -102,7 +108,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         );
         this.activityTray.rejectActivity = null;
       }
-      
+
       this.actor = event.actor ? event.actor : event;
       this.staticTrays = StaticTray.generateStaticTrays(this.actor);
       this.customTrays = CustomTray.generateCustomTrays(this.actor);
@@ -124,7 +130,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           currentTray: 'common',
         };
       }
-      
+
       this.render({
         parts: [
           'characterImage',
@@ -135,7 +141,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       });
     }
   };
-  
+
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
@@ -362,6 +368,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   static async endTurn(event, target) {
+    TargetHelper.makeTargetLine("Zaren");
+
+
+
     if (this.combatHandler == null) return;
     if (
       (this.combatHandler.combat.current.combatantId =
@@ -499,9 +509,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element));
 
-    console.log('rendered', Date.now() - this.debugtime, context, options['parts'], options);
-    this.debugtime = Date.now();
-
+    console.log(
+      'rendered',
+      Date.now() - this.debugtime,
+      context,
+      options['parts'],
+      options
+    );
 
     // Draggable.create('.abilities-tray', {
     //   bounds: { minX: 0, maxX: 700 },
