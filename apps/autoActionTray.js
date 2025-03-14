@@ -12,6 +12,7 @@ import { registerHandlebarsHelpers } from './helpers/handlebars.js';
 import { AnimationHandler } from './helpers/animationHandler.js';
 import { DragDropHandler } from './helpers/dragDropHandler.js';
 import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js';
+import gsap from '../foundry/greensock/esm/gsap-core.js';
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(
   ApplicationV2
@@ -21,9 +22,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin);
     super(options);
-    
-    this.debugtime = 0
-    
+
+    this.debugtime = 0;
+
     this.animating = false;
     this.selectingActivity = false;
     this.animationDuration = 0.7;
@@ -91,9 +92,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (event == null || controlled == false) {
       return;
     }
-    if (this.actor = event.actor && controlled == false) {
+    if ((this.actor = event.actor && controlled == false)) {
       this.actor = null;
-      return
+      return;
     }
     if (event.actor != this.actor || this.actor == event) {
       if (this.selectingActivity == true) {
@@ -102,7 +103,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         );
         this.activityTray.rejectActivity = null;
       }
-      
+
       this.actor = event.actor ? event.actor : event;
       this.staticTrays = StaticTray.generateStaticTrays(this.actor);
       this.customTrays = CustomTray.generateCustomTrays(this.actor);
@@ -124,7 +125,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           currentTray: 'common',
         };
       }
-      
+
       this.render({
         parts: [
           'characterImage',
@@ -135,7 +136,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       });
     }
   };
-  
+
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
@@ -362,6 +363,118 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   static async endTurn(event, target) {
+    let actor = game.actors.getName('Zeran').getActiveTokens()[0];
+    let pos;
+    let offset, offset2;
+
+    console.log(pos);
+
+    let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', window.innerWidth);
+    svg.setAttribute('height', window.innerHeight);
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.pointerEvents = 'none';
+    document.body.appendChild(svg);
+
+    // Create the mask element
+    let mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+    mask.setAttribute('id', 'mask');
+    mask.setAttribute('x', 0);
+    mask.setAttribute('y', 0);
+    mask.setAttribute('width', '100%');
+    mask.setAttribute('height', '100%');
+
+    // Create the outer transparent area for the mask (edges visible)
+    let outerRect = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'rect'
+    );
+    outerRect.setAttribute('x', 0);
+    outerRect.setAttribute('y', 0);
+    outerRect.setAttribute('width', '100%');
+    outerRect.setAttribute('height', '100%');
+    outerRect.setAttribute('fill', 'white');
+    // Create the outer transparent area for the mask (edges visible)
+    
+    const outerRect2 = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'rect'
+    );
+    outerRect2.setAttribute('id', 'outerRect2');
+    outerRect2.setAttribute('x', 0);
+    outerRect2.setAttribute('y', 0);
+    outerRect2.setAttribute('width', 100);
+    outerRect2.setAttribute('height', 100);
+    outerRect2.setAttribute('fill', 'black'); // This will hide the center
+    outerRect2.setAttribute('filter', 'blur(20px)'); 
+
+    mask.appendChild(outerRect);
+    mask.appendChild(outerRect2);
+
+    // Create the path element
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('stroke', 'black');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('fill', 'transparent');
+    path.setAttribute(
+      'filter',
+      'drop-shadow(0px 3px 3px rgba(0, 255, 255, 1))'
+    );
+    path.setAttribute('mask', 'url(#mask)');
+
+    svg.appendChild(path);
+    svg.appendChild(mask);
+
+    // Set the initial path using a cubic Bezier curve and absolute endpoint
+    gsap.set(path, {
+      attr: {
+        d: 'M 0 0 C 400 -200 600 -200  1000 0', // Initial cubic Bezier path
+      },
+    });
+
+    // Use mousemove event to dynamically update the path
+    window.addEventListener('mousemove', (event) => {
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      pos = game.canvas.clientCoordinatesFromCanvas({
+        x: actor.position.x + 50,
+        y: actor.position.y + 50,
+      });
+
+      let size = game.canvas.clientCoordinatesFromCanvas({x: 100, y: 100});
+
+      const offset1 = {
+        x: (pos.x + mouseX + 50) / 2,
+        y: (pos.y + mouseY + 50) / 2 - 150,
+      };
+
+      const offset2 = {
+        x: (pos.x + mouseX + 50) / 2,
+        y: (pos.y + mouseY + 50) / 2 - 150,
+      };
+
+      // Path data with cubic Bézier curve and smoother offsets
+      const pathData = `M ${pos.x} ${pos.y} C ${offset1.x} ${offset1.y} ${offset2.x} ${offset2.y} ${mouseX} ${mouseY}`;
+
+      gsap.set('#outerRect2', {
+        attr: {
+          x: pos.x-50, 
+          y: pos.y - 50,
+          width: 200,
+          height: 200,
+        },
+      });
+
+      gsap.to(path, {
+        duration: 0.1, // Smooth transition to new path
+        attr: {
+          d: pathData,
+        },
+      });
+    });
+
     if (this.combatHandler == null) return;
     if (
       (this.combatHandler.combat.current.combatantId =
@@ -499,9 +612,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element));
 
-    console.log('rendered', Date.now() - this.debugtime, context, options['parts'], options);
+    console.log(
+      'rendered',
+      Date.now() - this.debugtime,
+      context,
+      options['parts'],
+      options
+    );
     this.debugtime = Date.now();
-
 
     // Draggable.create('.abilities-tray', {
     //   bounds: { minX: 0, maxX: 700 },
