@@ -95,11 +95,14 @@ export class TargetHelper {
     canvas.layers[3].addChild(graphics);
 
     function onMouseMove(event) {
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-      let startX = actor.position.x + actor.shape.width / 2;
-      let startY = actor.position.y + actor.shape.height / 2;
-      drawCurvedLineWithAlpha(startX, startY, mouseX, mouseY);
+      window.requestAnimationFrame(() => {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        let startX = actor.position.x + actor.shape.width / 2;
+        let startY = actor.position.y + actor.shape.height / 2;
+        console.log(startX, startY, mouseX, mouseY);
+        drawCurvedLineWithAlpha(startX, startY, mouseX, mouseY);
+      });
     }
     window.addEventListener("mousemove", onMouseMove);
 
