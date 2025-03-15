@@ -51,6 +51,64 @@ Hooks.once("ready", async function() {
     requiresReload: true // true if you want to prompt the user to reload
     /** Creates a select dropdown */
   });
+
+  game.settings.register("auto-action-tray", "rowCount", {
+    name: "Number of Rows",
+    hint: "Select Number of Rows",
+    scope: "client", // "world" = sync to db, "client" = local storage
+    config: true, // false if you dont want it to show in module config
+
+    type: Number,
+    default: 2,
+
+    choices: {
+      2: "2 Rows",
+      3: "3 Rows",
+      4: "4 Rows"
+    },
+
+    requiresReload: true // true if you want to prompt the user to reload
+    /** Creates a select dropdown */
+  });
+
+  game.settings.register("auto-action-tray", "columnCount", {
+    name: "Number of Columns",
+    hint: "Select Number of Columns",
+    scope: "client", // "world" = sync to db, "client" = local storage
+    config: true, // false if you dont want it to show in module config
+
+    type: Number,
+    default: 10,
+
+    choices: {
+      10: "10 Columns",
+      15: "15 Columns",
+      20: "20 Columns"
+    },
+
+    requiresReload: true // true if you want to prompt the user to reload
+    /** Creates a select dropdown */
+  });
+
+  game.settings.register("auto-action-tray", "iconSize", {
+    name: "Icon Size",
+    hint: "Select Icon Size",
+    scope: "client", // "world" = sync to db, "client" = local storage
+    config: true, // false if you dont want it to show in module config
+
+    type: Number,
+    default: 75,
+
+    choices: {
+      75: "75 px",
+      60: "60 px",
+      50: "50 px"
+    },
+
+    requiresReload: true // true if you want to prompt the user to reload
+    /** Creates a select dropdown */
+  });
+
   if (game.settings.get("auto-action-tray", "enable")) {
     let hotbar = new AutoActionTray({
       id: "auto-action-tray"

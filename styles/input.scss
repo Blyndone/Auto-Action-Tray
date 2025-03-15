@@ -1,19 +1,28 @@
-$item-tray-item-width-count: 10;
-$item-tray-item-height-count: 2;
-$total-item-width: 75px;
-$total-item-height: 75px;
+:root {
+  --item-size: 75px;
+  --item-tray-item-width-count: 10;
+  --item-tray-item-height-count: 2;
+}
+
+$item-tray-item-width-count: var(--item-tray-item-width-count);
+$item-tray-item-height-count: var(--item-tray-item-height-count);
+$total-item-width: var(--item-size);
+$total-item-height: var(--item-size);
 $main-tray-padding: 5px;
 $app-width: 1400px;
-$app-height: $item-tray-item-height-count * $total-item-height +
-  $main-tray-padding * 4;
-$main-tray-height: $item-tray-item-height-count * $total-item-height +
-  $main-tray-padding * 2+2px;
+$app-height: calc(
+  $item-tray-item-height-count * $total-item-height + $main-tray-padding * 4
+);
+$main-tray-height: calc(
+  $item-tray-item-height-count * $total-item-height + $main-tray-padding * 2 +
+    2px
+);
 $inset-border: 2px;
 $item-margin: 1px;
-$item-width: $total-item-width - ($item-margin * 2);
-$item-height: $total-item-height - ($item-margin * 2);
-$small-button-width: $total-item-width - 20px;
-$small-button-height: $total-item-height / 3;
+$item-width: calc($total-item-width - ($item-margin * 2));
+$item-height: calc($total-item-height - ($item-margin * 2));
+$small-button-width: calc($total-item-width * 0.9);
+$small-button-height: calc($total-item-height / 3);
 $static-tray-size: 50px;
 $app-background: rgba(117, 117, 117, 0.7);
 $tray-button-background: rgb(97, 97, 95);
@@ -74,7 +83,7 @@ $tray-button-background: rgb(97, 97, 95);
   left: 50%;
   transform: translateX(-50%);
   z-index: 0;
-  width: $app-width;
+  // width: $app-width;
   height: $app-height;
   background-blend-mode: multiply;
 }
@@ -274,16 +283,17 @@ $tray-button-background: rgb(97, 97, 95);
 .equipment-misc-tray-container {
   @include main-tray-height;
   @include center;
+
   position: relative;
   flex-direction: column;
-  width: $total-item-width * 2 + $main-tray-padding * 2;
+  width: calc($total-item-width * 2 + $main-tray-padding * 2);
   margin: 5px;
 }
 .equipment-tray-container {
   @include center;
   @include inset-tray;
   padding: $main-tray-padding;
-  width: $total-item-width * 2 + $main-tray-padding * 2;
+  width: calc($total-item-width * 2 + $main-tray-padding * 2);
   img {
     @include hover;
     @include item;
@@ -292,11 +302,13 @@ $tray-button-background: rgb(97, 97, 95);
 
 .misc-tray-container {
   @include inset-tray;
-  width: $small-button-width * 2 + $main-tray-padding * 2;
-  height: $main-tray-height - $total-item-height - $main-tray-padding;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: calc($small-button-width * 2 + $main-tray-padding * 2);
+  height: calc($main-tray-height - $total-item-height - $main-tray-padding);
+  // display: flex;
+  // flex-direction: row;
+  // flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   padding: $main-tray-padding;
@@ -306,8 +318,8 @@ $tray-button-background: rgb(97, 97, 95);
 .ability-selection-input {
   @include inset-tray;
   position: absolute;
-  width: $total-item-width * $item-tray-item-width-count;
-  height: $total-item-height * $item-tray-item-height-count;
+  width: calc($total-item-width * $item-tray-item-width-count);
+  height: calc($total-item-height * $item-tray-item-height-count);
   left: 50%;
   bottom: 104%;
   transform: translateX(-50%);
@@ -335,16 +347,20 @@ $tray-button-background: rgb(97, 97, 95);
 .small-button {
   @include center;
   @include button-style;
-  width: $small-button-width - $main-tray-padding;
-  height: $small-button-height - $main-tray-padding;
+  width: calc($small-button-width - $main-tray-padding);
+  height: 100%;
+  flex-grow: 1;
+  box-sizing: border-box;
   font-size: 12px;
 }
 
 .small-button-active {
   @include center;
   @include button-style;
-  width: $small-button-width - $main-tray-padding;
-  height: $small-button-height - $main-tray-padding;
+  width: calc($small-button-width - $main-tray-padding);
+  height: 100%;
+  flex-grow: 1;
+  box-sizing: border-box;
   font-size: 12px;
   border: 2px solid #c9593f;
   box-shadow: 0 0 5px #c9593f;
@@ -353,8 +369,10 @@ $tray-button-background: rgb(97, 97, 95);
 .small-button-skill {
   @include center;
   @include button-style;
-  width: $small-button-width - $main-tray-padding;
-  height: $small-button-height - 2;
+  width: calc($small-button-width + $main-tray-padding);
+  height: $main-tray-height / 6;
+  flex-grow: 1;
+  box-sizing: border-box;
   font-size: 14px;
 }
 .small-button-save {
@@ -362,8 +380,11 @@ $tray-button-background: rgb(97, 97, 95);
   @include button-style;
   background: linear-gradient(180deg, #5b9fa4, #0f5753);
   border: 2px solid #004a74; /* Darker border color */
-  width: $small-button-width - $main-tray-padding;
-  height: $small-button-height - 2;
+  width: calc($small-button-width + $main-tray-padding);
+  height: $main-tray-height / 6;
+
+  flex-grow: 1;
+  box-sizing: border-box;
   font-size: 14px;
 }
 
@@ -388,8 +409,10 @@ $tray-button-background: rgb(97, 97, 95);
 .ability-tray-container {
   @include main-tray-height;
   @include inset-tray;
-  $tray-width: $total-item-width * $item-tray-item-width-count +
-    $main-tray-padding * 2 + 5px;
+  $tray-width: calc(
+    $total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 +
+      5px
+  );
 
   padding: $main-tray-padding;
   width: $tray-width;
@@ -451,23 +474,36 @@ $tray-button-background: rgb(97, 97, 95);
     @include item;
     @include hover;
   }
+
+  .ability-button-passive img {
+    @include center;
+    border-radius: 50%;
+    border: 2px solid #2c2d2e;
+    box-shadow: 0 0 2px #0d0d12;
+  }
   .ability-ol {
-    width: $total-item-width * $item-tray-item-width-count;
-    height: $total-item-height * $item-tray-item-height-count;
+    width: calc($total-item-width * $item-tray-item-width-count);
+    height: calc($total-item-height * $item-tray-item-height-count);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     list-style-type: none;
     padding: 0px;
     align-items: center;
+    li {
+      width: $total-item-width;
+      height: $total-item-height;
+    }
   }
   .activity-ol {
     li {
-      margin: 5px;
+      margin: 11px;
+      width: calc($total-item-width * 0.8);
+      height: calc($total-item-height * 0.8);
     }
     @include center;
-    width: $total-item-width * $item-tray-item-width-count;
-    height: $total-item-height * $item-tray-item-height-count;
+    width: calc($total-item-width * $item-tray-item-width-count);
+    height: calc($total-item-height * $item-tray-item-height-count);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -477,38 +513,41 @@ $tray-button-background: rgb(97, 97, 95);
   }
 }
 
-.ability-button-passive img {
-  border-radius: 50%;
-  @include center;
-  border: 2px solid #2c2d2e;
-  box-shadow: 0 0 2px #0d0d12;
-}
 .activity-button {
   position: relative;
-  border: 2px solid #00aaff;
+  outline: 2px outset #00aaff;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+  box-shadow: 0 0 15px 5px rgba(0, 170, 255, 0.8);
   transition: box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
+  width: calc(var(--item-size) * 0.8);
+  height: calc(var(--item-size) * 0.8);
+  overflow: hidden;
   &:hover {
-    box-shadow: 0 0 20px rgba(0, 170, 255, 1),
-      0 0 10px rgba(0, 170, 255, 0.8) inset;
+    box-shadow: 0 0 30px 10px rgba(0, 170, 255, 1),
+      /* Strong outer glow */ 0 0 20px 5px rgba(0, 170, 255, 0.9) inset; /* Deeper inner glow */
     transform: scale(1.05);
   }
   img {
-    width: 60px;
-    height: 60px;
+    width: calc($total-item-width * 0.8);
+    height: calc($total-item-height * 0.8);
     pointer-events: none;
   }
 }
 
 .activity-button-inactive {
   position: relative;
-
+  outline: 2px outset #00aaff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+  transition: box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
+  width: calc(var(--item-size) * 0.8);
+  height: calc(var(--item-size) * 0.8);
+  overflow: hidden;
   filter: 100%;
   filter: brightness(0.45);
   img {
-    width: 60px;
-    height: 60px;
+    width: calc($total-item-width * 0.8);
+    height: calc($total-item-height * 0.8);
   }
 }
 
@@ -609,16 +648,17 @@ $tray-button-background: rgb(97, 97, 95);
   }
 }
 .skill-tray-container {
-  @include center;
   @include inset-tray;
-  display: flex;
-  grid-template-columns: repeat(2, auto);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 equal-width columns */
+  grid-template-rows: repeat(6, auto); /* 6 rows */
+  grid-auto-flow: column; /* Fills columns first */
   gap: 2px;
   justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
   height: $main-tray-height;
-  width: $small-button-width * 2 + $main-tray-padding * 2;
+  min-width: calc($small-button-width * 2 + $main-tray-padding * 2);
   // width: $total-item-width * 2 + $main-tray-padding * 2;
   height: $main-tray-height;
   padding: $main-tray-padding;
@@ -626,11 +666,12 @@ $tray-button-background: rgb(97, 97, 95);
 }
 .end-turn-container {
   @include center;
+  height: 100%;
 }
 .custom-tray-container {
   @include center;
   position: absolute;
-  top: $main-tray-height + 8px;
+  top: calc($main-tray-height + 8px);
   border-radius: 0 0 10px 10px;
   background: $app-background;
   padding-left: 5px;
@@ -690,6 +731,11 @@ $tray-button-background: rgb(97, 97, 95);
 .transparent-box {
   @include item;
   @include center;
+}
+.transparent-box-passive {
+  @include item;
+  @include center;
+  border: 0px;
 }
 .tooltip-container {
   background: #2c1f12;
@@ -813,15 +859,24 @@ $tray-button-background: rgb(97, 97, 95);
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
     rgb(0, 0, 0) 0px 0px 6px;
 }
+
+.end-turn-swap-button-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
 .swap-skill-tray-button {
   @include center;
   @include button-style;
   position: absolute;
-  bottom: -1 * $total-item-height * 2;
+  // bottom: calc(-1 * $main-tray-height + $main-tray-padding);
+  bottom: 0px + $main-tray-padding;
   left: 0px;
   width: 25px;
   height: 25px;
-
   margin: 3px;
   border-radius: 50%; /* Makes it round */
   // background: linear-gradient(135deg, #a1c4fd, #c2e9fb); /* Pleasant gradient */

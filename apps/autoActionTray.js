@@ -28,8 +28,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.selectingActivity = false;
     this.animationDuration = 0.7;
 
-    this.totalabilities = 20;
-
     this.#dragDrop = this.#createDragDropHandlers();
     this.isEditable = true;
 
@@ -63,6 +61,36 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
         break;
       }
+
+      let rowCount = 2;
+      let columnCount = 10;
+      let iconSize = 75;
+
+      if (game.settings.get('auto-action-tray', 'iconSize')) {
+        iconSize = game.settings.get('auto-action-tray', 'iconSize');
+        document.documentElement.style.setProperty(
+          '--item-size',
+          iconSize + 'px'
+        );
+      }
+      if (game.settings.get('auto-action-tray', 'rowCount')) {
+        rowCount = game.settings.get('auto-action-tray', 'rowCount');
+        document.documentElement.style.setProperty(
+          '--item-tray-item-height-count',
+          rowCount
+        );
+      }
+      if (game.settings.get('auto-action-tray', 'columnCount')) {
+        columnCount = game.settings.get('auto-action-tray', 'columnCount');
+        document.documentElement.style.setProperty(
+          '--item-tray-item-width-count',
+          columnCount
+        );
+      }
+
+      this.totalabilities = rowCount * columnCount;
+
+      // document.documentElement.style.setProperty('--item-size', '60px');
     }
 
     Hooks.on('controlToken', this._onControlToken.bind(this));
@@ -137,7 +165,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     centerTray: {
       template: 'modules/auto-action-tray/templates/topParts/center-tray.hbs',
       id: 'center-tray',
-    
     },
     skillTray: {
       template: 'modules/auto-action-tray/templates/topParts/skill-tray.hbs',
@@ -168,10 +195,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       }
 
       this.actor = event.actor ? event.actor : event;
-      this.staticTrays = StaticTray.generateStaticTrays(this.actor);
-      this.customTrays = CustomTray.generateCustomTrays(this.actor);
-      this.equipmentTray = EquipmentTray.generateCustomTrays(this.actor);
-      this.activityTray = ActivityTray.generateActivityTray(this.actor);
+      this.staticTrays = StaticTray.generateStaticTrays(this.actor, {
+        application: this,
+      });
+      this.customTrays = CustomTray.generateCustomTrays(this.actor, {
+        application: this,
+      });
+      this.equipmentTray = EquipmentTray.generateCustomTrays(this.actor, {
+        application: this,
+      });
+      this.activityTray = ActivityTray.generateActivityTray(this.actor, {
+        application: this,
+      });
       this.setDefaultTray();
       this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
       this.rangedWeapon = this.equipmentTray.getRangedWeapon();
@@ -213,7 +248,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.currentTray instanceof StaticTray) {
       this.staticTrays.find((e) => e.id == this.currentTray.id).active = true;
     }
-    this.render({ parts: ['centerTray'] });
+    if (this.animating == false) {
+      this.render({ parts: ['centerTray'] });
+    }
   }
 
   _onUpdateCombat = (event) => {
@@ -260,6 +297,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       combatHandler: this.combatHandler,
       itemSelectorEnabled: this.itemSelectorEnabled,
       hpTextActive: this.hpTextActive,
+      selectingActivity: this.selectingActivity,
     };
 
     return context;
@@ -426,16 +464,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         const inputField = document.querySelector('.hpinput');
         inputField.focus();
       }
-    })
+    });
   }
 
   async updateHp(data) {
-    if (data == '') { 
+    if (data == '') {
       this.hpTextActive = false;
       this.render({ parts: ['characterImage'] });
       return;
     }
-    
+
     const regex = /^[+-]?\d*/;
 
     if (!regex.test(data)) {
@@ -468,9 +506,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
   }
 
-  static useSlot(event, target) { 
-  
-  }
+  static useSlot(event, target) {}
 
   static async useItem(event, target) {
     game.tooltip.deactivate();
@@ -507,10 +543,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     item.system.activities
       .get(
         activity?.itemId ||
-        activity?._id ||
-        item.system.activities.contents[0].id
+          activity?._id ||
+          item.system.activities.contents[0].id
       )
-      .use({ spell: selectedSpellLevel, consume: {spellSlot: activity?.useSlot} }, { configure: false });
+      .use(
+        {
+          spell: selectedSpellLevel,
+          consume: { spellSlot: activity?.useSlot },
+        },
+        { configure: false }
+      );
   }
 
   static useSkillSave(event, target) {
@@ -528,10 +570,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
   }
 
-  static async rollD20() { 
+  static async rollD20() {
     const roll = new Roll('1d20');
-	await roll.evaluate({ allowInteractive: false });
-	await roll.toMessage();
+    await roll.evaluate({ allowInteractive: false });
+    await roll.toMessage();
   }
 
   static viewItem(event, target) {

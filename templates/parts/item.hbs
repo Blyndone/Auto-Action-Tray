@@ -5,7 +5,7 @@
     item.system.activities.size 0)}} data-action='viewItem' class='ability-button ability-button-passive' {{else}}
     data-action='useItem' class='ability-button' {{/if}}>
     {{#if (eq item.system.activities.size 0)}}
-    <div class='transparent-box' data-index='{{@index}}'>
+    <div class='transparent-box-passive' data-index='{{@index}}'>
       <img src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item._id}}' data-index='{{@index}}' />
     </div>
     {{else}}

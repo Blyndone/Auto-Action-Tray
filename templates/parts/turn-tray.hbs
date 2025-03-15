@@ -1,5 +1,5 @@
-<div>
-  <div style='position: relative'>
+<div class="end-turn-swap-button-container">
+  <div style='position: relative; height: 100%' >
     <div
       class='swap-skill-tray-button'
       data-action='toggleSkillTrayPage'
@@ -9,18 +9,18 @@
       <i class='fa-solid fa-rotate-reverse'></i>
     </div>
   </div>
-  <div style='position: relative; pointer-events: none;'>
+  <div style='position: relative; pointer-events: none; height: 100% display: flex; align-items: center;
+}'>
     <svg width='200' height='200' viewBox='0 0 200 200' class='hp-circle'>
       <circle
         class='circle-svg'
         cx='100'
         cy='100'
         r='80'
-        {{! stroke='#8500a0' }}
         stroke-width='5'
         fill='none'
         stroke-linecap='round'
-        {{! style='filter: drop-shadow(rgb(209, 0, 59) 0px 0px 5px)' }}
+
       />
     </svg>
     {{#if combatHandler.isTurn}}
