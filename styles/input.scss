@@ -741,14 +741,32 @@ $tray-button-background: rgb(97, 97, 95);
   bottom: 15px;
   width: 170px;
 }
-
-.hp-text {
+@mixin hp {
   font-weight: bold;
   font-size: 20px;
   color: white;
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
     rgb(0, 0, 0) 0px 0px 6px;
+  font-size: 18px;
 }
+.hp-form {
+  @include inset-tray;
+  background: #333;
+  input {
+    @include hp;
+    pointer-events: all;
+  }
+}
+
+.hp-text {
+  @include hp;
+}
+.hidden-disabled {
+  display: none; /* Completely hides the element */
+  pointer-events: none; /* Prevents mouse interactions */
+  user-select: none; /* Prevents text selection */
+}
+
 .temp-hp-text {
   color: #5bc0de; /* Light blue */
   font-weight: bold;

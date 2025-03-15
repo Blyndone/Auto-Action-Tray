@@ -21,9 +21,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin);
     super(options);
-    
-    this.debugtime = 0
-    
+
+    this.debugtime = 0;
+
     this.animating = false;
     this.selectingActivity = false;
     this.animationDuration = 0.7;
@@ -36,7 +36,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.actor = null;
     this.meleeWeapon = null;
     this.rangedWeapon = null;
-
+    this.hpTextActive = false;
     this.currentTray = null;
     this.targetTray = null;
     this.customTrays = [];
@@ -86,14 +86,75 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     registerHandlebarsHelpers();
   }
 
+  static DEFAULT_OPTIONS = {
+    tag: 'form',
+    dragDrop: [{ dragSelector: '[data-drag]', dropSelector: null }],
+    form: {
+      handler: AutoActionTray.myFormHandler,
+      submitOnChange: true,
+      closeOnSubmit: false,
+      id: 'AutoActionTray',
+    },
+    window: {
+      frame: false,
+      positioned: false,
+    },
+
+    actions: {
+      openSheet: AutoActionTray.openSheet,
+      selectWeapon: AutoActionTray.selectWeapon,
+      useItem: AutoActionTray.useItem,
+      viewItem: AutoActionTray.viewItem,
+      setTray: AutoActionTray.setTray,
+      endTurn: AutoActionTray.endTurn,
+      useSkillSave: AutoActionTray.useSkillSave,
+      toggleSkillTrayPage: AutoActionTray.toggleSkillTrayPage,
+      toggleLock: AutoActionTray.toggleLock,
+      toggleFastForward: AutoActionTray.toggleFastForward,
+      toggleItemSelector: AutoActionTray.toggleItemSelector,
+      toggleHpText: AutoActionTray.toggleHpText,
+      useActivity: ActivityTray.useActivity,
+      cancelSelection: ActivityTray.cancelSelection,
+    },
+  };
+
+  static PARTS = {
+    characterImage: {
+      template:
+        'modules/auto-action-tray/templates/topParts/character-image.hbs',
+      id: 'character-image',
+      forms: {
+        '.hpinput': AutoActionTray.myFormHandler,
+      },
+    },
+    equipmentMiscTray: {
+      template:
+        'modules/auto-action-tray/templates/topParts/equipment-misc-tray.hbs',
+      id: 'equipment-misc-tray',
+    },
+    centerTray: {
+      template: 'modules/auto-action-tray/templates/topParts/center-tray.hbs',
+      id: 'center-tray',
+    },
+    skillTray: {
+      template: 'modules/auto-action-tray/templates/topParts/skill-tray.hbs',
+      id: 'skill-tray',
+    },
+    endTurn: {
+      template: 'modules/auto-action-tray/templates/topParts/end-turn.hbs',
+      id: 'end-turn',
+    },
+  };
+
   //#region Hooks
   _onControlToken = (event, controlled) => {
     if (event == null || controlled == false) {
       return;
     }
-    if (this.actor = event.actor && controlled == false) {
+    this.hpTextActive = false;
+    if ((this.actor = event.actor && controlled == false)) {
       this.actor = null;
-      return
+      return;
     }
     if (event.actor != this.actor || this.actor == event) {
       if (this.selectingActivity == true) {
@@ -102,7 +163,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         );
         this.activityTray.rejectActivity = null;
       }
-      
+
       this.actor = event.actor ? event.actor : event;
       this.staticTrays = StaticTray.generateStaticTrays(this.actor);
       this.customTrays = CustomTray.generateCustomTrays(this.actor);
@@ -124,7 +185,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           currentTray: 'common',
         };
       }
-      
+
       this.render({
         parts: [
           'characterImage',
@@ -135,7 +196,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       });
     }
   };
-  
+
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;
     this.staticTrays = StaticTray.generateStaticTrays(this.actor);
@@ -168,63 +229,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.render({ parts: ['centerTray'] });
   };
 
-  static DEFAULT_OPTIONS = {
-    tag: 'div',
-    dragDrop: [{ dragSelector: '[data-drag]', dropSelector: null }],
-
-    form: {
-      handler: AutoActionTray.myFormHandler,
-      submitOnChange: false,
-      closeOnSubmit: false,
-    },
-    window: {
-      frame: false,
-      positioned: false,
-    },
-
-    actions: {
-      openSheet: AutoActionTray.openSheet,
-      selectWeapon: AutoActionTray.selectWeapon,
-      useItem: AutoActionTray.useItem,
-      viewItem: AutoActionTray.viewItem,
-      setTray: AutoActionTray.setTray,
-      endTurn: AutoActionTray.endTurn,
-      useSkillSave: AutoActionTray.useSkillSave,
-      toggleSkillTrayPage: AutoActionTray.toggleSkillTrayPage,
-      toggleLock: AutoActionTray.toggleLock,
-      toggleFastForward: AutoActionTray.toggleFastForward,
-      toggleItemSelector: AutoActionTray.toggleItemSelector,
-      useActivity: ActivityTray.useActivity,
-      cancelSelection: ActivityTray.cancelSelection,
-    },
-  };
-
-  static PARTS = {
-    characterImage: {
-      template:
-        'modules/auto-action-tray/templates/topParts/character-image.hbs',
-      id: 'character-image',
-    },
-    equipmentMiscTray: {
-      template:
-        'modules/auto-action-tray/templates/topParts/equipment-misc-tray.hbs',
-      id: 'equipment-misc-tray',
-    },
-    centerTray: {
-      template: 'modules/auto-action-tray/templates/topParts/center-tray.hbs',
-      id: 'center-tray',
-    },
-    skillTray: {
-      template: 'modules/auto-action-tray/templates/topParts/skill-tray.hbs',
-      id: 'skill-tray',
-    },
-    endTurn: {
-      template: 'modules/auto-action-tray/templates/topParts/end-turn.hbs',
-      id: 'end-turn',
-    },
-  };
-
-  static async myFormHandler(event, form, formData) {}
+  static async myFormHandler(event, form, formData) {
+    let data = foundry.utils.expandObject(formData.object);
+    this.updateHp(data.hpinputText);
+  }
 
   //#region Rendering
   async _preparePartContext(partId, context) {
@@ -247,6 +255,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       activityTray: this.activityTray,
       combatHandler: this.combatHandler,
       itemSelectorEnabled: this.itemSelectorEnabled,
+      hpTextActive: this.hpTextActive,
     };
 
     return context;
@@ -405,6 +414,56 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.render({ parts: ['equipmentMiscTray'] });
   }
 
+  static toggleHpText() {
+    this.hpTextActive = !this.hpTextActive;
+
+    this.render({ parts: ['characterImage'] }).then(() => {
+      if (this.hpTextActive) {
+        const inputField = document.querySelector('.hpinput');
+        inputField.focus();
+      }
+    })
+  }
+
+  async updateHp(data) {
+    if (data == '') { 
+      this.hpTextActive = false;
+      this.render({ parts: ['characterImage'] });
+      return;
+    }
+    
+    const regex = /^[+-]?\d*/;
+
+    if (!regex.test(data)) {
+      // If not valid, sanitize by removing any invalid characters
+      return;
+    } else {
+      const matches = data.match(regex);
+      let currentHp = this.actor.system.attributes.hp.value;
+      let tempHp = this.actor.system.attributes.hp.temp;
+      let updates = {};
+      switch (true) {
+        case matches[0].includes('+'):
+          updates = {
+            'system.attributes.hp.value': currentHp + parseInt(matches[0]),
+          };
+          break;
+        case matches[0].includes('-'):
+          let thp = tempHp + parseInt(matches[0]);
+          updates = {
+            'system.attributes.hp.value': thp < 0 ? currentHp + thp : currentHp,
+            'system.attributes.hp.temp': thp <= 0 ? null : thp,
+          };
+          break;
+        case !matches[0].includes('+') && !matches[0].includes('-'):
+          updates = { 'system.attributes.hp.value': parseInt(matches[0]) };
+          break;
+      }
+      await this.actor.update(updates);
+      this.render({ parts: ['characterImage'] });
+    }
+  }
+
   static async useItem(event, target) {
     game.tooltip.deactivate();
     let itemId = target.dataset.itemId;
@@ -499,9 +558,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element));
 
-    console.log('rendered', Date.now() - this.debugtime, context, options['parts'], options);
+    console.log(
+      'rendered',
+      Date.now() - this.debugtime,
+      context,
+      options['parts'],
+      options
+    );
     this.debugtime = Date.now();
-
 
     // Draggable.create('.abilities-tray', {
     //   bounds: { minX: 0, maxX: 700 },

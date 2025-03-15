@@ -815,11 +815,35 @@
   width: 170px;
 }
 
+.hp-form {
+  background: #5b5b5b;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  border: 2px solid #2f2f2f;
+  border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  background: #333;
+}
+.hp-form input {
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  font-size: 18px;
+  pointer-events: all;
+}
+
 .hp-text {
   font-weight: bold;
   font-size: 20px;
   color: white;
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  font-size: 18px;
+}
+
+.hidden-disabled {
+  display: none; /* Completely hides the element */
+  pointer-events: none; /* Prevents mouse interactions */
+  user-select: none; /* Prevents text selection */
 }
 
 .temp-hp-text {
