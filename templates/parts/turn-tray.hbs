@@ -33,15 +33,20 @@
         {{/if}}
       </button>
     {{else}}
-      <button class='end-turn-btn-nohover'>
         {{#if combatHandler.inCombat}}
+      <button class='end-turn-btn-nohover'>
           <div class='end-turn-btn-text'>
             Next Turn:<br />
             {{combatHandler.tillNextTurn}}
             Turns
           </div>
-        {{/if}}
       </button>
+      {{else}}
+      <button class='end-turn-btn-dice' data-action="rollD20">
+          <div class='end-turn-btn-dice-icon'>
+<i class="fa-solid fa-dice-d20"></i>
+            </div>
+        {{/if}}
     {{/if}}
 
   </div>

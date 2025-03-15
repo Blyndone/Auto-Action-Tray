@@ -116,6 +116,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       useActivity: ActivityTray.useActivity,
       cancelSelection: ActivityTray.cancelSelection,
       useSlot: ActivityTray.useSlot,
+      rollD20: AutoActionTray.rollD20,
     },
   };
 
@@ -525,6 +526,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     } else {
       this.actor.rollAbilitySave(skillsave, skipDialog);
     }
+  }
+
+  static async rollD20() { 
+    const roll = new Roll('1d20');
+	await roll.evaluate({ allowInteractive: false });
+	await roll.toMessage();
   }
 
   static viewItem(event, target) {

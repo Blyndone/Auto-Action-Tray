@@ -942,6 +942,40 @@
   box-shadow: 0 0 10px #3f96c9;
 }
 
+.end-turn-btn-dice {
+  background: #5b5b5b;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  border: 2px solid #2f2f2f;
+  border-radius: 6px;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px;
+  background: radial-gradient(#e7916f, #864903);
+  transition: 0.3s ease-in-out;
+  height: 130px;
+  width: 130px;
+  border-radius: 100%;
+  font-size: 20px;
+  margin: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  color: #fff;
+  pointer-events: all;
+  border: 2px solid #1f0801; /* A deep warm orange border for better contrast */
+}
+.end-turn-btn-dice:active {
+  background: radial-gradient(#c75838, #2e1605); /* A more intense version on press */
+  box-shadow: inset 0 0 15px #3a0804; /* Stronger shadow effect for depth */
+}
+.end-turn-btn-dice:hover {
+  box-shadow: 0 0 10px #ff7b50, inset 0 0 10px #3a0804; /* Soft glow with inner depth */
+}
+.end-turn-btn-dice .end-turn-btn-dice-icon {
+  font-size: 80px;
+  color: #ffe1d6; /* Slightly warm off-white to match the fiery aesthetic */
+}
+.end-turn-btn-dice .end-turn-btn-dice-icon i {
+  text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8), 0px 0px 6px rgba(0, 0, 0, 0.8);
+}
+
 .end-turn-btn-nohover {
   background: #5b5b5b;
   box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
