@@ -409,6 +409,44 @@ $tray-button-background: rgb(97, 97, 95);
     font-family: serif;
     text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
   }
+
+  .use-slot-text-container {
+    position: absolute;
+    bottom: 0px;
+    right: 0;
+    padding: 15px;
+    font-size: 18px;
+    color: white;
+    font-family: serif;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .use-slot-checkbox {
+    @include inset-tray;
+    border: 2px solid white;
+    border-radius: 4px;
+    background: #333;
+    background-color: #0d0d12;
+
+    &:checked {
+      background-color: #c9593f; /* Highlighted when checked */
+      border-color: #c9593f;
+
+      &:hover {
+        border: 2px solid #c9593f;
+        box-shadow: 0 0 5px #c9593f;
+      }
+      &:checked::before {
+        background: #333;
+        background-color: #0d0d12;
+      }
+    }
+  }
+
   img {
     @include item;
     @include hover;

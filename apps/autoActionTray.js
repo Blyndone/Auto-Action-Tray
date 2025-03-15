@@ -115,6 +115,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       toggleHpText: AutoActionTray.toggleHpText,
       useActivity: ActivityTray.useActivity,
       cancelSelection: ActivityTray.cancelSelection,
+      useSlot: ActivityTray.useSlot,
     },
   };
 
@@ -135,6 +136,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     centerTray: {
       template: 'modules/auto-action-tray/templates/topParts/center-tray.hbs',
       id: 'center-tray',
+    
     },
     skillTray: {
       template: 'modules/auto-action-tray/templates/topParts/skill-tray.hbs',
@@ -232,6 +234,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   static async myFormHandler(event, form, formData) {
     let data = foundry.utils.expandObject(formData.object);
     this.updateHp(data.hpinputText);
+    this.hpTextActive = false;
   }
 
   //#region Rendering
@@ -464,6 +467,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
   }
 
+  static useSlot(event, target) { 
+  
+  }
+
   static async useItem(event, target) {
     game.tooltip.deactivate();
     let itemId = target.dataset.itemId;
@@ -479,10 +486,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           this.actor,
           this
         );
+        if (activity == null) return;
         selectedSpellLevel = !selectedSpellLevel
           ? activity['selectedSpellLevel']
           : '';
-        if (activity == null) return;
       } else {
         activity = item.system.activities[0];
       }
@@ -499,10 +506,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     item.system.activities
       .get(
         activity?.itemId ||
-          activity?._id ||
-          item.system.activities.contents[0].id
+        activity?._id ||
+        item.system.activities.contents[0].id
       )
-      .use({ spell: selectedSpellLevel }, { configure: false });
+      .use({ spell: selectedSpellLevel, consume: {spellSlot: activity?.useSlot} }, { configure: false });
   }
 
   static useSkillSave(event, target) {

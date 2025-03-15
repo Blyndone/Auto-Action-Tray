@@ -37,6 +37,14 @@
     </li>
     {{/each}}
   </ol>
+     {{#if (eq activities.0.type 'spell')}}<div class="use-slot-text-container">    
+      Use Slot:<input
+        id='useSlot'
+        name='useSlot'
+        type='checkbox'
+        class='use-slot-checkbox'
+        checked='true'
+        data-action='useSlot'
+      /></div> {{/if}}
 </div>
 
-{{!-- {{ data-tooltip="{{> 'AAT.item-tooltip' }} --}}

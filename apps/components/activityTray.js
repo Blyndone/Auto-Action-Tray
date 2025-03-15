@@ -11,6 +11,7 @@ export class ActivityTray extends AbilityTray {
     this.generateTray();
     this.selectedActivity = null;
     this.rejectActivity = null;
+    this.useSlot = true;
   }
 
   generateTray() {}
@@ -80,6 +81,7 @@ export class ActivityTray extends AbilityTray {
   }
 
   static useActivity(event, target) {
+    let options = {};
     let selectedSpellLevel = target.dataset.selectedspelllevel;
 
     let itemId;
@@ -90,15 +92,27 @@ export class ActivityTray extends AbilityTray {
       itemId = target.dataset.itemId;
     }
 
+    if (this.activityTray.useSlot) {
+      options = {
+        slot: this.activityTray.slot,
+        selectedSpellLevel: selectedSpellLevel
+      };
+    }
+
     if (this.activityTray.selectedActivity) {
       this.activityTray.selectedActivity({
         itemId: itemId,
-        selectedSpellLevel: selectedSpellLevel
+        selectedSpellLevel: selectedSpellLevel,
+        useSlot: this.activityTray.useSlot
       });
       this.activityTray.selectedActivity = null;
+      this.activityTray.useSlot = true;
     }
   }
 
+  static useSlot(event) {
+    this.activityTray.useSlot = event.target.checked;
+  }
   static cancelSelection(event, target) {
     this.activityTray.rejectActivity(
       new Error("User canceled activity selection")
