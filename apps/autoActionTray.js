@@ -76,7 +76,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         document.documentElement.style.setProperty(
           '--item-size',
           iconSize + 'px'
+          
         );
+        document.documentElement.style.setProperty(
+          '--text-scale-ratio',
+           iconSize/75);
       }
       if (game.settings.get('auto-action-tray', 'rowCount')) {
         rowCount = game.settings.get('auto-action-tray', 'rowCount');
@@ -150,7 +154,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       useActivity: ActivityTray.useActivity,
       cancelSelection: ActivityTray.cancelSelection,
       useSlot: ActivityTray.useSlot,
-      rollD20: AutoActionTray.rollD20,
+      rollD20: AutoActionTray.rollDice,
     },
   };
 
@@ -513,13 +517,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     });
 
     const checkboxInput = fields.createCheckboxInput({
-      name: 'checkbox',
+      name: 'healthIndicator',
       value: true,
     });
     const checkboxGroup = fields.createFormGroup({
       input: checkboxInput,
-      label: 'Checkbox',
-      hint: 'Optional hint',
+      label: 'Health Indicator',
+      hint: 'Enable the red health indicator based on missing health percentage.',
     });
 
     const content = `${textGroup.outerHTML} ${selectGroup.outerHTML} ${checkboxGroup.outerHTML}`;
@@ -528,8 +532,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       window: { title: 'D20 Roll' },
       content: content,
       modal: false,
-      // This example does not use i18n strings for the button labels,
-      // but they are automatically localized.
+
       buttons: [
         {
           label: 'Accept',
@@ -657,10 +660,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
   }
 
-  static async rollD20() {
+  static async rollDice() {
     const roll = new Roll(`1d${this.dice[this.currentDice]}`);
     await roll.evaluate({ allowInteractive: false });
-    await roll.toMessage();
+    await roll.toMessage({
+    speaker: ChatMessage.getSpeaker({ token: this.actor.token }),
+    flavor: `Rolling a d${this.dice[this.currentDice]}`,
+});
   }
 
   static viewItem(event, target) {
