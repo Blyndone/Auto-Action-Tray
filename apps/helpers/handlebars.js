@@ -100,6 +100,18 @@ export function registerHandlebarsHelpers() {
     }
   });
 
+  Handlebars.registerHelper('diceIcon', function (currentDice) { 
+    let diceIcons = [
+      '<i class="fa-solid fa-dice-d20"></i>',
+      '<i class="fa-solid fa-dice-d12"></i>',
+      '<i class="fa-solid fa-dice-d10"></i>',
+      '<i class="fa-solid fa-dice-d8"></i>',
+      '<i class="fa-solid fa-dice-d6"></i>',
+      '<i class="fa-solid fa-dice-d4"></i>'
+    ]
+    return diceIcons[currentDice];
+  })
+
 //  Handlebars.registerHelper('getCircleColor', function (tillNextTurn) {
 //   if (tillNextTurn === 0) return '#9600d1'; // Brighter purple  
 //   if (tillNextTurn === 1) return '#a000c9'; // Slightly different purple  

@@ -62,6 +62,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         break;
       }
 
+      this.currentDice = 0;
+      this.dice = ['20', '12', '10', '8', '6', '4'];
+
       let rowCount = 2;
       let columnCount = 10;
       let iconSize = 75;
@@ -298,6 +301,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       itemSelectorEnabled: this.itemSelectorEnabled,
       hpTextActive: this.hpTextActive,
       selectingActivity: this.selectingActivity,
+      currentDice: this.currentDice,
     };
 
     return context;
@@ -571,7 +575,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   }
 
   static async rollD20() {
-    const roll = new Roll('1d20');
+    const roll = new Roll(`1d${this.dice[this.currentDice]}`);
     await roll.evaluate({ allowInteractive: false });
     await roll.toMessage();
   }
@@ -614,27 +618,46 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element));
 
-    console.log(
-      'rendered',
-      Date.now() - this.debugtime,
-      context,
-      options['parts'],
-      options
-    );
-    this.debugtime = Date.now();
+    if (options.parts.filter((e) => e == 'endTurn').length > 0) {
+      const itemQuantities =
+        this.element.querySelectorAll('.end-turn-btn-dice');
+      if (itemQuantities.length > 0) {
+        itemQuantities.forEach((item) => {
+          item.addEventListener(
+            'mousedown',
+            function (event) {
+              if (event.button == 2) {
+                this.currentDice =
+                  this.currentDice < 5 ? this.currentDice + 1 : 0;
+                this.render({ parts: ['endTurn'] });
+              }
 
-    // Draggable.create('.abilities-tray', {
-    //   bounds: { minX: 0, maxX: 700 },
-    //   inertia: true,
-    //   type: 'x',
-    //   snap: {
-    //     x: function (value) {
-    //       //snap to the closest increment of 50.
-    //       return Math.round(value / 75) * 75+5;
-    //     },
-    //   },
-    // });
+            }.bind(this)
+          );
+        });
+      }
+    }
   }
+  // console.log(
+  //   'rendered',
+  //   Date.now() - this.debugtime,
+  //   context,
+  //   options['parts'],
+  //   options
+  // );
+  // this.debugtime = Date.now();
+
+  // Draggable.create('.abilities-tray', {
+  //   bounds: { minX: 0, maxX: 700 },
+  //   inertia: true,
+  //   type: 'x',
+  //   snap: {
+  //     x: function (value) {
+  //       //snap to the closest increment of 50.
+  //       return Math.round(value / 75) * 75+5;
+  //     },
+  //   },
+  // });
 
   _canDragStart(selector) {
     return this.isEditable && !this.trayOptions['locked'];

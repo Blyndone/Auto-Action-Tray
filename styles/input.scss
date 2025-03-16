@@ -477,6 +477,7 @@ $tray-button-background: rgb(97, 97, 95);
 
   .ability-button-passive img {
     @include center;
+    @include hover;
     border-radius: 50%;
     border: 2px solid #2c2d2e;
     box-shadow: 0 0 2px #0d0d12;
