@@ -3,6 +3,7 @@
 <div class="image-container {{#if (concentration this.actor)}}
 concentrating {{/if}}">
 <div class="image-border" 
+
 {{#if trayOptions.healthIndicator}}
 id="health-percent"
 {{/if}}>
@@ -16,7 +17,12 @@ id="health-percent"
   
   
   {{else}}"./icons/svg/mystery-man.svg"{{/if}} alt="{{this.actor.name}}" 
-  data-action="openSheet"/>
+  data-action="openSheet"
+  style="transform: scale({{trayOptions.imageScale}}) translate({{trayOptions.imageX}}px, {{trayOptions.imageY}}px)"
+
+
+  
+  />
 </div>
 
   {{>  "AAT.character-hp" actor=actor}}

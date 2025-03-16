@@ -53,6 +53,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       currentTray: 'common',
       fastForward: true,
       imageType: 'portrait',
+      imageScale: 1,
+      imageX: 0,
+      imageY: 0,
       healthIndicator: true,
       concentrationColor: '#ff0000',
       customStaticTrays: [],
@@ -239,6 +242,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           currentTray: 'common',
           fastForward: true,
           imageType: 'portrait',
+          imageScale: 1,
+          imageX: 0,
+          imageY: 0,
           healthIndicator: true,
           concentrationColor: '#ff0000',
           customStaticTrays: [],
@@ -370,6 +376,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
             currentTray: 'common',
             fastForward: true,
             imageType: 'portrait',
+            imageScale: 1,
+            imageX: 0,
+            imageY: 0,
             healthIndicator: true,
             concentrationColor: '#ff0000',
             customStaticTrays: [],
@@ -450,7 +459,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   updateActorHealthPercent(actor) {
     let hp = actor.system.attributes.hp.value;
     let maxHp = actor.system.attributes.hp.max;
+
     let percent = (hp / maxHp) * 100;
+    if (percent > 50) {
+      percent = 100;
+    }
     document.documentElement.style.setProperty(
       '--character-health-percent',
       percent
@@ -560,6 +573,34 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       hint: 'Choose between portrait or token display',
     });
 
+    const imageScale = fields.createNumberInput({
+      name: 'imageScale',
+      value: this.trayOptions['imageScale'],
+    });
+    const imageScaleOptions = fields.createFormGroup({
+      input: imageScale,
+      label: 'Image Scale',
+      hint: 'Change Character Image Scale.',
+    });
+    const imageX = fields.createNumberInput({
+      name: 'imageX',
+      value: this.trayOptions['imageX'],
+    });
+    const imageXOptions = fields.createFormGroup({
+      input: imageX,
+      label: 'Image X Offset',
+      hint: 'Change Character Image X Location.',
+    });
+    const imageY = fields.createNumberInput({
+      name: 'imageY',
+      value: this.trayOptions['imageY'],
+    });
+    const imageYOptions = fields.createFormGroup({
+      input: imageY,
+      label: 'Image Y Offset',
+      hint: 'Change Character Image Y Location.',
+    });
+
     const checkboxInput = fields.createCheckboxInput({
       name: 'healthIndicator',
       value: this.trayOptions['healthIndicator'],
@@ -570,11 +611,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       hint: 'Enable the red health indicator based on missing health percentage.',
     });
 
-    const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${checkboxGroup.outerHTML}`;
+    const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML}`;
 
     const method = await foundry.applications.api.DialogV2.wait({
       position: { width: 600 },
-      window: { title: 'D20 Roll' },
+      window: { title: 'Tray Quick Config' },
       content: content,
       modal: false,
 

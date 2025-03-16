@@ -208,6 +208,7 @@
 }
 .character-image-container #health-percent {
   box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), inset 0 0 calc(100px - var(--character-health-percent) * 1px) rgba(225, 0, 0, calc(1 - var(--character-health-percent) / 100));
+  z-index: 1;
 }
 .character-image-container .concentrating {
   box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 15px #9600d1;
@@ -220,7 +221,6 @@
   border: none;
   width: 170px;
   height: 170px;
-  border-radius: 50%;
   background: #5b5b5b;
 }
 
@@ -913,6 +913,7 @@
   text-align: center;
   bottom: 15px;
   width: 170px;
+  z-index: 2;
 }
 
 .hp-form {
