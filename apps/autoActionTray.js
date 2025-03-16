@@ -32,9 +32,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.isEditable = true;
 
     this.actor = null;
+
     this.meleeWeapon = null;
     this.rangedWeapon = null;
     this.hpTextActive = false;
+    this.actorHealthPercent = 100;
     this.currentTray = null;
     this.targetTray = null;
     this.customTrays = [];
@@ -143,6 +145,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
       toggleItemSelector: AutoActionTray.toggleItemSelector,
+      trayConfig: AutoActionTray.trayConfig,
       toggleHpText: AutoActionTray.toggleHpText,
       useActivity: ActivityTray.useActivity,
       cancelSelection: ActivityTray.cancelSelection,
@@ -198,6 +201,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       }
 
       this.actor = event.actor ? event.actor : event;
+      this.actorHealthPercent = this.updateActorHealthPercent(this.actor);
+
       this.staticTrays = StaticTray.generateStaticTrays(this.actor, {
         application: this,
       });
@@ -251,6 +256,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (this.currentTray instanceof StaticTray) {
       this.staticTrays.find((e) => e.id == this.currentTray.id).active = true;
     }
+    this.actorHealthPercent = this.updateActorHealthPercent(actor);
+
     if (this.animating == false) {
       this.render({ parts: ['centerTray'] });
     }
@@ -416,6 +423,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.actor.sheet.render(true);
   }
 
+  updateActorHealthPercent(actor) {
+    let hp = actor.system.attributes.hp.value;
+    let maxHp = actor.system.attributes.hp.max;
+    let percent = (hp / maxHp) * 100;
+    document.documentElement.style.setProperty(
+      '--character-health-percent',
+      percent
+    );
+    return percent;
+  }
+
   static async endTurn(event, target) {
     if (this.combatHandler == null) return;
     if (
@@ -458,6 +476,71 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   static toggleItemSelector() {
     this.itemSelectorEnabled = !this.itemSelectorEnabled;
     this.render({ parts: ['equipmentMiscTray'] });
+  }
+
+  static async trayConfig() {
+    const fields = foundry.applications.fields;
+
+    const textInput = fields.createTextInput({
+      name: 'customStaticTray',
+      value: 'Starting Value',
+    });
+
+    const textGroup = fields.createFormGroup({
+      input: textInput,
+      label: 'Additional Custom Static Tray',
+      hint: 'Optional hint',
+    });
+
+    const selectInput = fields.createSelectInput({
+      options: [
+        {
+          label: 'Portrait',
+          value: 'portrait',
+        },
+        {
+          label: 'Token',
+          value: 'token',
+        },
+      ],
+      name: 'imageType',
+    });
+
+    const selectGroup = fields.createFormGroup({
+      input: selectInput,
+      label: 'Select Character Image Type',
+      hint: 'Choose between portrait or token display',
+    });
+
+    const checkboxInput = fields.createCheckboxInput({
+      name: 'checkbox',
+      value: true,
+    });
+    const checkboxGroup = fields.createFormGroup({
+      input: checkboxInput,
+      label: 'Checkbox',
+      hint: 'Optional hint',
+    });
+
+    const content = `${textGroup.outerHTML} ${selectGroup.outerHTML} ${checkboxGroup.outerHTML}`;
+
+    const method = await foundry.applications.api.DialogV2.wait({
+      window: { title: 'D20 Roll' },
+      content: content,
+      modal: false,
+      // This example does not use i18n strings for the button labels,
+      // but they are automatically localized.
+      buttons: [
+        {
+          label: 'Accept',
+          action: 'accept',
+        },
+        {
+          label: 'Cancel',
+          action: 'cancel',
+        },
+      ],
+    });
   }
 
   static toggleHpText() {
@@ -631,7 +714,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
                   this.currentDice < 5 ? this.currentDice + 1 : 0;
                 this.render({ parts: ['endTurn'] });
               }
-
             }.bind(this)
           );
         });

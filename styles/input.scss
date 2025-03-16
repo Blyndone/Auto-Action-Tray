@@ -2,6 +2,7 @@
   --item-size: 75px;
   --item-tray-item-width-count: 10;
   --item-tray-item-height-count: 2;
+  --character-health-percent: 100;
 }
 
 $item-tray-item-width-count: var(--item-tray-item-width-count);
@@ -259,9 +260,15 @@ $tray-button-background: rgb(97, 97, 95);
       border-radius: 50%;
       box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
         inset -3px -3px 5px rgba(0, 0, 0, 0.8);
-
       outline: 4px solid rgba(39, 39, 39, 1);
     }
+  }
+
+  #health-percent {
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
+      inset -3px -3px 5px rgba(0, 0, 0, 0.8),
+      inset 0 0 calc(100px - var(--character-health-percent) * 1px)
+        rgba(225, 0, 0, calc(1 - (var(--character-health-percent) / 100)));
   }
   .concentrating {
     box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),

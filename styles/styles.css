@@ -2,6 +2,7 @@
   --item-size: 75px;
   --item-tray-item-width-count: 10;
   --item-tray-item-height-count: 2;
+  --character-health-percent: 100;
 }
 
 #auto-action-tray {
@@ -203,6 +204,9 @@
   border-radius: 50%;
   box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
   outline: 4px solid rgb(39, 39, 39);
+}
+.character-image-container #health-percent {
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), inset 0 0 calc(100px - var(--character-health-percent) * 1px) rgba(225, 0, 0, calc(1 - var(--character-health-percent) / 100));
 }
 .character-image-container .concentrating {
   box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 15px #9600d1;
