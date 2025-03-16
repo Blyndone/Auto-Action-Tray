@@ -67,19 +67,19 @@ static overrides = {
         customStaticTrays: { trays: JSON.stringify(temparr) },
       });
     }
-    this.savedData = true;
+
   }
 
   static getCustomStaticTrays(actor) {
-    let data = actor.getFlag('auto-action-tray', 'data');
-
-    if (data != undefined && data.customStaticTrays != undefined) {
-      let customStaticTrays = JSON.parse(data.customStaticTrays.trays);
-      this.savedData = true;
-      return customStaticTrays;
-    } else {
-      return [];
+    let data = actor.getFlag('auto-action-tray', 'data')?.customStaticTrays?.trays || [];
+    if (data.length > 0) {
+      data = JSON.parse(data);
     }
+      let config = actor.getFlag('auto-action-tray', 'config')?.customStaticTrays || [];
+      return [...data, ...config];
+      
+    
+    
   }
 
   getIcon(keyItem, actor) {
@@ -108,7 +108,7 @@ static overrides = {
 
     let requirements = keyItem.system?.requirements;
     let parse = Object.keys(classIcons).filter((e) =>
-      requirements.toLocaleLowerCase().includes(e)
+      keyItem?.requirements?.toLocaleLowerCase().includes(e)
     )[0];
     let actorClasses = actor._classes;
     let classarr = Object.keys(actor._classes);

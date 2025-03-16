@@ -2,8 +2,20 @@
 <div  class="character-image" >
 <div class="image-container {{#if (concentration this.actor)}}
 concentrating {{/if}}">
-<div class="image-border" id="health-percent"></div>
-  <img src={{#if this.actor.img}}{{actor.img}}{{else}}"./icons/svg/mystery-man.svg"{{/if}} alt="{{this.actor.name}}" 
+<div class="image-border" 
+{{#if trayOptions.healthIndicator}}
+id="health-percent"
+{{/if}}>
+</div>
+  <img src={{#if this.actor.img}}
+  {{#if (eq trayOptions.imageType 'token')}}
+  {{actor.prototypeToken.texture.src}}{{else}}
+  
+  {{actor.img}}
+  {{/if}}
+  
+  
+  {{else}}"./icons/svg/mystery-man.svg"{{/if}} alt="{{this.actor.name}}" 
   data-action="openSheet"/>
 </div>
 

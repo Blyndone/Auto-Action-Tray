@@ -52,6 +52,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       skillTrayPage: 0,
       currentTray: 'common',
       fastForward: true,
+      imageType: 'portrait',
+      healthIndicator: true,
+      concentrationColor: '#ff0000',
+      customStaticTrays: [],
     };
     this.styleSheet;
     for (let sheet of document.styleSheets) {
@@ -76,11 +80,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         document.documentElement.style.setProperty(
           '--item-size',
           iconSize + 'px'
-          
         );
         document.documentElement.style.setProperty(
           '--text-scale-ratio',
-           iconSize/75);
+          iconSize / 75
+        );
       }
       if (game.settings.get('auto-action-tray', 'rowCount')) {
         rowCount = game.settings.get('auto-action-tray', 'rowCount');
@@ -233,6 +237,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
           locked: false,
           skillTrayPage: 0,
           currentTray: 'common',
+          fastForward: true,
+          imageType: 'portrait',
+          healthIndicator: true,
+          concentrationColor: '#ff0000',
+          customStaticTrays: [],
         };
       }
 
@@ -354,7 +363,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         icon: '<i class="fa-solid fa-delete-right"></i>',
         callback: (li) => {
           this.actor.unsetFlag('auto-action-tray', 'data');
-          this.refresh();
+          this.actor.unsetFlag('auto-action-tray', 'config');
+          this.trayOptions = {
+            locked: false,
+            skillTrayPage: 0,
+            currentTray: 'common',
+            fastForward: true,
+            imageType: 'portrait',
+            healthIndicator: true,
+            concentrationColor: '#ff0000',
+            customStaticTrays: [],
+          };
+          this.render(true);
         },
       },
     ];
@@ -485,19 +505,43 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   static async trayConfig() {
     const fields = foundry.applications.fields;
 
-    const textInput = fields.createTextInput({
-      name: 'customStaticTray',
-      value: 'Starting Value',
+    const customStaticTray = fields.createTextInput({
+      name: 'customStaticTrays',
+      value: '',
     });
 
-    const textGroup = fields.createFormGroup({
-      input: textInput,
+    const customStaticTrayGroup = fields.createFormGroup({
+      input: customStaticTray,
       label: 'Additional Custom Static Tray',
-      hint: 'Optional hint',
+      hint: "Add an Item Resource here for auto-recognition. Enter the Item Name. The item must have limited uses. Additionally, other items that consume this resource should be configured to use the inputted item's available uses.",
+    });
+    const clearCustomStaticTrays = fields.createCheckboxInput({
+      name: 'clearCustomStaticTrays',
+      value: false,
+    });
+    const clearCustomStaticTraysGroup = fields.createFormGroup({
+      input: clearCustomStaticTrays,
+      label: 'Clear Custom Static Trays',
+      hint: 'Clear previous custom Static Trays',
+    });
+
+    const concentrationColor = fields.createTextInput({
+      name: 'concentrationColor',
+      value: '',
+    });
+
+    const concentrationColorGroup = fields.createFormGroup({
+      input: concentrationColor,
+      label: 'Concentration Color',
+      hint: 'Input a color for concentration highlight.  Colors should be in Hex; Ex. #ff0000',
     });
 
     const selectInput = fields.createSelectInput({
       options: [
+        {
+          label: '',
+          value: '',
+        },
         {
           label: 'Portrait',
           value: 'portrait',
@@ -518,7 +562,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
 
     const checkboxInput = fields.createCheckboxInput({
       name: 'healthIndicator',
-      value: true,
+      value: this.trayOptions['healthIndicator'],
     });
     const checkboxGroup = fields.createFormGroup({
       input: checkboxInput,
@@ -526,9 +570,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       hint: 'Enable the red health indicator based on missing health percentage.',
     });
 
-    const content = `${textGroup.outerHTML} ${selectGroup.outerHTML} ${checkboxGroup.outerHTML}`;
+    const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${checkboxGroup.outerHTML}`;
 
     const method = await foundry.applications.api.DialogV2.wait({
+      position: { width: 600 },
       window: { title: 'D20 Roll' },
       content: content,
       modal: false,
@@ -537,13 +582,49 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         {
           label: 'Accept',
           action: 'accept',
+          callback: (event, button, dialog) =>
+            new FormDataExtended(button.form).object,
         },
         {
           label: 'Cancel',
           action: 'cancel',
+          callback: (event, button, dialog) =>
+            new FormDataExtended(button.form).object,
         },
       ],
+    }).then((result) => {
+      if (result['imageType'] == '') {
+        result['imageType'] = this.trayOptions['imageType'];
+      }
+      if (result['clearCustomStaticTrays']) {
+        this.trayOptions['customStaticTrays'] = [];
+        result['customStaticTrays'] = [];
+      }
+      if (result['customStaticTrays'] != '') {
+        let itemId = this.actor.items.find(
+          (e) =>
+            e.name.toLowerCase() == result['customStaticTrays'].toLowerCase()
+        )?.id;
+        if (itemId) {
+          result['customStaticTrays'] = [
+            ...this.trayOptions['customStaticTrays'],
+            itemId,
+          ];
+        } else {
+          result['customStaticTrays'] = this.trayOptions['customStaticTrays'];
+        }
+      }
+      this.trayOptions = { ...this.trayOptions, ...result };
+      this.setTrayConfig(this.trayOptions);
+      this.render(true);
     });
+
+    // {
+    //     "customStaticTray": "",
+    //     "concentrationColor": "",
+    //     "imageType": "portrait",
+    //     "healthIndicator": true
+    //     }
   }
 
   static toggleHpText() {
@@ -664,9 +745,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     const roll = new Roll(`1d${this.dice[this.currentDice]}`);
     await roll.evaluate({ allowInteractive: false });
     await roll.toMessage({
-    speaker: ChatMessage.getSpeaker({ token: this.actor.token }),
-    flavor: `Rolling a d${this.dice[this.currentDice]}`,
-});
+      speaker: ChatMessage.getSpeaker({ token: this.actor.token }),
+      flavor: `Rolling a d${this.dice[this.currentDice]}`,
+    });
   }
 
   static viewItem(event, target) {

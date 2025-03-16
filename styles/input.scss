@@ -363,7 +363,7 @@ $tray-button-background: rgb(97, 97, 95);
   height: 100%;
   flex-grow: 1;
   box-sizing: border-box;
-  font-size: calc(var(--text-scale-ratio) * 0.75rem);
+  font-size: 100%;
 }
 
 .small-button-active {
@@ -373,7 +373,7 @@ $tray-button-background: rgb(97, 97, 95);
   height: 100%;
   flex-grow: 1;
   box-sizing: border-box;
-  font-size: calc(var(--text-scale-ratio) * 0.75rem);
+  font-size: 100%;
   border: 2px solid #c9593f;
   box-shadow: 0 0 5px #c9593f;
 }
@@ -385,7 +385,7 @@ $tray-button-background: rgb(97, 97, 95);
   height: $main-tray-height / 6;
   flex-grow: 1;
   box-sizing: border-box;
-  font-size: calc(var(--text-scale-ratio) * 0.875rem);
+  font-size: 100%;
 }
 .small-button-save {
   @include center;
@@ -397,7 +397,7 @@ $tray-button-background: rgb(97, 97, 95);
 
   flex-grow: 1;
   box-sizing: border-box;
-  font-size: calc(var(--text-scale-ratio) * 0.875rem);
+  font-size: 100%;
 }
 
 .proficient {
@@ -507,6 +507,10 @@ $tray-button-background: rgb(97, 97, 95);
     list-style-type: none;
     padding: 0px;
     align-items: center;
+    .context-item {
+      width: auto;
+      height: auto;
+    }
     li {
       width: $total-item-width;
       height: $total-item-height;
