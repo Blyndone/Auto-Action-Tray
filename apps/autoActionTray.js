@@ -19,9 +19,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   // Constructor
 
   constructor(options = {}) {
+
     gsap.registerPlugin(DrawSVGPlugin);
     super(options);
-
+    
     this.debugtime = 0;
 
     this.animating = false;
@@ -125,9 +126,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     Hooks.on('createCombatant', this._onUpdateCombat.bind(this));
     Hooks.on('updateCombatant', this._onUpdateCombat.bind(this));
     Hooks.on('deleteCombat', this._onUpdateCombat.bind(this));
+    Hooks.on('createItem', CustomTray._onCreateItem.bind(this));
 
     ui.hotbar.collapse();
     registerHandlebarsHelpers();
+    if (!game.user.isGM) { 
+      this.actor=canvas.tokens.controlled[0].actor
+      
+     this.newTray(this.actor)
+    }
   }
 
   static DEFAULT_OPTIONS = {
@@ -204,63 +211,67 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       return;
     }
     if (event.actor != this.actor || this.actor == event) {
-      if (this.selectingActivity == true) {
-        this.activityTray.rejectActivity(
-          new Error('User canceled activity selection')
-        );
-        this.activityTray.rejectActivity = null;
-      }
-
-      this.actor = event.actor ? event.actor : event;
-      this.actorHealthPercent = this.updateActorHealthPercent(this.actor);
-
-      this.staticTrays = StaticTray.generateStaticTrays(this.actor, {
-        application: this,
-      });
-      this.customTrays = CustomTray.generateCustomTrays(this.actor, {
-        application: this,
-      });
-      this.equipmentTray = EquipmentTray.generateCustomTrays(this.actor, {
-        application: this,
-      });
-      this.activityTray = ActivityTray.generateActivityTray(this.actor, {
-        application: this,
-      });
-      this.setDefaultTray();
-      this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
-      this.rangedWeapon = this.equipmentTray.getRangedWeapon();
-      this.skillTray = SkillTray.generateCustomTrays(this.actor);
-      this.combatHandler = new CombatHandler(this.actor, this);
-      // this.render({ parts: ['endTurn'] });
-      let config = this.getTrayConfig();
-      if (config) {
-        this.trayOptions = Object.assign({}, this.trayOptions, config);
-      } else {
-        this.trayOptions = {
-          locked: false,
-          skillTrayPage: 0,
-          currentTray: 'common',
-          fastForward: true,
-          imageType: 'portrait',
-          imageScale: 1,
-          imageX: 0,
-          imageY: 0,
-          healthIndicator: true,
-          concentrationColor: '#ff0000',
-          customStaticTrays: [],
-        };
-      }
-
-      this.render({
-        parts: [
-          'characterImage',
-          'centerTray',
-          'equipmentMiscTray',
-          'skillTray',
-        ],
-      });
+      this.newTray(actor);
     }
   };
+
+  newTray(actor) {
+    if (this.selectingActivity == true) {
+      this.activityTray.rejectActivity(
+        new Error('User canceled activity selection')
+      );
+      this.activityTray.rejectActivity = null;
+    }
+
+
+    this.actorHealthPercent = this.updateActorHealthPercent(actor);
+
+    this.staticTrays = StaticTray.generateStaticTrays(actor, {
+      application: this,
+    });
+    this.customTrays = CustomTray.generateCustomTrays(actor, {
+      application: this,
+    });
+    this.equipmentTray = EquipmentTray.generateCustomTrays(actor, {
+      application: this,
+    });
+    this.activityTray = ActivityTray.generateActivityTray(actor, {
+      application: this,
+    });
+    this.setDefaultTray();
+    this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
+    this.rangedWeapon = this.equipmentTray.getRangedWeapon();
+    this.skillTray = SkillTray.generateCustomTrays(actor);
+    this.combatHandler = new CombatHandler(actor, this);
+    // this.render({ parts: ['endTurn'] });
+    let config = this.getTrayConfig();
+    if (config) {
+      this.trayOptions = Object.assign({}, this.trayOptions, config);
+    } else {
+      this.trayOptions = {
+        locked: false,
+        skillTrayPage: 0,
+        currentTray: 'common',
+        fastForward: true,
+        imageType: 'portrait',
+        imageScale: 1,
+        imageX: 0,
+        imageY: 0,
+        healthIndicator: true,
+        concentrationColor: '#ff0000',
+        customStaticTrays: [],
+      };
+    }
+
+    this.render({
+      parts: [
+        'characterImage',
+        'centerTray',
+        'equipmentMiscTray',
+        'skillTray',
+      ],
+    });
+  }
 
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return;

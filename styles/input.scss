@@ -503,7 +503,7 @@ $tray-button-background: rgb(97, 97, 95);
     width: calc($total-item-width * $item-tray-item-width-count);
     height: calc($total-item-height * $item-tray-item-height-count);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     list-style-type: none;
     padding: 0px;

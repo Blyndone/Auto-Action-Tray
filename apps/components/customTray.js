@@ -31,12 +31,13 @@ export class CustomTray extends AbilityTray {
       case 'common':
         this.abilities = allItems.filter(
           (e) =>
-            e.system?.activities?.some(
+            (e.system?.activities?.some(
               (activity) => activity?.activation?.type === 'action'
             ) ||
-            e.system?.activities?.some(
-              (activity) => activity?.activation?.type === 'bonus'
-            )
+              e.system?.activities?.some(
+                (activity) => activity?.activation?.type === 'bonus'
+              )) &&
+            e.type != 'spell'
         );
         this.id = 'common';
         break;
@@ -49,8 +50,18 @@ export class CustomTray extends AbilityTray {
         this.id = 'items';
         break;
       case 'passive':
-        this.abilities = actor.items.filter((e) => e.system?.activities?.size < 1)
+        this.abilities = actor.items.filter(
+          (e) => e.system?.activities?.size < 1
+        );
         this.id = 'passive';
+        break;
+      case 'reaction':
+        this.abilities = allItems.filter((e) =>
+          e.system?.activities?.some(
+            (activity) => activity?.activation?.type === 'reaction'
+          )
+        );
+        this.id = 'reaction';
         break;
       case 'custom':
         this.id = 'custom';
@@ -153,7 +164,7 @@ export class CustomTray extends AbilityTray {
         break;
     }
     this.abilities = AbilityTray.padArray(this.abilities, 20);
-   
+
     return;
   }
 
@@ -179,18 +190,34 @@ export class CustomTray extends AbilityTray {
       actorUuid: actor.uuid,
     });
 
+    let reactionTray = new CustomTray({
+      category: 'reaction',
+      id: 'reaction',
+      actorUuid: actor.uuid,
+    });
+
     let customTray = new CustomTray({
       category: 'custom',
       id: 'custom',
       actorUuid: actor.uuid,
     });
-let trays = [commonTray, classTray, consumablesTray, passiveTray, customTray];
-      if (actor.type === 'npc') {
-      trays = trays.filter(e => (e.abilities.some(e => e!= null)))
-     
-    }
+    let trays = [
+      commonTray,
+      classTray,
+      consumablesTray,
+      reactionTray,
+      passiveTray,
+      customTray,
+    ];
+    trays = trays.filter(
+      (e) => e.abilities.some((e) => e != null) || e.cataegory === 'custom'
+    );
 
     return trays;
+  }
+
+  static _onCreateItem(event) {
+    debugger;
   }
 
   checkSavedData() {

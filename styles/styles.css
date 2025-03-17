@@ -513,7 +513,7 @@
   width: calc(var(--item-size) * var(--item-tray-item-width-count));
   height: calc(var(--item-size) * var(--item-tray-item-height-count));
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
   list-style-type: none;
   padding: 0px;
