@@ -217,6 +217,9 @@ export class CustomTray extends AbilityTray {
   }
 
   static _onCreateItem(item) {
+    if (this.trayOptions['autoAddItems'] == false) {
+      return;
+    }
     if (item.parent.type != 'character') {
       return;
     }

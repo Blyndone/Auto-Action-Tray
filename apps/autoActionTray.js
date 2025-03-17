@@ -59,6 +59,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       healthIndicator: true,
       concentrationColor: '#ff0000',
       customStaticTrays: [],
+      autoAddItems: true,
     };
     this.styleSheet;
     for (let sheet of document.styleSheets) {
@@ -236,11 +237,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (data != undefined) {
       let delayedItems = JSON.parse(data);
 
-      if (delayedItems != undefined && delayedItems.length > 0) {
+      if (this.trayOptions['autoAddItems'] && delayedItems != undefined && delayedItems.length > 0) {
         delayedItems.forEach((item) => {
           let foundItem = actor.items.get(item);
           if (foundItem != undefined) {
-            CustomTray._onCreateItem.bind(this, foundItem)()
+            CustomTray._onCreateItem.bind(this, foundItem)();
           }
         });
         actor.unsetFlag('auto-action-tray', 'delayedItems');
@@ -276,6 +277,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         healthIndicator: true,
         concentrationColor: '#ff0000',
         customStaticTrays: [],
+        autoAddItems: true,
       };
     }
 
@@ -404,6 +406,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
             healthIndicator: true,
             concentrationColor: '#ff0000',
             customStaticTrays: [],
+            autoAddItems: true,
           };
           this.render(true);
         },
@@ -633,7 +636,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       hint: 'Enable the red health indicator based on missing health percentage.',
     });
 
-    const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML}`;
+    const autoAddItems = fields.createCheckboxInput({
+      name: 'autoAddItems',
+      value: this.trayOptions['autoAddItems'],
+    });
+    const autoAddItemsGroup = fields.createFormGroup({
+      input: autoAddItems,
+      label: 'Auto Add Items ',
+      hint: 'Automattily add items to the tray when they are created.',
+    });
+
+    const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`;
 
     const method = await foundry.applications.api.DialogV2.wait({
       position: { width: 600 },
