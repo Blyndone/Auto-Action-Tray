@@ -211,7 +211,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       return;
     }
     if (event.actor != this.actor || this.actor == event) {
-      this.newTray(actor);
+      this.actor = event.actor ? event.actor : event;
+      this.newTray(this.actor);
     }
   };
 
