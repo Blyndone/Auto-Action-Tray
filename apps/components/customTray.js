@@ -216,10 +216,102 @@ export class CustomTray extends AbilityTray {
     return trays;
   }
 
-  static _onCreateItem(event) {
+  static _onCreateItem(item) {
+    console.log(item);
+
+    console.log(this);
+    if (item.parent.type != 'character') {
+      return;
+    }
+    if (item.parent == this.actor) {
+      let tray;
+      switch (true) {
+        case item.system.activities.length == 0:
+           tray = this.customTrays.find((e) => e.id == 'passive');
+          if (tray) {
+            CustomTray.addToTray(item, tray);
+          } else {
+            let passiveTray = new CustomTray({
+              category: 'passive',
+              id: 'passive',
+              actorUuid: this.actor.uuid,
+            });
+            this.customTrays.push(passiveTray);
+          }
+          break;
+
+        case item.system?.activities.some((e) => e?.activation?.type == 'reaction'):
+          tray = this.customTrays.find((e) => e.id == 'reaction');
+          if (tray) {
+            CustomTray.addToTray(item, tray);
+          } else {
+            let reactionTray = new CustomTray({
+              category: 'reaction',
+              id: 'reaction',
+              actorUuid: this.actor.uuid,
+            });
+            this.customTrays.push(reactionTray);
+          }
+          break;
+
+        case item.type == 'consumable':
+          tray = this.customTrays.find((e) => e.id == 'items');
+          if (tray) {
+            CustomTray.addToTray(item, tray);
+          } else {
+            let consumableTray = new CustomTray({
+              category: 'items',
+              id: 'items',
+              actorUuid: this.actor.uuid,
+            });
+            this.customTrays.push(consumableTray);
+          }
+          break;
+
+        case item.type == 'feat':
+          tray = this.customTrays.find((e) => e.id == 'classFeatures');
+          if (tray) {
+            CustomTray.addToTray(item, tray);
+          } else {
+            let classFeatureTray = new CustomTray({
+              category: 'classFeatures',
+              id: 'classFeatures',
+              actorUuid: this.actor.uuid,
+            });
+            this.customTrays.push(classFeatureTray);
+          }
+
+          break;
+
+        default:
+           tray = this.customTrays.find((e) => e.id == 'common');
+          if (tray) {
+            CustomTray.addToTray(item, tray);
+          } else {
+            let commonTray = new CustomTray({
+              category: 'common',
+              id: 'common',
+              actorUuid: actor.uuid,
+            });
+            this.customTrays.push(commonTray);
+          }
+          break;
+        }
+        
+        this.render(['centerTray']);
+      return;
+      //ADD TO CUSTOM TRAY
+    }
+    //flag for addition to custom tray
+
     debugger;
   }
-
+  static addToTray(item, tray) {
+    tray.abilities[tray.abilities.findIndex(e => e == null)] = item;
+    tray.setSavedData();
+    
+    // this.abilities = AbilityTray.padArray(this.abilities, 20);
+  }
   checkSavedData() {
     let actor = fromUuidSync(this.actorUuid);
     if (actor != null) {

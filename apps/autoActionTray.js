@@ -133,7 +133,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (!game.user.isGM) { 
       this.actor=canvas.tokens.controlled[0].actor
       
-     this.newTray(this.actor)
+     this.initialTraySetup(this.actor)
     }
   }
 
@@ -212,11 +212,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
     if (event.actor != this.actor || this.actor == event) {
       this.actor = event.actor ? event.actor : event;
-      this.newTray(this.actor);
+      this.initialTraySetup(this.actor);
     }
   };
 
-  newTray(actor) {
+  initialTraySetup(actor) {
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(
         new Error('User canceled activity selection')
