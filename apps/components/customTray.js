@@ -217,17 +217,15 @@ export class CustomTray extends AbilityTray {
   }
 
   static _onCreateItem(item) {
-    console.log(item);
-
-    console.log(this);
     if (item.parent.type != 'character') {
       return;
     }
     if (item.parent == this.actor) {
       let tray;
+      let commonTray = this.customTrays.find((e) => e.id == 'common');
       switch (true) {
-        case item.system.activities.length == 0:
-           tray = this.customTrays.find((e) => e.id == 'passive');
+        case item.system.activities.size == 0:
+          tray = this.customTrays.find((e) => e.id == 'passive');
           if (tray) {
             CustomTray.addToTray(item, tray);
           } else {
@@ -240,7 +238,9 @@ export class CustomTray extends AbilityTray {
           }
           break;
 
-        case item.system?.activities.some((e) => e?.activation?.type == 'reaction'):
+        case item.system?.activities.some(
+          (e) => e?.activation?.type == 'reaction'
+        ):
           tray = this.customTrays.find((e) => e.id == 'reaction');
           if (tray) {
             CustomTray.addToTray(item, tray);
@@ -256,6 +256,9 @@ export class CustomTray extends AbilityTray {
 
         case item.type == 'consumable':
           tray = this.customTrays.find((e) => e.id == 'items');
+          if (commonTray) {
+            CustomTray.addToTray(item, commonTray);
+          }
           if (tray) {
             CustomTray.addToTray(item, tray);
           } else {
@@ -270,6 +273,9 @@ export class CustomTray extends AbilityTray {
 
         case item.type == 'feat':
           tray = this.customTrays.find((e) => e.id == 'classFeatures');
+          if (commonTray) {
+            CustomTray.addToTray(item, commonTray);
+          }
           if (tray) {
             CustomTray.addToTray(item, tray);
           } else {
@@ -284,9 +290,8 @@ export class CustomTray extends AbilityTray {
           break;
 
         default:
-           tray = this.customTrays.find((e) => e.id == 'common');
-          if (tray) {
-            CustomTray.addToTray(item, tray);
+          if (commonTray) {
+            CustomTray.addToTray(item, commonTray);
           } else {
             let commonTray = new CustomTray({
               category: 'common',
@@ -296,21 +301,43 @@ export class CustomTray extends AbilityTray {
             this.customTrays.push(commonTray);
           }
           break;
-        }
-        
-        this.render(['centerTray']);
-      return;
-      //ADD TO CUSTOM TRAY
-    }
-    //flag for addition to custom tray
+      }
 
-    debugger;
+      this.render(['centerTray']);
+      return;
+    } else {
+      CustomTray.setDelayedData(item, item.parent);
+    }
+
+    //flag for addition to custom tray
+  }
+
+  static _onDeleteItem(item) {
+    let actor = item.parent;
+    if (actor != this.actor) {
+      return;
+    }
+
+    let trays = this.customTrays;
+    trays.forEach((tray) => {
+      let index = tray.abilities.findIndex((e) => e?.id == item.id);
+      if (index > -1) {
+        tray.abilities[index] = null;
+        tray.setSavedData();
+      }
+    });
+    this.render(['centerTray']);
   }
   static addToTray(item, tray) {
-    tray.abilities[tray.abilities.findIndex(e => e == null)] = item;
+    let index = tray.abilities.findIndex((e) => e == null);
+    if (index == -1) {
+      return;
+    }
+    if (tray.abilities.filter((e) => e == item).length > 0) {
+      return;
+    }
+    tray.abilities[index] = item;
     tray.setSavedData();
-    
-    // this.abilities = AbilityTray.padArray(this.abilities, 20);
   }
   checkSavedData() {
     let actor = fromUuidSync(this.actorUuid);
@@ -328,8 +355,34 @@ export class CustomTray extends AbilityTray {
         this.abilities = JSON.parse(data[this.id].abilities).map((e) =>
           e ? actor.items.get(e) : null
         );
+        if (
+          this.abilities.length == 0 ||
+          this.abilities.every((item) => item === null)
+        ) {
+          actor.unsetFlag('auto-action-tray', 'data.' + this.id);
+        }
+        this.setSavedData();
         this.savedData = true;
       }
+    }
+  }
+
+  static setDelayedData(item, actor) {
+    if (game.user.isGM) {
+      let existingDelayItems = actor.getFlag(
+        'auto-action-tray',
+        'delayedItems'
+      );
+      let delayItems = [];
+      if (existingDelayItems != undefined) {
+        delayItems = [...JSON.parse(existingDelayItems)];
+      }
+      delayItems.push(item.id);
+      actor.setFlag(
+        'auto-action-tray',
+        'delayedItems',
+        JSON.stringify(delayItems)
+      );
     }
   }
 
@@ -337,6 +390,9 @@ export class CustomTray extends AbilityTray {
     let actor = fromUuidSync(this.actorUuid);
     if (actor != null) {
       let temparr = this.abilities.map((e) => (e ? e.id : null));
+      if (temparr.length == 0) {
+        return;
+      }
       actor.setFlag('auto-action-tray', 'data', {
         [this.id]: { abilities: JSON.stringify(temparr) },
       });

@@ -19,10 +19,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   // Constructor
 
   constructor(options = {}) {
-
     gsap.registerPlugin(DrawSVGPlugin);
     super(options);
-    
+
     this.debugtime = 0;
 
     this.animating = false;
@@ -127,13 +126,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     Hooks.on('updateCombatant', this._onUpdateCombat.bind(this));
     Hooks.on('deleteCombat', this._onUpdateCombat.bind(this));
     Hooks.on('createItem', CustomTray._onCreateItem.bind(this));
+    Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this));
 
     ui.hotbar.collapse();
     registerHandlebarsHelpers();
-    if (!game.user.isGM) { 
-      this.actor=canvas.tokens.controlled[0].actor
-      
-     this.initialTraySetup(this.actor)
+    if (!game.user.isGM) {
+      this.actor = canvas.tokens.controlled[0].actor;
+
+      this.initialTraySetup(this.actor);
     }
   }
 
@@ -224,7 +224,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       this.activityTray.rejectActivity = null;
     }
 
-
     this.actorHealthPercent = this.updateActorHealthPercent(actor);
 
     this.staticTrays = StaticTray.generateStaticTrays(actor, {
@@ -233,12 +232,28 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     this.customTrays = CustomTray.generateCustomTrays(actor, {
       application: this,
     });
+    let data = actor.getFlag('auto-action-tray', 'delayedItems');
+    if (data != undefined) {
+      let delayedItems = JSON.parse(data);
+
+      if (delayedItems != undefined && delayedItems.length > 0) {
+        delayedItems.forEach((item) => {
+          let foundItem = actor.items.get(item);
+          if (foundItem != undefined) {
+            CustomTray._onCreateItem.bind(this, foundItem)()
+          }
+        });
+        actor.unsetFlag('auto-action-tray', 'delayedItems');
+      }
+    }
+
     this.equipmentTray = EquipmentTray.generateCustomTrays(actor, {
       application: this,
     });
     this.activityTray = ActivityTray.generateActivityTray(actor, {
       application: this,
     });
+
     this.setDefaultTray();
     this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
     this.rangedWeapon = this.equipmentTray.getRangedWeapon();
@@ -265,12 +280,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     }
 
     this.render({
-      parts: [
-        'characterImage',
-        'centerTray',
-        'equipmentMiscTray',
-        'skillTray',
-      ],
+      parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     });
   }
 
