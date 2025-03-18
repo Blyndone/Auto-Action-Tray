@@ -333,6 +333,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     context = {
       partId: `${this.id}-${partId}`,
       actor: this.actor,
+      animating: this.animating,
       totalabilities: this.totalabilities,
       meleeWeapon: this.meleeWeapon,
       rangedWeapon: this.rangedWeapon,

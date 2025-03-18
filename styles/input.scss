@@ -815,14 +815,16 @@ $tray-button-background: rgb(97, 97, 95);
 
 .tooltip-duration,
 .tooltip-info {
-  font-size: calc(var(--text-scale-ratio) * 0.875rem);
-  margin-top: 8px;
+  font-size: calc(var(--text-scale-ratio) * 1.1rem);
+  margin-left: 15px;
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
 .tooltip-footer {
+  flex-direction: row;
+  display: flex;
   margin-top: 10px;
   text-align: left;
   background-color: #1d140c;

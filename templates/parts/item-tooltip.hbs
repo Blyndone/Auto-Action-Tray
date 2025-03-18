@@ -20,39 +20,39 @@
 
   </div>
 
-  <div class='tooltip-info'>
-    {{#if system.range.reach}}
-      <span class='range-icon'><i class='fa-solid fa-swords'></i></span>
-      {{system.range.reach}}
-      ft. Melee
-    {{/if}}
-    {{#if system.range.value}}
-      {{#if (eq system.type spell)}}
-        <span class='range-icon'><i
-            class='fa-solid fa-wand-sparkles'
-          ></i></span>
-      {{else}}
-        <span class='range-icon'><i class='fa-solid fa-bow-arrow'></i></span>
+  <div class='tooltip-footer'>
+    <span class='action-tag'>{{#if
+        (eq @root.actionType '')
+      }}Passive{{else}}{{@root.actionType}}{{/if}}</span>
+
+    <span class='tooltip-info'>
+      {{#if system.range.reach}}
+        <span class='range-icon'><i class='fa-solid fa-swords'></i></span>
+        {{system.range.reach}}
+        ft. Melee
       {{/if}}
-      {{system.range.value}}
-      {{#if system.range.long}}
-        /
-        {{system.range.long}}
+      {{#if system.range.value}}
+        {{#if (eq system.type spell)}}
+          <span class='range-icon'><i
+              class='fa-solid fa-wand-sparkles'
+            ></i></span>
+        {{else}}
+          <span class='range-icon'><i class='fa-solid fa-bow-arrow'></i></span>
+        {{/if}}
+        {{system.range.value}}
+        {{#if system.range.long}}
+          /
+          {{system.range.long}}
+        {{/if}}
+        ft.
       {{/if}}
-      ft.
-    {{/if}}
-    <span>
-      {{#if @root.saveType}}
-        <i class='fa-solid fa-shield-halved'></i>{{@root.saveType}}
-      {{/if}}
+      <span>
+        {{#if @root.saveType}}
+          <i class='fa-solid fa-shield-halved'></i>{{@root.saveType}}
+        {{/if}}
+      </span>
+
     </span>
 
-    {{!-- <span class='save-icon'>🛡️</span>
-    {{saveType}}
-    Save --}}
-  </div>
-
-  <div class='tooltip-footer'>
-    <span class='action-tag'>{{@root.actionType}}</span>
   </div>
 </div>

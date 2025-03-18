@@ -13,12 +13,12 @@ export class AnimationHandler {
 
     let tray1 = this.findTray(tray1ID, hotbar);
     let tray2 = this.findTray(tray2ID, hotbar);
+    hotbar.animating = true;
     tray1.active = true;
     tray2.active = true;
     hotbar.currentTray = tray1;
     hotbar.targetTray = tray2;
     await hotbar.render({ parts: ["centerTray"] });
-    hotbar.animating = true;
 
     var tl = gsap.timeline();
     tl
@@ -43,8 +43,8 @@ export class AnimationHandler {
           onStart: () => {},
           onComplete: () => {
             hotbar.animating = false;
-            hotbar.currentTray.active = true;
             hotbar.targetTray.active = false;
+            hotbar.currentTray.active = true;
             hotbar.refresh();
           }
         },
