@@ -1088,4 +1088,19 @@
   pointer-events: none;
 }
 
+.minimize-button {
+  /* position: absolute; */
+  /* padding: 8px; */
+  /* transform: translate(0px, -40px); */
+  /* justify-items: center; */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  pointer-events: all;
+}
+.minimize-button i {
+  font-size: 18px;
+}
+
 /*# sourceMappingURL=styles.css.map */

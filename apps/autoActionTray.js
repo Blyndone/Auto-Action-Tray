@@ -21,7 +21,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin);
     super(options);
-
+    this.enabled = true;
     this.debugtime = 0;
 
     this.animating = false;
@@ -128,8 +128,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     Hooks.on('deleteCombat', this._onUpdateCombat.bind(this));
     Hooks.on('createItem', CustomTray._onCreateItem.bind(this));
     Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this));
+    Hooks.on('renderHotbar', () => {});
 
     ui.hotbar.collapse();
+
     registerHandlebarsHelpers();
     if (!game.user.isGM) {
       this.actor = canvas.tokens.controlled[0].actor;
@@ -163,6 +165,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       toggleSkillTrayPage: AutoActionTray.toggleSkillTrayPage,
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
+      minimizeTray: AutoActionTray.minimizeTray,
       toggleItemSelector: AutoActionTray.toggleItemSelector,
       trayConfig: AutoActionTray.trayConfig,
       toggleHpText: AutoActionTray.toggleHpText,
@@ -237,7 +240,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
     if (data != undefined) {
       let delayedItems = JSON.parse(data);
 
-      if (this.trayOptions['autoAddItems'] && delayedItems != undefined && delayedItems.length > 0) {
+      if (
+        this.trayOptions['autoAddItems'] &&
+        delayedItems != undefined &&
+        delayedItems.length > 0
+      ) {
         delayedItems.forEach((item) => {
           let foundItem = actor.items.get(item);
           if (foundItem != undefined) {
@@ -539,6 +546,38 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
   static toggleItemSelector() {
     this.itemSelectorEnabled = !this.itemSelectorEnabled;
     this.render({ parts: ['equipmentMiscTray'] });
+  }
+  static minimizeTray() {
+
+    this.close({ animate: false });
+    const bottomUi = document.getElementById('hotbar');
+
+    if (!bottomUi) {
+      console.error("Element with ID 'hotbar' not found.");
+      return;
+    }
+
+    let wrapper = document.createElement('div');
+    wrapper.classList.add('bar-controls', 'minimize-button');
+
+    let link = document.createElement('a');
+    link.id = 'aat-maximize';
+    link.setAttribute('role', 'button');
+    link.setAttribute('data-tooltip', 'Restore Auto Action Tray');
+    link.setAttribute('data-action', 'openSheet');
+
+    let icon = document.createElement('i');
+    icon.classList.add('fa-solid', 'fa-arrows-maximize');
+
+    link.appendChild(icon);
+    wrapper.appendChild(link);
+
+    wrapper.onclick = () => {
+      this.render(true);
+      wrapper.remove();      
+    };
+
+    bottomUi.prepend(wrapper);
   }
 
   static async trayConfig() {
@@ -884,26 +923,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       }
     }
   }
-  // console.log(
-  //   'rendered',
-  //   Date.now() - this.debugtime,
-  //   context,
-  //   options['parts'],
-  //   options
-  // );
-  // this.debugtime = Date.now();
-
-  // Draggable.create('.abilities-tray', {
-  //   bounds: { minX: 0, maxX: 700 },
-  //   inertia: true,
-  //   type: 'x',
-  //   snap: {
-  //     x: function (value) {
-  //       //snap to the closest increment of 50.
-  //       return Math.round(value / 75) * 75+5;
-  //     },
-  //   },
-  // });
 
   _canDragStart(selector) {
     return this.isEditable && !this.trayOptions['locked'];
