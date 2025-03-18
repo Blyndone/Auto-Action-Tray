@@ -14,6 +14,7 @@ export class DamageCalc {
     if (activities.length == 0) {
       return '';
     }
+
     let damageParts = activities.map((activity) => this.getDamage(activity));
     let flatDamages = activities.map((activity) =>
       this.getFlatDamage(activity, item.actor)
@@ -24,6 +25,9 @@ export class DamageCalc {
 
     let i = 0;
     let activity = activities[i];
+    let actorBonuses = item.actor.system.bonuses;
+    let activityBonus = parseInt(actorBonuses[activity.actionType]?.damage) || 0;
+
 
     if (this.checkOverride(item)) {
       damageParts[0] = this.getOverrideDamageParts(item);
@@ -54,9 +58,9 @@ export class DamageCalc {
       if (flatDamages[i].length != 0) {
         bonus = flatDamages[i][0] != '' ? parseInt(flatDamages[i]) : 0;
       }
-      bonus =
-        parseInt(bonus) +
-        parseInt(part.bonus != '@mod' && part.bonus != '' ? part.bonus : 0);
+      bonus += activityBonus;
+
+      
       dice.push(
         `${part.min}d${part.dieSize}${bonus > 0 ? ' + ' + bonus : ''} ${[
           this.capitalize(part.damageType),

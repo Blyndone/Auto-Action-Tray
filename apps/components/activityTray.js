@@ -26,7 +26,11 @@ export class ActivityTray extends AbilityTray {
 
   async setActivities(item, actor) {
     this.abilities = [];
-    if (item.type == "spell" && item.system.activities.size == 1) {
+    if (
+      item.type == "spell" &&
+      item.system.activities.size == 1 &&
+      item.system.level > 0
+    ) {
       Object.keys(actor.system.spells).forEach(spell => {
         if (
           item.system.level <= actor.system.spells[spell].level &&
