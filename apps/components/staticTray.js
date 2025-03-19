@@ -62,10 +62,10 @@ export class StaticTray extends AbilityTray {
           .filter(
             (e) =>
               (e.system.level <= this.spellLevel && e.system.level != 0) &&
-              e.system.preparation?.prepared == true ||
+              (e.system.preparation?.prepared == true ||
               e.system.preparation?.mode == 'innate' ||
               e.system.preparation?.mode == 'always' ||
-              e.system.preparation?.mode == 'atwill',
+              e.system.preparation?.mode == 'atwill'),
           )
           .sort((a, b) => b.system.level - a.system.level)
 

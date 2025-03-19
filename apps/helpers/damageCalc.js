@@ -208,8 +208,8 @@ export class DamageCalc {
 
       case activity.type == 'heal':
         ability =
-          activity.parent?.ability != '' && activity.parent.ability
-            ? activity.parent.ability
+          activity.ability != '' && activity.ability
+            ? activity.ability
             : actor.system.attributes.spellcasting;
         modDamge =
           actor.system.abilities[ability ? ability : activity.item.abilityMod]

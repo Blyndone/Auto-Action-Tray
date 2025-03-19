@@ -1,4 +1,5 @@
 <div class='tooltip-container'>
+
   <div class='tooltip-header'>
     <h2>{{name}}</h2>
     <p class='tooltip-subtitle'>{{capitalize type}}</p>
@@ -26,23 +27,21 @@
       }}Passive{{else}}{{@root.actionType}}{{/if}}</span>
 
     <span class='tooltip-info'>
-      {{#if system.range.reach}}
+      {{#if system.activities.contents.0.range.reach}}
         <span class='range-icon'><i class='fa-solid fa-swords'></i></span>
-        {{system.range.reach}}
+        {{system.activities.contents.0.range.reach}}
         ft. Melee
       {{/if}}
-      {{#if system.range.value}}
+      {{#if system.activities.contents.0.range.value}}
         {{#if (eq system.type spell)}}
-          <span class='range-icon'><i
-              class='fa-solid fa-wand-sparkles'
-            ></i></span>
+          <span class='range-icon'><i class='fa-solid fa-wand-sparkles'></i></span>
         {{else}}
           <span class='range-icon'><i class='fa-solid fa-bow-arrow'></i></span>
         {{/if}}
-        {{system.range.value}}
-        {{#if system.range.long}}
+        {{system.activities.contents.0.range.value}}
+        {{#if system.activities.contents.0.range.long}}
           /
-          {{system.range.long}}
+          {{system.activities.contents.0.range.long}}
         {{/if}}
         ft.
       {{/if}}
