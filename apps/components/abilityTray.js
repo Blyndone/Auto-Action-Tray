@@ -5,25 +5,25 @@ export class AbilityTray {
     this.category = options.category || null;
     this.actorUuid = options.actorUuid || null;
     this.active = false;
-    this.type = "";
+    this.type = '';
     this.application = options.application || null;
   }
 
   static padArray(arr, length = 20, filler = null) {
     let rowCount = 2;
     let columnCount = 10;
-    if (game.settings.get("auto-action-tray", "rowCount")) {
-      rowCount = game.settings.get("auto-action-tray", "rowCount");
+    if (game.settings.get('auto-action-tray', 'rowCount')) {
+      rowCount = game.settings.get('auto-action-tray', 'rowCount');
       document.documentElement.style.setProperty(
-        "--item-tray-item-height-count",
+        '--item-tray-item-height-count',
         rowCount
       );
     }
 
-    if (game.settings.get("auto-action-tray", "columnCount")) {
-      rowCount = game.settings.get("auto-action-tray", "columnCount");
+    if (game.settings.get('auto-action-tray', 'columnCount')) {
+      columnCount = game.settings.get('auto-action-tray', 'columnCount');
       document.documentElement.style.setProperty(
-        " --item-tray-item-width-count",
+        ' --item-tray-item-width-count',
         columnCount
       );
     }
@@ -33,10 +33,10 @@ export class AbilityTray {
     if (arr == null) return new Array(length).fill(filler);
     return [
       ...arr,
-      ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)
+      ...Array(Math.max(0, totalabilities - arr.length)).fill(filler),
     ];
   }
-    static _onDeleteItem(item) {
+  static _onDeleteItem(item) {
     let actor = item.parent;
     if (actor != this.actor) {
       return;
@@ -63,7 +63,7 @@ export class AbilityTray {
     tray.abilities[index] = item;
     tray.setSavedData();
   }
-    static _onCreateItem(item) {
+  static _onCreateItem(item) {
     if (this.trayOptions['autoAddItems'] == false) {
       return;
     }
@@ -77,7 +77,7 @@ export class AbilityTray {
         case item.system.activities.size == 0:
           tray = this.customTrays.find((e) => e.id == 'passive');
           if (tray) {
-            CustomTray.addToTray(item, tray);
+            AbilityTray.addToTray(item, tray);
           } else {
             let passiveTray = new CustomTray({
               category: 'passive',
@@ -93,7 +93,7 @@ export class AbilityTray {
         ):
           tray = this.customTrays.find((e) => e.id == 'reaction');
           if (tray) {
-            CustomTray.addToTray(item, tray);
+            AbilityTray.addToTray(item, tray);
           } else {
             let reactionTray = new CustomTray({
               category: 'reaction',
@@ -107,10 +107,10 @@ export class AbilityTray {
         case item.type == 'consumable':
           tray = this.customTrays.find((e) => e.id == 'items');
           if (commonTray) {
-            CustomTray.addToTray(item, commonTray);
+            AbilityTray.addToTray(item, commonTray);
           }
           if (tray) {
-            CustomTray.addToTray(item, tray);
+            AbilityTray.addToTray(item, tray);
           } else {
             let consumableTray = new CustomTray({
               category: 'items',
@@ -124,10 +124,10 @@ export class AbilityTray {
         case item.type == 'feat':
           tray = this.customTrays.find((e) => e.id == 'classFeatures');
           if (commonTray) {
-            CustomTray.addToTray(item, commonTray);
+            AbilityTray.addToTray(item, commonTray);
           }
           if (tray) {
-            CustomTray.addToTray(item, tray);
+            AbilityTray.addToTray(item, tray);
           } else {
             let classFeatureTray = new CustomTray({
               category: 'classFeatures',
@@ -141,7 +141,7 @@ export class AbilityTray {
 
         default:
           if (commonTray) {
-            CustomTray.addToTray(item, commonTray);
+            AbilityTray.addToTray(item, commonTray);
           } else {
             let commonTray = new CustomTray({
               category: 'common',
@@ -156,7 +156,7 @@ export class AbilityTray {
       this.render(['centerTray']);
       return;
     } else {
-      CustomTray.setDelayedData(item, item.parent);
+      AbilityTray.setDelayedData(item, item.parent);
     }
 
     //flag for addition to custom tray
@@ -258,6 +258,4 @@ export class AbilityTray {
   getAbilities() {
     return this.abilities;
   }
-
-  
 }

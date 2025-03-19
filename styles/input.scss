@@ -12,12 +12,9 @@ $total-item-width: var(--item-size);
 $total-item-height: var(--item-size);
 $main-tray-padding: 5px;
 $app-width: 1400px;
-$app-height: calc(
-  $item-tray-item-height-count * $total-item-height + $main-tray-padding * 4
-);
+$app-height: calc($item-tray-item-height-count * $total-item-height + $main-tray-padding * 4);
 $main-tray-height: calc(
-  $item-tray-item-height-count * $total-item-height + $main-tray-padding * 2 +
-    2px
+  $item-tray-item-height-count * $total-item-height + $main-tray-padding * 2 + 2px
 );
 $inset-border: 2px;
 $item-margin: 1px;
@@ -66,8 +63,7 @@ $tray-button-background: rgb(97, 97, 95);
 
 @mixin inset-tray {
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-    inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
 
   border: $inset-border solid #2f2f2f;
   border-radius: 6px;
@@ -262,22 +258,20 @@ $tray-button-background: rgb(97, 97, 95);
       height: 100%;
       border-radius: 50%;
 
-      box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-        inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+      box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
       outline: 4px solid rgba(39, 39, 39, 1);
     }
   }
 
   #health-percent {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-      inset -3px -3px 5px rgba(0, 0, 0, 0.8),
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
       inset 0 0 calc(100px - var(--character-health-percent) * 1px)
         rgba(225, 0, 0, calc(1 - (var(--character-health-percent) / 100)));
     z-index: 1;
   }
   .concentrating {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8),
-      inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 15px #9600d1;
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
+      0 0 15px #9600d1;
     border: $inset-border solid #2f2f2f;
     outline: 3px solid #8500a0;
     // border: 2px solid #8500a0;
@@ -352,8 +346,7 @@ $tray-button-background: rgb(97, 97, 95);
   font-family: serif;
   &:hover {
     border-color: #c9593f; // Warmer highlight color
-    box-shadow: 0 0 8px rgba(201, 89, 63, 0.8),
-      0 0 4px rgba(201, 89, 63, 0.6) inset;
+    box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
   }
 }
 
@@ -422,10 +415,7 @@ $tray-button-background: rgb(97, 97, 95);
 .ability-tray-container {
   @include main-tray-height;
   @include inset-tray;
-  $tray-width: calc(
-    $total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 +
-      5px
-  );
+  $tray-width: calc($total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 + 5px);
 
   padding: $main-tray-padding;
   width: $tray-width;
@@ -603,8 +593,7 @@ $tray-button-background: rgb(97, 97, 95);
   min-width: 20px;
   text-align: right;
   height: 0px;
-  text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black,
-    1px 1px 0px black;
+  text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;
 }
 
 .spell-item-container {
@@ -624,8 +613,7 @@ $tray-button-background: rgb(97, 97, 95);
   padding: 5px 10px;
   font-size: calc(var(--text-scale-ratio) * 1.375rem);
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
 
@@ -639,8 +627,7 @@ $tray-button-background: rgb(97, 97, 95);
   padding: 0px 5px;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
 
@@ -857,8 +844,7 @@ $tray-button-background: rgb(97, 97, 95);
   // font-size: calc(var(--text-scale-ratio) * 1.25rem);  SCALING
   font-size: 1.25rem;
   color: white;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
 }
 .hp-form {
   @include inset-tray;
@@ -883,8 +869,7 @@ $tray-button-background: rgb(97, 97, 95);
   font-weight: bold;
   font-size: calc(var(--text-scale-ratio) * 1.125rem);
 
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px,
-    rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
 }
 
 .end-turn-swap-button-container {
@@ -932,10 +917,7 @@ $tray-button-background: rgb(97, 97, 95);
   &:active {
     /* Slightly reduce the size for "pressing" effect */
     box-shadow: inset 0 0 10px #b0e8f7; /* Add an inset shadow when pressed */
-    background: radial-gradient(
-      #5f9fe5,
-      #01111f
-    ); /* Darken background on press */
+    background: radial-gradient(#5f9fe5, #01111f); /* Darken background on press */
   }
 
   &:hover {
@@ -961,10 +943,7 @@ $tray-button-background: rgb(97, 97, 95);
   border: 2px solid #1f0801; /* A deep warm orange border for better contrast */
 
   &:active {
-    background: radial-gradient(
-      #c75838,
-      #2e1605
-    ); /* A more intense version on press */
+    background: radial-gradient(#c75838, #2e1605); /* A more intense version on press */
     box-shadow: inset 0 0 15px #3a0804; /* Stronger shadow effect for depth */
   }
 
@@ -978,8 +957,7 @@ $tray-button-background: rgb(97, 97, 95);
     color: #ffe1d6; /* Slightly warm off-white to match the fiery aesthetic */
 
     i {
-      text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8),
-        0px 0px 6px rgba(0, 0, 0, 0.8);
+      text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8), 0px 0px 6px rgba(0, 0, 0, 0.8);
     }
   }
 }
@@ -1033,4 +1011,21 @@ $tray-button-background: rgb(97, 97, 95);
   i {
     font-size: 18px;
   }
+}
+
+.multi-group0 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px rgb(255 0 0);
+  z-index: 1;
+}
+
+.multi-group1 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px rgb(255, 250, 0);
+  z-index: 1;
+}
+.multi-group2 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px rgb(0, 252, 0);
+  z-index: 1;
 }

@@ -1103,4 +1103,22 @@
   font-size: 18px;
 }
 
+.multi-group0 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px rgb(255, 0, 0);
+  z-index: 1;
+}
+
+.multi-group1 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px rgb(255, 250, 0);
+  z-index: 1;
+}
+
+.multi-group2 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px rgb(0, 252, 0);
+  z-index: 1;
+}
+
 /*# sourceMappingURL=styles.css.map */
