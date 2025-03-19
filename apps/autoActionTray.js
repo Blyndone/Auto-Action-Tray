@@ -1,52 +1,53 @@
-const { ApplicationV2 } = foundry.applications.api;
-const { api, sheets } = foundry.applications;
-import { AbilityTray } from './components/abilityTray.js';
-import { CustomTray } from './components/customTray.js';
-import { StaticTray } from './components/staticTray.js';
-import { CustomStaticTray } from './components/customStaticTray.js';
-import { ActivityTray } from './components/activityTray.js';
-import { EquipmentTray } from './components/equipmentTray.js';
-import { SkillTray } from './components/skillTray.js';
-import { CombatHandler } from './components/combatHandler.js';
-import { registerHandlebarsHelpers } from './helpers/handlebars.js';
-import { AnimationHandler } from './helpers/animationHandler.js';
-import { DragDropHandler } from './helpers/dragDropHandler.js';
-import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js';
+const { ApplicationV2 } = foundry.applications.api
+const { api, sheets } = foundry.applications
+import { AbilityTray } from './components/abilityTray.js'
+import { CustomTray } from './components/customTray.js'
+import { StaticTray } from './components/staticTray.js'
+import { CustomStaticTray } from './components/customStaticTray.js'
+import { ActivityTray } from './components/activityTray.js'
+import { EquipmentTray } from './components/equipmentTray.js'
+import { SkillTray } from './components/skillTray.js'
+import { CombatHandler } from './components/combatHandler.js'
+import { registerHandlebarsHelpers } from './helpers/handlebars.js'
+import { AnimationHandler } from './helpers/animationHandler.js'
+import { DragDropHandler } from './helpers/dragDropHandler.js'
+import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js'
+import { TrayConfig } from './helpers/trayConfig.js'
+import { Actions } from './helpers/actions.js'
 
-export class AutoActionTray extends api.HandlebarsApplicationMixin(
-  ApplicationV2
-) {
+export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   // Constructor
 
   constructor(options = {}) {
-    gsap.registerPlugin(DrawSVGPlugin);
-    super(options);
-    this.enabled = true;
-    this.debugtime = 0;
+    gsap.registerPlugin(DrawSVGPlugin)
+    super(options)
+    this.enabled = true
+    this.debugtime = 0
 
-    this.animating = false;
-    this.selectingActivity = false;
-    this.animationDuration = 0.7;
+    this.animating = false
+    this.selectingActivity = false
+    this.animationDuration = 0.7
 
-    this.#dragDrop = this.#createDragDropHandlers();
-    this.isEditable = true;
+    this.#dragDrop = this.#createDragDropHandlers()
+    this.isEditable = true
 
-    this.actor = null;
+    this.actor = null
 
-    this.meleeWeapon = null;
-    this.rangedWeapon = null;
-    this.hpTextActive = false;
-    this.actorHealthPercent = 100;
-    this.currentTray = null;
-    this.targetTray = null;
-    this.customTrays = [];
-    this.staticTrays = [];
-    this.activityTray = null;
-    this.equipmentTray = null;
-    this.skillTray = null;
-    this.skillTray = null;
-    this.itemSelectorEnabled = false;
-    this.trayInformation = '';
+    this.meleeWeapon = null
+    this.rangedWeapon = null
+    this.hpTextActive = false
+    this.actorHealthPercent = 100
+    this.currentTray = null
+    this.targetTray = null
+    this.customTrays = []
+    this.staticTrays = []
+    this.activityTray = null
+    this.equipmentTray = null
+    this.skillTray = null
+    this.itemSelectorEnabled = false
+    this.currentDice = 0
+    this.dice = ['20', '12', '10', '8', '6', '4']
+    this.trayInformation = ''
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
@@ -60,83 +61,61 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       concentrationColor: '#ff0000',
       customStaticTrays: [],
       autoAddItems: true,
-    };
-    this.styleSheet;
-    for (let sheet of document.styleSheets) {
-      if (
-        sheet.href &&
-        sheet.href.includes('auto-action-tray/styles/styles.css')
-      ) {
-        this.styleSheet = sheet;
-
-        break;
-      }
-
-      this.currentDice = 0;
-      this.dice = ['20', '12', '10', '8', '6', '4'];
-
-      let rowCount = 2;
-      let columnCount = 10;
-      let iconSize = 75;
-
-      if (game.settings.get('auto-action-tray', 'iconSize')) {
-        iconSize = game.settings.get('auto-action-tray', 'iconSize');
-        document.documentElement.style.setProperty(
-          '--item-size',
-          iconSize + 'px'
-        );
-        document.documentElement.style.setProperty(
-          '--text-scale-ratio',
-          iconSize / 75
-        );
-      }
-      if (game.settings.get('auto-action-tray', 'rowCount')) {
-        rowCount = game.settings.get('auto-action-tray', 'rowCount');
-        document.documentElement.style.setProperty(
-          '--item-tray-item-height-count',
-          rowCount
-        );
-      }
-      if (game.settings.get('auto-action-tray', 'columnCount')) {
-        columnCount = game.settings.get('auto-action-tray', 'columnCount');
-        document.documentElement.style.setProperty(
-          '--item-tray-item-width-count',
-          columnCount
-        );
-      }
-
-      this.totalabilities = rowCount * columnCount;
-
-      // document.documentElement.style.setProperty('--item-size', '60px');
     }
 
-    Hooks.on('controlToken', this._onControlToken.bind(this));
-    Hooks.on('updateActor', this._onUpdateActor.bind(this));
-    Hooks.on('updateItem', this._onUpdateItem.bind(this));
-    Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data));
+    let rowCount = 2
+    let columnCount = 10
+    let iconSize = 75
+    this.styleSheet
+    for (let sheet of document.styleSheets) {
+      if (sheet.href && sheet.href.includes('auto-action-tray/styles/styles.css')) {
+        this.styleSheet = sheet
+        break
+      }
+
+      if (game.settings.get('auto-action-tray', 'iconSize')) {
+        iconSize = game.settings.get('auto-action-tray', 'iconSize')
+        document.documentElement.style.setProperty('--item-size', iconSize + 'px')
+        document.documentElement.style.setProperty('--text-scale-ratio', iconSize / 75)
+      }
+      if (game.settings.get('auto-action-tray', 'rowCount')) {
+        rowCount = game.settings.get('auto-action-tray', 'rowCount')
+        document.documentElement.style.setProperty('--item-tray-item-height-count', rowCount)
+      }
+      if (game.settings.get('auto-action-tray', 'columnCount')) {
+        columnCount = game.settings.get('auto-action-tray', 'columnCount')
+        document.documentElement.style.setProperty('--item-tray-item-width-count', columnCount)
+      }
+
+      this.totalabilities = rowCount * columnCount
+    }
+
+    Hooks.on('controlToken', this._onControlToken.bind(this))
+    Hooks.on('updateActor', this._onUpdateActor.bind(this))
+    Hooks.on('updateItem', this._onUpdateItem.bind(this))
+    Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
     Hooks.on('dnd5e.beginConcentrating', (actor) => {
-      if (actor == this.actor)
-        this.render(this.render({ parts: ['characterImage'] }));
-    });
+      if (actor == this.actor) this.render(this.render({ parts: ['characterImage'] }))
+    })
     Hooks.on('dnd5e.endConcentration', (actor) => {
-      if (actor == this.actor) this.render({ parts: ['characterImage'] });
-    });
-    Hooks.on('updateCombat', this._onUpdateCombat.bind(this));
-    Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this));
-    Hooks.on('createCombatant', this._onUpdateCombat.bind(this));
-    Hooks.on('updateCombatant', this._onUpdateCombat.bind(this));
-    Hooks.on('deleteCombat', this._onUpdateCombat.bind(this));
-    Hooks.on('createItem', CustomTray._onCreateItem.bind(this));
-    Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this));
-    Hooks.on('renderHotbar', () => {});
+      if (actor == this.actor) this.render({ parts: ['characterImage'] })
+    })
+    Hooks.on('updateCombat', this._onUpdateCombat.bind(this))
+    Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this))
+    Hooks.on('createCombatant', this._onUpdateCombat.bind(this))
+    Hooks.on('updateCombatant', this._onUpdateCombat.bind(this))
+    Hooks.on('deleteCombat', this._onUpdateCombat.bind(this))
+    Hooks.on('createItem', CustomTray._onCreateItem.bind(this))
+    Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this))
+    Hooks.on('renderHotbar', () => {})
 
-    ui.hotbar.collapse();
+    ui.hotbar.collapse()
 
-    registerHandlebarsHelpers();
+    registerHandlebarsHelpers()
     if (!game.user.isGM) {
-      this.actor = canvas.tokens.controlled[0].actor;
+      this.actor = canvas.tokens.controlled[0].actor
 
-      this.initialTraySetup(this.actor);
+      this.initialTraySetup(this.actor)
     }
   }
 
@@ -174,20 +153,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       useSlot: ActivityTray.useSlot,
       rollD20: AutoActionTray.rollDice,
     },
-  };
+  }
 
   static PARTS = {
     characterImage: {
-      template:
-        'modules/auto-action-tray/templates/topParts/character-image.hbs',
+      template: 'modules/auto-action-tray/templates/topParts/character-image.hbs',
       id: 'character-image',
       forms: {
         '.hpinput': AutoActionTray.myFormHandler,
       },
     },
     equipmentMiscTray: {
-      template:
-        'modules/auto-action-tray/templates/topParts/equipment-misc-tray.hbs',
+      template: 'modules/auto-action-tray/templates/topParts/equipment-misc-tray.hbs',
       id: 'equipment-misc-tray',
     },
     centerTray: {
@@ -202,43 +179,41 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       template: 'modules/auto-action-tray/templates/topParts/end-turn.hbs',
       id: 'end-turn',
     },
-  };
+  }
 
   //#region Hooks
   _onControlToken = (event, controlled) => {
     if (event == null || controlled == false) {
-      return;
+      return
     }
-    this.hpTextActive = false;
+    this.hpTextActive = false
     if ((this.actor = event.actor && controlled == false)) {
-      this.actor = null;
-      return;
+      this.actor = null
+      return
     }
     if (event.actor != this.actor || this.actor == event) {
-      this.actor = event.actor ? event.actor : event;
-      this.initialTraySetup(this.actor);
+      this.actor = event.actor ? event.actor : event
+      this.initialTraySetup(this.actor)
     }
-  };
+  }
 
   initialTraySetup(actor) {
     if (this.selectingActivity == true) {
-      this.activityTray.rejectActivity(
-        new Error('User canceled activity selection')
-      );
-      this.activityTray.rejectActivity = null;
+      this.activityTray.rejectActivity(new Error('User canceled activity selection'))
+      this.activityTray.rejectActivity = null
     }
 
-    this.actorHealthPercent = this.updateActorHealthPercent(actor);
+    this.actorHealthPercent = this.updateActorHealthPercent(actor)
 
     this.staticTrays = StaticTray.generateStaticTrays(actor, {
       application: this,
-    });
+    })
     this.customTrays = CustomTray.generateCustomTrays(actor, {
       application: this,
-    });
-    let data = actor.getFlag('auto-action-tray', 'delayedItems');
+    })
+    let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
-      let delayedItems = JSON.parse(data);
+      let delayedItems = JSON.parse(data)
 
       if (
         this.trayOptions['autoAddItems'] &&
@@ -246,31 +221,31 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         delayedItems.length > 0
       ) {
         delayedItems.forEach((item) => {
-          let foundItem = actor.items.get(item);
+          let foundItem = actor.items.get(item)
           if (foundItem != undefined) {
-            CustomTray._onCreateItem.bind(this, foundItem)();
+            CustomTray._onCreateItem.bind(this, foundItem)()
           }
-        });
-        actor.unsetFlag('auto-action-tray', 'delayedItems');
+        })
+        actor.unsetFlag('auto-action-tray', 'delayedItems')
       }
     }
 
     this.equipmentTray = EquipmentTray.generateCustomTrays(actor, {
       application: this,
-    });
+    })
     this.activityTray = ActivityTray.generateActivityTray(actor, {
       application: this,
-    });
+    })
 
-    this.setDefaultTray();
-    this.meleeWeapon = this.equipmentTray.getMeleeWeapon();
-    this.rangedWeapon = this.equipmentTray.getRangedWeapon();
-    this.skillTray = SkillTray.generateCustomTrays(actor);
-    this.combatHandler = new CombatHandler(actor, this);
+    this.setDefaultTray()
+    this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
+    this.rangedWeapon = this.equipmentTray.getRangedWeapon()
+    this.skillTray = SkillTray.generateCustomTrays(actor)
+    this.combatHandler = new CombatHandler(actor, this)
     // this.render({ parts: ['endTurn'] });
-    let config = this.getTrayConfig();
+    let config = this.getTrayConfig()
     if (config) {
-      this.trayOptions = Object.assign({}, this.trayOptions, config);
+      this.trayOptions = Object.assign({}, this.trayOptions, config)
     } else {
       this.trayOptions = {
         locked: false,
@@ -285,54 +260,52 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         concentrationColor: '#ff0000',
         customStaticTrays: [],
         autoAddItems: true,
-      };
+      }
     }
 
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
-    });
+    })
   }
 
   _onUpdateItem(item, change, options, userId) {
-    if (item.actor != this.actor) return;
-    this.staticTrays = StaticTray.generateStaticTrays(this.actor);
-    this.refresh();
+    if (item.actor != this.actor) return
+    this.staticTrays = StaticTray.generateStaticTrays(this.actor)
+    this.refresh()
   }
 
   _onUpdateActor(actor, change, options, userId) {
-    if (actor != this.actor) return;
-    // if (item.actor != this.actor) return;
-    this.staticTrays = StaticTray.generateStaticTrays(this.actor);
+    if (actor != this.actor) return
+    this.staticTrays = StaticTray.generateStaticTrays(this.actor)
     if (this.currentTray instanceof StaticTray) {
-      this.staticTrays.find((e) => e.id == this.currentTray.id).active = true;
+      this.staticTrays.find((e) => e.id == this.currentTray.id).active = true
     }
-    this.actorHealthPercent = this.updateActorHealthPercent(actor);
+    this.actorHealthPercent = this.updateActorHealthPercent(actor)
 
     if (this.animating == false) {
-      this.render({ parts: ['centerTray'] });
+      this.render({ parts: ['centerTray'] })
     }
   }
 
   _onUpdateCombat = (event) => {
-    if (this.combatHandler == null || this.combatHandler.inCombat == false)
-      return;
-    this.combatHandler.updateCombat(this.actor, event);
-  };
+    if (this.combatHandler == null || this.combatHandler.inCombat == false) return
+    this.combatHandler.updateCombat(this.actor, event)
+  }
 
   refresh = () => {
-    if (this.animating == true || this.actor == null) return;
-    this.currentTray = this.getTray(this.currentTray.id);
-    this.currentTray.active = true;
+    if (this.animating == true || this.actor == null) return
+    this.currentTray = this.getTray(this.currentTray.id)
+    this.currentTray.active = true
     if (this.combatHandler.inCombat) {
-      this.combatHandler.setCombat(this.actor);
+      this.combatHandler.setCombat(this.actor)
     }
-    this.render({ parts: ['centerTray'] });
-  };
+    this.render({ parts: ['centerTray'] })
+  }
 
   static async myFormHandler(event, form, formData) {
-    let data = foundry.utils.expandObject(formData.object);
-    this.updateHp(data.hpinputText);
-    this.hpTextActive = false;
+    let data = foundry.utils.expandObject(formData.object)
+    this.updateHp(data.hpinputText)
+    this.hpTextActive = false
   }
 
   //#region Rendering
@@ -360,24 +333,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
       hpTextActive: this.hpTextActive,
       selectingActivity: this.selectingActivity,
       currentDice: this.currentDice,
-    };
+    }
 
-    return context;
+    return context
   }
   //#region Frame Listeners
   _configureRenderOptions(options) {
-    super._configureRenderOptions(options);
+    super._configureRenderOptions(options)
   }
 
   _attachFrameListeners() {
-    super._attachFrameListeners();
+    super._attachFrameListeners()
 
     let itemContextMenu = [
       {
         name: 'DND5E.ItemView',
         icon: '<i class="fas fa-eye"></i>',
         callback: (li) => {
-          this._onAction(li[0], 'view');
+          this._onAction(li[0], 'view')
         },
       },
       {
@@ -385,14 +358,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         icon: "<i class='fas fa-trash fa-fw'></i>",
         callback: (li) => this._onAction(li[0], 'remove'),
       },
-    ];
+    ]
 
     let characterContextMenu = [
       {
         name: 'View Sheet',
         icon: '<i class="fas fa-eye"></i>',
         callback: () => {
-          this.actor.sheet.render(true);
+          this.actor.sheet.render(true)
         },
       },
 
@@ -400,8 +373,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
         name: 'Reset Data',
         icon: '<i class="fa-solid fa-delete-right"></i>',
         callback: (li) => {
-          this.actor.unsetFlag('auto-action-tray', 'data');
-          this.actor.unsetFlag('auto-action-tray', 'config');
+          this.actor.unsetFlag('auto-action-tray', 'data')
+          this.actor.unsetFlag('auto-action-tray', 'config')
           this.trayOptions = {
             locked: false,
             skillTrayPage: 0,
@@ -415,535 +388,187 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(
             concentrationColor: '#ff0000',
             customStaticTrays: [],
             autoAddItems: true,
-          };
-          this.render(true);
+          }
+          this.render(true)
         },
       },
-    ];
+    ]
     new ContextMenu(this.element, '.character-image', characterContextMenu, {
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
       _expandUp: true,
-    });
+    })
 
     new ContextMenu(this.element, '.ability-button', itemContextMenu, {
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
-    });
+    })
   }
 
   _onOpenContextMenu(event) {
-    return;
+    return
   }
 
   _onAction(li, action) {
-    // console.log(li, action, li.dataset.itemId)
-
     switch (action) {
       case 'view':
-        this.actor.items.get(li.dataset.itemId).sheet.render(true);
-        break;
+        this.actor.items.get(li.dataset.itemId).sheet.render(true)
+        break
       // case "edit":
       //   this.actor.items.get(li.dataset.itemId).sheet.render(true);
       //   break;
       case 'remove':
-        // //CHANGE THIS TO USE THE CURRENT TRAY
-        this.currentTray.abilities[li.dataset.index] = null;
-        // this.abilities[li.dataset.index] = null;
-        // this.setAbilities();
-        this.render(true);
-        break;
+        this.currentTray.abilities[li.dataset.index] = null
+        this.render(true)
+        break
     }
   }
   //#region Actions
 
   setDefaultTray() {
-    this.currentTray = this.customTrays.find((e) => e.id == 'common');
-
-    this.currentTray.active = true;
-    // this.render({ parts: ['centerTray'] });
+    Actions.setDefaultTray.bind(this)()
   }
 
   setTrayConfig(config) {
-    this.actor.setFlag('auto-action-tray', 'config', config);
+    this.actor.setFlag('auto-action-tray', 'config', config)
   }
 
   getTrayConfig() {
-    let data = this.actor.getFlag('auto-action-tray', 'config');
-    if (data) {
-      return data;
-    } else {
-      return null;
-    }
+    return Actions.getTrayConfig.bind(this)()
   }
 
   getTray(trayId) {
-    return (
-      this.staticTrays.find((tray) => tray.id == trayId) ||
-      this.customTrays.find((tray) => tray.id == trayId) ||
-      [this.activityTray].find((tray) => tray.id == trayId)
-    );
+    return Actions.getTray.bind(this)(trayId)
   }
 
   static openSheet(event, target) {
-    this.actor.sheet.render(true);
+    Actions.openSheet.bind(this)(event, target)
   }
 
   updateActorHealthPercent(actor) {
-    let hp = actor.system.attributes.hp.value;
-    let maxHp = actor.system.attributes.hp.max;
-
-    let percent = (hp / maxHp) * 100;
-    if (percent > 50) {
-      percent = 100;
-    }
-    document.documentElement.style.setProperty(
-      '--character-health-percent',
-      percent
-    );
-    return percent;
+    Actions.updateActorHealthPercent.bind(this)(actor)
   }
 
   static async endTurn(event, target) {
-    if (this.combatHandler == null) return;
-    if (
-      (this.combatHandler.combat.current.combatantId =
-        !this.actor.getActiveTokens()[0].combatant._id)
-    ) {
-      return;
-    }
-    this.combatHandler.combat.nextTurn();
-    // this.actor.unsetFlag('auto-action-tray', 'data');
-    // this.actor.unsetFlag('auto-action-tray', 'config');
+    Actions.endTurn.bind(this)(event, target)
   }
 
   static async setTray(event, target) {
-    if (this.animating == true || this.selectingActivity == true) return;
-
-    AnimationHandler.animateTrays(target.dataset.id, this.currentTray.id, this);
+    Actions.setTray.bind(this)(event, target)
   }
   static toggleLock() {
-    if (this.selectingActivity) return;
-    this.trayOptions['locked'] = !this.trayOptions['locked'];
-    this.setTrayConfig({ locked: this.trayOptions['locked'] });
-    this.render({ parts: ['equipmentMiscTray'] });
+    Actions.toggleLock.bind(this)()
   }
   static toggleSkillTrayPage() {
-    if (this.selectingActivity) return;
-    this.trayOptions['skillTrayPage'] =
-      this.trayOptions['skillTrayPage'] == 0 ? 1 : 0;
-    this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] });
-
-    this.render({ parts: ['skillTray'] });
+    Actions.toggleSkillTrayPage.bind(this)()
   }
   static toggleFastForward() {
-    if (this.selectingActivity) return;
-    this.trayOptions['fastForward'] = !this.trayOptions['fastForward'];
-    this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] });
-    this.render({ parts: ['equipmentMiscTray'] });
+    Actions.toggleFastForward.bind(this)()
   }
 
   static toggleItemSelector() {
-    this.itemSelectorEnabled = !this.itemSelectorEnabled;
-    this.render({ parts: ['equipmentMiscTray'] });
+    Actions.toggleItemSelector.bind(this)()
   }
   static minimizeTray() {
-
-    this.close({ animate: false });
-    const bottomUi = document.getElementById('hotbar');
-
-    if (!bottomUi) {
-      console.error("Element with ID 'hotbar' not found.");
-      return;
-    }
-
-    let wrapper = document.createElement('div');
-    wrapper.classList.add('bar-controls', 'minimize-button');
-
-    let link = document.createElement('a');
-    link.id = 'aat-maximize';
-    link.setAttribute('role', 'button');
-    link.setAttribute('data-tooltip', 'Restore Auto Action Tray');
-    link.setAttribute('data-action', 'openSheet');
-
-    let icon = document.createElement('i');
-    icon.classList.add('fa-solid', 'fa-arrows-maximize');
-
-    link.appendChild(icon);
-    wrapper.appendChild(link);
-
-    wrapper.onclick = () => {
-      this.render(true);
-      wrapper.remove();      
-    };
-
-    bottomUi.prepend(wrapper);
+    Actions.minimizeTray.bind(this)()
   }
 
   static async trayConfig() {
-    const fields = foundry.applications.fields;
-
-    const customStaticTray = fields.createTextInput({
-      name: 'customStaticTrays',
-      value: '',
-    });
-
-    const customStaticTrayGroup = fields.createFormGroup({
-      input: customStaticTray,
-      label: 'Additional Custom Static Tray',
-      hint: "Add an Item Resource here for auto-recognition. Enter the Item Name. The item must have limited uses. Additionally, other items that consume this resource should be configured to use the inputted item's available uses.",
-    });
-    const clearCustomStaticTrays = fields.createCheckboxInput({
-      name: 'clearCustomStaticTrays',
-      value: false,
-    });
-    const clearCustomStaticTraysGroup = fields.createFormGroup({
-      input: clearCustomStaticTrays,
-      label: 'Clear Custom Static Trays',
-      hint: 'Clear previous custom Static Trays',
-    });
-
-    const concentrationColor = fields.createTextInput({
-      name: 'concentrationColor',
-      value: '',
-    });
-
-    const concentrationColorGroup = fields.createFormGroup({
-      input: concentrationColor,
-      label: 'Concentration Color',
-      hint: 'Input a color for concentration highlight.  Colors should be in Hex; Ex. #ff0000',
-    });
-
-    const selectInput = fields.createSelectInput({
-      options: [
-        {
-          label: '',
-          value: '',
-        },
-        {
-          label: 'Portrait',
-          value: 'portrait',
-        },
-        {
-          label: 'Token',
-          value: 'token',
-        },
-      ],
-      name: 'imageType',
-    });
-
-    const selectGroup = fields.createFormGroup({
-      input: selectInput,
-      label: 'Select Character Image Type',
-      hint: 'Choose between portrait or token display',
-    });
-
-    const imageScale = fields.createNumberInput({
-      name: 'imageScale',
-      value: this.trayOptions['imageScale'],
-    });
-    const imageScaleOptions = fields.createFormGroup({
-      input: imageScale,
-      label: 'Image Scale',
-      hint: 'Change Character Image Scale.',
-    });
-    const imageX = fields.createNumberInput({
-      name: 'imageX',
-      value: this.trayOptions['imageX'],
-    });
-    const imageXOptions = fields.createFormGroup({
-      input: imageX,
-      label: 'Image X Offset',
-      hint: 'Change Character Image X Location.',
-    });
-    const imageY = fields.createNumberInput({
-      name: 'imageY',
-      value: this.trayOptions['imageY'],
-    });
-    const imageYOptions = fields.createFormGroup({
-      input: imageY,
-      label: 'Image Y Offset',
-      hint: 'Change Character Image Y Location.',
-    });
-
-    const checkboxInput = fields.createCheckboxInput({
-      name: 'healthIndicator',
-      value: this.trayOptions['healthIndicator'],
-    });
-    const checkboxGroup = fields.createFormGroup({
-      input: checkboxInput,
-      label: 'Health Indicator',
-      hint: 'Enable the red health indicator based on missing health percentage.',
-    });
-
-    const autoAddItems = fields.createCheckboxInput({
-      name: 'autoAddItems',
-      value: this.trayOptions['autoAddItems'],
-    });
-    const autoAddItemsGroup = fields.createFormGroup({
-      input: autoAddItems,
-      label: 'Auto Add Items ',
-      hint: 'Automattily add items to the tray when they are created.',
-    });
-
-    const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`;
-
-    const method = await foundry.applications.api.DialogV2.wait({
-      position: { width: 600 },
-      window: { title: 'Tray Quick Config' },
-      content: content,
-      modal: false,
-
-      buttons: [
-        {
-          label: 'Accept',
-          action: 'accept',
-          callback: (event, button, dialog) =>
-            new FormDataExtended(button.form).object,
-        },
-        {
-          label: 'Cancel',
-          action: 'cancel',
-          callback: (event, button, dialog) =>
-            new FormDataExtended(button.form).object,
-        },
-      ],
-    }).then((result) => {
-      if (result['imageType'] == '') {
-        result['imageType'] = this.trayOptions['imageType'];
-      }
-      if (result['clearCustomStaticTrays']) {
-        this.trayOptions['customStaticTrays'] = [];
-        result['customStaticTrays'] = [];
-      }
-      if (result['customStaticTrays'] != '') {
-        let itemId = this.actor.items.find(
-          (e) =>
-            e.name.toLowerCase() == result['customStaticTrays'].toLowerCase()
-        )?.id;
-        if (itemId) {
-          result['customStaticTrays'] = [
-            ...this.trayOptions['customStaticTrays'],
-            itemId,
-          ];
-        } else {
-          result['customStaticTrays'] = this.trayOptions['customStaticTrays'];
-        }
-      }
-      this.trayOptions = { ...this.trayOptions, ...result };
-      this.setTrayConfig(this.trayOptions);
-      this.render(true);
-    });
-
-    // {
-    //     "customStaticTray": "",
-    //     "concentrationColor": "",
-    //     "imageType": "portrait",
-    //     "healthIndicator": true
-    //     }
+    TrayConfig.trayConfig.bind(this)()
+    return
   }
 
   static toggleHpText() {
-    this.hpTextActive = !this.hpTextActive;
-
-    this.render({ parts: ['characterImage'] }).then(() => {
-      if (this.hpTextActive) {
-        const inputField = document.querySelector('.hpinput');
-        inputField.focus();
-      }
-    });
+    Actions.toggleHpText.bind(this)()
   }
 
   async updateHp(data) {
-    if (data == '') {
-      this.hpTextActive = false;
-      this.render({ parts: ['characterImage'] });
-      return;
-    }
-
-    const regex = /^[+-]?\d*/;
-
-    if (!regex.test(data)) {
-      // If not valid, sanitize by removing any invalid characters
-      return;
-    } else {
-      const matches = data.match(regex);
-      let currentHp = this.actor.system.attributes.hp.value;
-      let tempHp = this.actor.system.attributes.hp.temp;
-      let updates = {};
-      switch (true) {
-        case matches[0].includes('+'):
-          updates = {
-            'system.attributes.hp.value': currentHp + parseInt(matches[0]),
-          };
-          break;
-        case matches[0].includes('-'):
-          let thp = tempHp + parseInt(matches[0]);
-          updates = {
-            'system.attributes.hp.value': thp < 0 ? currentHp + thp : currentHp,
-            'system.attributes.hp.temp': thp <= 0 ? null : thp,
-          };
-          break;
-        case !matches[0].includes('+') && !matches[0].includes('-'):
-          updates = { 'system.attributes.hp.value': parseInt(matches[0]) };
-          break;
-      }
-      await this.actor.update(updates);
-      this.render({ parts: ['characterImage'] });
-    }
+    Actions.updateHp.bind(this)(data)
   }
 
-  static useSlot(event, target) {}
-
   static async useItem(event, target) {
-    game.tooltip.deactivate();
-    let itemId = target.dataset.itemId;
-    let item = this.actor.items.get(itemId);
-    this.activityTray.getActivities(item, this.actor);
-    let selectedSpellLevel = null,
-      activity = null;
-
-    if (!this.trayOptions['fastForward']) {
-      if (this.activityTray?.abilities?.length > 1) {
-        activity = await this.activityTray.selectAbility(
-          item,
-          this.actor,
-          this
-        );
-        if (activity == null) return;
-        selectedSpellLevel = !selectedSpellLevel
-          ? activity['selectedSpellLevel']
-          : '';
-      } else {
-        activity = item.system.activities[0];
-      }
-    } else {
-      activity = item.system.activities.contents[0];
-      selectedSpellLevel = this.currentTray.spellLevel;
-    }
-
-    selectedSpellLevel =
-      item.system.preparation?.mode == 'pact'
-        ? { slot: 'pact' }
-        : { slot: 'spell' + selectedSpellLevel };
-
-    item.system.activities
-      .get(
-        activity?.itemId ||
-          activity?._id ||
-          item.system.activities.contents[0].id
-      )
-      .use(
-        {
-          spell: selectedSpellLevel,
-          consume: { spellSlot: activity?.useSlot },
-        },
-        { configure: false }
-      );
+    Actions.useItem.bind(this)(event, target)
   }
 
   static useSkillSave(event, target) {
-    let type = target.dataset.type;
-    let skillsave = target.dataset.skill;
-
-    let skipDialog = this.trayOptions['fastForward']
-      ? { fastForward: true }
-      : null;
-
-    if (type == 'skill') {
-      this.actor.rollSkill(skillsave, skipDialog);
-    } else {
-      this.actor.rollAbilitySave(skillsave, skipDialog);
-    }
+    Actions.useSkillSave.bind(this)(event, target)
   }
 
   static async rollDice() {
-    const roll = new Roll(`1d${this.dice[this.currentDice]}`);
-    await roll.evaluate({ allowInteractive: false });
-    await roll.toMessage({
-      speaker: ChatMessage.getSpeaker({ token: this.actor.token }),
-      flavor: `Rolling a d${this.dice[this.currentDice]}`,
-    });
+    Actions.rollDice.bind(this)()
   }
 
   static viewItem(event, target) {
-    let itemId = target.dataset.itemId;
-    let item = this.actor.items.get(itemId);
-    item.sheet.render(true);
+    Actions.viewItem.bind(this)(event, target)
   }
 
   static selectWeapon(event, target) {
-    if (target.classList.contains('selected')) {
-      target.classList.remove('selected');
-      return;
-    }
-    target.classList.add('selected');
+    Actions.selectWeapon.bind(this)(event, target)
   }
+
   //#region DragDrop
   #createDragDropHandlers() {
     return this.options.dragDrop.map((d) => {
       d.permissions = {
         dragstart: this._canDragStart.bind(this),
         drop: this._canDragDrop.bind(this),
-      };
+      }
       d.callbacks = {
         dragstart: this._onDragStart.bind(this),
         dragover: this._onDragOver.bind(this),
         drop: this._onDrop.bind(this),
-      };
-      return new DragDrop(d);
-    });
+      }
+      return new DragDrop(d)
+    })
   }
 
-  #dragDrop;
+  #dragDrop
 
   get dragDrop() {
-    return this.#dragDrop;
+    return this.#dragDrop
   }
 
   _onRender(context, options) {
-    this.#dragDrop.forEach((d) => d.bind(this.element));
+    this.#dragDrop.forEach((d) => d.bind(this.element))
 
     if (options.parts.filter((e) => e == 'endTurn').length > 0) {
-      const itemQuantities =
-        this.element.querySelectorAll('.end-turn-btn-dice');
+      const itemQuantities = this.element.querySelectorAll('.end-turn-btn-dice')
       if (itemQuantities.length > 0) {
         itemQuantities.forEach((item) => {
           item.addEventListener(
             'mousedown',
             function (event) {
               if (event.button == 2) {
-                this.currentDice =
-                  this.currentDice < 5 ? this.currentDice + 1 : 0;
-                this.render({ parts: ['endTurn'] });
+                this.currentDice = this.currentDice < 5 ? this.currentDice + 1 : 0
+                this.render({ parts: ['endTurn'] })
               }
-            }.bind(this)
-          );
-        });
+            }.bind(this),
+          )
+        })
       }
     }
   }
 
   _canDragStart(selector) {
-    return this.isEditable && !this.trayOptions['locked'];
+    return this.isEditable && !this.trayOptions['locked']
   }
 
   _canDragDrop(selector) {
-    return this.isEditable;
+    return this.isEditable
   }
 
   _onDragStart(event) {
-    DragDropHandler._onDragStart(event, this);
+    DragDropHandler._onDragStart(event, this)
   }
 
   _onDragOver(event) {
-    DragDropHandler._onDragOver(event, this);
+    DragDropHandler._onDragOver(event, this)
   }
 
   async _onDrop(event) {
-    DragDropHandler._onDrop(event, this);
+    DragDropHandler._onDrop(event, this)
   }
   _onDropCanvas(data) {
-    DragDropHandler._onDropCanvas(data, this);
+    DragDropHandler._onDropCanvas(data, this)
   }
 }

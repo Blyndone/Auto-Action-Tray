@@ -11,8 +11,8 @@ export class AnimationHandler {
       duration = 0.5;
     }
 
-    let tray1 = this.findTray(tray1ID, hotbar);
-    let tray2 = this.findTray(tray2ID, hotbar);
+    let tray1 = AnimationHandler.findTray(tray1ID, hotbar);
+    let tray2 = AnimationHandler.findTray(tray2ID, hotbar);
     hotbar.animating = true;
     tray1.active = true;
     tray2.active = true;
