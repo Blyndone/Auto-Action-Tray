@@ -1,5 +1,5 @@
-<div class="end-turn-swap-button-container">
-  <div style='position: relative; height: 100%' >
+<div class='end-turn-swap-button-container'>
+  <div style='position: relative; height: 100%'>
     <div
       class='swap-skill-tray-button'
       data-action='toggleSkillTrayPage'
@@ -9,8 +9,10 @@
       <i class='fa-solid fa-rotate-reverse'></i>
     </div>
   </div>
-  <div style='position: relative; pointer-events: none; height: 100% display: flex; align-items: center;
-}'>
+  <div
+    style='position: relative; pointer-events: none; height: 100%; display: flex; align-items: center;
+}'
+  >
     <svg width='200' height='200' viewBox='0 0 200 200' class='hp-circle'>
       <circle
         class='circle-svg'
@@ -20,34 +22,33 @@
         stroke-width='5'
         fill='none'
         stroke-linecap='round'
-
       />
     </svg>
     {{#if combatHandler.isTurn}}
-      <button class='end-turn-btn' data-action='endTurn'>
+      <div class='end-turn-btn' data-action='endTurn'>
         {{#if combatHandler.inCombat}}
           <div class='end-turn-btn-text'>
             End Turn<br />
             <i class='fa-solid fa-hourglass-half'></i>
           </div>
         {{/if}}
-      </button>
+      </div>
     {{else}}
-        {{#if combatHandler.inCombat}}
-      <button class='end-turn-btn-nohover'>
+      {{#if combatHandler.inCombat}}
+        <div class='end-turn-btn-nohover'>
           <div class='end-turn-btn-text'>
             Next Turn:<br />
             {{combatHandler.tillNextTurn}}
             Turns
           </div>
-      </button>
+        </div>
       {{else}}
-      <button class='end-turn-btn-dice' data-action="rollD20">
+        <div class='end-turn-btn-dice' data-action='rollD20'>
           <div class='end-turn-btn-dice-icon'>
-{{{diceIcon currentDice}}}
-</button>
-            </div>
-        {{/if}}
+            {{{diceIcon currentDice}}}
+          </div>
+        </div>
+      {{/if}}
     {{/if}}
 
   </div>

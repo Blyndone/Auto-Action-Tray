@@ -14,6 +14,7 @@ import { DragDropHandler } from './helpers/dragDropHandler.js'
 import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js'
 import { TrayConfig } from './helpers/trayConfig.js'
 import { Actions } from './helpers/actions.js'
+import { EffectTray } from './components/effectTray.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   // Constructor
@@ -44,6 +45,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.activityTray = null
     this.equipmentTray = null
     this.skillTray = null
+    this.effectsTray = new EffectTray()
+
     this.itemSelectorEnabled = false
     this.currentDice = 0
     this.dice = ['20', '12', '10', '8', '6', '4']
@@ -107,6 +110,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('deleteCombat', this._onUpdateCombat.bind(this))
     Hooks.on('createItem', CustomTray._onCreateItem.bind(this))
     Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this))
+    Hooks.on('createActiveEffect', this._onCreateActiveEffect.bind(this))
+    Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
     Hooks.on('renderHotbar', () => {})
 
     ui.hotbar.collapse()
@@ -179,6 +184,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       template: 'modules/auto-action-tray/templates/topParts/end-turn.hbs',
       id: 'end-turn',
     },
+    effectsTray: {
+      template: 'modules/auto-action-tray/templates/topParts/effect-tray.hbs',
+      id: 'effect-tray',
+    }
   }
 
   //#region Hooks
@@ -211,6 +220,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.customTrays = CustomTray.generateCustomTrays(actor, {
       application: this,
     })
+    this.effectsTray.setActor(actor)
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
       let delayedItems = JSON.parse(data)
@@ -264,13 +274,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     this.render({
-      parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
+      parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray', 'effectsTray'],
     })
   }
 
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
+     this.effectsTray.setActor(actor)
     this.refresh()
   }
 
@@ -281,15 +292,25 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.staticTrays.find((e) => e.id == this.currentTray.id).active = true
     }
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
-
+     this.effectsTray.setActor(actor)
     if (this.animating == false) {
-      this.render({ parts: ['centerTray'] })
+      this.render({ parts: ['centerTray', 'effectsTray'] })
     }
   }
 
   _onUpdateCombat = (event) => {
     if (this.combatHandler == null || this.combatHandler.inCombat == false) return
     this.combatHandler.updateCombat(this.actor, event)
+  }
+  _onCreateActiveEffect = (effect) => {
+    if (effect.parent != this.actor) return
+    this.effectsTray.setEffects()
+    this.render(['effectsTray'])
+  }
+    _onDeleteActiveEffect = (effect) => {
+    if (effect.parent != this.actor) return
+    this.effectsTray.setEffects()
+    this.render(['effectsTray'])
   }
 
   refresh = () => {
@@ -303,6 +324,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static async myFormHandler(event, form, formData) {
+
     let data = foundry.utils.expandObject(formData.object)
     this.updateHp(data.hpinputText)
     this.hpTextActive = false
@@ -333,6 +355,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       hpTextActive: this.hpTextActive,
       selectingActivity: this.selectingActivity,
       currentDice: this.currentDice,
+      effectsTray: this.effectsTray
     }
 
     return context
@@ -470,6 +493,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.toggleItemSelector.bind(this)()
   }
   static minimizeTray() {
+
     Actions.minimizeTray.bind(this)()
   }
 

@@ -130,7 +130,7 @@ export class Actions {
     })
   }
 
-  async updateHp(data) {
+  static async updateHp(data) {
     if (data == '') {
       this.hpTextActive = false
       this.render({ parts: ['characterImage'] })
