@@ -33,7 +33,7 @@ export class EffectTray {
     let match = desc.match(regex);
     if (!match) return desc;
     return await fromUuid(match[1]).then(item => {
-      return item.text.content;
+      return item?.text?.content || desc;
     });
   }
 
