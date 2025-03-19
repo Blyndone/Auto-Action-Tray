@@ -136,7 +136,7 @@ export class StaticTray extends AbilityTray {
           actorUuid: actor.uuid,
           spellLevel: level,
           totalSlots: actor.system?.spells['spell' + level]?.max,
-          availableSlots: actor.system?.spells['spell' + level]?.value,
+          availableSlots: (level ==0)? 1: actor.system?.spells['spell' + level]?.value,
         }),
       )
     })
