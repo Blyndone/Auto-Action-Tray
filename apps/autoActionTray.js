@@ -112,6 +112,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this))
     Hooks.on('createActiveEffect', this._onCreateActiveEffect.bind(this))
     Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
+    Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('renderHotbar', () => {})
 
     ui.hotbar.collapse()
@@ -312,6 +313,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.effectsTray.setEffects()
     this.render(['effectsTray'])
   }
+      _onUpdateActiveEffect = (effect) => {
+    if (effect.parent != this.actor) return
+    this.effectsTray.setEffects()
+    this.render(['effectsTray'])
+  }
 
   refresh = () => {
     if (this.animating == true || this.actor == null) return
@@ -426,6 +432,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
     })
+    new ContextMenu(this.element, '.effect-tray-icon', {},{
+      onOpen: EffectTray.removeEffect.bind(this),
+      jQuery: true,
+    })
+
   }
 
   _onOpenContextMenu(event) {

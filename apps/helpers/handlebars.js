@@ -25,6 +25,16 @@ export function registerHandlebarsHelpers() {
     return DamageCalc.damageCalc(item, options)
   })
 
+  Handlebars.registerHelper('getDuration', function (duration) {
+    let txt = ''
+    let seconds = duration.seconds
+    let rounds = duration.rounds
+    let turns = duration.turns
+    if (!(seconds || rounds || turns)) return 'Ongoing'
+    txt = ` ${(rounds) ? rounds + ' Rounds' : ''} ${(turns) ? turns + ' Turns' : ''} ${(seconds) ? seconds + ' Seconds' : ''}`
+    return txt
+  })
+
   Handlebars.registerHelper('getRomanNumeral', function (spellLvl) {
     let romanNumeral = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
     return romanNumeral[spellLvl - 1]
