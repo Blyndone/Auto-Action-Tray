@@ -282,7 +282,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
-     this.effectsTray.setActor(actor)
+     this.effectsTray.setActor(this.actor)
     this.refresh()
   }
 
@@ -293,7 +293,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.staticTrays.find((e) => e.id == this.currentTray.id).active = true
     }
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
-     this.effectsTray.setActor(actor)
+     this.effectsTray.setActor(this.actor)
     if (this.animating == false) {
       this.render({ parts: ['centerTray', 'effectsTray'] })
     }
