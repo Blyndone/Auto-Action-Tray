@@ -188,22 +188,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     effectsTray: {
       template: 'modules/auto-action-tray/templates/topParts/effect-tray.hbs',
       id: 'effect-tray',
-    }
+    },
   }
 
   //#region Hooks
   _onControlToken = (event, controlled) => {
-    if (event == null || controlled == false) {
-      return
-    }
     this.hpTextActive = false
-    if ((this.actor = event.actor && controlled == false)) {
-      this.actor = null
-      return
-    }
-    if (event.actor != this.actor || this.actor == event) {
-      this.actor = event.actor ? event.actor : event
-      this.initialTraySetup(this.actor)
+    switch (true) {
+      case event == null || controlled == false || this.actor == event.actor:
+        return
+      case controlled == true && this.actor != event.actor:
+        this.actor = event.actor ? event.actor : event
+        this.initialTraySetup(this.actor)
     }
   }
 
@@ -221,7 +217,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.customTrays = CustomTray.generateCustomTrays(actor, {
       application: this,
     })
-    this.effectsTray.setActor(actor)
+    this.effectsTray.setActor(actor, this)
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
       let delayedItems = JSON.parse(data)
@@ -253,49 +249,53 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
     this.skillTray = SkillTray.generateCustomTrays(actor)
     this.combatHandler = new CombatHandler(actor, this)
-    // this.render({ parts: ['endTurn'] });
+    this.trayOptions = {
+      locked: false,
+      skillTrayPage: 0,
+      currentTray: 'common',
+      fastForward: true,
+      imageType: 'portrait',
+      imageScale: 1,
+      imageX: 0,
+      imageY: 0,
+      healthIndicator: true,
+      concentrationColor: '#ff0000',
+      customStaticTrays: [],
+      autoAddItems: true,
+    }
     let config = this.getTrayConfig()
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
-    } else {
-      this.trayOptions = {
-        locked: false,
-        skillTrayPage: 0,
-        currentTray: 'common',
-        fastForward: true,
-        imageType: 'portrait',
-        imageScale: 1,
-        imageX: 0,
-        imageY: 0,
-        healthIndicator: true,
-        concentrationColor: '#ff0000',
-        customStaticTrays: [],
-        autoAddItems: true,
-      }
     }
 
     this.render({
-      parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray', 'effectsTray'],
+      parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
   }
 
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
-     this.effectsTray.setActor(this.actor)
-    this.refresh()
+    this.currentTray = this.getTray(this.currentTray.id)
+    this.currentTray.active = true
+    this.effectsTray.setEffects()
+    if (this.animating == false) {
+      this.render({ parts: ['centerTray'] })
+    }
   }
 
   _onUpdateActor(actor, change, options, userId) {
     if (actor != this.actor) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
-    if (this.currentTray instanceof StaticTray) {
-      this.staticTrays.find((e) => e.id == this.currentTray.id).active = true
-    }
+    this.currentTray = this.getTray(this.currentTray.id)
+    this.currentTray.active = true
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
-     this.effectsTray.setActor(this.actor)
+    this.effectsTray.setEffects()
+    if (this.combatHandler.inCombat) {
+      this.combatHandler.setCombat(this.actor)
+    }
     if (this.animating == false) {
-      this.render({ parts: ['centerTray', 'effectsTray'] })
+      this.render({ parts: ['centerTray'] })
     }
   }
 
@@ -306,31 +306,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onCreateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
-    this.render(['effectsTray'])
+  
   }
-    _onDeleteActiveEffect = (effect) => {
+  _onDeleteActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
-    this.render(['effectsTray'])
-  }
-      _onUpdateActiveEffect = (effect) => {
-    if (effect.parent != this.actor) return
-    this.effectsTray.setEffects()
-    this.render(['effectsTray'])
-  }
 
-  refresh = () => {
-    if (this.animating == true || this.actor == null) return
-    this.currentTray = this.getTray(this.currentTray.id)
-    this.currentTray.active = true
-    if (this.combatHandler.inCombat) {
-      this.combatHandler.setCombat(this.actor)
-    }
-    this.render({ parts: ['centerTray'] })
+  }
+  _onUpdateActiveEffect = (effect) => {
+    if (effect.parent != this.actor) return
+    this.effectsTray.setEffects()
   }
 
   static async myFormHandler(event, form, formData) {
-
     let data = foundry.utils.expandObject(formData.object)
     this.updateHp(data.hpinputText)
     this.hpTextActive = false
@@ -361,7 +349,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       hpTextActive: this.hpTextActive,
       selectingActivity: this.selectingActivity,
       currentDice: this.currentDice,
-      effectsTray: this.effectsTray
+      effectsTray: this.effectsTray,
     }
 
     return context
@@ -432,11 +420,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
     })
-    new ContextMenu(this.element, '.effect-tray-icon', {},{
-      onOpen: EffectTray.removeEffect.bind(this),
-      jQuery: true,
-    })
-
+    new ContextMenu(
+      this.element,
+      '.effect-tray-icon',
+      {},
+      {
+        onOpen: EffectTray.removeEffect.bind(this),
+        jQuery: true,
+      },
+    )
+    new ContextMenu(
+      this.element,
+      '.end-turn-btn-dice',
+      {},
+      {
+        onOpen: Actions.changeDice.bind(this),
+        jQuery: true,
+      },
+    )
   }
 
   _onOpenContextMenu(event) {
@@ -504,7 +505,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.toggleItemSelector.bind(this)()
   }
   static minimizeTray() {
-
     Actions.minimizeTray.bind(this)()
   }
 
@@ -531,6 +531,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   static async rollDice() {
     Actions.rollDice.bind(this)()
+  }
+  static changeDice() {
+    Actions.changeDice.bind(this)()
   }
 
   static viewItem(event, target) {
@@ -564,24 +567,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onRender(context, options) {
+    console.log('rendering', ...options.parts)
     this.#dragDrop.forEach((d) => d.bind(this.element))
-
-    if (options.parts.filter((e) => e == 'endTurn').length > 0) {
-      const itemQuantities = this.element.querySelectorAll('.end-turn-btn-dice')
-      if (itemQuantities.length > 0) {
-        itemQuantities.forEach((item) => {
-          item.addEventListener(
-            'mousedown',
-            function (event) {
-              if (event.button == 2) {
-                this.currentDice = this.currentDice < 5 ? this.currentDice + 1 : 0
-                this.render({ parts: ['endTurn'] })
-              }
-            }.bind(this),
-          )
-        })
-      }
-    }
   }
 
   _canDragStart(selector) {

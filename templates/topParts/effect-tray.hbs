@@ -4,7 +4,7 @@
     {{#each effectsTray.effects as |effect|}}
  {{#if effect.isTemporary}}
 
-      <img class='effect-tray-icon' src='{{effect.img}}' title='{{effect.name}}' data-tooltip="{{> 'AAT.effect-tooltip' }}" data-tooltip-direction='UP' data-effect-id ="{{effect.id}}" data-name="{{effect.name}}" />
+      <img class='effect-tray-icon' src='{{effect.img}}'  data-tooltip="{{> 'AAT.effect-tooltip' }}" data-tooltip-direction='UP' data-effect-id ="{{effect.id}}" data-name="{{effect.name}}" />
       {{/if}}
     {{/each}}
   </div>

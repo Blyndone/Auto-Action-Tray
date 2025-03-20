@@ -39,7 +39,7 @@ export class ActivityTray extends AbilityTray {
           let spellData = { actorSpellData: actor.system.spells[spell] };
           let tempitem = item.clone();
           tempitem.itemId = item.id;
-          mergeObject(tempitem, spellData);
+          foundry.utils.mergeObject(tempitem, spellData);
 
           this.abilities.push(tempitem);
         }

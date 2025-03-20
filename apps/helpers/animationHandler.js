@@ -45,7 +45,7 @@ export class AnimationHandler {
             hotbar.animating = false;
             hotbar.targetTray.active = false;
             hotbar.currentTray.active = true;
-            hotbar.refresh();
+            hotbar.render({ parts: ["centerTray"] });
           }
         },
         "start"

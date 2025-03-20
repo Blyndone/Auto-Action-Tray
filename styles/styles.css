@@ -220,7 +220,6 @@
   vertical-align: middle;
   border: none;
   width: 170px;
-  height: 170px;
   background: #5b5b5b;
 }
 
@@ -1055,6 +1054,7 @@
 .end-turn-btn-dice .end-turn-btn-dice-icon {
   font-size: 5rem;
   color: #ffe1d6; /* Slightly warm off-white to match the fiery aesthetic */
+  display: flex;
 }
 .end-turn-btn-dice .end-turn-btn-dice-icon i {
   text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8), 0px 0px 6px rgba(0, 0, 0, 0.8);

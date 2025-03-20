@@ -230,6 +230,11 @@ export class Actions {
     })
   }
 
+  static changeDice() {
+    this.currentDice = this.currentDice < 5 ? this.currentDice + 1 : 0
+    this.render({ parts: ['endTurn'] })
+  }
+
   static viewItem(event, target) {
     let itemId = target.dataset.itemId
     let item = this.actor.items.get(itemId)

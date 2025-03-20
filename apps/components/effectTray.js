@@ -2,10 +2,12 @@ export class EffectTray {
   constructor(options = {}) {
     this.actor = options.actor
     this.effects = options.effects || []
+    this.hotbar = null
   }
 
-  async setActor(actor) {
+  async setActor(actor, hotbar) {
     this.actor = actor
+    this.hotbar = hotbar
     await this.setEffects()
   }
   async setEffects() {
@@ -22,7 +24,10 @@ export class EffectTray {
       }
     })
 
-    this.effects = await Promise.all(effectsPromises)
+    await Promise.all(effectsPromises).then((effects) => {
+      this.effects = effects
+      this.hotbar.render(['effectsTray'])
+    })
   }
 
   static async removeEffect(event, element) {
