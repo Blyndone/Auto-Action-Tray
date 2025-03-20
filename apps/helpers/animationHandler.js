@@ -1,6 +1,7 @@
 export class AnimationHandler {
   constructor(options = {}) {
-    this.hotbat = options.hotbar;
+    this.hotbar = options.hotbar;
+    this.animationDuration = 2;
   }
   findTray(trayId, hotbar) {
     return hotbar.getTray(trayId);
@@ -8,10 +9,10 @@ export class AnimationHandler {
 
   async animateTrays(tray1ID, tray2ID, hotbar) {
     if (tray1ID == tray2ID) return;
-    let duration = hotbar.animationDuration;
-    if (tray1ID == "activity" || tray2ID == "activity") {
-      duration = 0.5;
-    }
+    // let duration = hotbar.animationDuration;
+    // if (tray1ID == "activity" || tray2ID == "activity") {
+    //   duration = 0.5;
+    // }
 
     let tray1 = this.findTray(tray1ID, hotbar);
     let tray2 = this.findTray(tray2ID, hotbar);
@@ -21,41 +22,93 @@ export class AnimationHandler {
     hotbar.currentTray = tray1;
     hotbar.targetTray = tray2;
     await hotbar.render({ parts: ["centerTray"] });
+    let p1 = this.animateTrayIn(tray1);
+    let p2 = this.animateTrayOut(tray2);
 
-    var tl = gsap.timeline();
-    tl
-      .add("start")
-      .fromTo(
-        "." + tray1.id,
-        {
-          opacity: 0,
-          y: tray1.type == "static" ? -200 : tray1.type == "activity" ? 200 : 0,
-          x: tray1.type == "custom" ? 1000 : 0
-        },
-        { opacity: 1, y: 0, x: 0, duration: duration, onStart: () => {} },
-        "start"
-      )
-      .to(
-        "." + tray2.id,
-        {
-          opacity: 0,
-          y: tray2.type == "static" ? -200 : tray2.type == "activity" ? 200 : 0,
-          x: tray2.type == "custom" ? 1000 : 0,
-          duration: duration,
-          onStart: () => {},
-          onComplete: () => {
-            hotbar.animating = false;
-            hotbar.targetTray.active = false;
-            hotbar.currentTray.active = true;
-            hotbar.render({ parts: ["centerTray"] });
-          }
-        },
-        "start"
-      );
+    Promise.all([p1, p2])
+      .then(() => {
+        hotbar.animating = false;
+        tray1.active = true;
+        tray2.active = false;
+        hotbar.currentTray = tray1;
+        hotbar.targetTray = tray1;
+        console.log("Animation complete");
+      })
+      .then(() => {
+        hotbar.render({ parts: ["centerTray"] });
+      });
   }
 
-  animateTrayIn(trayId, hotbar) {}
-  animateTrayOut(trayId, hotbar) {}
+  animateTrayIn(tray) {
+    return new Promise(resolve => {
+      hotbar.animating = true;
+      hotbar.targetTray = tray;
+      tray.active = true;
+      let xOffset = 0;
+      let yOffset = 0;
+      switch (tray.type) {
+        case "static":
+          yOffset = -200;
+          break;
+        case "activity":
+          yOffset = 200;
+          break;
+        case "custom":
+          xOffset = 1000;
+          break;
+      }
+
+      gsap.set(`.${tray.id}`, {
+        opacity: 0,
+        y: yOffset,
+        x: xOffset
+      });
+
+      gsap.to(`.${tray.id}`, {
+        opacity: 1,
+        y: 0,
+        x: 0,
+        duration: this.animationDuration,
+        onComplete: () => {
+          resolve();
+          return;
+        }
+      });
+    });
+  }
+
+  animateTrayOut(tray) {
+    return new Promise(resolve => {
+      hotbar.animating = true;
+      hotbar.currentTray = tray;
+
+      tray.active = true;
+      let xOffset = 0;
+      let yOffset = 0;
+      switch (tray.type) {
+        case "static":
+          yOffset = -200;
+          break;
+        case "activity":
+          yOffset = 200;
+          break;
+        case "custom":
+          xOffset = 1000;
+          break;
+      }
+
+      gsap.to(`.${tray.id}`, {
+        opacity: 0,
+        y: yOffset,
+        x: xOffset,
+        duration: this.animationDuration,
+        onComplete: () => {
+          resolve();
+          return;
+        }
+      });
+    });
+  }
 
   setCircle(value) {
     let baseColor = value == 100 ? "#007f8c" : "#9600d1";
@@ -162,3 +215,34 @@ export class AnimationHandler {
     return hslToHex(hsl.h, hsl.s, newLightness);
   }
 }
+
+// var tl = gsap.timeline();
+// tl
+//   .add("start")
+//   .fromTo(
+//     "." + tray1.id,
+//     {
+//       opacity: 0,
+//       y: tray1.type == "static" ? -200 : tray1.type == "activity" ? 200 : 0,
+//       x: tray1.type == "custom" ? 1000 : 0
+//     },
+//     { opacity: 1, y: 0, x: 0, duration: duration, onStart: () => {} },
+//     "start"
+//   )
+//   .to(
+//     "." + tray2.id,
+//     {
+//       opacity: 0,
+//       y: tray2.type == "static" ? -200 : tray2.type == "activity" ? 200 : 0,
+//       x: tray2.type == "custom" ? 1000 : 0,
+//       duration: duration,
+//       onStart: () => {},
+//       onComplete: () => {
+//         hotbar.animating = false;
+//         hotbar.targetTray.active = false;
+//         hotbar.currentTray.active = true;
+//         hotbar.render({ parts: ["centerTray"] });
+//       }
+//     },
+//     "start"
+//   );

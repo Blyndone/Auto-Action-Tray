@@ -28,7 +28,7 @@ export class DamageCalc {
 
     if (this.checkOverride(item)) {
       damageParts[0] = this.getOverrideDamageParts(item)
-      let scalingDamageParts = this.getOverrideScaling(item, currentTray.spellLevel, damageParts[0])
+      let scalingDamageParts = this.getOverrideScaling(item, currentTray?.spellLevel || item?.system?.level, damageParts[0])
       damageParts[0] = scalingDamageParts
       scaling['scaling'] = 0
       scaling['number'] = 0
