@@ -306,12 +306,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onCreateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
-  
   }
   _onDeleteActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
-
   }
   _onUpdateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
@@ -567,7 +565,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onRender(context, options) {
-    console.log('rendering', ...options.parts)
     this.#dragDrop.forEach((d) => d.bind(this.element))
   }
 
