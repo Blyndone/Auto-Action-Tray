@@ -1,6 +1,6 @@
 import { AnimationHandler } from "../helpers/animationHandler.js";
 export class CombatHandler {
-  constructor(actor, hotbar) {
+  constructor(options = {}) {
     this.actor;
     this.token;
     this.combatantId = null;
@@ -9,8 +9,12 @@ export class CombatHandler {
     this.isTurn = false;
     this.isNext = false;
     this.tillNextTurn = 0;
-    this.hotbar = hotbar;
+    this.hotbar = options.hotbar;
     this.previousCircleValue = null;
+  }
+
+  setActor(actor) {
+    this.actor = actor;
     this.setCombat(actor);
   }
 
@@ -27,10 +31,10 @@ export class CombatHandler {
       let value = 100 * (1 - this.tillNextTurn / this.combat.turns.length);
       this.previousCircleValue = value;
       await this.hotbar.render({ parts: ["endTurn"] });
-      AnimationHandler.setCircle(value);
+      this.hotbar.animationHandler.setCircle(value);
     } else {
       await this.hotbar.render({ parts: ["endTurn"] });
-      AnimationHandler.setCircle(0);
+      this.hotbar.animationHandler.setCircle(0);
     }
   }
 
@@ -45,7 +49,7 @@ export class CombatHandler {
       this.tillNextTurn = 0;
       this.previousCircleValue = 0;
       await this.hotbar.render({ parts: ["endTurn"] });
-      AnimationHandler.setCircle(0);
+      this.hotbar.animationHandler.setCircle(0);
       return;
     }
     this.getInitPlacement();
@@ -55,8 +59,8 @@ export class CombatHandler {
       : 100 * (1 - (this.tillNextTurn + 1) / this.combat.turns.length);
     let end = 100 * (1 - this.tillNextTurn / this.combat.turns.length);
     await this.hotbar.render({ parts: ["endTurn"] });
-    AnimationHandler.setCircle(start);
-    AnimationHandler.animateCircle(start, end, this);
+    this.hotbar.animationHandler.setCircle(start);
+    this.hotbar.animationHandler.animateCircle(start, end, this);
     this.previousCircleValue = end >= 100 ? 0 : end;
   }
 

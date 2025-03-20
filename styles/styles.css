@@ -420,7 +420,7 @@
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
   padding: 5px;
-  width: calc(var(--item-size) * var(--item-tray-item-width-count) + 10px + 5px);
+  width: calc(var(--item-size) * var(--item-tray-item-width-count) + 10px + 5px + 10px);
   margin: 5px;
   display: flex;
   overflow: hidden;
@@ -1160,6 +1160,19 @@
   border: 2px solid #000;
   margin: 2px;
   box-sizing: border-box;
+}
+
+.drag-handle {
+  height: 150px;
+  width: 10px;
+  background: red;
+}
+
+.drag-tray-container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
 }
 
 /*# sourceMappingURL=styles.css.map */

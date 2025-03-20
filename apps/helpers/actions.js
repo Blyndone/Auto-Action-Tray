@@ -60,8 +60,8 @@ export class Actions {
 
   static async setTray(event, target) {
     if (this.animating == true || this.selectingActivity == true) return
-
-    AnimationHandler.animateTrays.bind(this)(target.dataset.id, this.currentTray.id, this)
+    
+    this.animationHandler.animateTrays(target.dataset.id, this.currentTray.id, this)
   }
   static toggleLock() {
     if (this.selectingActivity) return

@@ -15,6 +15,8 @@ import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js'
 import { TrayConfig } from './helpers/trayConfig.js'
 import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
+import { StackedTray } from './components/stackedTray.js'
+
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   // Constructor
@@ -45,7 +47,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.activityTray = null
     this.equipmentTray = null
     this.skillTray = null
+    this.stackedTray = new StackedTray({id: 'stacked', hotbar: this, type:'stacked', name:'stacked'})
     this.effectsTray = new EffectTray()
+    this.animationHandler = new AnimationHandler(
+      {hotbar:this}
+    )
+    this.combatHandler = new CombatHandler({
+      hotbar:this
+    })
 
     this.itemSelectorEnabled = false
     this.currentDice = 0
@@ -217,6 +226,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.customTrays = CustomTray.generateCustomTrays(actor, {
       application: this,
     })
+    this.stackedTray.setTrays(this.customTrays.slice(0, 3))
+    this.customTrays = [this.stackedTray, ...this.customTrays]
+    this.currentTray = this.getTray(this.trayOptions['currentTray'])
     this.effectsTray.setActor(actor, this)
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
@@ -248,7 +260,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
     this.skillTray = SkillTray.generateCustomTrays(actor)
-    this.combatHandler = new CombatHandler(actor, this)
+    this.combatHandler.setActor(actor)
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
@@ -348,6 +360,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       selectingActivity: this.selectingActivity,
       currentDice: this.currentDice,
       effectsTray: this.effectsTray,
+      stackedTray: this.stackedTray,
     }
 
     return context
@@ -566,6 +579,22 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
+
+    Draggable.create('.drag-tray-container', {
+      type: 'x',
+      inertia: true,
+      bounds: {
+        left: 0,
+        right: 600,
+      },
+      handle: '.drag-handle',
+      snap: {
+        x: function (value) {
+          //snap to the closest increment of 50.
+          return Math.round(value / 60) * 60
+        },
+      },
+    })
   }
 
   _canDragStart(selector) {

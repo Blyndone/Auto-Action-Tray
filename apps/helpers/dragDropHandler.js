@@ -20,12 +20,7 @@ export class DragDropHandler {
 
   static _onDragOver(event, hotbar) {}
 
-  //   async _onDropCanvas(event, hotbar) {
-
-  //   }
-
   static async _onDrop(event, hotbar) {
-    // Try to extract the data
     if (hotbar.currentTray instanceof StaticTray) {
       return;
     }
@@ -33,7 +28,6 @@ export class DragDropHandler {
       event.dataTransfer.getData("application/json") ||
       event.dataTransfer.getData("text/plain");
     if (!dragData) return;
-    //super._onDrop(event);
     let data;
     try {
       data = JSON.parse(dragData);

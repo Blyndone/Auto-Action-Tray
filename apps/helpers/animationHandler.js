@@ -1,18 +1,20 @@
 export class AnimationHandler {
-  constructor() {}
-  static findTray(trayId, hotbar) {
+  constructor(options = {}) {
+    this.hotbat = options.hotbar;
+  }
+  findTray(trayId, hotbar) {
     return hotbar.getTray(trayId);
   }
 
-  static async animateTrays(tray1ID, tray2ID, hotbar) {
+  async animateTrays(tray1ID, tray2ID, hotbar) {
     if (tray1ID == tray2ID) return;
     let duration = hotbar.animationDuration;
     if (tray1ID == "activity" || tray2ID == "activity") {
       duration = 0.5;
     }
 
-    let tray1 = AnimationHandler.findTray(tray1ID, hotbar);
-    let tray2 = AnimationHandler.findTray(tray2ID, hotbar);
+    let tray1 = this.findTray(tray1ID, hotbar);
+    let tray2 = this.findTray(tray2ID, hotbar);
     hotbar.animating = true;
     tray1.active = true;
     tray2.active = true;
@@ -52,7 +54,10 @@ export class AnimationHandler {
       );
   }
 
-  static setCircle(value) {
+  animateTrayIn(trayId, hotbar) {}
+  animateTrayOut(trayId, hotbar) {}
+
+  setCircle(value) {
     let baseColor = value == 100 ? "#007f8c" : "#9600d1";
     let glowpx = value == 100 ? 8 : 4;
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
@@ -70,7 +75,7 @@ export class AnimationHandler {
     });
   }
 
-  static async animateCircle(start, end, hotbar) {
+  async animateCircle(start, end, hotbar) {
     let baseColor = end == 100 ? "#007f8c" : "#9600d1";
     let glowpx = end == 100 ? 8 : 4;
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
@@ -87,7 +92,6 @@ export class AnimationHandler {
         ease: "power4.out",
         stroke: `${this.getAdjustedColor(baseColor, end)}`,
         filter: filter,
-
         onComplete: () => {
           gsap.set(".circle-svg", {
             drawSVG: `0%
@@ -98,7 +102,7 @@ export class AnimationHandler {
     );
   }
 
-  static getAdjustedColor(baseColor, percentage) {
+  getAdjustedColor(baseColor, percentage) {
     // Convert HEX to HSL for easier brightness manipulation
     function hexToHSL(hex) {
       let r = parseInt(hex.substring(1, 3), 16) / 255;

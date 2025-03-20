@@ -1,0 +1,12 @@
+
+<div class="drag-tray-container"  data-data-id="{{{tray.id}}}" >
+<div class='drag-handle'></div>
+  <ol class='ability-ol'>
+    {{#each tray.abilities as |item|}}
+        {{#indexRange '0' @index @root.totalabilities }}
+      {{> AAT.item item=item tray=../tray index=@index}} 
+        {{/indexRange}}
+    {{/each}}
+
+  </ol>
+</div>

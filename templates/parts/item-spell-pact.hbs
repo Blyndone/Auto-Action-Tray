@@ -1,9 +1,4 @@
-<img
-  src='{{item.img}}'
-  alt='{{item.name}}'
-  data-item-id='{{item._id}}'
-  data-index='{{@index}}'
-/>
+<img src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item._id}}' data-index='{{@index}}' />
 
 {{#if (eq item.system.uses.max '')}}
   <div class='spell-item-container-text'>{{getRomanNumeral

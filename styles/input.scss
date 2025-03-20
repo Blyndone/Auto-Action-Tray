@@ -415,7 +415,9 @@ $tray-button-background: rgb(97, 97, 95);
 .ability-tray-container {
   @include main-tray-height;
   @include inset-tray;
-  $tray-width: calc($total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 + 5px);
+  $tray-width: calc(
+    $total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 + 5px + 10px
+  );
 
   padding: $main-tray-padding;
   width: $tray-width;
@@ -1069,4 +1071,17 @@ $tray-button-background: rgb(97, 97, 95);
   border: 2px solid #000;
   margin: 2px;
   box-sizing: border-box;
+}
+
+.drag-handle {
+  height: 150px;
+  width: 10px;
+  background: red;
+}
+
+.drag-tray-container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
 }
