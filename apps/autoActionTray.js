@@ -17,7 +17,6 @@ import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
 
-
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   // Constructor
 
@@ -47,13 +46,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.activityTray = null
     this.equipmentTray = null
     this.skillTray = null
-    this.stackedTray = new StackedTray({id: 'stacked', hotbar: this, type:'stacked', name:'stacked'})
+    this.stackedTray = new StackedTray({
+      id: 'stacked',
+      hotbar: this,
+      type: 'stacked',
+      name: 'stacked',
+    })
     this.effectsTray = new EffectTray()
-    this.animationHandler = new AnimationHandler(
-      {hotbar:this}
-    )
+    this.animationHandler = new AnimationHandler({ hotbar: this })
     this.combatHandler = new CombatHandler({
-      hotbar:this
+      hotbar: this,
     })
 
     this.itemSelectorEnabled = false
@@ -580,19 +582,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
+    const hotbar = this
     Draggable.create('.drag-tray-container', {
       type: 'x',
-      inertia: true,
       bounds: {
         left: 0,
         right: 600,
       },
       handle: '.drag-handle',
+      inertia: true,
+      maxDuration: 0.1,
       snap: {
         x: function (value) {
-          //snap to the closest increment of 50.
           return Math.round(value / 60) * 60
         },
+      },
+      onDragEnd: function () {
+        hotbar.customTrays[1].x = Math.round(this.x / 60) * 60
+        console.log('drag ended', this, Math.round(this.x / 60) * 60)
       },
     })
   }

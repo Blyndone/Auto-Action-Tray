@@ -6,6 +6,7 @@ export class StackedTray {
     this.id = options.id;
     this.type = "stacked";
     this.name = "stacked";
+    this.x = 0;
   }
   setActive(active) {
     this.active = active;
