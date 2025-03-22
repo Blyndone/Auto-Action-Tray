@@ -2,7 +2,11 @@
 
   {{#if item}}
     <div {{#if (eq tray.type 'static' )}} {{else}} data-drag='true' {{/if}} data-item-id='{{item._id}}'
-      data-index='{{@index}}' data-tooltip="{{> 'AAT.item-tooltip' }}" data-tooltip-direction='UP' {{#if (eq
+      data-index='{{@index}}' 
+      
+      data-tooltip="{{> 'AAT.item-tooltip' }}" data-tooltip-direction='UP'
+      
+       {{#if (eq
       item.system.activities.size 0)}} data-action='viewItem' class='ability-button ability-button-passive' {{else}}
       data-action='useItem' class='ability-button' {{/if}}>
       {{#if (eq item.system.activities.size 0)}}

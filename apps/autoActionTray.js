@@ -15,6 +15,7 @@ import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js'
 import { TrayConfig } from './helpers/trayConfig.js'
 import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
+import { StackedTray } from './components/stackedTray.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   // Constructor
@@ -45,7 +46,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.activityTray = null
     this.equipmentTray = null
     this.skillTray = null
+    this.stackedTray = new StackedTray({
+      id: 'stacked',
+      hotbar: this,
+      type: 'stacked',
+      name: 'stacked',
+    })
     this.effectsTray = new EffectTray()
+    this.animationHandler = new AnimationHandler({ hotbar: this })
+    this.combatHandler = new CombatHandler({
+      hotbar: this,
+    })
 
     this.itemSelectorEnabled = false
     this.currentDice = 0
@@ -54,7 +65,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
-      currentTray: 'common',
+      currentTray: 'stacked',
       fastForward: true,
       imageType: 'portrait',
       imageScale: 1,
@@ -217,6 +228,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.customTrays = CustomTray.generateCustomTrays(actor, {
       application: this,
     })
+    this.stackedTray.setTrays(this.customTrays.slice(0, 3))
+    this.stackedTray.setActor(actor)
+    this.customTrays = [this.stackedTray, ...this.customTrays]
+    this.stackedTray.setActive()
+
     this.effectsTray.setActor(actor, this)
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
@@ -248,11 +264,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
     this.skillTray = SkillTray.generateCustomTrays(actor)
-    this.combatHandler = new CombatHandler(actor, this)
+    this.combatHandler.setActor(actor)
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
-      currentTray: 'common',
+      currentTray: 'stacked',
       fastForward: true,
       imageType: 'portrait',
       imageScale: 1,
@@ -284,17 +300,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  _onUpdateActor(actor, change, options, userId) {
-    if (actor != this.actor) return
+  async _onUpdateActor(actor, change, options, userId) {
+    if (actor != this.actor || Object.keys(change).includes('flags')) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
     this.currentTray = this.getTray(this.currentTray.id)
     this.currentTray.active = true
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
     this.effectsTray.setEffects()
+    this.stackedTray.setActor(actor)
     if (this.combatHandler.inCombat) {
       this.combatHandler.setCombat(this.actor)
     }
-    if (this.animating == false) {
+    if (!this.animating) {
       this.render({ parts: ['centerTray'] })
     }
   }
@@ -348,6 +365,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       selectingActivity: this.selectingActivity,
       currentDice: this.currentDice,
       effectsTray: this.effectsTray,
+      stackedTray: this.stackedTray,
     }
 
     return context
@@ -566,6 +584,53 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
+
+    if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
+
+    this.animationHandler.setAllStackedTrayPos(this.currentTray)
+    const hotbar = this
+
+    let classFeatures = Draggable.create('.container-classFeatures', {
+      type: 'x',
+      bounds: {
+        minX: 22,
+        maxX: hotbar.stackedTray.trays[2].xPos,
+      },
+      handle: '.handle-classFeatures',
+      inertia: true,
+      zIndexBoost: false,
+      maxDuration: 0.1,
+      snap: {
+        x: function (value) {
+          return Math.floor(value / 60) * 60 + 22
+        },
+      },
+      onThrowComplete: function () {
+        hotbar.stackedTray.setTrayPosition('classFeatures', Math.round(this.endX / 60) * 60 + 22)
+        items[0].applyBounds({ minX: this.endX + 22, maxX: 895 })
+      },
+    })
+
+    let items = Draggable.create('.container-items', {
+      type: 'x',
+      bounds: {
+        minX: 44,
+        maxX: 895,
+      },
+      handle: '.handle-items',
+      zIndexBoost: false,
+      inertia: true,
+      maxDuration: 0.1,
+      snap: {
+        x: function (value) {
+          return Math.floor(value / 60) * 60 + 44
+        },
+      },
+      onThrowComplete: function () {
+        hotbar.stackedTray.setTrayPosition('items', Math.round(this.endX / 60) * 60 + 44)
+        classFeatures[0].applyBounds({ minX: 22, maxX: this.endX - 22 })
+      },
+    })
   }
 
   _canDragStart(selector) {

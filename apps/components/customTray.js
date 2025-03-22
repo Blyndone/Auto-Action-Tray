@@ -8,6 +8,7 @@ export class CustomTray extends AbilityTray {
     this.category = options.category;
     this.id = options.id;
     this.type = 'custom';
+    this.xPos = 0;
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
       // console.log('Generating Custom Trays');
@@ -115,7 +116,7 @@ export class CustomTray extends AbilityTray {
       customTray,
     ];
     trays = trays.filter(
-      (e) => e.abilities.some((e) => e != null) || e.cataegory === 'custom'
+      (e) => e.abilities.some((e) => e != null) || e.category == 'common' || e.category == 'classFeatures'|| e.category == 'items' || e.cataegory === 'custom'
     );
 
     return trays;

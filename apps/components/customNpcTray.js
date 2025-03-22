@@ -170,7 +170,14 @@ export class CustomNpcTray extends AbilityTray {
     })
     let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]
 
-    trays = trays.filter((e) => e.abilities.some((e) => e != null) || e.cataegory === 'custom')
+    trays = trays.filter(
+      (e) =>
+        e.abilities.some((e) => e != null) ||
+        e.category == 'common' ||
+        e.category == 'classFeatures' ||
+        e.category == 'items' ||
+        e.cataegory === 'custom',
+    )
 
     const highestIndex = trays[0].abilities
       .map((ability, index) => (ability !== null ? index : -1))

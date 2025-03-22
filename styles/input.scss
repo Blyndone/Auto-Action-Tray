@@ -498,6 +498,7 @@ $tray-button-background: rgb(97, 97, 95);
     list-style-type: none;
     padding: 0px;
     align-items: center;
+    background: #5b5b5b;
     .context-item {
       width: auto;
       height: auto;
@@ -581,6 +582,11 @@ $tray-button-background: rgb(97, 97, 95);
 
 .abilities-tray {
   position: absolute;
+  // background: #5b5b5b;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
 }
 
 .consumable-count {
@@ -1069,4 +1075,34 @@ $tray-button-background: rgb(97, 97, 95);
   border: 2px solid #000;
   margin: 2px;
   box-sizing: border-box;
+}
+
+.drag-handle {
+  height: calc($main-tray-height - 14px);
+  width: calc(($total-item-width / 3) + 2px);
+  background: rgb(173 2 2);
+  outline: 4px solid #5b5b5b;
+  outline-offset: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: inset 0px 0px 10px 3px #000000;
+}
+
+.drag-tray-container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+}
+
+.common {
+  z-index: 1;
+}
+.classFeatures {
+  z-index: 2;
+}
+.items {
+  z-index: 3;
 }

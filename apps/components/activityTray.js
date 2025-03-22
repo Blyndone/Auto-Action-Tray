@@ -65,7 +65,11 @@ export class ActivityTray extends AbilityTray {
       hotbar.trayInformation = `${item.name}`;
     }
     hotbar.selectingActivity = true;
-    AnimationHandler.animateTrays("activity", hotbar.currentTray.id, hotbar);
+    hotbar.animationHandler.animateTrays(
+      "activity",
+      hotbar.currentTray.id,
+      hotbar
+    );
 
     let act;
     try {
@@ -79,7 +83,11 @@ export class ActivityTray extends AbilityTray {
     }
     hotbar.selectingActivity = false;
     hotbar.trayInformation = "";
-    AnimationHandler.animateTrays(hotbar.targetTray.id, "activity", hotbar);
+    hotbar.animationHandler.animateTrays(
+      hotbar.targetTray.id,
+      "activity",
+      hotbar
+    );
 
     return act;
   }

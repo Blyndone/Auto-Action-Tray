@@ -11,11 +11,17 @@
         {{/if}}
         {{/each}}
 
+
         {{#each customTrays as |tray|}}
         {{#if tray.active}}
-        <div class="abilities-tray custom-tray  {{tray.id}}">
-          {{> "AAT.full-tray" tray=tray}}
-        </div>
+        {{#if (eq tray.type 'custom')}}
+ 
+        {{#if @root.stackedTray.active}}
+          {{> "AAT.full-tray-dragable" tray=tray}}
+        {{else}}
+        {{> "AAT.full-tray" tray=tray}}
+        {{/if}}
+        {{/if}}
         {{/if}}
         {{/each}}
 
