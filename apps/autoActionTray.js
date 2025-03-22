@@ -81,6 +81,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     let columnCount = 10
     let iconSize = 75
     this.styleSheet
+
     for (let sheet of document.styleSheets) {
       if (sheet.href && sheet.href.includes('auto-action-tray/styles/styles.css')) {
         this.styleSheet = sheet
@@ -102,6 +103,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
 
       this.totalabilities = rowCount * columnCount
+      this.rowCount = rowCount
+      this.columnCount = columnCount
+      this.iconSize = iconSize
     }
 
     Hooks.on('controlToken', this._onControlToken.bind(this))
@@ -589,12 +593,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this.animationHandler.setAllStackedTrayPos(this.currentTray)
     const hotbar = this
-
+    let handleSize = hotbar.iconSize / 3 +2
     let classFeatures = Draggable.create('.container-classFeatures', {
       type: 'x',
       bounds: {
         minX: 22,
-        maxX: hotbar.stackedTray.trays[2].xPos,
+        maxX: hotbar.stackedTray.trays[2].xPos-handleSize,
       },
       handle: '.handle-classFeatures',
       inertia: true,
@@ -602,20 +606,20 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       maxDuration: 0.1,
       snap: {
         x: function (value) {
-          return Math.floor(value / 60) * 60 + 22
+          return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + handleSize
         },
       },
       onThrowComplete: function () {
-        hotbar.stackedTray.setTrayPosition('classFeatures', Math.round(this.endX / 60) * 60 + 22)
-        items[0].applyBounds({ minX: this.endX + 22, maxX: 895 })
+        hotbar.stackedTray.setTrayPosition('classFeatures', Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + handleSize)
+        items[0].applyBounds({ minX: this.endX + handleSize, maxX: hotbar.columnCount* hotbar.iconSize -handleSize })
       },
     })
 
     let items = Draggable.create('.container-items', {
       type: 'x',
       bounds: {
-        minX: 44,
-        maxX: 895,
+        minX: hotbar.stackedTray.trays[1].xPos+handleSize,
+        maxX: hotbar.columnCount* hotbar.iconSize-handleSize,
       },
       handle: '.handle-items',
       zIndexBoost: false,
@@ -623,12 +627,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       maxDuration: 0.1,
       snap: {
         x: function (value) {
-          return Math.floor(value / 60) * 60 + 44
+          return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + handleSize*2
         },
       },
       onThrowComplete: function () {
-        hotbar.stackedTray.setTrayPosition('items', Math.round(this.endX / 60) * 60 + 44)
-        classFeatures[0].applyBounds({ minX: 22, maxX: this.endX - 22 })
+        hotbar.stackedTray.setTrayPosition('items', Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + handleSize*2)
+        classFeatures[0].applyBounds({ minX: handleSize, maxX: this.endX - handleSize })
       },
     })
   }

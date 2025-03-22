@@ -10,6 +10,7 @@
       alt='{{item.name}}'
       data-item-id='{{item._id}}'
       data-index='{{@index}}'
+       data-trayid='{{tray.id}}'
     />
   {{else}}
     {{#if (eq tray.type 'static')}}
@@ -19,6 +20,7 @@
           alt='{{item.name}}'
           data-item-id='{{item._id}}'
           data-index='{{@index}}'
+           data-trayid='{{tray.id}}'
         />
       {{else}}
         <img
@@ -26,6 +28,7 @@
           alt='{{item.name}}'
           data-item-id='{{item._id}}'
           data-index='{{@index}}'
+           data-trayid='{{tray.id}}'
           class='spell-item-container-img-upcast'
         />
         <div class='spell-item-container-text-upcast'>+</div>
@@ -36,6 +39,7 @@
         alt='{{item.name}}'
         data-item-id='{{item._id}}'
         data-index='{{@index}}'
+         data-trayid='{{tray.id}}'
       />
     {{/if}}
   {{/if}}
