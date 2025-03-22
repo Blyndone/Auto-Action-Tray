@@ -1,106 +1,108 @@
-import { StaticTray } from "../components/staticTray.js";
-import { CustomStaticTray } from "../components/customStaticTray.js";
+import { StaticTray } from '../components/staticTray.js'
+import { CustomStaticTray } from '../components/customStaticTray.js'
 export class DragDropHandler {
   static _onDragStart(event, hotbar) {
-    game.tooltip.deactivate();
-    const li = event.currentTarget;
+    game.tooltip.deactivate()
+    const li = event.currentTarget
 
-    if (event.target.classList.contains("content-link")) return;
+    if (event.target.classList.contains('content-link')) return
 
-    if (li.dataset.itemId === undefined) return;
-    const effect = hotbar.actor.items.get(li.dataset.itemId);
-    let data = effect.toDragData();
-    data.section = li.dataset.section;
-    data.index = li.dataset.index;
-    data.src = "AAT";
-    if (effect) event.dataTransfer.setData("text/plain", JSON.stringify(data));
+    if (li.dataset.itemId === undefined) return
+    const effect = hotbar.actor.items.get(li.dataset.itemId)
+    let data = effect.toDragData()
+    data.section = li.dataset.section
+    data.index = li.dataset.index
+    data.src = 'AAT'
+    data.trayId = event.target.dataset.trayid
+    if (effect) event.dataTransfer.setData('text/plain', JSON.stringify(data))
 
-    return;
+    return
   }
 
   static _onDragOver(event, hotbar) {}
 
   static async _onDrop(event, hotbar) {
     if (hotbar.currentTray instanceof StaticTray) {
-      return;
+      return
     }
     const dragData =
-      event.dataTransfer.getData("application/json") ||
-      event.dataTransfer.getData("text/plain");
-    if (!dragData) return;
-    let data;
+      event.dataTransfer.getData('application/json') || event.dataTransfer.getData('text/plain')
+    if (!dragData) return
+    let data
     try {
-      data = JSON.parse(dragData);
+      data = JSON.parse(dragData)
     } catch (e) {
-      console.error(e);
-      return;
+      console.error(e)
+      return
     }
 
     let target =
       hotbar.actor.items.get(event.target.dataset.itemId) ||
-      hotbar.actor.items.get(event.target.parentElement.dataset.itemId);
+      hotbar.actor.items.get(event.target.parentElement.dataset.itemId)
 
-    let index = event.target.dataset.index;
+    let index = event.target.dataset.index
 
-    if (event.target.parentElement.dataset.index === "meleeWeapon") {
-      hotbar.equipmentTray.setMeleeWeapon(fromUuidSync(data.uuid));
-      hotbar.render({ parts: ["equipmentMiscTray"] });
-      return;
-    } else if (event.target.parentElement.dataset.index === "rangedWeapon") {
-      hotbar.equipmentTray.setRangedWeapon(fromUuidSync(data.uuid));
-      hotbar.render({ parts: ["equipmentMiscTray"] });
-      return;
+    if (event.target.parentElement.dataset.index === 'meleeWeapon') {
+      hotbar.equipmentTray.setMeleeWeapon(fromUuidSync(data.uuid))
+      hotbar.render({ parts: ['equipmentMiscTray'] })
+      return
+    } else if (event.target.parentElement.dataset.index === 'rangedWeapon') {
+      hotbar.equipmentTray.setRangedWeapon(fromUuidSync(data.uuid))
+      hotbar.render({ parts: ['equipmentMiscTray'] })
+      return
     }
 
-    if (!index) return;
-    if (index == "meleeWeapon") {
-      let item = fromUuidSync(data.uuid);
-      hotbar.equipmentTray.setMeleeWeapon(item);
-      hotbar.render({ parts: ["equipmentMiscTray"] });
-      return;
+    if (!index) return
+    if (index == 'meleeWeapon') {
+      let item = fromUuidSync(data.uuid)
+      hotbar.equipmentTray.setMeleeWeapon(item)
+      hotbar.render({ parts: ['equipmentMiscTray'] })
+      return
     }
-    if (index == "rangedWeapon") {
-      let item = fromUuidSync(data.uuid);
-      hotbar.equipmentTray.setRangedWeapon(item);
-      hotbar.render({ parts: ["equipmentMiscTray"] });
-      return;
+    if (index == 'rangedWeapon') {
+      let item = fromUuidSync(data.uuid)
+      hotbar.equipmentTray.setRangedWeapon(item)
+      hotbar.render({ parts: ['equipmentMiscTray'] })
+      return
     }
-    if (index == "abilitySelection") {
-      let itemUuid = fromUuidSync(data.uuid).id;
-      CustomStaticTray.setCustomStaticTray(itemUuid, hotbar.actor);
-      hotbar.staticTrays = StaticTray.generateStaticTrays(hotbar.actor);
-      hotbar.render({ parts: ["centerTray"] });
-      return;
+    if (index == 'abilitySelection') {
+      let itemUuid = fromUuidSync(data.uuid).id
+      CustomStaticTray.setCustomStaticTray(itemUuid, hotbar.actor)
+      hotbar.staticTrays = StaticTray.generateStaticTrays(hotbar.actor)
+      hotbar.render({ parts: ['centerTray'] })
+      return
     }
 
-    if (index == data.index) return;
+    if (index == data.index) return
 
     // Handle different data types
     switch (data.type) {
-      case "Item":
-        let item = fromUuidSync(data.uuid);
-        hotbar.currentTray.setAbility(index, item);
-        hotbar.currentTray.setAbility(data.index, null);
-        hotbar.render({ parts: ["centerTray"] });
-        break;
+      case 'Item':
+        let item = fromUuidSync(data.uuid)
+        let sourceTray = hotbar.getTray(data.trayId)
+        let targetTray = hotbar.getTray(event.target.dataset.trayid)
+        targetTray?.setAbility(index, item)
+        sourceTray?.setAbility(data.index, null)
+        hotbar.render({ parts: ['centerTray'] })
+        break
 
       default:
-        return;
+        return
     }
   }
   static _onDropCanvas(data, hotbar) {
-    if (data.src != "AAT") return;
-    if (data.index == "meleeWeapon") {
-      hotbar.equipmentTray.setMeleeWeapon(null);
-      hotbar.render({ parts: ["equipmentMiscTray"] });
-      return;
+    if (data.src != 'AAT') return
+    if (data.index == 'meleeWeapon') {
+      hotbar.equipmentTray.setMeleeWeapon(null)
+      hotbar.render({ parts: ['equipmentMiscTray'] })
+      return
     }
-    if (data.index == "rangedWeapon") {
-      hotbar.equipmentTray.setRangedWeapon(null);
-      hotbar.render({ parts: ["equipmentMiscTray"] });
-      return;
+    if (data.index == 'rangedWeapon') {
+      hotbar.equipmentTray.setRangedWeapon(null)
+      hotbar.render({ parts: ['equipmentMiscTray'] })
+      return
     }
-    hotbar.currentTray.setAbility(data.index, null);
-    hotbar.render({ parts: ["centerTray"] });
+    hotbar.getTray(data.trayId).setAbility(data.index, null)
+    hotbar.render({ parts: ['centerTray'] })
   }
 }
