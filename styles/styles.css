@@ -420,7 +420,7 @@
   border-radius: 6px;
   outline: 1px solid rgba(255, 255, 255, 0.1);
   padding: 5px;
-  width: calc(var(--item-size) * var(--item-tray-item-width-count) + 10px + 5px + 10px);
+  width: calc(var(--item-size) * var(--item-tray-item-width-count) + 10px + 5px);
   margin: 5px;
   display: flex;
   overflow: hidden;
@@ -517,6 +517,7 @@
   list-style-type: none;
   padding: 0px;
   align-items: center;
+  background: #5b5b5b;
 }
 .ability-tray-container .ability-ol .context-item {
   width: auto;
@@ -600,6 +601,10 @@
 
 .abilities-tray {
   position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
 }
 
 .consumable-count {
@@ -1163,9 +1168,15 @@
 }
 
 .drag-handle {
-  height: 150px;
-  width: 10px;
-  background: red;
+  height: calc(var(--item-tray-item-height-count) * var(--item-size) + 10px + 2px - 14px);
+  width: calc(var(--item-size) / 3 + 2px);
+  background: rgb(119, 0, 0);
+  outline: 4px solid #5b5b5b;
+  outline-offset: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
 }
 
 .drag-tray-container {
@@ -1173,6 +1184,18 @@
   flex-direction: row;
   align-content: center;
   align-items: center;
+}
+
+.common {
+  z-index: 1;
+}
+
+.classFeatures {
+  z-index: 2;
+}
+
+.items {
+  z-index: 3;
 }
 
 /*# sourceMappingURL=styles.css.map */

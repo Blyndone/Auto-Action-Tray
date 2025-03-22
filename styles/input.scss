@@ -415,9 +415,7 @@ $tray-button-background: rgb(97, 97, 95);
 .ability-tray-container {
   @include main-tray-height;
   @include inset-tray;
-  $tray-width: calc(
-    $total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 + 5px + 10px
-  );
+  $tray-width: calc($total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 + 5px);
 
   padding: $main-tray-padding;
   width: $tray-width;
@@ -500,6 +498,7 @@ $tray-button-background: rgb(97, 97, 95);
     list-style-type: none;
     padding: 0px;
     align-items: center;
+    background: #5b5b5b;
     .context-item {
       width: auto;
       height: auto;
@@ -583,6 +582,11 @@ $tray-button-background: rgb(97, 97, 95);
 
 .abilities-tray {
   position: absolute;
+  // background: #5b5b5b;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
 }
 
 .consumable-count {
@@ -1074,9 +1078,15 @@ $tray-button-background: rgb(97, 97, 95);
 }
 
 .drag-handle {
-  height: 150px;
-  width: 10px;
-  background: red;
+  height: calc($main-tray-height - 14px);
+  width: calc(($total-item-width / 3) + 2px);
+  background: rgb(119, 0, 0);
+  outline: 4px solid #5b5b5b;
+  outline-offset: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
 }
 
 .drag-tray-container {
@@ -1084,4 +1094,14 @@ $tray-button-background: rgb(97, 97, 95);
   flex-direction: row;
   align-content: center;
   align-items: center;
+}
+
+.common {
+  z-index: 1;
+}
+.classFeatures {
+  z-index: 2;
+}
+.items {
+  z-index: 3;
 }

@@ -1,12 +1,14 @@
+<div class="abilities-tray custom-tray  {{tray.id}}">
 
-<div  data-data-id="{{{tray.id}}}" >
+  <div data-data-id="{{{tray.id}}}">
 
-  <ol class='ability-ol'>
-    {{#each tray.abilities as |item|}}
+    <ol class='ability-ol'>
+      {{#each tray.abilities as |item|}}
         {{#indexRange '0' @index @root.totalabilities }}
-      {{> AAT.item item=item tray=../tray index=@index}} 
+          {{> AAT.item item=item tray=../tray index=@index}}
         {{/indexRange}}
-    {{/each}}
+      {{/each}}
 
-  </ol>
+    </ol>
+  </div>
 </div>

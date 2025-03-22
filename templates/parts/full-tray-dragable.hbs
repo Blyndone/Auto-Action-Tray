@@ -1,6 +1,9 @@
+        <div class="abilities-tray custom-tray drag-tray-container container-{{tray.id}}  {{tray.id}}">
 
-<div class="drag-tray-container"  data-data-id="{{{tray.id}}}" >
-<div class='drag-handle'></div>
+
+
+<div class='drag-handle handle-{{tray.id}}'> <i class="fa-regular fa-grip-lines-vertical"></i></div>
+
   <ol class='ability-ol'>
     {{#each tray.abilities as |item|}}
         {{#indexRange '0' @index @root.totalabilities }}
@@ -9,4 +12,6 @@
     {{/each}}
 
   </ol>
-</div>
+
+
+          </div>

@@ -1,10 +1,10 @@
 export class AnimationHandler {
   constructor(options = {}) {
     this.hotbar = options.hotbar
-    this.animationDuration = 2
+    this.animationDuration = 0.7
   }
   findTray(trayId, hotbar) {
-    return hotbar.getTray(trayId)
+    return this.hotbar.getTray(trayId)
   }
 
   async animateTrays(trayInId, trayOutId, hotbar) {
@@ -19,26 +19,76 @@ export class AnimationHandler {
     hotbar.animating = true
     trayIn.active = true
     trayOut.active = true
+    if (trayIn.id == 'stacked') {
+      trayIn.setActive()
+    }
+    if (trayOut.id == 'stacked') {
+      trayOut.setActive()
+    }
+
     hotbar.currentTray = trayIn
     hotbar.targetTray = trayOut
-    
+
     await hotbar.render({ parts: ['centerTray'] })
 
+    trayIn?.trays?.forEach((tray) => {
+      this.setPreStackedTrayPos(tray, trayOut)
+    })
+    trayOut?.trays?.forEach((tray) => {
+      this.setStackedTrayPos(tray)
+    })
 
-    let p1 = this.animateTrayIn(trayIn)
-    let p2 = this.animateTrayOut(trayOut)
+    let p1, p2
+
+    switch (true) {
+      case trayIn.id != 'stacked' && trayOut.id != 'stacked':
+        p1 = this.animateTrayIn(trayIn)
+        p2 = this.animateTrayOut(trayOut)
+        break
+      case trayIn.id == 'stacked' && trayIn?.trays?.includes(trayOut):
+        p1 = this.animateStackedTrayIn(trayIn, trayOut)
+        p2 = Promise.resolve(p2)
+        break
+      case trayIn.id == 'stacked' && !trayIn?.trays?.includes(trayOut):
+        p2 = this.animateTrayOut(trayOut)
+        p1 = this.animateStackedTrayIn(trayIn, trayOut)
+        break
+      case trayOut.id == 'stacked':
+        p1 = this.animateStackedTrayOut(trayOut, trayIn)
+        trayOut.trays.includes(trayIn)
+          ? (p2 = Promise.resolve(p2))
+          : (p2 = this.animateTrayIn(trayIn))
+
+        break
+    }
 
     Promise.all([p1, p2])
       .then(() => {
         hotbar.animating = false
-        trayIn.active = true
-        trayOut.active = false
+        if (trayIn.id == 'stacked') {
+          trayIn.active = true
+          trayOut.active = false
+          trayIn.setActive()
+        } else if (trayOut.id == 'stacked') {
+          trayOut.active = false
+          trayOut.setDeactive()
+          trayIn.active = true
+        } else {
+          trayIn.active = true
+          trayOut.active = false
+        }
         hotbar.currentTray = trayIn
-        hotbar.targetTray = trayIn
-        console.log('Animation complete')
+        hotbar.targetTray = trayOut
+      })
+      .then(async () => {
+        await hotbar.render({ parts: ['centerTray'] })
       })
       .then(() => {
-        hotbar.render({ parts: ['centerTray'] })
+        if (trayIn.id == 'stacked') {
+          trayIn.trays.forEach((tray) => {
+            this.setStackedTrayPos(tray)
+          })
+        }
       })
   }
 
@@ -51,7 +101,7 @@ export class AnimationHandler {
       let yOffset = 0
       switch (tray.type) {
         case 'static':
-          yOffset = -200
+          yOffset = -100
           break
         case 'activity':
           yOffset = 200
@@ -80,8 +130,8 @@ export class AnimationHandler {
     })
   }
 
-  animateTrayOut(tray) {
-        if (tray?.x) {
+  async animateTrayOut(tray) {
+    if (tray?.x) {
       gsap.set(`.${tray.id}`, {
         x: tray.x,
       })
@@ -95,7 +145,7 @@ export class AnimationHandler {
       let yOffset = 0
       switch (tray.type) {
         case 'static':
-          yOffset = -200
+          yOffset = -100
           break
         case 'activity':
           yOffset = 200
@@ -116,6 +166,78 @@ export class AnimationHandler {
           return
         },
       })
+    })
+  }
+
+  async animateStackedTrayOut(trayOut, trayIn) {
+    return new Promise(async (resolve) => {
+      let animationComplete = trayOut.trays.length
+
+      trayOut.trays.forEach((tray) => {
+        if (tray == trayIn) {
+          this.setStackedTrayPos(tray)
+          gsap.to(`.container-${tray.id}`, {
+            opacity: 1,
+            x: -22,
+            duration: this.animationDuration,
+            onComplete: () => {
+              animationComplete > 0 ? resolve() : animationComplete--
+              return
+            },
+          })
+        } else {
+          gsap.to(`.container-${tray.id}`, {
+            opacity: 0,
+            x: 1000,
+            duration: this.animationDuration,
+            onComplete: () => {
+              animationComplete > 0 ? resolve() : animationComplete--
+              return
+            },
+          })
+        }
+      })
+    })
+  }
+
+  async animateStackedTrayIn(trayIn, trayOut) {
+    return new Promise(async (resolve) => {
+      let animationComplete = trayIn.trays.length
+
+      trayIn.trays.forEach((tray) => {
+        gsap.to(`.container-${tray.id}`, {
+          opacity: 1,
+          x: tray.xPos,
+          duration: this.animationDuration,
+          onComplete: () => {
+            animationComplete > 0 ? resolve() : animationComplete--
+            return
+          },
+        })
+      })
+    })
+  }
+
+
+  setAllStackedTrayPos(stackedTray) { 
+    stackedTray.trays.forEach((tray) => {
+      gsap.set(`.container-${tray.id}`, {
+        opacity: 1,
+        x: tray.xPos,
+      })
+    })
+  }
+  setStackedTrayPos(tray) {
+    gsap.set(`.container-${tray.id}`, {
+      opacity: 1,
+      x: tray.xPos,
+    })
+  }
+
+  setPreStackedTrayPos(tray, trayOut) {
+    gsap.set(`.container-${tray.id}`, {
+      opacity: 1,
+      x: tray == trayOut ? -22 : 1000,
     })
   }
 
@@ -224,33 +346,3 @@ export class AnimationHandler {
   }
 }
 
-// var tl = gsap.timeline();
-// tl
-//   .add("start")
-//   .fromTo(
-//     "." + tray1.id,
-//     {
-//       opacity: 0,
-//       y: tray1.type == "static" ? -200 : tray1.type == "activity" ? 200 : 0,
-//       x: tray1.type == "custom" ? 1000 : 0
-//     },
-//     { opacity: 1, y: 0, x: 0, duration: duration, onStart: () => {} },
-//     "start"
-//   )
-//   .to(
-//     "." + tray2.id,
-//     {
-//       opacity: 0,
-//       y: tray2.type == "static" ? -200 : tray2.type == "activity" ? 200 : 0,
-//       x: tray2.type == "custom" ? 1000 : 0,
-//       duration: duration,
-//       onStart: () => {},
-//       onComplete: () => {
-//         hotbar.animating = false;
-//         hotbar.targetTray.active = false;
-//         hotbar.currentTray.active = true;
-//         hotbar.render({ parts: ["centerTray"] });
-//       }
-//     },
-//     "start"
-//   );

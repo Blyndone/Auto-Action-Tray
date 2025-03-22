@@ -8,7 +8,7 @@ export class CustomTray extends AbilityTray {
     this.category = options.category;
     this.id = options.id;
     this.type = 'custom';
-    this.x = 0;
+    this.xPos = 0;
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
       // console.log('Generating Custom Trays');

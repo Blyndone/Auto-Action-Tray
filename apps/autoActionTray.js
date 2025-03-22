@@ -65,7 +65,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
-      currentTray: 'common',
+      currentTray: 'stacked',
       fastForward: true,
       imageType: 'portrait',
       imageScale: 1,
@@ -214,7 +214,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  initialTraySetup(actor) {
+  async initialTraySetup(actor) {
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
@@ -229,8 +229,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       application: this,
     })
     this.stackedTray.setTrays(this.customTrays.slice(0, 3))
+    this.stackedTray.setActor(actor)
     this.customTrays = [this.stackedTray, ...this.customTrays]
-    this.currentTray = this.getTray(this.trayOptions['currentTray'])
+    this.stackedTray.setActive()
+
     this.effectsTray.setActor(actor, this)
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
@@ -266,7 +268,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
-      currentTray: 'common',
+      currentTray: 'stacked',
       fastForward: true,
       imageType: 'portrait',
       imageScale: 1,
@@ -282,7 +284,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
 
-    this.render({
+    await this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
   }
@@ -298,17 +300,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  _onUpdateActor(actor, change, options, userId) {
-    if (actor != this.actor) return
+  async _onUpdateActor(actor, change, options, userId) {
+    if (actor != this.actor || Object.keys(change).includes('flags')) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
     this.currentTray = this.getTray(this.currentTray.id)
     this.currentTray.active = true
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
     this.effectsTray.setEffects()
+    this.stackedTray.setActor(actor)
     if (this.combatHandler.inCombat) {
       this.combatHandler.setCombat(this.actor)
     }
-    if (this.animating == false) {
+    if (!this.animating) {
       this.render({ parts: ['centerTray'] })
     }
   }
@@ -582,24 +585,49 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
+    if (this.animating || !this.stackedTray.active) return
+    this.animationHandler.setAllStackedTrayPos(this.currentTray)
     const hotbar = this
-    Draggable.create('.drag-tray-container', {
+
+    let classFeatures = Draggable.create('.container-classFeatures', {
       type: 'x',
       bounds: {
-        left: 0,
-        right: 600,
+        minX: 22,
+        maxX: hotbar.stackedTray.trays[2].xPos,
       },
-      handle: '.drag-handle',
+      handle: '.handle-classFeatures',
+      inertia: true,
+      zIndexBoost: false,
+      maxDuration: 0.1,
+      snap: {
+        x: function (value) {
+          return Math.floor(value / 60) * 60 + 22
+        },
+      },
+      onThrowComplete: function () {
+        hotbar.stackedTray.setTrayPosition('classFeatures', Math.round(this.endX / 60) * 60 + 22)
+        items[0].applyBounds({ minX: this.endX + 22, maxX: 895 })
+      },
+    })
+
+    let items = Draggable.create('.container-items', {
+      type: 'x',
+      bounds: {
+        minX: 44,
+        maxX: 895,
+      },
+      handle: '.handle-items',
+      zIndexBoost: false,
       inertia: true,
       maxDuration: 0.1,
       snap: {
         x: function (value) {
-          return Math.round(value / 60) * 60
+          return Math.floor(value / 60) * 60 + 44
         },
       },
-      onDragEnd: function () {
-        hotbar.customTrays[1].x = Math.round(this.x / 60) * 60
-        console.log('drag ended', this, Math.round(this.x / 60) * 60)
+      onThrowComplete: function () {
+        hotbar.stackedTray.setTrayPosition('items', Math.round(this.endX / 60) * 60 + 44)
+        classFeatures[0].applyBounds({ minX: 22, maxX: this.endX - 22 })
       },
     })
   }
