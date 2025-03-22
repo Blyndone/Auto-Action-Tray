@@ -1170,13 +1170,14 @@
 .drag-handle {
   height: calc(var(--item-tray-item-height-count) * var(--item-size) + 10px + 2px - 14px);
   width: calc(var(--item-size) / 3 + 2px);
-  background: rgb(119, 0, 0);
+  background: rgb(173, 2, 2);
   outline: 4px solid #5b5b5b;
   outline-offset: -3px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26px;
+  box-shadow: inset 0px 0px 10px 3px #000000;
 }
 
 .drag-tray-container {

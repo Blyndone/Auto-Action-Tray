@@ -112,7 +112,7 @@ export class AnimationHandler {
       }
 
       gsap.set(`.${tray.id}`, {
-        opacity: 0,
+        opacity: 1,
         y: yOffset,
         x: xOffset,
       })
@@ -156,7 +156,7 @@ export class AnimationHandler {
       }
 
       gsap.to(`.${tray.id}`, {
-        opacity: 0,
+        opacity: 1,
         y: yOffset,
         x: xOffset,
         inherit: true,
@@ -187,7 +187,7 @@ export class AnimationHandler {
           })
         } else {
           gsap.to(`.container-${tray.id}`, {
-            opacity: 0,
+            opacity: 1,
             x: 1000,
             duration: this.animationDuration,
             onComplete: () => {

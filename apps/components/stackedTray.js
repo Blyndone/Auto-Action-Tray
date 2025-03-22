@@ -16,7 +16,7 @@ export class StackedTray {
       this.getSavedData();
       this.setTrayPositions(this.positions);
     } else {
-      this.setTrayPositions([0, 150, 300]);
+      this.setTrayPositions([0, 300, 600]);
     }
   }
   setActive() {

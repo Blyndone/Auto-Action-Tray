@@ -214,7 +214,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  async initialTraySetup(actor) {
+  initialTraySetup(actor) {
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
@@ -284,7 +284,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
 
-    await this.render({
+    this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
   }
@@ -585,7 +585,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
-    if (this.animating || !this.stackedTray.active) return
+    if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
+
     this.animationHandler.setAllStackedTrayPos(this.currentTray)
     const hotbar = this
 
