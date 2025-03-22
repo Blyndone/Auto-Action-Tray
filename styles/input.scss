@@ -4,13 +4,14 @@
   --item-tray-item-width-count: 10;
   --item-tray-item-height-count: 2;
   --character-health-percent: 100;
+  --stacked-spacer-width: 0px;
 }
 
 $item-tray-item-width-count: var(--item-tray-item-width-count);
 $item-tray-item-height-count: var(--item-tray-item-height-count);
 $total-item-width: var(--item-size);
 $total-item-height: var(--item-size);
-$main-tray-padding: 5px;
+$main-tray-padding: 7px;
 $app-width: 1400px;
 $app-height: calc($item-tray-item-height-count * $total-item-height + $main-tray-padding * 4);
 $main-tray-height: calc(
@@ -494,6 +495,36 @@ $tray-button-background: rgb(97, 97, 95);
 
   img {
     @include item;
+    @include hover;
+  }
+
+  img.common {
+    border: 2px solid #333;
+    @include hover;
+  }
+
+  img.uncommon {
+    border: 2px solid #11cf00;
+    @include hover;
+  }
+
+  img.rare {
+    border: 2px solid #164cfc;
+    @include hover;
+  }
+
+  img.veryRare {
+    border: 2px solid #a665e4;
+    @include hover;
+  }
+
+  img.legendary {
+    border: 2px solid #e29404;
+    @include hover;
+  }
+
+  img.artifact {
+    border: 2px solid #c00505;
     @include hover;
   }
 
@@ -1106,7 +1137,7 @@ $tray-button-background: rgb(97, 97, 95);
 .drag-handle {
   height: calc($main-tray-height - 14px);
   width: calc(($total-item-width / 3) + 2px);
-  background: rgb(173 2 2);
+  background: linear-gradient(180deg, #920000, #c93232);
   outline: 4px solid #5b5b5b;
   outline-offset: -3px;
   display: flex;
@@ -1114,6 +1145,17 @@ $tray-button-background: rgb(97, 97, 95);
   justify-content: center;
   font-size: 26px;
   box-shadow: inset 0px 0px 10px 3px #000000;
+  &:hover {
+    background: linear-gradient(180deg, #ca0202, #f53d3d);
+  }
+}
+.drag-spacer {
+  height: calc($main-tray-height - 14px);
+  width: calc(($total-item-width / 3) + 2px);
+  position: absolute;
+  background: #5b5b5b;
+  right: 0px;
+  z-index: 3;
 }
 
 .drag-tray-container {
@@ -1121,6 +1163,17 @@ $tray-button-background: rgb(97, 97, 95);
   flex-direction: row;
   align-content: center;
   align-items: center;
+}
+
+.stacked-tray-spacer-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin-right: var(--stacked-spacer-width);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .common {

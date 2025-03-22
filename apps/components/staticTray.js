@@ -11,6 +11,7 @@ export class StaticTray extends AbilityTray {
     this.type = 'static'
     this.active = false
     this.generateTray()
+ 
   }
 
   generateTray() {
@@ -92,10 +93,12 @@ export class StaticTray extends AbilityTray {
   static generateStaticTrays(actor) {
     let actionTray = new StaticTray({
       category: 'action',
+      label: 'Action',
       actorUuid: actor.uuid,
     })
     let bonusTray = new StaticTray({
       category: 'bonus',
+      label: 'Bonus Action',
       actorUuid: actor.uuid,
     })
 
@@ -110,6 +113,7 @@ export class StaticTray extends AbilityTray {
         new CustomStaticTray({
           category: 'customStaticTray',
           actorUuid: actor.uuid,
+          label: actor.items.get(e).name,
           keyItemUuid: e,
         }),
     )
@@ -133,6 +137,7 @@ export class StaticTray extends AbilityTray {
       spellTray.push(
         new StaticTray({
           category: 'spell',
+          label: level == 0 ? 'Cantrips' : `Level ${level} Spells`,
           actorUuid: actor.uuid,
           spellLevel: level,
           totalSlots: actor.system?.spells['spell' + level]?.max,
@@ -143,6 +148,7 @@ export class StaticTray extends AbilityTray {
 
     let pactTray = new StaticTray({
       category: 'pact',
+      label: 'Pact Magic',
       actorUuid: actor.uuid,
       spellLevel: actor.system.spells.pact.level,
       totalSlots: actor.system.spells.pact.max,
@@ -151,6 +157,7 @@ export class StaticTray extends AbilityTray {
 
     let ritualTray = new StaticTray({
       category: 'ritual',
+      label: 'Rituals',
       actorUuid: actor.uuid,
     })
 

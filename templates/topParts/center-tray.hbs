@@ -3,6 +3,8 @@
       <div class='static-tray-container'>{{> "AAT.static-tray" }}</div>
       {{/if}}
       <div class='ability-tray-container'>
+        <div class="stacked-tray-spacer-container">
+
         {{#each staticTrays as |tray|}}
         {{#if tray.active}}
         <div class="abilities-tray static-tray  {{tray.id}}">
@@ -30,6 +32,10 @@
           {{> "AAT.activity-tray" activities=activityTray.abilities}}
         </div>
           {{/if}}
+
+      
+     
+        </div>
       </div>
     {{#if customTrays}}
       <div class='custom-tray-container'>{{> "AAT.custom-tray" customTrays=customTrays}}</div>

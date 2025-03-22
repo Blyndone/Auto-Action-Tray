@@ -60,13 +60,17 @@ export class Actions {
 
   static async setTray(event, target) {
     if (this.animating == true || this.selectingActivity == true) return
-
+    let trayIn = this.getTray(target.dataset.id)
     // if (target.dataset.id == 'stacked') {
     //   this.animationHandler.animateTrayOut(this.animationHandler.findTray(this.currentTray.id))
     //   this.animationHandler.animateStackedTray(this.animationHandler.findTray(target.dataset.id))
     //   return
     // }
-    
+    if (trayIn.type == 'static') {
+      this.trayInformation = trayIn.label
+    } else { 
+      this.trayInformation = ''
+    }
     this.animationHandler.animateTrays(target.dataset.id, this.currentTray.id, this)
   }
 

@@ -7,6 +7,7 @@ export class AbilityTray {
     this.active = false;
     this.type = '';
     this.application = options.application || null;
+    this.label = options.label || '';
   }
 
   static padArray(arr, length = 20, filler = null) {

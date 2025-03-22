@@ -126,9 +126,16 @@ export class ActivityTray extends AbilityTray {
     this.activityTray.useSlot = event.target.checked;
   }
   static cancelSelection(event, target) {
-    this.activityTray.rejectActivity(
-      new Error("User canceled activity selection")
-    );
-    this.activityTray.rejectActivity = null;
+    if (this.currentTray instanceof ActivityTray) {
+      this.activityTray.rejectActivity(
+        new Error("User canceled activity selection")
+      );
+      this.activityTray.rejectActivity = null;
+    } else {
+      this.currentTray.active = false;
+      this.setDefaultTray();
+      this.trayInformation = "";
+      this.animationHandler.animateTrays("stacked", "activity", this);
+    }
   }
 }

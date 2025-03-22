@@ -78,33 +78,39 @@ export class CustomTray extends AbilityTray {
     let commonTray = new CustomTray({
       category: 'common',
       id: 'common',
+      label: 'Common',
       actorUuid: actor.uuid,
     });
     let classTray = new CustomTray({
       category: 'classFeatures',
       id: 'classFeatures',
+      label: 'Class Features',
       actorUuid: actor.uuid,
     });
     let consumablesTray = new CustomTray({
       category: 'items',
       id: 'items',
+      label: 'Consumables',
       actorUuid: actor.uuid,
     });
     let passiveTray = new CustomTray({
       category: 'passive',
       id: 'passive',
+      label: 'Passive',
       actorUuid: actor.uuid,
     });
 
     let reactionTray = new CustomTray({
       category: 'reaction',
       id: 'reaction',
+      label: 'Reactions',
       actorUuid: actor.uuid,
     });
 
     let customTray = new CustomTray({
       category: 'custom',
       id: 'custom',
+      label: 'Custom',
       actorUuid: actor.uuid,
     });
     let trays = [

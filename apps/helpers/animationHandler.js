@@ -1,7 +1,7 @@
 export class AnimationHandler {
   constructor(options = {}) {
     this.hotbar = options.hotbar
-    this.animationDuration = 0.7
+    this.animationDuration = .5
   }
   findTray(trayId, hotbar) {
     return this.hotbar.getTray(trayId)
@@ -169,16 +169,31 @@ export class AnimationHandler {
     })
   }
 
+  async animateSpacer(width) { 
+      gsap.to('.stacked-tray-spacer-container', {
+        marginRight: width,
+        duration: this.animationDuration,
+       onComplete: () => {
+        document.documentElement.style.setProperty('--stacked-spacer-width', width + 'px')
+       }
+      })
+    
+
+  }
+
   async animateStackedTrayOut(trayOut, trayIn) {
+    
     return new Promise(async (resolve) => {
       let animationComplete = trayOut.trays.length
-
+      this.animateSpacer(0)
       trayOut.trays.forEach((tray) => {
+        let xOffset = 0
         if (tray == trayIn) {
+          if(tray.id != 'common') xOffset =-22
           this.setStackedTrayPos(tray)
           gsap.to(`.container-${tray.id}`, {
             opacity: 1,
-            x: -22,
+            x: xOffset,
             duration: this.animationDuration,
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
@@ -203,7 +218,7 @@ export class AnimationHandler {
   async animateStackedTrayIn(trayIn, trayOut) {
     return new Promise(async (resolve) => {
       let animationComplete = trayIn.trays.length
-
+      this.animateSpacer(17)
       trayIn.trays.forEach((tray) => {
         gsap.to(`.container-${tray.id}`, {
           opacity: 1,
@@ -237,7 +252,7 @@ export class AnimationHandler {
   setPreStackedTrayPos(tray, trayOut) {
     gsap.set(`.container-${tray.id}`, {
       opacity: 1,
-      x: tray == trayOut ? -22 : 1000,
+      x: tray == trayOut ? 0 : 1000,
     })
   }
 

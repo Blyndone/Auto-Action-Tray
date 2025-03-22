@@ -18,7 +18,7 @@
           {{> AAT.item-spell item=item index=@index tray=tray}}
 
         {{else}}
-          <img src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item._id}}'  data-trayid='{{tray.id}}' data-index='{{@index}}' />
+          <img class='{{item.system.rarity}}' src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item._id}}'  data-trayid='{{tray.id}}' data-index='{{@index}}' />
         {{/if}}
       {{/if}}
       {{#if (eq item.type 'consumable')}}
