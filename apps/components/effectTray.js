@@ -26,7 +26,7 @@ export class EffectTray {
 
     await Promise.all(effectsPromises).then((effects) => {
       this.effects = effects
-      this.hotbar.render(['effectsTray'])
+        this.hotbar.render({ parts: ["effectsTray"] });
     })
   }
 

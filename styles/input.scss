@@ -43,14 +43,14 @@ $tray-button-background: rgb(97, 97, 95);
 
 @mixin static-hover {
   &:hover {
-    box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8); /* Warm inner glow on hover */
-    cursor: pointer; /* Changes the cursor to a pointer */
+    box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8);
+    cursor: pointer;
   }
 }
 
 @mixin item {
   background: #333;
-  color: white;
+  color: #f1f1f1;
   border: 2px solid #333;
   border-radius: 5px;
   cursor: pointer;
@@ -82,7 +82,7 @@ $tray-button-background: rgb(97, 97, 95);
   left: 50%;
   transform: translateX(-50%);
   z-index: 0;
-  // width: $app-width;
+
   height: $app-height;
   background-blend-mode: multiply;
 }
@@ -109,14 +109,14 @@ $tray-button-background: rgb(97, 97, 95);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  justify-items: center; /* Centers the items horizontally */
+  justify-items: center;
   align-items: center;
-  align-content: center; /* Centers the items vertically */
+  align-content: center;
   padding: 5px;
   margin: 1px;
   border-radius: 5px;
   box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6);
-  transition: all 0.3s ease; /* Smooth transition for hover and active states */
+  transition: all 0.3s ease;
   border: 6px inset #5b5b5b94;
   &:hover {
     box-shadow: 0 0 12px rgba(201, 89, 63, 0.8), inset 0 0 12px rgba(201, 89, 63, 0.8);
@@ -135,7 +135,7 @@ $tray-button-background: rgb(97, 97, 95);
 .static-tray-active {
   box-shadow: inset 0 0 15px rgba(255, 140, 0, 0.9);
   background: rgb(120, 60, 40);
-  color: white;
+  color: #f1f1f1;
 
   box-shadow: 0 0 12px rgba(201, 89, 63, 0.8), inset 0 0 12px rgba(201, 89, 63, 0.8);
   border: 6px inset rgb(201 89 63 / 77%);
@@ -152,42 +152,42 @@ $tray-button-background: rgb(97, 97, 95);
 }
 
 .icon-bonus {
-  color: darkgreen;
+  color: rgb(0, 143, 0);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
   font-size: calc(var(--text-scale-ratio) * 1.3rem);
 }
 
 .icon-slot {
-  color: #00aaff; /* Glowing blue */
+  color: #00aaff;
   text-shadow: 0 0 8px rgba(0, 170, 255, 0.8);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
 }
 
 .icon-slot-spent {
-  color: #5582a3; /* Depleted blue */
+  color: #5582a3;
   opacity: 0.6;
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
   margin: 3px;
 }
 
 .icon-pact {
-  color: #aa00ff; /* Glowing purple */
+  color: #aa00ff;
   text-shadow: 0 0 8px rgba(170, 0, 255, 0.8);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
 }
 
 .icon-pact-spent {
-  color: #71528a; /* Depleted purple */
+  color: #71528a;
   opacity: 0.6;
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
   margin: 3px;
 }
 
 .icon-ritual {
-  color: #f1c15f; /* Glowing yellow */
+  color: #ffcc66;
   text-shadow: 0 0 8px rgba(255, 170, 0, 0.8);
   filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
   margin: 3px;
@@ -201,7 +201,6 @@ $tray-button-background: rgb(97, 97, 95);
   font-size: calc(var(--text-scale-ratio) * 1.325rem);
 }
 
-/* Base styles for the cancel icon */
 .icon-cancel {
   font-size: calc(var(--text-scale-ratio) * 1.56rem);
   color: #eb7676;
@@ -230,9 +229,9 @@ $tray-button-background: rgb(97, 97, 95);
   left: 50%;
   transform: translateX(-50%) translateY(-20%);
   padding: 5px 10px;
-  // font-size: calc(var(--text-scale-ratio) * 1rem);  STATIC
+
   font-size: 1rem;
-  color: white;
+  color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
@@ -244,9 +243,9 @@ $tray-button-background: rgb(97, 97, 95);
   left: 50%;
   transform: translateX(-50%) translateY(-20%);
   padding: 5px 10px;
-  // font-size: calc(var(--text-scale-ratio) * 1rem);  STATIC
+
   font-size: 1rem;
-  color: white;
+  color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
@@ -290,15 +289,13 @@ $tray-button-background: rgb(97, 97, 95);
       0 0 15px #9600d1;
     border: $inset-border solid #2f2f2f;
     outline: 3px solid #8500a0;
-    // border: 2px solid #8500a0;
   }
   img {
     align-items: center;
     vertical-align: middle;
     border: none;
     width: 170px;
-    // height: 170px;
-    // border-radius: 50%;
+
     background: #5b5b5b;
   }
 }
@@ -329,9 +326,7 @@ $tray-button-background: rgb(97, 97, 95);
   grid-template-columns: repeat(2, 1fr);
   width: calc($small-button-width * 2 + $main-tray-padding * 2);
   height: calc($main-tray-height - $total-item-height - $main-tray-padding);
-  // display: flex;
-  // flex-direction: row;
-  // flex-wrap: wrap;
+
   justify-content: center;
   align-items: flex-start;
   padding: $main-tray-padding;
@@ -353,7 +348,7 @@ $tray-button-background: rgb(97, 97, 95);
 
 @mixin button-style {
   text-align: center;
-  color: white;
+  color: #f1f1f1;
   background: linear-gradient(180deg, #1e3a5f, #355c7d);
   border: 2px inset #4a6fa5;
   border-radius: 8px;
@@ -361,7 +356,7 @@ $tray-button-background: rgb(97, 97, 95);
   transition: all 0.3s ease-in-out;
   font-family: serif;
   &:hover {
-    border-color: #c9593f; // Warmer highlight color
+    border-color: #c9593f;
     box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
   }
 }
@@ -401,7 +396,7 @@ $tray-button-background: rgb(97, 97, 95);
   @include center;
   @include button-style;
   background: linear-gradient(180deg, #5b9fa4, #0f5753);
-  border: 2px solid #004a74; /* Darker border color */
+  border: 2px solid #004a74;
   width: calc($small-button-width + $main-tray-padding);
   height: $main-tray-height / 6;
 
@@ -412,17 +407,16 @@ $tray-button-background: rgb(97, 97, 95);
 
 .proficient {
   border: 2px inset #92cdff;
-  // box-shadow: 0 0 15px rgba(255, 120, 0, 1),
-  //   /* Orange glow */ 0 0 10px rgba(255, 120, 0, 0.8) inset; /* Orange inset glow */
+
   text-decoration: underline;
-  text-decoration-color: #1e70b9; // Darker blue underline
+  text-decoration-color: #1e70b9;
 }
 
 .expertise {
   border: 2px inset #bca4eb;
 
   text-decoration: underline double;
-  text-decoration-color: #005b8d; // Even deeper blue underline
+  text-decoration-color: #005b8d;
 }
 .center-tray-container {
   @include center;
@@ -447,7 +441,7 @@ $tray-button-background: rgb(97, 97, 95);
     left: 50%;
     transform: translateX(-50%);
     font-size: calc(var(--text-scale-ratio) * 1.3rem);
-    color: white;
+    color: #f1f1f1;
     font-family: serif;
     text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
   }
@@ -458,7 +452,7 @@ $tray-button-background: rgb(97, 97, 95);
     right: 0;
     padding: 8px;
     font-size: calc(var(--text-scale-ratio) * 1.125rem);
-    color: white;
+    color: #f1f1f1;
     font-family: serif;
     text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
     display: flex;
@@ -469,7 +463,7 @@ $tray-button-background: rgb(97, 97, 95);
 
   .use-slot-checkbox {
     @include inset-tray;
-    border: 2px solid white;
+    border: 2px solid #f1f1f1;
     border-radius: 4px;
     background: #333;
     background-color: #0d0d12;
@@ -478,7 +472,7 @@ $tray-button-background: rgb(97, 97, 95);
       scale: calc(var(--text-scale-ratio));
     }
     &:checked {
-      background-color: #c9593f; /* Highlighted when checked */
+      background-color: #c9593f;
       border-color: #c9593f;
       scale: calc(var(--text-scale-ratio));
 
@@ -583,8 +577,7 @@ $tray-button-background: rgb(97, 97, 95);
   height: calc(var(--item-size) * 0.8);
   overflow: hidden;
   &:hover {
-    box-shadow: 0 0 30px 10px rgba(0, 170, 255, 1),
-      /* Strong outer glow */ 0 0 20px 5px rgba(0, 170, 255, 0.9) inset; /* Deeper inner glow */
+    box-shadow: 0 0 30px 10px rgba(0, 170, 255, 1), 0 0 20px 5px rgba(0, 170, 255, 0.9) inset;
     transform: scale(1.05);
   }
   img {
@@ -621,14 +614,13 @@ $tray-button-background: rgb(97, 97, 95);
     transform: translateX(-50%);
   }
   .icon-slot-spent {
-    // color: #5582a3;
     opacity: 1;
   }
 }
 
 .abilities-tray {
   position: absolute;
-  // background: #5b5b5b;
+
   display: flex;
   flex-direction: row;
   align-content: center;
@@ -639,7 +631,7 @@ $tray-button-background: rgb(97, 97, 95);
   position: relative;
   bottom: 30px;
   right: 8px;
-  color: white;
+  color: #f1f1f1;
   font-size: calc(var(--text-scale-ratio) * 1.375rem);
   font-weight: bold;
   min-width: 20px;
@@ -664,7 +656,7 @@ $tray-button-background: rgb(97, 97, 95);
   right: 0;
   padding: 5px 10px;
   font-size: calc(var(--text-scale-ratio) * 1.375rem);
-  color: white;
+  color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
@@ -678,7 +670,7 @@ $tray-button-background: rgb(97, 97, 95);
   right: 0px;
   padding: 0px 5px;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
-  color: white;
+  color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   pointer-events: none;
 }
@@ -701,7 +693,7 @@ $tray-button-background: rgb(97, 97, 95);
     margin-top: 3px;
     margin-bottom: 3px;
     font-size: calc(var(--text-scale-ratio) * 1.125rem);
-    color: #fff;
+    color: #f1f1f1;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 
     font-family: Arial, sans-serif;
@@ -712,16 +704,16 @@ $tray-button-background: rgb(97, 97, 95);
 .skill-tray-container {
   @include inset-tray;
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 equal-width columns */
-  grid-template-rows: repeat(6, auto); /* 6 rows */
-  grid-auto-flow: column; /* Fills columns first */
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(6, auto);
+  grid-auto-flow: column;
   gap: 2px;
   justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
   height: $main-tray-height;
   min-width: calc($small-button-width * 2 + $main-tray-padding * 2);
-  // width: $total-item-width * 2 + $main-tray-padding * 2;
+
   height: $main-tray-height;
   padding: $main-tray-padding;
   gap: 2px;
@@ -750,11 +742,11 @@ $tray-button-background: rgb(97, 97, 95);
   padding: 10px;
   margin: 1px;
   border-radius: 5px;
-  box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6); /* Inner glow */
-  transition: all 0.3s ease; /* Smooth transition for hover and active states */
+  box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6);
+  transition: all 0.3s ease;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: white;
+  color: #f1f1f1;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
   border-right: 6px inset #5b5b5b94;
   border-left: 6px inset #5b5b5b94;
@@ -773,10 +765,10 @@ $tray-button-background: rgb(97, 97, 95);
   border-radius: 5px;
   box-shadow: inset 0 0 15px rgba(255, 140, 0, 0.9);
   background: rgb(120, 60, 40);
-  color: white;
+  color: #f1f1f1;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: white;
+  color: #f1f1f1;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
   border-right: 6px inset rgb(201 89 63 / 77%);
   border-left: 6px inset rgb(201 89 63 / 77%);
@@ -789,15 +781,15 @@ $tray-button-background: rgb(97, 97, 95);
   background: $tray-button-background;
   margin: -1px;
   border-radius: 50px;
-  // border-radius: 0 0 10px 10px;
+
   padding: 4px;
   padding-left: 20px;
   padding-right: 10px;
-  // box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6); /* Inner glow */
-  transition: all 0.3s ease; /* Smooth transition for hover and active states */
+
+  transition: all 0.3s ease;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1.625rem);
-  color: white;
+  color: #f1f1f1;
   text-shadow: 0 0 10px rgba(0, 0, 0, 1);
 }
 
@@ -815,7 +807,7 @@ $tray-button-background: rgb(97, 97, 95);
   border: 2px solid #704214;
   border-radius: 8px;
   padding: 10px;
-  color: #d4af6a;
+  color: #ffcc66;
   width: 300px;
   font-family: serif;
   position: relative;
@@ -825,7 +817,7 @@ $tray-button-background: rgb(97, 97, 95);
 .tooltip-header h2 {
   padding: 2px;
   font-size: calc(var(--text-scale-ratio) * 1.4375rem);
-  color: #ffdb87;
+  color: #ffcc66;
 }
 
 .tooltip-subtitle {
@@ -885,11 +877,10 @@ $tray-button-background: rgb(97, 97, 95);
   background: #612626;
   padding: 4px 8px;
   border-radius: 4px;
-  color: #fff;
+  color: #f1f1f1;
 }
 
 .hp-container {
-  // font-size: calc(var(--text-scale-ratio) * 1.125rem);  SCALING
   font-size: 1.125rem;
   font-family: Arial, sans-serif;
   position: absolute;
@@ -904,9 +895,9 @@ $tray-button-background: rgb(97, 97, 95);
 }
 @mixin hp {
   font-weight: bold;
-  // font-size: calc(var(--text-scale-ratio) * 1.25rem);  SCALING
+
   font-size: 1.25rem;
-  color: white;
+  color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
 }
 .hp-form {
@@ -922,13 +913,13 @@ $tray-button-background: rgb(97, 97, 95);
   @include hp;
 }
 .hidden-disabled {
-  display: none; /* Completely hides the element */
-  pointer-events: none; /* Prevents mouse interactions */
-  user-select: none; /* Prevents text selection */
+  display: none;
+  pointer-events: none;
+  user-select: none;
 }
 
 .temp-hp-text {
-  color: #5bc0de; /* Light blue */
+  color: #5bc0de;
   font-weight: bold;
   font-size: calc(var(--text-scale-ratio) * 1.125rem);
 
@@ -947,58 +938,47 @@ $tray-button-background: rgb(97, 97, 95);
   @include center;
   @include button-style;
   position: absolute;
-  // bottom: calc(-1 * $main-tray-height + $main-tray-padding);
+
   bottom: 0px + $main-tray-padding;
   left: 0px;
   width: 25px;
   height: 25px;
   margin: 3px;
-  border-radius: 50%; /* Makes it round */
-  // background: linear-gradient(135deg, #a1c4fd, #c2e9fb); /* Pleasant gradient */
-  // border: 4px solid #5a91e6; /* Soft blue border */
-  // display: flex;
-
-  // font-size: 1.125rem;
-  // font-weight: bold;
-  // color: #fff;
-  // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
-  // font-family: Arial, sans-serif;
+  border-radius: 50%;
 }
 .end-turn-btn {
   @include inset-tray;
   padding: $main-tray-padding;
-  background: radial-gradient(#6fa3e7, #012747);
   transition: 0.3s ease-in-out;
   height: 130px;
   width: 130px;
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 15px;
-  // margin-left: 20px;
+
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
   pointer-events: all;
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
-  /* align-content: center; */
+
   justify-content: center;
   align-items: center;
+  background: radial-gradient(#ff4800, #000000);
+
   &:active {
-    /* Slightly reduce the size for "pressing" effect */
-    box-shadow: inset 0 0 10px #b0e8f7; /* Add an inset shadow when pressed */
-    background: radial-gradient(#5f9fe5, #01111f); /* Darken background on press */
+    background: radial-gradient(#fc3c1b, #420000);
+    box-shadow: inset 0 0 15px #3a0804;
   }
 
   &:hover {
-    border: 2px solid #3fc0c9;
-    box-shadow: 0 0 10px #3f96c9;
+    box-shadow: 0 0 10px #ff7b50, inset 0 0 10px #3a0804;
   }
 }
 
 .end-turn-btn-dice {
   @include inset-tray;
   padding: $main-tray-padding;
-  background: radial-gradient(#e7916f, #864903);
   transition: 0.3s ease-in-out;
   height: 130px;
   width: 130px;
@@ -1008,27 +988,25 @@ $tray-button-background: rgb(97, 97, 95);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   color: #fff;
   pointer-events: all;
-  border: 2px solid #1f0801; /* A deep warm orange border for better contrast */
+  border: 2px solid #1f0801;
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
-  /* align-content: center; */
   justify-content: center;
   align-items: center;
-
+  background: radial-gradient(#65a4f5, #004987);
   &:active {
-    background: radial-gradient(#c75838, #2e1605); /* A more intense version on press */
-    box-shadow: inset 0 0 15px #3a0804; /* Stronger shadow effect for depth */
+    box-shadow: inset 0 0 10px #0096c0;
+    background: radial-gradient(#5494e7, #013969);
   }
 
   &:hover {
-    // border: 2px solid #ff7b50; /* A brighter accent when hovered */
-    box-shadow: 0 0 10px #ff7b50, inset 0 0 10px #3a0804; /* Soft glow with inner depth */
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5), inset -3px -3px 5px rgba(0, 0, 0, 0.5),
+      0px 0px 9px 6px #65a4f5;
   }
   .end-turn-btn-dice-icon {
-    // font-size: calc(var(--text-scale-ratio) * 5rem);  SCALING
     font-size: 5rem;
-    color: #ffe1d6; /* Slightly warm off-white to match the fiery aesthetic */
+    color: #f1f1f1;
     display: flex;
     i {
       text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8), 0px 0px 6px rgba(0, 0, 0, 0.8);
@@ -1039,7 +1017,7 @@ $tray-button-background: rgb(97, 97, 95);
 .end-turn-btn-nohover {
   @include inset-tray;
   padding: $main-tray-padding;
-  background: radial-gradient(#6fa3e7, #012747);
+  background: radial-gradient(#ff8725, #552502);
   transition: 0.3s ease-in-out;
   height: 130px;
   width: 130px;
@@ -1055,11 +1033,10 @@ $tray-button-background: rgb(97, 97, 95);
 }
 
 .end-turn-btn-text {
-  // font-size: calc(var(--text-scale-ratio) * 1.125rem);  STATIC
   font-size: 1.125rem;
   line-height: 22px;
   font-family: serif;
-  color: #fff; // Bright text for visibility
+  color: #f1f1f1;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) 0px 0px 4px rgba(0, 0, 0, 0.8);
   letter-spacing: 1px;
   text-align: center;
@@ -1072,15 +1049,9 @@ $tray-button-background: rgb(97, 97, 95);
   height: 150px;
   transform: translate(-50%, -50%) rotate(90deg);
   pointer-events: none;
-  // filter: drop-shadow(0 0 3px #9600d1) drop-shadow(0 0 4px #8500a0);
-  // stroke: #8500a0;
 }
 
 .minimize-button {
-  /* position: absolute; */
-  /* padding: 8px; */
-  /* transform: translate(0px, -40px); */
-  /* justify-items: center; */
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -1104,7 +1075,7 @@ $tray-button-background: rgb(97, 97, 95);
 }
 .multi-group2 {
   border-radius: 8px;
-  box-shadow: 0 0 7px 1px rgb(0, 252, 0);
+  box-shadow: 0 0 7px 1px #86d632;
   z-index: 1;
 }
 

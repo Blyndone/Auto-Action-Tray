@@ -1,7 +1,7 @@
 export class AnimationHandler {
   constructor(options = {}) {
     this.hotbar = options.hotbar
-    this.animationDuration = .5
+    this.animationDuration = 0.5
   }
   findTray(trayId, hotbar) {
     return this.hotbar.getTray(trayId)
@@ -169,27 +169,24 @@ export class AnimationHandler {
     })
   }
 
-  async animateSpacer(width) { 
-      gsap.to('.stacked-tray-spacer-container', {
-        marginRight: width,
-        duration: this.animationDuration,
-       onComplete: () => {
+  async animateSpacer(width) {
+    gsap.to('.stacked-tray-spacer-container', {
+      marginRight: width,
+      duration: this.animationDuration,
+      onComplete: () => {
         document.documentElement.style.setProperty('--stacked-spacer-width', width + 'px')
-       }
-      })
-    
-
+      },
+    })
   }
 
   async animateStackedTrayOut(trayOut, trayIn) {
-    
     return new Promise(async (resolve) => {
       let animationComplete = trayOut.trays.length
       this.animateSpacer(0)
       trayOut.trays.forEach((tray) => {
         let xOffset = 0
         if (tray == trayIn) {
-          if(tray.id != 'common') xOffset =-22
+          if (tray.id != 'common') xOffset = -22
           this.setStackedTrayPos(tray)
           gsap.to(`.container-${tray.id}`, {
             opacity: 1,
@@ -233,8 +230,7 @@ export class AnimationHandler {
     })
   }
 
-
-  setAllStackedTrayPos(stackedTray) { 
+  setAllStackedTrayPos(stackedTray) {
     stackedTray.trays.forEach((tray) => {
       gsap.set(`.container-${tray.id}`, {
         opacity: 1,
@@ -257,7 +253,9 @@ export class AnimationHandler {
   }
 
   setCircle(value) {
-    let baseColor = value == 100 ? '#007f8c' : '#9600d1'
+    let color100 = '#01a3e4'
+    let color = '#1D86AF'
+    let baseColor = value == 100 ? color100 : color
     let glowpx = value == 100 ? 8 : 4
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
       baseColor,
@@ -272,13 +270,27 @@ export class AnimationHandler {
   }
 
   async animateCircle(start, end, hotbar) {
-    let baseColor = end == 100 ? '#007f8c' : '#9600d1'
+    let color100 = '#01a3e4'
+    let color = '#1D86AF'
+    let baseColor = end == 100 ? color100 : color
     let glowpx = end == 100 ? 8 : 4
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
       baseColor,
       end,
     )}) drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(baseColor, end)}) `
 
+if (end == 100) {
+  gsap.fromTo(
+    '.end-turn-btn',
+    {
+      background: 'radial-gradient( #ff8725, #552502)',
+    },
+    {
+      background: 'radial-gradient( #ff4800, #000000)',
+      duration: 1,
+    }
+  );
+}
     gsap.fromTo(
       '.circle-svg',
       { drawSVG: `0% ${start}%` },
@@ -360,4 +372,3 @@ export class AnimationHandler {
     return hslToHex(hsl.h, hsl.s, newLightness)
   }
 }
-

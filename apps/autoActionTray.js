@@ -119,9 +119,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })
     Hooks.on('updateCombat', this._onUpdateCombat.bind(this))
     Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this))
-    Hooks.on('createCombatant', this._onUpdateCombat.bind(this))
+    Hooks.on('createCombatant', this._onCreateCombatant.bind(this))
     Hooks.on('updateCombatant', this._onUpdateCombat.bind(this))
-    Hooks.on('deleteCombat', this._onUpdateCombat.bind(this))
+    Hooks.on('combatStart', this._onUpdateCombat.bind(this))
+    Hooks.on('deleteCombat', this._onCombatDelete.bind(this))
     Hooks.on('createItem', CustomTray._onCreateItem.bind(this))
     Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this))
     Hooks.on('createActiveEffect', this._onCreateActiveEffect.bind(this))
@@ -326,6 +327,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.combatHandler == null || this.combatHandler.inCombat == false) return
     this.combatHandler.updateCombat(this.actor, event)
   }
+  _onCombatDelete = (event) => {
+    if (this.combatHandler == null) return
+    this.combatHandler.updateCombat(this.actor, event)
+  }
+  _onCreateCombatant = (event) => { 
+    if (this.actor != event.actor) return
+    this.combatHandler.setCombat(this.actor, event)
+  }
+
   _onCreateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
@@ -565,8 +575,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   static selectWeapon(event, target) {
     Actions.selectWeapon.bind(this)(event, target)
   }
-
- 
 
   //#region DragDrop
   #createDragDropHandlers() {

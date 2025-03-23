@@ -132,10 +132,10 @@ export class ActivityTray extends AbilityTray {
       );
       this.activityTray.rejectActivity = null;
     } else {
-      this.currentTray.active = false;
-      this.setDefaultTray();
+      // this.currentTray.active = false;
+      this.animationHandler.animateTrays("stacked", this.currentTray.id, this);
+
       this.trayInformation = "";
-      this.animationHandler.animateTrays("stacked", "activity", this);
     }
   }
 }
