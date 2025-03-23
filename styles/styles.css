@@ -1117,7 +1117,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(#65a4f5, #004987);
+  background: radial-gradient(#5990d6, #062f51);
 }
 .end-turn-btn-dice:active {
   box-shadow: inset 0 0 10px #0096c0;
@@ -1234,7 +1234,7 @@
 }
 
 .drag-handle {
-  height: calc(var(--item-tray-item-height-count) * var(--item-size) + 14px + 2px - 14px);
+  height: calc(var(--item-tray-item-height-count) * var(--item-size) + 14px + 2px - 18px);
   width: calc(var(--item-size) / 3 + 2px);
   background: linear-gradient(180deg, #920000, #c93232);
   outline: 4px solid #5b5b5b;
