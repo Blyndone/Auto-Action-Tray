@@ -22,7 +22,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
     super(options)
-    this.enabled = true
+  
     this.debugtime = 0
 
     this.animating = false

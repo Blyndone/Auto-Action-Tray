@@ -69,7 +69,7 @@ export function registerHandlebarsHelpers() {
       slotSpent: `<i class="fa-solid fa-square icon-slot-spent"></i>`,
       action: `<i class="fa-solid fa-circle  icon-action"></i>`,
       bonus: `<i class="fa-solid fa-triangle icon-bonus"></i>`,
-      cantrip: `<i class="fa-solid fa-square-dashed icon-slot"></i>`,
+      cantrip: `<i class="fa-solid fa-square-dashed icon-slot-cantrip"></i>`,
       pact: `<i class="fa-solid fa-square icon-pact"></i>`,
       pactSpent: `<i class="fa-solid fa-square icon-pact-spent"></i>`,
       ritual: `<i class="fa-solid fa-square icon-ritual"></i>`,
