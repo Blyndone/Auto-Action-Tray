@@ -106,10 +106,18 @@ export class CustomTray extends AbilityTray {
       actorUuid: actor.uuid,
     })
 
-    let exclusions = new Set([...classTray.abilities, ...consumablesTray.abilities, ...reactionTray.abilities])
+    let exclusions = new Set([
+      ...classTray.abilities,
+      ...consumablesTray.abilities,
+      ...reactionTray.abilities,
+    ])
 
-    commonTray.abilities = AbilityTray.padArray(commonTray.abilities.filter((e) => !exclusions.has(e)))
-    
+    if (!commonTray.savedData) {
+      commonTray.abilities = commonTray.abilities
+        .map((e) => (exclusions.has(e) ? null : e)) // Set exclusions to null
+        .sort((a, b) => (a === null ? 1 : -1))
+    }
+
     let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]
 
     trays = trays.filter(

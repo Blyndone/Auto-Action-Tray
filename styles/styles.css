@@ -1259,10 +1259,11 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
-  margin-right: var(--stacked-spacer-width);
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  overflow: visible;
+  clip-path: inset(-7px var(--stacked-spacer-width) -5px -5px);
 }
 
 .common {

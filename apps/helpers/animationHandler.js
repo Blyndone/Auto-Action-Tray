@@ -171,7 +171,7 @@ export class AnimationHandler {
 
   async animateSpacer(width) {
     gsap.to('.stacked-tray-spacer-container', {
-      marginRight: width,
+      clipPath: `inset(-7px ${width}px -5px -5px)`,
       duration: this.animationDuration,
       onComplete: () => {
         document.documentElement.style.setProperty('--stacked-spacer-width', width + 'px')
@@ -279,18 +279,18 @@ export class AnimationHandler {
       end,
     )}) drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(baseColor, end)}) `
 
-if (end == 100) {
-  gsap.fromTo(
-    '.end-turn-btn',
-    {
-      background: 'radial-gradient( #ff8725, #552502)',
-    },
-    {
-      background: 'radial-gradient( #ff4800, #000000)',
-      duration: 1,
+    if (end == 100) {
+      gsap.fromTo(
+        '.end-turn-btn',
+        {
+          background: 'radial-gradient( #ff8725, #552502)',
+        },
+        {
+          background: 'radial-gradient( #ff4800, #000000)',
+          duration: 1,
+        },
+      )
     }
-  );
-}
     gsap.fromTo(
       '.circle-svg',
       { drawSVG: `0% ${start}%` },

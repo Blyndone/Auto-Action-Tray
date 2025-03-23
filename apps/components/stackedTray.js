@@ -17,7 +17,11 @@ export class StackedTray {
       this.getSavedData();
       this.setTrayPositions(this.positions);
     } else {
-      this.setTrayPositions([0, 300, 600]);
+      this.setTrayPositions([
+        0,
+        this.hotbar.iconSize * 5,
+        this.hotbar.iconSize * 31 / 3 + 2
+      ]);
     }
   }
   setActive() {
