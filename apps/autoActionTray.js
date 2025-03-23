@@ -225,7 +225,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
-
+    this.stackedTray.setInactive()
     this.staticTrays = StaticTray.generateStaticTrays(actor, {
       application: this,
     })
@@ -234,8 +234,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })
     this.stackedTray.setTrays(this.customTrays.slice(0, 3))
     this.stackedTray.setActor(actor)
+
     this.customTrays = [this.stackedTray, ...this.customTrays]
-    this.stackedTray.setActive()
     document.documentElement.style.setProperty('--stacked-spacer-width', 17 + 'px')
 
     this.effectsTray.setActor(actor, this)
@@ -299,7 +299,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (item.actor != this.actor) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
     this.currentTray = this.getTray(this.currentTray.id)
-    this.currentTray.active = true
+    this.currentTray.setActive()
     this.effectsTray.setEffects()
     this.stackedTray.setActor(this.actor)
     if (this.animating == false) {
@@ -311,7 +311,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (actor != this.actor || Object.keys(change).includes('flags')) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor)
     this.currentTray = this.getTray(this.currentTray.id)
-    this.currentTray.active = true
+    this.currentTray.setActive()
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
     this.effectsTray.setEffects()
     this.stackedTray.setActor(actor)
@@ -331,7 +331,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.combatHandler == null) return
     this.combatHandler.updateCombat(this.actor, event)
   }
-  _onCreateCombatant = (event) => { 
+  _onCreateCombatant = (event) => {
     if (this.actor != event.actor) return
     this.combatHandler.setCombat(this.actor, event)
   }

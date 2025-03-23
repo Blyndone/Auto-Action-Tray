@@ -2,9 +2,13 @@ import { AnimationHandler } from './animationHandler.js'
 
 export class Actions {
   static setDefaultTray() {
-    this.currentTray = this.customTrays.find((e) => e.id == 'stacked')
-
-    this.currentTray.setActive()
+    if (this.actor.type === 'npc') {
+      this.currentTray = this.customTrays.find((e) => e.id == 'common')
+      this.currentTray.setActive()
+    } else {
+      this.currentTray = this.customTrays.find((e) => e.id == 'stacked')
+      this.currentTray.setActive()
+    }
     // this.render({ parts: ['centerTray'] });
   }
 
@@ -68,7 +72,7 @@ export class Actions {
     // }
     if (trayIn.type == 'static') {
       this.trayInformation = trayIn.label
-    } else { 
+    } else {
       this.trayInformation = ''
     }
     this.animationHandler.animateTrays(target.dataset.id, this.currentTray.id, this)

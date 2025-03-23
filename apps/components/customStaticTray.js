@@ -22,7 +22,7 @@ static overrides = {
     this.keyItemUsesMax;
     this.type = 'static';
     this.category = 'customStaticTray';
-    this.active = false;
+    this.setInactive();
     this.actorUuid = options.actorUuid || null;
  
     this.generateTray();

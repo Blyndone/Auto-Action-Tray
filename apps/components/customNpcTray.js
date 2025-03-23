@@ -139,33 +139,39 @@ export class CustomNpcTray extends AbilityTray {
     let commonTray = new CustomNpcTray({
       category: 'common',
       id: 'common',
+      label: 'Common',
       actorUuid: actor.uuid,
     })
     let classTray = new CustomNpcTray({
       category: 'classFeatures',
       id: 'classFeatures',
+      label: 'Class Features',
       actorUuid: actor.uuid,
     })
     let consumablesTray = new CustomNpcTray({
       category: 'items',
       id: 'items',
+      label: 'Consumables',
       actorUuid: actor.uuid,
     })
     let passiveTray = new CustomNpcTray({
       category: 'passive',
       id: 'passive',
+      label: 'Passive',
       actorUuid: actor.uuid,
     })
 
     let reactionTray = new CustomNpcTray({
       category: 'reaction',
       id: 'reaction',
+      label: 'Reactions',
       actorUuid: actor.uuid,
     })
 
     let customTray = new CustomNpcTray({
       category: 'custom',
       id: 'custom',
+      label: 'Custom',
       actorUuid: actor.uuid,
     })
     let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]

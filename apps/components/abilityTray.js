@@ -4,7 +4,7 @@ export class AbilityTray {
     this.abilities = [];
     this.category = options.category || null;
     this.actorUuid = options.actorUuid || null;
-    this.active = false;
+    this.setInactive();
     this.type = '';
     this.application = options.application || null;
     this.label = options.label || '';
@@ -258,5 +258,12 @@ export class AbilityTray {
 
   getAbilities() {
     return this.abilities;
+  }
+
+  setActive() {
+    this.active = true;
+  }
+  setInactive() {
+    this.active = false;
   }
 }

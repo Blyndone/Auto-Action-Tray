@@ -6,7 +6,7 @@ export class ActivityTray extends AbilityTray {
     this.id = "activity";
     this.abilities = [];
     this.actorUuid = options.actorUuid || null;
-    this.active = false;
+    this.setInactive();
     this.type = "activity";
     this.generateTray();
     this.selectedActivity = null;
@@ -132,7 +132,7 @@ export class ActivityTray extends AbilityTray {
       );
       this.activityTray.rejectActivity = null;
     } else {
-      // this.currentTray.active = false;
+      // this.currentTray.setInactive();
       this.animationHandler.animateTrays("stacked", this.currentTray.id, this);
 
       this.trayInformation = "";

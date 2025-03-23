@@ -23,13 +23,13 @@ export class StackedTray {
   setActive() {
     this.active = true;
     this.trays.forEach(element => {
-      element.active = true;
+      element.setActive();
     });
   }
-  setDeactive() {
+  setInactive() {
     this.active = false;
     this.trays.forEach(element => {
-      element.active = false;
+      element.setInactive();
     });
   }
 

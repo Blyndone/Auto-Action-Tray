@@ -17,8 +17,8 @@ export class AnimationHandler {
     let trayIn = this.findTray(trayInId, hotbar)
     let trayOut = this.findTray(trayOutId, hotbar)
     hotbar.animating = true
-    trayIn.active = true
-    trayOut.active = true
+    trayIn.setActive()
+    trayOut.setActive()
     if (trayIn.id == 'stacked') {
       trayIn.setActive()
     }
@@ -66,16 +66,16 @@ export class AnimationHandler {
       .then(() => {
         hotbar.animating = false
         if (trayIn.id == 'stacked') {
-          trayIn.active = true
-          trayOut.active = false
+          trayIn.setActive()
+          trayOut.setInactive()
           trayIn.setActive()
         } else if (trayOut.id == 'stacked') {
-          trayOut.active = false
-          trayOut.setDeactive()
-          trayIn.active = true
+          trayOut.setInactive()
+          trayOut.setInactive()
+          trayIn.setActive()
         } else {
-          trayIn.active = true
-          trayOut.active = false
+          trayIn.setActive()
+          trayOut.setInactive()
         }
         hotbar.currentTray = trayIn
         hotbar.targetTray = trayOut
@@ -96,7 +96,7 @@ export class AnimationHandler {
     return new Promise((resolve) => {
       hotbar.animating = true
       hotbar.targetTray = tray
-      tray.active = true
+      tray.setActive()
       let xOffset = 0
       let yOffset = 0
       switch (tray.type) {
@@ -140,7 +140,7 @@ export class AnimationHandler {
       hotbar.animating = true
       hotbar.currentTray = tray
 
-      tray.active = true
+      tray.setActive()
       let xOffset = 0
       let yOffset = 0
       switch (tray.type) {

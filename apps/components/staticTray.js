@@ -9,7 +9,7 @@ export class StaticTray extends AbilityTray {
     this.totalSlots = options.totalSlots
     this.availableSlots = options.availableSlots
     this.type = 'static'
-    this.active = false
+    this.setInactive()
     this.generateTray()
  
   }
