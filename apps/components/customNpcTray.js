@@ -189,7 +189,7 @@ export class CustomNpcTray extends AbilityTray {
       .map((ability, index) => (ability !== null ? index : -1))
       .reduce((max, current) => Math.max(max, current), -1)
     let rowCount = game.settings.get('auto-action-tray', 'rowCount')
-    trays[0].abilities = trays[0].abilities.slice(0, highestIndex)
+    trays[0].abilities = trays[0].abilities.slice(0, highestIndex+1)
     trays.slice(1).forEach((tray) => {
       tray.abilities.forEach((ability) => {
         if (ability != null && !trays[0].abilities.includes(ability)) {
