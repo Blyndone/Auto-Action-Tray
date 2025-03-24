@@ -15,6 +15,7 @@ import { TrayConfig } from './helpers/trayConfig.js'
 import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
+import { TargetHelper } from './helpers/targetHelper.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   // Constructor
@@ -22,7 +23,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
     super(options)
-  
+
     this.debugtime = 0
 
     this.animating = false
@@ -33,7 +34,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.isEditable = true
 
     this.actor = null
-
+    this.targetHelper = new TargetHelper()
     this.meleeWeapon = null
     this.rangedWeapon = null
     this.hpTextActive = false
@@ -173,7 +174,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       cancelSelection: ActivityTray.cancelSelection,
       useSlot: ActivityTray.useSlot,
       rollD20: AutoActionTray.rollDice,
+      testAnimation: AutoActionTray.testAnimation,
     },
+  }
+
+  static testAnimation() { 
+    
+    this.targetHelper.setData(this.actor, 'Activity');
+    this.targetHelper.testAnimation();
   }
 
   static PARTS = {
