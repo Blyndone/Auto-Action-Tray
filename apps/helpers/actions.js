@@ -97,6 +97,11 @@ export class Actions {
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] })
     this.render({ parts: ['equipmentMiscTray'] })
   }
+  static toggleTargetHelper() {
+    this.trayOptions['enableTargetHelper'] = !this.trayOptions['enableTargetHelper']
+    this.setTrayConfig({ enableTargetHelper: this.trayOptions['enableTargetHelper'] })
+    this.render({ parts: ['equipmentMiscTray'] })
+  }
 
   static toggleItemSelector() {
     this.itemSelectorEnabled = !this.itemSelectorEnabled
@@ -211,6 +216,9 @@ export class Actions {
       item.system.preparation?.mode == 'pact'
         ? { slot: 'pact' }
         : { slot: 'spell' + selectedSpellLevel }
+    if (this.trayOptions['enableTargetHelper']) {
+      await this.targetHelper.requestTargets(item, activity, this.actor)
+    }
 
     item.system.activities
       .get(activity?.itemId || activity?._id || item.system.activities.contents[0].id)

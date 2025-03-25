@@ -9,6 +9,16 @@
     "maximum": "12.999"
   },
   "relationships": {
+    "requires": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "compatibility": {
+          "minimum": "1.0.0.0",
+          "verified": "1.12.6.0"
+        }
+      }
+    ],
     "systems": [
       {
         "id": "dnd5e",
