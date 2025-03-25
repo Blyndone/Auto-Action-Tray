@@ -1,3 +1,5 @@
+import { DamageCalc } from './damageCalc.js'
+
 export class TargetHelper {
   constructor() {
     this.stage = canvas.stage
@@ -36,6 +38,9 @@ export class TargetHelper {
     this.targetText = null
     this.itemRange = 0
     this.itemTargetCount = 0
+    try {
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+    } catch (error) {}
   }
   setData(actor, activity) {
     this.setActor(actor)
@@ -43,34 +48,59 @@ export class TargetHelper {
   }
 
   selectTarget(token) {
-
-      if (this.targets.length == 0) {
-        token.setTarget(true, { releaseOthers: false })
-      }
-      this.targets.push(token)
+    if (this.targets.length == 0) {
       token.setTarget(true, { releaseOthers: false })
-      this.setTargetLine(token)
+    }
+    this.targets.push(token)
+    token.setTarget(true, { releaseOthers: false })
+    this.setTargetLine(token)
 
-      if (this.targets.length < this.activityTargetCount) {
-        this.targetText.text = `${this.targets.length}/${this.activityTargetCount}`
+    if (this.targets.length < this.activityTargetCount) {
+      this.targetText.text = `${this.targets.length}/${this.activityTargetCount}`
 
-        this.newTargetLine()
-      } else {
-        document.removeEventListener('mousemove', this.mouseMoveHandler)
-        this.targetText.text = `${this.targets.length}/${this.activityTargetCount}`
-        this.selectingTargets = false
-        this.selectedTargets(this.targets)
+      this.newTargetLine()
+    } else {
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      this.targetText.text = `${this.targets.length}/${this.activityTargetCount}`
+      this.selectingTargets = false
+      this.selectedTargets({ targets: this.targets, individual: true })
+      this.targetText.destroy()
 
-        setTimeout(() => {
-          this.currentLine.clear()
-          this.currentGlowLine.clear()
-          this.targetText.destroy()
-          console.log(this.targets)
-          this.targets = []
-          this.clearTargetLines()
-        }, 3000)
-      }
-    
+      setTimeout(() => {
+        if (this.selectingTargets) return
+        this.currentLine.clear()
+        this.currentGlowLine.clear()
+        this.targets = []
+        this.clearTargetLines()
+      }, 3000)
+    }
+  }
+
+  removeTarget() {
+    if (this.targets.length == 0) {
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      this.rejectTargets(new Error('No targets to remove'))
+      this.currentLine.clear()
+      this.currentGlowLine.clear()
+      this.clearTargetLines()
+      this.clearData()
+      this.selectingTargets = false
+      return
+    }
+    let token = this.targets.pop()
+    token.setTarget(false, { releaseOthers: false })
+    if (this.targetLines.length > 1) {
+      this.targetLines.at(-2)?.clear()
+      this.targetLines.splice(-2, 1)
+    }
+
+    if (this.targetGlowLines.length > 1) {
+      this.targetGlowLines.at(-2)?.clear()
+      this.targetGlowLines.splice(-2, 1)
+    }
+
+    this.targetText.destroy()
+    this.newTargetText()
   }
 
   newTargetLine() {
@@ -94,8 +124,11 @@ export class TargetHelper {
     })
   }
   clearTargetLines() {
-    this.targetLines.forEach((line) => line.clear())
-    this.targetGlowLines.forEach((line) => line.clear())
+    try {
+      this.targetLines ? this.targetLines.forEach((line) => line.clear()) : null
+      this.targetGlowLines ? this.targetGlowLines.forEach((line) => line.clear()) : null
+      this.targetText ? this.targetText.destroy() : null
+    } catch (error) {}
   }
 
   drawCurve(line, endPos) {
@@ -131,11 +164,13 @@ export class TargetHelper {
     canvas.app.stage.addChild(this.targetText)
   }
 
-  async requestTargets(item, activity, actor) {
+  async requestTargets(item, activity, actor, targetCount) {
+    this.clearTargetLines()
+    this.clearData()
     this.setData(actor, activity)
     let activityData = this.getActivityData(item, activity)
     this.activityRange = activityData.range
-    this.activityTargetCount = activityData.targetCount
+    this.activityTargetCount = targetCount || 1
 
     this.selectingTargets = true
     game.user.updateTokenTargets([])
@@ -149,12 +184,11 @@ export class TargetHelper {
       this.moveText(endPos)
     }
 
-    // Add event listeners
     document.addEventListener('mousemove', this.mouseMoveHandler)
 
     let targets
     try {
-      targets = await new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         this.selectedTargets = resolve
         this.rejectTargets = reject
       })
@@ -162,23 +196,6 @@ export class TargetHelper {
       console.log('AAT - Target selection canceled')
       targets = null
     }
-  }
-
-  async testAnimation() {
-    this.selectingTargets = true
-    game.user.updateTokenTargets([])
-    this.newTargetLine()
-    this.newTargetText()
-
-    this.mouseMoveHandler = async (event) => {
-      let endPos = await TargetHelper.getCursorCoordinates(event)
-      this.drawCurve(this.currentLine, endPos)
-      this.drawCurve(this.currentGlowLine, endPos)
-      this.moveText(endPos)
-    }
-
-    // Add event listeners
-    document.addEventListener('mousemove', this.mouseMoveHandler)
   }
 
   static getPositionFromActor(actor) {
@@ -217,14 +234,36 @@ export class TargetHelper {
     }
   }
 
-    static cancelSelection(event, target) {
-    if (this.currentTray instanceof TargetHelper) {
-      this.activityTray.rejectActivity(
-        new Error("User canceled Target selection")
-      );
-      this.activityTray.rejectActivity = null;
-    } else {
+  static cancelSelection(event, target) {
+    this.rejectTargets(new Error('User canceled Target selection'))
+    this.activityTray.rejectActivity = null
+  }
 
+  static checkTargetCount(item, activity, spellLevel) {
+    let targetCount
+    console.log(item, activity, spellLevel)
+
+    if (DamageCalc.checkOverride(item)) {
+      let castLevel = spellLevel.slot == 'pact' ? 0 : parseInt(spellLevel.slot.replace('spell', ''))
+      targetCount = DamageCalc.getOverrideScaling(
+        item,
+        castLevel,
+        DamageCalc.getOverrideDamageParts(item),
+      ).length
+      return targetCount
     }
+
+    switch (true) {
+      case item.type == 'weapon' &&
+        (item.system.activities.contents[0].type == 'attack' ||
+          item.system.activities.get(activity.itemId)?.type == 'attack'):
+        return 1
+
+      case item.type == 'spell' && item.hasIndividualTarget == 'creature':
+        targetCount = item.system.activities.get(activity.itemId)?.target?.affect?.count || 1
+        return targetCount
+    }
+
+    return -1
   }
 }

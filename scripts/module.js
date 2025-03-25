@@ -38,16 +38,27 @@ Hooks.once('init', async function () {
     AUTOACTIONTRAY_MODULE_NAME,
     'Token.prototype._onClickLeft',
     function (wrapped, ...args) {
-      AutoActionTray._onTest(hotbar,wrapped, ...args )
+      AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
     },
     'MIXED',
   )
-  // libWrapper.register(
-  //   AUTOACTIONTRAY_MODULE_NAME,
-  //   'TokenLayer.prototype._onClickLeft',
-  //   AutoActionTray._onTest,
-  //   'WRAPPER',
-  // )
+  libWrapper.register(
+    AUTOACTIONTRAY_MODULE_NAME,
+    'Token.prototype._onClickRight',
+    function (wrapped, ...args) {
+      AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
+    },
+    'MIXED',
+  )
+  libWrapper.register(
+    AUTOACTIONTRAY_MODULE_NAME,
+    'TokenLayer.prototype._onClickRight',
+    function (wrapped, ...args) {
+      AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
+    },
+    'MIXED',
+  )
+
   preloadHandlebarsTemplates()
 })
 

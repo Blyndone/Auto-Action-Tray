@@ -359,12 +359,21 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.effectsTray.setEffects()
   }
 
-  static _onTest(hotbar, wrapped, ...args) {
+  static _onTokenSelect(hotbar, wrapped, ...args) {
     const event = args[0]
     if (hotbar.targetHelper.selectingTargets) {
       let token = event.interactionData.object
 
       hotbar.targetHelper.selectTarget(token)
+      return event.stopPropagation()
+    } else return wrapped(...args)
+  }
+
+    static _onTokenCancel(hotbar, wrapped, ...args) {
+    const event = args[0]
+    if (hotbar.targetHelper.selectingTargets) {
+      let token = event.interactionData.object
+      hotbar.targetHelper.removeTarget(token)
       return event.stopPropagation()
     } else return wrapped(...args)
   }
