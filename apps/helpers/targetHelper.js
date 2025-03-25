@@ -241,7 +241,7 @@ export class TargetHelper {
 
   static checkTargetCount(item, activity, spellLevel) {
     let targetCount
-    console.log(item, activity, spellLevel)
+
 
     if (DamageCalc.checkOverride(item)) {
       let castLevel = spellLevel.slot == 'pact' ? 0 : parseInt(spellLevel.slot.replace('spell', ''))

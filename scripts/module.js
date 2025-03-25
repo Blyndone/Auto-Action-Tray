@@ -42,6 +42,14 @@ Hooks.once('init', async function () {
     },
     'MIXED',
   )
+    libWrapper.register(
+    AUTOACTIONTRAY_MODULE_NAME,
+    'Token.prototype._canControl',
+    function (wrapped, ...args) {
+      return AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
+    },
+    'MIXED',
+  )
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'Token.prototype._onClickRight',

@@ -136,7 +136,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     registerHandlebarsHelpers()
     if (!game.user.isGM) {
-      this.actor = canvas.tokens.controlled[0].actor
+      this.actor = game.user.character
 
       this.initialTraySetup(this.actor)
     }
@@ -360,16 +360,22 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static _onTokenSelect(hotbar, wrapped, ...args) {
-    const event = args[0]
+ 
+    const [, event] = args
+
+    if (!event) {
+      return wrapped(...args)
+    }
+
     if (hotbar.targetHelper.selectingTargets) {
-      let token = event.interactionData.object
+      let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
       return event.stopPropagation()
     } else return wrapped(...args)
   }
 
-    static _onTokenCancel(hotbar, wrapped, ...args) {
+  static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
     if (hotbar.targetHelper.selectingTargets) {
       let token = event.interactionData.object
