@@ -15,6 +15,7 @@ import { TrayConfig } from './helpers/trayConfig.js'
 import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
+import { TargetHelper } from './helpers/targetHelper.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   // Constructor
@@ -22,7 +23,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
     super(options)
-  
+
     this.debugtime = 0
 
     this.animating = false
@@ -33,7 +34,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.isEditable = true
 
     this.actor = null
-
+    this.targetHelper = new TargetHelper()
     this.meleeWeapon = null
     this.rangedWeapon = null
     this.hpTextActive = false
@@ -74,6 +75,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       concentrationColor: '#ff0000',
       customStaticTrays: [],
       autoAddItems: true,
+      enableTargetHelper: true,
     }
 
     let rowCount = 2
@@ -134,7 +136,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     registerHandlebarsHelpers()
     if (!game.user.isGM) {
-      this.actor = canvas.tokens.controlled[0].actor
+      this.actor = game.user.character
 
       this.initialTraySetup(this.actor)
     }
@@ -165,6 +167,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       toggleSkillTrayPage: AutoActionTray.toggleSkillTrayPage,
       toggleLock: AutoActionTray.toggleLock,
       toggleFastForward: AutoActionTray.toggleFastForward,
+      toggleTargetHelper: AutoActionTray.toggleTargetHelper,
       minimizeTray: AutoActionTray.minimizeTray,
       toggleItemSelector: AutoActionTray.toggleItemSelector,
       trayConfig: AutoActionTray.trayConfig,
@@ -173,7 +176,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       cancelSelection: ActivityTray.cancelSelection,
       useSlot: ActivityTray.useSlot,
       rollD20: AutoActionTray.rollDice,
+      testAnimation: AutoActionTray.testAnimation,
     },
+  }
+
+  static testAnimation() {
+    this.targetHelper.setData(this.actor, 'Activity')
+    this.targetHelper.testAnimation()
   }
 
   static PARTS = {
@@ -284,6 +293,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       concentrationColor: '#ff0000',
       customStaticTrays: [],
       autoAddItems: true,
+      enableTargetHelper: true,
     }
     let config = this.getTrayConfig()
     if (config) {
@@ -349,6 +359,31 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.effectsTray.setEffects()
   }
 
+  static _onTokenSelect(hotbar, wrapped, ...args) {
+ 
+    const [, event] = args
+
+    if (!event) {
+      return wrapped(...args)
+    }
+
+    if (hotbar.targetHelper.selectingTargets) {
+      let token = event.currentTarget
+
+      hotbar.targetHelper.selectTarget(token)
+      return event.stopPropagation()
+    } else return wrapped(...args)
+  }
+
+  static _onTokenCancel(hotbar, wrapped, ...args) {
+    const event = args[0]
+    if (hotbar.targetHelper.selectingTargets) {
+      let token = event.interactionData.object
+      hotbar.targetHelper.removeTarget(token)
+      return event.stopPropagation()
+    } else return wrapped(...args)
+  }
+
   static async myFormHandler(event, form, formData) {
     let data = foundry.utils.expandObject(formData.object)
     this.updateHp(data.hpinputText)
@@ -372,6 +407,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       skillTray: this.skillTray,
       locked: this.trayOptions['locked'],
       skillTrayPage: this.trayOptions['skillTrayPage'],
+      enableTargetHelper: this.trayOptions['enableTargetHelper'],
       trayOptions: this.trayOptions,
       trayInformation: this.trayInformation,
       activityTray: this.activityTray,
@@ -426,6 +462,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           this.actor.unsetFlag('auto-action-tray', 'config')
           this.trayOptions = {
             locked: false,
+            enableTargetHelper: true,
             skillTrayPage: 0,
             currentTray: 'common',
             fastForward: true,
@@ -531,6 +568,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   static toggleFastForward() {
     Actions.toggleFastForward.bind(this)()
+  }
+  static toggleTargetHelper() {
+    Actions.toggleTargetHelper.bind(this)()
   }
 
   static toggleItemSelector() {

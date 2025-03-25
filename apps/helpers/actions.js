@@ -1,4 +1,5 @@
 import { AnimationHandler } from './animationHandler.js'
+import { TargetHelper } from './targetHelper.js'
 
 export class Actions {
   static setDefaultTray() {
@@ -95,6 +96,11 @@ export class Actions {
     if (this.selectingActivity) return
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward']
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] })
+    this.render({ parts: ['equipmentMiscTray'] })
+  }
+  static toggleTargetHelper() {
+    this.trayOptions['enableTargetHelper'] = !this.trayOptions['enableTargetHelper']
+    this.setTrayConfig({ enableTargetHelper: this.trayOptions['enableTargetHelper'] })
     this.render({ parts: ['equipmentMiscTray'] })
   }
 
@@ -211,16 +217,39 @@ export class Actions {
       item.system.preparation?.mode == 'pact'
         ? { slot: 'pact' }
         : { slot: 'spell' + selectedSpellLevel }
-
-    item.system.activities
-      .get(activity?.itemId || activity?._id || item.system.activities.contents[0].id)
-      .use(
-        {
-          spell: selectedSpellLevel,
-          consume: { spellSlot: activity?.useSlot },
-        },
-        { configure: false },
-      )
+    let targetCount = TargetHelper.checkTargetCount(item, activity, selectedSpellLevel)
+    let targets = null
+    if (this.trayOptions['enableTargetHelper'] && targetCount > 0) {
+      targets = await this.targetHelper.requestTargets(item, activity, this.actor, targetCount)
+      if(targets == null) return
+    }
+    if (targets && targets.individual == true) {
+      let slotUse = (activity?.useSlot != undefined && activity?.useSlot == false) ? 0:1
+      for (const target of targets.targets) {
+        target.setTarget(true, { releaseOthers: true })
+        await item.system.activities
+          .get(activity?.itemId || activity?._id || item.system.activities.contents[0].id)
+          .use(
+            {
+              spell: selectedSpellLevel,
+              consume: { spellSlot: slotUse ==1 ? true : false },
+            },
+            { configure: false },
+            target,
+        )
+        slotUse = 0;
+      }
+    } else {
+      item.system.activities
+        .get(activity?.itemId || activity?._id || item.system.activities.contents[0].id)
+        .use(
+          {
+            spell: selectedSpellLevel,
+            consume: { spellSlot: activity?.useSlot },
+          },
+          { configure: false },
+        )
+    }
   }
 
   static useSkillSave(event, target) {

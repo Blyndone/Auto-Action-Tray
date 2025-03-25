@@ -68,10 +68,11 @@ export class AbilityTray {
     if (this.trayOptions['autoAddItems'] == false) {
       return;
     }
-    if (item.parent.type != 'character') {
+
+    if (item.parent.type != 'character' || item.type == 'spell') {
       return;
     }
-    if (item.parent == this.actor) {
+    if (item.parent == this.actor ) {
       let tray;
       let commonTray = this.customTrays.find((e) => e.id == 'common');
       switch (true) {
