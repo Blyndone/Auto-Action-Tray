@@ -38,15 +38,19 @@ Hooks.once('init', async function () {
     AUTOACTIONTRAY_MODULE_NAME,
     'Token.prototype._onClickLeft',
     function (wrapped, ...args) {
-      AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
+      if (hotbar) {
+        AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
+      } else return wrapped(...args)
     },
     'MIXED',
   )
-    libWrapper.register(
+  libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'Token.prototype._canControl',
     function (wrapped, ...args) {
-      return AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
+      if (hotbar) {
+        return AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
+      } else return wrapped(...args)
     },
     'MIXED',
   )
@@ -54,7 +58,9 @@ Hooks.once('init', async function () {
     AUTOACTIONTRAY_MODULE_NAME,
     'Token.prototype._onClickRight',
     function (wrapped, ...args) {
-      AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
+      if (hotbar) {
+        AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
+      } else return wrapped(...args)
     },
     'MIXED',
   )
@@ -62,7 +68,9 @@ Hooks.once('init', async function () {
     AUTOACTIONTRAY_MODULE_NAME,
     'TokenLayer.prototype._onClickRight',
     function (wrapped, ...args) {
-      AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
+      if (hotbar) {
+        AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
+      } else return wrapped(...args)
     },
     'MIXED',
   )

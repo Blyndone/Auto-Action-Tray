@@ -241,6 +241,9 @@ export class TargetHelper {
 
   static checkTargetCount(item, activity, spellLevel) {
     let targetCount
+    if (!activity) { 
+      activity = item.system.activities.contents[0]
+    }
 
 
     if (DamageCalc.checkOverride(item)) {
