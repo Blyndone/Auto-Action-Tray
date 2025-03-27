@@ -7,80 +7,30 @@ export class DamageCalc {
     options.data.root['actionType'] = ''
     options.data.root['saveType'] = ''
     let currentTray = options.data.root.currentTray
-    let bonus = 0,
-      saveType = ''
+    let bonus = 0
 
     let activities = this.getActivities(item)
     if (activities.length == 0 || (activities.length == 1 && activities[0].type == 'utility')) {
       return ''
     }
 
-    let damageParts = activities.map((activity) => this.getDamage(activity))
-    let flatDamages = activities.map((activity) => this.getFlatDamage(activity, item.actor))
-    let saveDc = activities.map((activity) => this.getSaveDc(activity))
-
-    let scaling = this.getScaling(item, currentTray.spellLevel)
-
     let i = 0
     let activity = activities[i]
-    let actorBonuses = item.actor.system.bonuses
-    let activityBonus = parseInt(actorBonuses[activity.actionType]?.damage) || 0
-
-    if (this.checkOverride(item)) {
-      damageParts[0] = this.getOverrideDamageParts(item)
-      let scalingDamageParts = this.getOverrideScaling(item, currentTray?.spellLevel || item?.system?.level, damageParts[0])
-      damageParts[0] = scalingDamageParts
-      scaling['scaling'] = 0
-      scaling['number'] = 0
-    }
-
-    options.data.root['actionType'] = this.capitalize(
-      item.system?.activities?.contents[i]?.activation?.type,
-    )
-    let dice = ['<i class="fa-solid fa-dice-d6"></i>']
-    let damage = []
-    let totalDamage = { min: 0, max: 0 }
+    let scaling = this.getScaling(item, currentTray.spellLevel)
 
     if (scaling['scaling'] == undefined || isNaN(scaling['scaling'])) {
       scaling['scaling'] = 0
       scaling['number'] = 0
     }
 
-    damageParts[i].forEach((part) => {
-      bonus = 0
-      if (flatDamages[i].length != 0) {
-        bonus = flatDamages[i][0] != '' ? parseInt(flatDamages[i]) : 0
-      }
-      bonus += parseInt(activityBonus)
+    let rollData = this.getRollData(activity, scaling['scaling'])
+    let saveDc = activities.map((activity) => this.getSaveDc(activity))
 
-      if (Number.isInteger(part.min) && Number.isInteger(part.max)) {
-        dice.push(
-          `${part.min}d${part.dieSize}${bonus > 0 ? ' + ' + bonus : ''} ${[
-            this.capitalize(part.damageType),
-          ].join(' ')}`,
-        )
-      }
-      totalDamage['min'] =
-        totalDamage['min'] + part.min + scaling['scaling'] * scaling['number'] + bonus
-      totalDamage['max'] =
-        totalDamage['max'] +
-        part.max +
-        scaling['scaling'] * scaling['number'] * part.dieSize +
-        bonus
-    })
+    let dice = '<i class="fa-solid fa-dice-d6"></i> '
 
-    if (scaling['scaling'] != 0) {
-      dice.push(`${scaling['scaling'] * scaling['number']}d${damageParts[i][0]?.dieSize}`)
-    }
-
-    if (
-      totalDamage['min'] != 0 &&
-      totalDamage['max'] != 0 &&
-      totalDamage['min'] != null &&
-      totalDamage['max'] != null
-    ) {
-      damage.push(`${totalDamage['min']} ~ ${totalDamage['max']} `)
-      damage.push(`${damageParts[i][0]?.damageType != 'healing' ? 'Damage' : 'Healing'} `)
+    let data = ''
+    if (rollData && rollData.rolls.length > 0) {
+      data = this.parseData(rollData)
     }
 
     if (saveDc[i].saveType != '') {
@@ -88,122 +38,66 @@ export class DamageCalc {
         saveDc[i].saveDc
       }`
     }
+    options.data.root['actionType'] = this.capitalize(
+      item.system?.activities?.contents[i]?.activation?.type,
+    )
 
-    if (damageParts[i][0]?.formula != '' && damageParts[i][0]?.formula != undefined) {
-      damage = [damageParts[i][0]?.formula]
-      dice = [damageParts[i][0]?.formula]
+    if (data == '') {
+      return
     }
 
     options.data.root['diceFormula'] =
-      dice.length > 1
-        ? dice.slice(0, 1) + ' ' + dice.slice(1).join(' <br><i class="fa-solid fa-dice-d6"></i> ')
-        : ''
-    return damage.join(' ')
+      dice + data.map((x) => x.formula).join(' <br><i class="fa-solid fa-dice-d6"></i> ')
+    return (
+      `${data.reduce((sum, x) => sum + Number(x.min), 0)} ~ ${data.reduce(
+        (sum, x) => sum + Number(x.max),
+        0,
+      )}` + (data[0].damageTypes !== ' Healing' ? ' Damage' : ' Healing')
+    )
   }
 
-  //returns [activies]
+  static parseData(rollData) {
+    if (rollData.rolls.length == 0) {
+      return
+    }
+
+    let retArr = []
+    rollData.rolls.forEach((roll) => {
+      let rollTerms = []
+      let part = roll.parts.join(' + ')
+      part = Roll.replaceFormulaData(part, roll.data)
+      rollTerms.push(Roll.parse(part))
+
+      let damageTypes = ' ' + roll.options.types.map((type) => this.capitalize(type)).join(' ')
+
+      let max = ''
+      let min = ''
+      rollTerms.forEach((arr) => {
+        arr.forEach((term) => {
+          if (term._evaluated == false) {
+            term.evaluate({ maximize: true })
+          }
+          max += term.total
+          min += term.number || term.total
+        })
+
+        max = dnd5e.dice.simplifyRollFormula(max)
+        min = dnd5e.dice.simplifyRollFormula(min)
+        let formulaText = dnd5e.dice.simplifyRollFormula(part) + damageTypes
+        retArr.push({ min: min, max: max, damageTypes: damageTypes, formula: formulaText })
+      })
+    })
+
+    if (retArr.length == 0) {
+      return
+    }
+    return retArr
+  }
+
   static getActivities(item) {
     return item.system.activities.contents
   }
-  //returns [{min, dieSize, max, mod, damageType}]
-  static getDamage(activity) {
-    let damage = {
-      min: 0,
-      max: 0,
-      dieSize: 0,
-      bonus: 0,
-      damageType: '',
-    }
-    let damageParts = []
-    switch (true) {
-      case activity.type == 'attack' ||
-        activity.type == 'damage' ||
-        activity.type == 'save' ||
-        activity.type == 'spell':
-        activity.damage.parts.forEach((part) => {
-          damageParts.push({
-            min: part.number,
-            max: part.number * part.denomination,
-            dieSize: part.denomination,
-            bonus: part.bonus,
-            damageType: [...part.types],
-            formula: part.custom.enabled ? part.custom.formula : '',
-          })
-        })
-        break
-      case activity.type == 'heal':
-        let healing = activity.healing
-        damageParts.push({
-          min: healing.number,
-          max: healing.number * healing.denomination,
-          dieSize: healing.denomination,
-          bonus: healing.bonus,
-          damageType: 'healing',
-          formula: healing.custom.enabled ? healing.custom.formula : '',
-        })
-        break
-      case 'damage':
 
-      default:
-        return []
-    }
-    return damageParts
-  }
-
-  //return flat [Mod]
-  static getFlatDamage(activity, actor) {
-    let flatDamages = []
-    let ability = ''
-    let modDamge = 0
-    switch (true) {
-      case activity.type == 'utility' || activity.type == 'use':
-        return []
-
-      case activity?.attack?.type.classification == 'weapon':
-        ability = activity.attack.ability
-        if (ability == '') {
-          ability = activity.attack.type.value == 'melee' ? 'str' : 'dex'
-        }
-        modDamge = actor.system.abilities[ability ? ability : activity.item.abilityMod].mod
-        activity.damage.parts.forEach((part) => {
-          flatDamages.push((parseInt(part.bonus) || 0) + (parseInt(modDamge) || 0))
-        })
-        break
-
-      case activity.item.type == 'spell' &&
-        activity.type != 'heal' &&
-        (activity.type == 'save' || activity.type == 'attack' || activity.type == 'damage'):
-        ability = activity?.attack?.ability
-        ability =
-          activity.parent?.ability != ''
-            ? activity.parent.ability
-            : actor.system.attributes.spellcasting
-
-        modDamge = actor.system.abilities[ability ? ability : activity.item.abilityMod].mod
-        activity.damage.parts.forEach((part) => {
-          flatDamages.push(
-            part.bonus == '@mod' ? parseInt(modDamge) || 0 : parseInt(part.bonus) || 0,
-          )
-        })
-        break
-
-      case activity.type == 'heal':
-        ability =
-          activity.ability != '' && activity.ability
-            ? activity.ability
-            : actor.system.attributes.spellcasting
-        modDamge = actor.system.abilities[ability ? ability : activity.item.abilityMod]?.mod || 0
-        flatDamages.push(
-          activity.healing.bonus == '@mod'
-            ? parseInt(modDamge) || 0
-            : parseInt(activity.healing.bonus) || 0,
-        )
-        break
-      default:
-        return []
-    }
-    return flatDamages
-  }
   static getSaveDc(activity) {
     if (activity.type == 'save') {
       let saveType = activity.save.ability.first()
@@ -213,7 +107,6 @@ export class DamageCalc {
     return { saveType: '', saveDc: '' }
   }
 
-  //return { scaling: scaling, number: number, formula: formula };
   static getScaling(item, castLevel) {
     if (item.actorSpellData) {
       castLevel = item.actorSpellData.level
@@ -222,7 +115,7 @@ export class DamageCalc {
     let mode =
       item.system.activities.contents[0]?.damage?.parts[0]?.scaling.mode ||
       item.system.activities.contents[0]?.healing?.scaling.mode
-    let scaling
+    let scaling = 0
     let number =
       item.system.activities.contents[0]?.damage?.parts[0]?.scaling.number ||
       item.system.activities.contents[0]?.healing?.scaling.number
@@ -341,5 +234,61 @@ export class DamageCalc {
         break
     }
     return damageParts
+  }
+
+  static getRollData(activity, scalingSteps) {
+    if (
+      !activity ||
+      activity.type == 'summon' ||
+      activity.type == 'enchantment' ||
+      activity.type == 'utility' ||
+      activity.type == 'forward' ||
+      activity.type == 'check'
+    )
+      return
+    class Scaling {
+      constructor(increase) {
+        this.#increase = increase
+      }
+
+      #increase
+
+      get increase() {
+        return this.#increase
+      }
+
+      get value() {
+        return this.#increase + 1
+      }
+
+      toString() {
+        return this.value
+      }
+    }
+
+    let rollConfig = {}
+    let config = {}
+
+    let rollData = activity.getRollData()
+    rollData['scaling'] = new Scaling(scalingSteps - 1)
+
+    if (activity?.damage?.parts) {
+      rollConfig.rolls = activity.damage.parts
+        .map((d, index) => activity._processDamagePart(d, rollConfig, rollData, index))
+        .filter((d) => d.parts.length)
+        .concat(config.rolls ?? [])
+    } else {
+      const rollConfig = foundry.utils.mergeObject(
+        { critical: { allow: false }, scaling: 0 },
+        config,
+      )
+      rollConfig.rolls = [
+        activity._processDamagePart(activity.healing, rollConfig, rollData),
+      ].concat(config.rolls ?? [])
+
+      return rollConfig
+    }
+
+    return rollConfig
   }
 }

@@ -260,7 +260,7 @@ export class TargetHelper {
         return 1
 
       case item.type == 'spell' && item.hasIndividualTarget == 'creature':
-        targetCount = item.system.activities.get(activity.itemId)?.target?.affect?.count || 1
+        targetCount = item.system.activities?.get(activity.itemId)?.target?.affect?.count || 1
         return targetCount
     }
 
