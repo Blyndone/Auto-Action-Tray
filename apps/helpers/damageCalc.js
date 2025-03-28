@@ -1,3 +1,5 @@
+
+
 export class DamageCalc {
   static damageCalc(item, options) {
     if (options.data.root['animating']) {
@@ -29,9 +31,19 @@ export class DamageCalc {
     let dice = '<i class="fa-solid fa-dice-d6"></i> '
 
     let data = ''
-    if (rollData && rollData.rolls.length > 0) {
-      data = this.parseData(rollData)
+    let overrideScale = 0
+    if (this.checkOverride(item)) {
+      overrideScale = this.getOverrideScaling(
+        item,
+        currentTray.spellLevel,
+        this.getOverrideDamageParts(item),
+      )
     }
+
+    if (rollData && rollData.rolls.length > 0) {
+      data = this.parseData(rollData, overrideScale)
+    }
+   
 
     if (saveDc[i].saveType != '') {
       options.data.root['saveType'] = `    ${saveDc[i].saveType.toUpperCase()} - DC ${
@@ -56,7 +68,7 @@ export class DamageCalc {
     )
   }
 
-  static parseData(rollData) {
+  static parseData(rollData, overrideScale) {
     if (rollData.rolls.length == 0) {
       return
     }
@@ -84,7 +96,9 @@ export class DamageCalc {
         max = dnd5e.dice.simplifyRollFormula(max)
         min = dnd5e.dice.simplifyRollFormula(min)
         let formulaText = dnd5e.dice.simplifyRollFormula(part) + damageTypes
-        retArr.push({ min: min, max: max, damageTypes: damageTypes, formula: formulaText })
+        for (let i = 0; i <= overrideScale; i++) {
+          retArr.push({ min: min, max: max, damageTypes: damageTypes, formula: formulaText })
+        }
       })
     })
 
@@ -222,16 +236,15 @@ export class DamageCalc {
 
     switch (item.name) {
       case 'Eldritch Blast':
-        damageParts = [...damageParts, ...Array(scaling).fill({ ...damageParts[0] })]
-        break
+        return scaling
+
       case 'Magic Missile':
-        damageParts = [...damageParts, ...Array(castLevel - itemLevel).fill({ ...damageParts[0] })]
-        break
+        return 2 + castLevel - itemLevel
+
       case 'Scorching Ray':
-        damageParts = [...damageParts, ...Array(scaling).fill({ ...damageParts[0] })]
-        break
+        return 2 + Math.floor((castLevel - itemLevel) / 2)
+
       default:
-        break
     }
     return damageParts
   }

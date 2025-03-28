@@ -252,8 +252,8 @@ export class TargetHelper {
         item,
         castLevel,
         DamageCalc.getOverrideDamageParts(item),
-      ).length
-      return targetCount
+      )
+      return targetCount+1
     }
 
     switch (true) {

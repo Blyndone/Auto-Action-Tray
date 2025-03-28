@@ -146,10 +146,10 @@ Hooks.once('ready', async function () {
     type: Number,
     default: 75,
 
-    choices: {
-      75: '75 px',
-      60: '60 px',
-      50: '50 px',
+    range: {
+      min: 30,
+      step: 5,
+      max: 100,
     },
 
     requiresReload: true, // true if you want to prompt the user to reload
