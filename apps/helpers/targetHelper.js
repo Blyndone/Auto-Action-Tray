@@ -1,7 +1,9 @@
 import { DamageCalc } from './damageCalc.js'
 
 export class TargetHelper {
-  constructor() {
+  constructor(options) {
+    this.socket = options.socket
+    this.hotbar = options.hotbar
     this.stage = canvas.stage
     this.color = 0xffff00
     this.glowColor = 0xff0000
@@ -26,13 +28,65 @@ export class TargetHelper {
     this.gridSize = game.canvas.scene.grid.size
   }
 
+  drawPhantomLines(startPos, endPos) {
+    let currentLine = new PIXI.Graphics()
+    let currentGlowLine = new PIXI.Graphics()
+    canvas.app.stage.addChild(currentLine)
+    canvas.app.stage.addChild(currentGlowLine)
+
+    let midpoint1 = {
+      x: startPos.x + (endPos.x - startPos.x) / 3,
+      y: startPos.y - 200,
+    }
+    let midpoint2 = {
+      x: endPos.x - (endPos.x - startPos.x) / 3,
+      y: endPos.y - 200,
+    }
+
+    currentGlowLine.lineStyle(3, 0xff0000, 1)
+
+    currentLine.lineStyle(2, 0xffff00, 1)
+
+    currentLine.moveTo(startPos.x, startPos.y)
+    currentLine.bezierCurveTo(
+      midpoint1.x,
+      midpoint1.y,
+      midpoint2.x,
+      midpoint2.y,
+      endPos.x,
+      endPos.y,
+    )
+    currentGlowLine.moveTo(startPos.x, startPos.y)
+    currentGlowLine.bezierCurveTo(
+      midpoint1.x,
+      midpoint1.y,
+      midpoint2.x,
+      midpoint2.y,
+      endPos.x,
+      endPos.y,
+    )
+
+    gsap.set(currentGlowLine, {
+      pixi: { blur: 10, alpha: 0.8, saturation: 3 },
+    })
+
+    gsap.set(currentLine, {
+      pixi: { blur: 1, alpha: 1 },
+    })
+    setTimeout(() => {
+      currentLine.clear()
+      currentGlowLine.clear()
+      currentLine.destroy()
+      currentGlowLine.destroy()
+    }, 50)
+  }
+
   setActor(actor) {
     this.actor = actor
     this.startPos = TargetHelper.getPositionFromActor(actor)
   }
   setActivity(activity) {
     this.activity = activity
-
   }
   clearData() {
     this.actor = null
@@ -149,9 +203,9 @@ export class TargetHelper {
       y: endPos.y - 200,
     }
     if (line == this.currentGlowLine) {
-      line.lineStyle(3, (inRange)?this.glowColor: this.outOfRangeGlowColor, 1)
+      line.lineStyle(3, inRange ? this.glowColor : this.outOfRangeGlowColor, 1)
     } else {
-      line.lineStyle(2, (inRange)?this.color: this.outOfRangeColor, 1)
+      line.lineStyle(2, inRange ? this.color : this.outOfRangeColor, 1)
     }
     line.moveTo(this.startPos.x, this.startPos.y)
     line.bezierCurveTo(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y, endPos.x, endPos.y)
@@ -213,6 +267,7 @@ export class TargetHelper {
     this.drawCurve(this.currentLine, endPos)
     this.drawCurve(this.currentGlowLine, endPos)
     this.moveText(endPos)
+    this.socket.executeForOthers('phantom', this.startPos, endPos)
   }
 
   static getPositionFromActor(actor) {
@@ -242,11 +297,14 @@ export class TargetHelper {
     if (!activity) {
       activity = item.system.activities.contents[0]
     }
-    let range = activity.range?.value || activity.range?.reach || (activity.range?.units=='touch') ? 5:0 || 0
+    let range =
+      activity.range?.value || activity.range?.reach || activity.range?.units == 'touch'
+        ? 5
+        : 0 || 0
     let targetCount = item.system.activities.get(activity.itemId)?.target?.affect?.count || 1
 
     return {
-      range: range/5,
+      range: range / 5,
       targetCount: targetCount,
     }
   }

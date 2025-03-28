@@ -2,6 +2,7 @@ import { AutoActionTray } from '../apps/autoActionTray.js'
 // import { registerHooks } from "./hooks.js";
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
+let socket
 export async function preloadHandlebarsTemplates() {
   const partials = [
     'modules/auto-action-tray/templates/parts/equip-tray.hbs',
@@ -78,6 +79,14 @@ Hooks.once('init', async function () {
   preloadHandlebarsTemplates()
 })
 
+
+Hooks.once("socketlib.ready", () => {
+	socket = socketlib.registerModule("auto-action-tray");
+
+
+});
+
+
 Hooks.once('ready', async function () {
   console.log('-------Ready-----------')
 
@@ -85,6 +94,12 @@ Hooks.once('ready', async function () {
     ui.notifications.error(
       "Auto Action Tray requires the 'libWrapper' module. Please install and activate it.",
     )
+  
+    if (!game.modules.get('socketlib')?.active && game.user.isGM)
+    ui.notifications.error(
+      "Auto Action Tray requires the 'socketlib' module. Please install and activate it.",
+    )
+
 
   game.settings.register('auto-action-tray', 'enable', {
     name: 'Enabled',
@@ -159,6 +174,7 @@ Hooks.once('ready', async function () {
   if (game.settings.get('auto-action-tray', 'enable')) {
     hotbar = new AutoActionTray({
       id: 'auto-action-tray',
+      socket: socket
     })
     hotbar.render(true)
   }

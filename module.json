@@ -17,6 +17,10 @@
           "minimum": "1.0.0.0",
           "verified": "1.12.6.0"
         }
+      },
+      {
+        "id": "socketlib",
+        "type": "module"
       }
     ],
     "systems": [
@@ -40,6 +44,7 @@
   "styles": [
     "/styles/styles.css"
   ],
+  "socket": true,
   "languages": [],
   "url": "#{URL}#",
   "manifest": "#{MANIFEST}#",

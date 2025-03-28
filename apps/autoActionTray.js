@@ -21,18 +21,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
     super(options)
-
+    this.socket = options.socket
     this.debugtime = 0
-
+    
     this.animating = false
     this.selectingActivity = false
     this.animationDuration = 0.7
-
+    
     this.#dragDrop = this.#createDragDropHandlers()
     this.isEditable = true
-
+    
     this.actor = null
-    this.targetHelper = new TargetHelper()
+    this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
+    this.socket.register("phantom", this.targetHelper.drawPhantomLines);
     this.meleeWeapon = null
     this.rangedWeapon = null
     this.hpTextActive = false
@@ -89,7 +90,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       if (game.settings.get('auto-action-tray', 'iconSize')) {
         iconSize = game.settings.get('auto-action-tray', 'iconSize')
-        document.documentElement.style.setProperty('--item-size', iconSize/16 + 'rem')
+        document.documentElement.style.setProperty('--item-size', iconSize / 16 + 'rem')
         document.documentElement.style.setProperty('--text-scale-ratio', iconSize / 75)
       }
       if (game.settings.get('auto-action-tray', 'rowCount')) {
@@ -178,9 +179,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     },
   }
 
-  static testAnimation() {
-    this.targetHelper.setData(this.actor, 'Activity')
-    this.targetHelper.testAnimation()
+  testAnimation() {
+   console.log("Test")
   }
 
   static PARTS = {
@@ -226,11 +226,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   initialTraySetup(actor) {
+
+
+    
+    
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
     }
-
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
     this.stackedTray.setInactive()
     this.staticTrays = StaticTray.generateStaticTrays(actor, {
@@ -358,7 +361,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static _onTokenSelect(hotbar, wrapped, ...args) {
- 
     const [, event] = args
 
     if (!event) {
