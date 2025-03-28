@@ -91,7 +91,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       if (game.settings.get('auto-action-tray', 'iconSize')) {
         iconSize = game.settings.get('auto-action-tray', 'iconSize')
-        document.documentElement.style.setProperty('--item-size', iconSize + 'px')
+        document.documentElement.style.setProperty('--item-size', iconSize/16 + 'rem')
         document.documentElement.style.setProperty('--text-scale-ratio', iconSize / 75)
       }
       if (game.settings.get('auto-action-tray', 'rowCount')) {

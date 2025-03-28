@@ -1,29 +1,29 @@
 :root {
-  --item-size: 75px;
+  --item-size: 4.6875rem;
   --text-scale-ratio: 1;
   --item-tray-item-width-count: 10;
   --item-tray-item-height-count: 2;
   --character-health-percent: 100;
-  --stacked-spacer-width: 0px;
+  --stacked-spacer-width: 0rem;
 }
 
 $item-tray-item-width-count: var(--item-tray-item-width-count);
 $item-tray-item-height-count: var(--item-tray-item-height-count);
 $total-item-width: var(--item-size);
 $total-item-height: var(--item-size);
-$main-tray-padding: 7px;
-$app-width: 1400px;
+$main-tray-padding: 0.4375rem;
+$app-width: 87.5rem;
 $app-height: calc($item-tray-item-height-count * $total-item-height + $main-tray-padding * 4);
 $main-tray-height: calc(
-  $item-tray-item-height-count * $total-item-height + $main-tray-padding * 2 + 2px
+  $item-tray-item-height-count * $total-item-height + $main-tray-padding * 2 + 0.125rem
 );
-$inset-border: 2px;
-$item-margin: 1px;
+$inset-border: 0.125rem;
+$item-margin: 0.0625rem;
 $item-width: calc($total-item-width - ($item-margin * 2));
 $item-height: calc($total-item-height - ($item-margin * 2));
 $small-button-width: calc($total-item-width * 0.9);
 $small-button-height: calc($total-item-height / 3);
-$static-tray-size: 50px;
+$static-tray-size: 3.125rem;
 $app-background: rgba(117, 117, 117, 0.7);
 $tray-button-background: rgb(97, 97, 95);
 @mixin center {
@@ -36,14 +36,14 @@ $tray-button-background: rgb(97, 97, 95);
 }
 @mixin hover {
   &:hover {
-    border: 2px solid #c9593f;
-    box-shadow: 0 0 5px #c9593f;
+    border: 0.125rem solid #c9593f;
+    box-shadow: 0 0 0.3125rem #c9593f;
   }
 }
 
 @mixin static-hover {
   &:hover {
-    box-shadow: inset 0 0 12px rgba(201, 89, 63, 0.8);
+    box-shadow: inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
     cursor: pointer;
   }
 }
@@ -51,8 +51,8 @@ $tray-button-background: rgb(97, 97, 95);
 @mixin item {
   background: #333;
   color: #f1f1f1;
-  border: 2px solid #333;
-  border-radius: 5px;
+  border: 0.125rem solid #333;
+  border-radius: 0.3125rem;
   cursor: pointer;
   width: $item-width;
   height: $item-height;
@@ -64,11 +64,12 @@ $tray-button-background: rgb(97, 97, 95);
 
 @mixin inset-tray {
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
 
   border: $inset-border solid #2f2f2f;
-  border-radius: 6px;
-  outline: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
 }
 
 #auto-action-tray {
@@ -76,9 +77,9 @@ $tray-button-background: rgb(97, 97, 95);
   @include main-tray-height;
   flex-direction: row;
   background: $app-background;
-  border-radius: 100px 8px 8px 100px;
+  border-radius: 6.25rem 0.5rem 0.5rem 6.25rem;
   position: absolute;
-  bottom: 45px;
+  bottom: 2.8125rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 0;
@@ -89,12 +90,12 @@ $tray-button-background: rgb(97, 97, 95);
 
 .static-tray-container {
   position: absolute;
-  top: -57px;
-  border-radius: 10px 10px 0 0;
+  top: -3.5625rem;
+  border-radius: 0.625rem 0.625rem 0 0;
   background: $app-background;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 5px;
+  padding-left: 0.3125rem;
+  padding-right: 0.3125rem;
+  padding-top: 0.3125rem;
 
   @include center;
 }
@@ -112,15 +113,15 @@ $tray-button-background: rgb(97, 97, 95);
   justify-items: center;
   align-items: center;
   align-content: center;
-  padding: 5px;
-  margin: 1px;
-  border-radius: 5px;
-  box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6);
+  padding: 0.3125rem;
+  margin: 0.0625rem;
+  border-radius: 0.3125rem;
+  box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
   transition: all 0.3s ease;
-  border: 6px inset #5b5b5b94;
+  border: 0.375rem inset #5b5b5b94;
   &:hover {
-    box-shadow: 0 0 12px rgba(201, 89, 63, 0.8), inset 0 0 12px rgba(201, 89, 63, 0.8);
-    border: 6px inset rgb(201 89 63 / 77%);
+    box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
+    border: 0.375rem inset rgb(201 89 63 / 77%);
   }
 }
 .static-tray-button-container {
@@ -128,17 +129,17 @@ $tray-button-background: rgb(97, 97, 95);
   justify-content: center;
   align-items: center;
   position: absolute;
-  width: 38px;
+  width: 2.375rem;
   flex-wrap: wrap;
 }
 
 .static-tray-active {
-  box-shadow: inset 0 0 15px rgba(255, 140, 0, 0.9);
+  box-shadow: inset 0 0 0.9375rem rgba(255, 140, 0, 0.9);
   background: rgb(120, 60, 40);
   color: #f1f1f1;
 
-  box-shadow: 0 0 12px rgba(201, 89, 63, 0.8), inset 0 0 12px rgba(201, 89, 63, 0.8);
-  border: 6px inset rgb(201 89 63 / 77%);
+  box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
+  border: 0.375rem inset rgb(201 89 63 / 77%);
 }
 .static-tray-no-slots {
   background: radial-gradient(circle, #b35858 0%, #5f5252 100%);
@@ -146,66 +147,66 @@ $tray-button-background: rgb(97, 97, 95);
 
 .icon-action {
   color: rgb(214, 118, 0);
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
-  margin: 3px;
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
+  margin: 0.1875rem;
   font-size: calc(var(--text-scale-ratio) * 1.3rem);
 }
 
 .icon-bonus {
   color: rgb(0, 143, 0);
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
-  margin: 3px;
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
+  margin: 0.1875rem;
   font-size: calc(var(--text-scale-ratio) * 1.3rem);
 }
 
 .icon-slot {
   color: #00aaff;
-  text-shadow: 0 0 8px rgba(0, 170, 255, 0.8);
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
-  margin: 3px;
+  text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
+  margin: 0.1875rem;
 }
 
 .icon-slot-cantrip {
   color: #00aaff;
-  text-shadow: 0 0 8px rgba(0, 170, 255, 0.8);
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+  text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   font-size: calc(var(--text-scale-ratio) * 1.3rem);
-  margin: 3px;
+  margin: 0.1875rem;
 }
 
 .icon-slot-spent {
   color: #5582a3;
   opacity: 0.6;
-  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
-  margin: 3px;
+  filter: drop-shadow(0 0 0.1875rem rgba(0, 0, 0, 0.6));
+  margin: 0.1875rem;
 }
 
 .icon-pact {
   color: #aa00ff;
-  text-shadow: 0 0 8px rgba(170, 0, 255, 0.8);
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
-  margin: 3px;
+  text-shadow: 0 0 0.5rem rgba(170, 0, 255, 0.8);
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
+  margin: 0.1875rem;
 }
 
 .icon-pact-spent {
   color: #71528a;
   opacity: 0.6;
-  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
-  margin: 3px;
+  filter: drop-shadow(0 0 0.1875rem rgba(0, 0, 0, 0.6));
+  margin: 0.1875rem;
 }
 
 .icon-ritual {
   color: #ffcc66;
-  text-shadow: 0 0 8px rgba(255, 170, 0, 0.8);
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
-  margin: 3px;
+  text-shadow: 0 0 0.5rem rgba(255, 170, 0, 0.8);
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
+  margin: 0.1875rem;
 }
 
 .icon-custom {
   color: #eb0a0a;
-  text-shadow: 0 0 8px rgba(230, 80, 80, 0.8);
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
-  margin: 3px;
+  text-shadow: 0 0 0.5rem rgba(230, 80, 80, 0.8);
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
+  margin: 0.1875rem;
   font-size: calc(var(--text-scale-ratio) * 1.325rem);
 }
 
@@ -213,7 +214,7 @@ $tray-button-background: rgb(97, 97, 95);
   font-size: calc(var(--text-scale-ratio) * 1.56rem);
   color: #eb7676;
   cursor: pointer;
-  margin-left: 12px;
+  margin-left: 0.75rem;
   transition: color 0.3s, transform 0.2s;
 
   &:hover {
@@ -223,7 +224,7 @@ $tray-button-background: rgb(97, 97, 95);
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 5px rgba(255, 77, 77, 0.6);
+    box-shadow: 0 0 0.3125rem rgba(255, 77, 77, 0.6);
   }
 }
 
@@ -236,25 +237,25 @@ $tray-button-background: rgb(97, 97, 95);
   top: 0;
   left: 50%;
   transform: translateX(-50%) translateY(-20%);
-  padding: 5px 10px;
+  padding: 0.3125rem 0.625rem;
 
   font-size: 1rem;
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
 
 .static-item-uses {
   font-family: Georgia, 'Times New Roman', Times, serif;
   position: absolute;
-  bottom: -9px;
+  bottom: -0.5625rem;
   left: 50%;
   transform: translateX(-50%) translateY(-20%);
-  padding: 5px 10px;
+  padding: 0.3125rem 0.625rem;
 
   font-size: 1rem;
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
 
@@ -263,14 +264,14 @@ $tray-button-background: rgb(97, 97, 95);
   @include main-tray-height;
   .image-container {
     padding: 0;
-    width: 170px;
-    height: 170px;
+    width: 10.625rem;
+    height: 10.625rem;
     overflow: hidden;
     border-radius: 50%;
-    margin-right: 10px;
+    margin-right: 0.625rem;
     align-items: center;
     vertical-align: middle;
-    outline: 5px solid rgba(39, 39, 39, 1);
+    outline: 0.3125rem solid rgba(39, 39, 39, 1);
     position: relative;
     .image-border {
       position: absolute;
@@ -281,28 +282,30 @@ $tray-button-background: rgb(97, 97, 95);
       height: 100%;
       border-radius: 50%;
 
-      box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
-      outline: 4px solid rgba(39, 39, 39, 1);
+      box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
+        inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+      outline: 0.25rem solid rgba(39, 39, 39, 1);
     }
   }
 
   #health-percent {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
-      inset 0 0 calc(100px - var(--character-health-percent) * 1px)
+    box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
+      inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
+      inset 0 0 calc(6.25rem - var(--character-health-percent) * 0.0625rem)
         rgba(225, 0, 0, calc(1 - (var(--character-health-percent) / 100)));
     z-index: 1;
   }
   .concentrating {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
-      0 0 15px #9600d1;
+    box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
+      inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), 0 0 0.9375rem #9600d1;
     border: $inset-border solid #2f2f2f;
-    outline: 3px solid #8500a0;
+    outline: 0.1875rem solid #8500a0;
   }
   img {
     align-items: center;
     vertical-align: middle;
     border: none;
-    width: 170px;
+    width: 10.625rem;
 
     background: #5b5b5b;
   }
@@ -315,7 +318,7 @@ $tray-button-background: rgb(97, 97, 95);
   position: relative;
   flex-direction: column;
   width: calc($total-item-width * 2 + $main-tray-padding * 2);
-  margin: 5px;
+  margin: 0.3125rem;
 }
 .equipment-tray-container {
   @include center;
@@ -338,7 +341,7 @@ $tray-button-background: rgb(97, 97, 95);
   justify-content: center;
   align-items: flex-start;
   padding: $main-tray-padding;
-  gap: 2px;
+  gap: 0.125rem;
 }
 
 .ability-selection-input {
@@ -349,23 +352,23 @@ $tray-button-background: rgb(97, 97, 95);
   left: 50%;
   bottom: 104%;
   transform: translateX(-50%);
-  border: 3px solid #c9593f;
-  outline: 3px solid #c9593f;
-  box-shadow: (0 0 8px #c9593f), (0 0 8px #c9593f), (0 0 8px #c9593f);
+  border: 0.1875rem solid #c9593f;
+  outline: 0.1875rem solid #c9593f;
+  box-shadow: (0 0 0.5rem #c9593f), (0 0 0.5rem #c9593f), (0 0 0.5rem #c9593f);
 }
 
 @mixin button-style {
   text-align: center;
   color: #f1f1f1;
   background: linear-gradient(180deg, #1e3a5f, #355c7d);
-  border: 2px inset #4a6fa5;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  border: 0.125rem inset #4a6fa5;
+  border-radius: 0.5rem;
+  box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
   font-family: serif;
   &:hover {
     border-color: #c9593f;
-    box-shadow: 0 0 8px rgba(201, 89, 63, 0.8), 0 0 4px rgba(201, 89, 63, 0.6) inset;
+    box-shadow: 0 0 0.5rem rgba(201, 89, 63, 0.8), 0 0 0.25rem rgba(201, 89, 63, 0.6) inset;
   }
 }
 
@@ -387,8 +390,8 @@ $tray-button-background: rgb(97, 97, 95);
   flex-grow: 1;
   box-sizing: border-box;
   font-size: 100%;
-  border: 2px solid #c9593f;
-  box-shadow: 0 0 5px #c9593f;
+  border: 0.125rem solid #c9593f;
+  box-shadow: 0 0 0.3125rem #c9593f;
 }
 
 .small-button-skill {
@@ -404,7 +407,7 @@ $tray-button-background: rgb(97, 97, 95);
   @include center;
   @include button-style;
   background: linear-gradient(180deg, #5b9fa4, #0f5753);
-  border: 2px solid #004a74;
+  border: 0.125rem solid #004a74;
   width: calc($small-button-width + $main-tray-padding);
   height: $main-tray-height / 6;
 
@@ -414,14 +417,14 @@ $tray-button-background: rgb(97, 97, 95);
 }
 
 .proficient {
-  border: 2px inset #92cdff;
+  border: 0.125rem inset #92cdff;
 
   text-decoration: underline;
   text-decoration-color: #1e70b9;
 }
 
 .expertise {
-  border: 2px inset #bca4eb;
+  border: 0.125rem inset #bca4eb;
 
   text-decoration: underline double;
   text-decoration-color: #005b8d;
@@ -433,11 +436,13 @@ $tray-button-background: rgb(97, 97, 95);
 .ability-tray-container {
   @include main-tray-height;
   @include inset-tray;
-  $tray-width: calc($total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 + 5px);
+  $tray-width: calc(
+    $total-item-width * $item-tray-item-width-count + $main-tray-padding * 2 + 0.3125rem
+  );
 
   padding: $main-tray-padding;
   width: $tray-width;
-  margin: 5px;
+  margin: 0.3125rem;
   display: flex;
   overflow: hidden;
   align-items: center;
@@ -445,24 +450,24 @@ $tray-button-background: rgb(97, 97, 95);
   background: #5b5b5b;
   .activity-selection-text {
     position: absolute;
-    top: 15px;
+    top: 0.9375rem;
     left: 50%;
     transform: translateX(-50%);
     font-size: calc(var(--text-scale-ratio) * 1.3rem);
     color: #f1f1f1;
     font-family: serif;
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
   }
 
   .use-slot-text-container {
     position: absolute;
-    bottom: 0px;
+    bottom: 0rem;
     right: 0;
-    padding: 8px;
+    padding: 0.5rem;
     font-size: calc(var(--text-scale-ratio) * 1.125rem);
     color: #f1f1f1;
     font-family: serif;
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -471,8 +476,8 @@ $tray-button-background: rgb(97, 97, 95);
 
   .use-slot-checkbox {
     @include inset-tray;
-    border: 2px solid #f1f1f1;
-    border-radius: 4px;
+    border: 0.125rem solid #f1f1f1;
+    border-radius: 0.25rem;
     background: #333;
     background-color: #0d0d12;
 
@@ -485,8 +490,8 @@ $tray-button-background: rgb(97, 97, 95);
       scale: calc(var(--text-scale-ratio));
 
       &:hover {
-        border: 2px solid #c9593f;
-        box-shadow: 0 0 5px #c9593f;
+        border: 0.125rem solid #c9593f;
+        box-shadow: 0 0 0.3125rem #c9593f;
       }
       &:checked::before {
         background: #333;
@@ -501,32 +506,32 @@ $tray-button-background: rgb(97, 97, 95);
   }
 
   img.common {
-    border: 2px solid #333;
+    border: 0.125rem solid #333;
     @include hover;
   }
 
   img.uncommon {
-    border: 2px solid #11cf00;
+    border: 0.125rem solid #11cf00;
     @include hover;
   }
 
   img.rare {
-    border: 2px solid #164cfc;
+    border: 0.125rem solid #164cfc;
     @include hover;
   }
 
   img.veryRare {
-    border: 2px solid #a665e4;
+    border: 0.125rem solid #a665e4;
     @include hover;
   }
 
   img.legendary {
-    border: 2px solid #e29404;
+    border: 0.125rem solid #e29404;
     @include hover;
   }
 
   img.artifact {
-    border: 2px solid #c00505;
+    border: 0.125rem solid #c00505;
     @include hover;
   }
 
@@ -534,8 +539,8 @@ $tray-button-background: rgb(97, 97, 95);
     @include center;
     @include hover;
     border-radius: 50%;
-    border: 2px solid #2c2d2e;
-    box-shadow: 0 0 2px #0d0d12;
+    border: 0.125rem solid #2c2d2e;
+    box-shadow: 0 0 0.125rem #0d0d12;
   }
   .ability-ol {
     width: calc($total-item-width * $item-tray-item-width-count);
@@ -544,7 +549,7 @@ $tray-button-background: rgb(97, 97, 95);
     flex-direction: column;
     flex-wrap: wrap;
     list-style-type: none;
-    padding: 0px;
+    padding: 0rem;
     align-items: center;
     background: #5b5b5b;
     .context-item {
@@ -570,22 +575,23 @@ $tray-button-background: rgb(97, 97, 95);
     flex-direction: row;
     flex-wrap: wrap;
     list-style-type: none;
-    padding: 0px;
+    padding: 0rem;
     align-items: center;
   }
 }
 
 .activity-button {
   position: relative;
-  outline: 2px outset #00aaff;
-  border-radius: 8px;
-  box-shadow: 0 0 15px 5px rgba(0, 170, 255, 0.8);
+  outline: 0.125rem outset #00aaff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.9375rem 0.3125rem rgba(0, 170, 255, 0.8);
   transition: box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
   width: calc(var(--item-size) * 0.8);
   height: calc(var(--item-size) * 0.8);
   overflow: hidden;
   &:hover {
-    box-shadow: 0 0 30px 10px rgba(0, 170, 255, 1), 0 0 20px 5px rgba(0, 170, 255, 0.9) inset;
+    box-shadow: 0 0 1.875rem 0.625rem rgba(0, 170, 255, 1),
+      0 0 1.25rem 0.3125rem rgba(0, 170, 255, 0.9) inset;
     transform: scale(1.05);
   }
   img {
@@ -597,9 +603,9 @@ $tray-button-background: rgb(97, 97, 95);
 
 .activity-button-inactive {
   position: relative;
-  outline: 2px outset #00aaff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+  outline: 0.125rem outset #00aaff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.625rem rgba(0, 170, 255, 0.5);
   transition: box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
   width: calc(var(--item-size) * 0.8);
   height: calc(var(--item-size) * 0.8);
@@ -617,7 +623,7 @@ $tray-button-background: rgb(97, 97, 95);
   @include center;
   i {
     position: absolute;
-    top: -9px;
+    top: -0.5625rem;
     left: 46%;
     transform: translateX(-50%);
   }
@@ -637,15 +643,16 @@ $tray-button-background: rgb(97, 97, 95);
 
 .consumable-count {
   position: relative;
-  bottom: 30px;
-  right: 8px;
+  bottom: 1.875rem;
+  right: 0.5rem;
   color: #f1f1f1;
   font-size: calc(var(--text-scale-ratio) * 1.375rem);
   font-weight: bold;
-  min-width: 20px;
+  min-width: 1.25rem;
   text-align: right;
-  height: 0px;
-  text-shadow: -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black, 1px 1px 0px black;
+  height: 0rem;
+  text-shadow: -0.0625rem -0.0625rem 0rem black, 0.0625rem -0.0625rem 0rem black,
+    -0.0625rem 0.0625rem 0rem black, 0.0625rem 0.0625rem 0rem black;
 }
 
 .spell-item-container {
@@ -662,10 +669,11 @@ $tray-button-background: rgb(97, 97, 95);
   position: absolute;
   bottom: 0;
   right: 0;
-  padding: 5px 10px;
+  padding: 0.3125rem 0.625rem;
   font-size: calc(var(--text-scale-ratio) * 1.375rem);
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
+    rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
 
@@ -674,35 +682,36 @@ $tray-button-background: rgb(97, 97, 95);
   font-weight: bold;
   position: absolute;
   transform: translateY(-5%);
-  top: 0px;
-  right: 0px;
-  padding: 0px 5px;
+  top: 0rem;
+  right: 0rem;
+  padding: 0rem 0.3125rem;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
+    rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
 
 .main-tray-controls-container {
-  right: 291px;
-  top: 13px;
+  right: 18.1875rem;
+  top: 0.8125rem;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   flex-wrap: nowrap;
-  margin-right: 3px;
+  margin-right: 0.1875rem;
   div {
     @include center;
     @include button-style;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    margin-top: 3px;
-    margin-bottom: 3px;
+    width: 1.875rem;
+    height: 1.875rem;
+    margin-top: 0.1875rem;
+    margin-bottom: 0.1875rem;
     font-size: calc(var(--text-scale-ratio) * 1.125rem);
     color: #f1f1f1;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
 
     font-family: Arial, sans-serif;
     flex-direction: column;
@@ -715,7 +724,7 @@ $tray-button-background: rgb(97, 97, 95);
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(6, auto);
   grid-auto-flow: column;
-  gap: 2px;
+  gap: 0.125rem;
   justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
@@ -724,7 +733,7 @@ $tray-button-background: rgb(97, 97, 95);
 
   height: $main-tray-height;
   padding: $main-tray-padding;
-  gap: 2px;
+  gap: 0.125rem;
 }
 .end-turn-container {
   @include center;
@@ -733,12 +742,12 @@ $tray-button-background: rgb(97, 97, 95);
 .custom-tray-container {
   @include center;
   position: absolute;
-  top: calc($main-tray-height + 8px);
-  border-radius: 0 0 18px 18px;
+  top: calc($main-tray-height + 0.5rem);
+  border-radius: 0 0 1.125rem 1.125rem;
   background: $app-background;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-bottom: 5px;
+  padding-left: 0.3125rem;
+  padding-right: 0.3125rem;
+  padding-bottom: 0.3125rem;
 }
 
 .custom-tray-button {
@@ -747,58 +756,59 @@ $tray-button-background: rgb(97, 97, 95);
   background: $tray-button-background;
   display: flex;
   border: none;
-  padding: 10px;
-  margin: 1px;
-  border-radius: 5px;
-  box-shadow: inset 0 0 7px rgba(36, 36, 36, 0.6);
+  padding: 0.625rem;
+  margin: 0.0625rem;
+  border-radius: 0.3125rem;
+  box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
   transition: all 0.3s ease;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
   color: #f1f1f1;
-  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-  border-right: 6px inset #5b5b5b94;
-  border-left: 6px inset #5b5b5b94;
-  border-bottom: 6px inset #5b5b5b94;
+  text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+  border-right: 0.375rem inset #5b5b5b94;
+  border-left: 0.375rem inset #5b5b5b94;
+  border-bottom: 0.375rem inset #5b5b5b94;
   &:hover {
-    box-shadow: 0 0 12px rgba(201, 89, 63, 0.8), inset 0 0 12px rgba(201, 89, 63, 0.8);
-    border-right: 6px inset rgb(201 89 63 / 77%);
-    border-left: 6px inset rgb(201 89 63 / 77%);
-    border-bottom: 6px inset rgb(201 89 63 / 77%);
+    box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
+    border-right: 0.375rem inset rgb(201 89 63 / 77%);
+    border-left: 0.375rem inset rgb(201 89 63 / 77%);
+    border-bottom: 0.375rem inset rgb(201 89 63 / 77%);
   }
 }
 .custom-tray-active {
   @include center;
-  padding: 10px;
-  margin: 1px;
-  border-radius: 5px;
-  box-shadow: inset 0 0 15px rgba(255, 140, 0, 0.9);
+  padding: 0.625rem;
+  margin: 0.0625rem;
+  border-radius: 0.3125rem;
+  box-shadow: inset 0 0 0.9375rem rgba(255, 140, 0, 0.9);
   background: rgb(120, 60, 40);
   color: #f1f1f1;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
   color: #f1f1f1;
-  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-  border-right: 6px inset rgb(201 89 63 / 77%);
-  border-left: 6px inset rgb(201 89 63 / 77%);
-  border-bottom: 6px inset rgb(201 89 63 / 77%);
+  text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+  border-right: 0.375rem inset rgb(201 89 63 / 77%);
+  border-left: 0.375rem inset rgb(201 89 63 / 77%);
+  border-bottom: 0.375rem inset rgb(201 89 63 / 77%);
 }
 
 .tray-information {
   @include inset-tray();
   background: #5b5b5b;
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
-  border: 0px solid #2f2f2f;
-  border-radius: 0px 0px 19px 19px;
-  outline: 1px solid rgba(0, 0, 0, 0.5);
-  margin: -3px;
-  padding: 10px;
-  padding-left: 20px;
-  padding-right: 15px;
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  border: 0rem solid #2f2f2f;
+  border-radius: 0rem 0rem 1.1875rem 1.1875rem;
+  outline: 0.0625rem solid rgba(0, 0, 0, 0.5);
+  margin: -0.1875rem;
+  padding: 0.625rem;
+  padding-left: 1.25rem;
+  padding-right: 0.9375rem;
   transition: all 0.3s ease;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1.625rem);
   color: #f1f1f1;
-  text-shadow: 0 0 10px rgb(0, 0, 0);
+  text-shadow: 0 0 0.625rem rgb(0, 0, 0);
 }
 
 .transparent-box {
@@ -808,22 +818,22 @@ $tray-button-background: rgb(97, 97, 95);
 .transparent-box-passive {
   @include item;
   @include center;
-  border: 0px;
+  border: 0rem;
 }
 .tooltip-container {
   background: #2c1f12;
-  border: 2px solid #704214;
-  border-radius: 8px;
-  padding: 10px;
+  border: 0.125rem solid #704214;
+  border-radius: 0.5rem;
+  padding: 0.625rem;
   color: #ffcc66;
-  width: 300px;
+  width: 18.75rem;
   font-family: serif;
   position: relative;
   text-align: left;
 }
 
 .tooltip-header h2 {
-  padding: 2px;
+  padding: 0.125rem;
   font-size: calc(var(--text-scale-ratio) * 1.4375rem);
   color: #ffcc66;
 }
@@ -834,21 +844,21 @@ $tray-button-background: rgb(97, 97, 95);
 }
 
 .tooltip-damage h3 {
-  padding: 2px;
+  padding: 0.125rem;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
-  margin: 5px 0;
-  padding: 5px;
+  margin: 0.3125rem 0;
+  padding: 0.3125rem;
   color: #ffcc66;
 }
 
 .damage-type {
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   color: #86d632;
-  padding: 5px;
+  padding: 0.3125rem;
 }
 
 .tooltip-description {
-  margin: 5px 0;
+  margin: 0.3125rem 0;
   font-size: calc(var(--text-scale-ratio) * 1rem);
   color: #c8b08e;
   word-wrap: break-word;
@@ -866,25 +876,25 @@ $tray-button-background: rgb(97, 97, 95);
 .tooltip-duration,
 .tooltip-info {
   font-size: calc(var(--text-scale-ratio) * 1.1rem);
-  margin-left: 15px;
+  margin-left: 0.9375rem;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3125rem;
 }
 
 .tooltip-footer {
   flex-direction: row;
   display: flex;
-  margin-top: 10px;
+  margin-top: 0.625rem;
   text-align: left;
   background-color: #1d140c;
-  padding: 6px;
+  padding: 0.375rem;
 }
 
 .action-tag {
   background: #612626;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
   color: #f1f1f1;
 }
 
@@ -897,8 +907,8 @@ $tray-button-background: rgb(97, 97, 95);
   align-items: center;
   justify-content: center;
   text-align: center;
-  bottom: 15px;
-  width: 170px;
+  bottom: 0.9375rem;
+  width: 10.625rem;
   z-index: 2;
 }
 @mixin hp {
@@ -906,7 +916,8 @@ $tray-button-background: rgb(97, 97, 95);
 
   font-size: 1.25rem;
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
+    rgb(0, 0, 0) 0rem 0rem 0.375rem;
 }
 .hp-form {
   @include inset-tray;
@@ -931,7 +942,8 @@ $tray-button-background: rgb(97, 97, 95);
   font-weight: bold;
   font-size: calc(var(--text-scale-ratio) * 1.125rem);
 
-  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
+    rgb(0, 0, 0) 0rem 0rem 0.375rem;
 }
 
 .end-turn-swap-button-container {
@@ -947,24 +959,24 @@ $tray-button-background: rgb(97, 97, 95);
   @include button-style;
   position: absolute;
 
-  bottom: 0px + $main-tray-padding;
-  left: 0px;
-  width: 25px;
-  height: 25px;
-  margin: 3px;
+  bottom: 0rem + $main-tray-padding;
+  left: 0rem;
+  width: 1.5625rem;
+  height: 1.5625rem;
+  margin: 0.1875rem;
   border-radius: 50%;
 }
 .end-turn-btn {
   @include inset-tray;
   padding: $main-tray-padding;
   transition: 0.3s ease-in-out;
-  height: 130px;
-  width: 130px;
+  height: 8.125rem;
+  width: 8.125rem;
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
-  margin: 15px;
+  margin: 0.9375rem;
 
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0, 0, 0, 0.6);
   pointer-events: all;
   display: flex;
   flex-wrap: nowrap;
@@ -976,11 +988,11 @@ $tray-button-background: rgb(97, 97, 95);
 
   &:active {
     background: radial-gradient(#fc3c1b, #420000);
-    box-shadow: inset 0 0 15px #3a0804;
+    box-shadow: inset 0 0 0.9375rem #3a0804;
   }
 
   &:hover {
-    box-shadow: 0 0 10px #ff7b50, inset 0 0 10px #3a0804;
+    box-shadow: 0 0 0.625rem #ff7b50, inset 0 0 0.625rem #3a0804;
   }
 }
 
@@ -988,15 +1000,15 @@ $tray-button-background: rgb(97, 97, 95);
   @include inset-tray;
   padding: $main-tray-padding;
   transition: 0.3s ease-in-out;
-  height: 130px;
-  width: 130px;
+  height: 8.125rem;
+  width: 8.125rem;
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
-  margin: 15px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  margin: 0.9375rem;
+  text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0, 0, 0, 0.7);
   color: #fff;
   pointer-events: all;
-  border: 2px solid #1f0801;
+  border: 0.125rem solid #1f0801;
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
@@ -1004,20 +1016,20 @@ $tray-button-background: rgb(97, 97, 95);
   align-items: center;
   background: radial-gradient(#5990d6, #062f51);
   &:active {
-    box-shadow: inset 0 0 10px #0096c0;
+    box-shadow: inset 0 0 0.625rem #0096c0;
     background: radial-gradient(#5494e7, #013969);
   }
 
   &:hover {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5), inset -3px -3px 5px rgba(0, 0, 0, 0.5),
-      0px 0px 9px 6px #65a4f5;
+    box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+      inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #65a4f5;
   }
   .end-turn-btn-dice-icon {
     font-size: 5rem;
     color: #f1f1f1;
     display: flex;
     i {
-      text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.8), 0px 0px 6px rgba(0, 0, 0, 0.8);
+      text-shadow: 0rem 0rem 0.375rem rgba(0, 0, 0, 0.8), 0rem 0rem 0.375rem rgba(0, 0, 0, 0.8);
     }
   }
 }
@@ -1027,12 +1039,12 @@ $tray-button-background: rgb(97, 97, 95);
   padding: $main-tray-padding;
   background: radial-gradient(#ff8725, #552502);
   transition: 0.3s ease-in-out;
-  height: 130px;
-  width: 130px;
+  height: 8.125rem;
+  width: 8.125rem;
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
-  margin: 15px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  margin: 0.9375rem;
+  text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0, 0, 0, 0.6);
   pointer-events: none;
   display: flex;
   align-content: center;
@@ -1042,19 +1054,19 @@ $tray-button-background: rgb(97, 97, 95);
 
 .end-turn-btn-text {
   font-size: 1.125rem;
-  line-height: 22px;
+  line-height: 1.375rem;
   font-family: serif;
   color: #f1f1f1;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) 0px 0px 4px rgba(0, 0, 0, 0.8);
-  letter-spacing: 1px;
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.8) 0rem 0rem 0.25rem rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.0625rem;
   text-align: center;
 }
 .hp-circle {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 150px;
-  height: 150px;
+  width: 9.375rem;
+  height: 9.375rem;
   transform: translate(-50%, -50%) rotate(90deg);
   pointer-events: none;
 }
@@ -1066,24 +1078,24 @@ $tray-button-background: rgb(97, 97, 95);
   align-items: center;
   pointer-events: all;
   i {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 }
 
 .multi-group0 {
-  border-radius: 8px;
-  box-shadow: 0 0 7px 1px rgb(255 0 0);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.4375rem 0.0625rem rgb(255 0 0);
   z-index: 1;
 }
 
 .multi-group1 {
-  border-radius: 8px;
-  box-shadow: 0 0 7px 1px rgb(255, 250, 0);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.4375rem 0.0625rem rgb(255, 250, 0);
   z-index: 1;
 }
 .multi-group2 {
-  border-radius: 8px;
-  box-shadow: 0 0 7px 1px #86d632;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.4375rem 0.0625rem #86d632;
   z-index: 1;
 }
 
@@ -1094,46 +1106,46 @@ $tray-button-background: rgb(97, 97, 95);
 .effect-tray {
   position: absolute;
   bottom: 100%;
-  right: 0px;
+  right: 0rem;
   display: flex;
   flex-direction: row-reverse;
   align-items: flex-end;
   justify-content: flex-start;
-  width: 200px;
-  height: 200px;
+  width: 12.5rem;
+  height: 12.5rem;
   align-content: flex-start;
   flex-wrap: wrap-reverse;
 }
 
 .effect-tray-icon {
-  width: 40px;
-  height: 40px;
-  border: 2px solid #000;
-  margin: 2px;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.125rem solid #000;
+  margin: 0.125rem;
   box-sizing: border-box;
 }
 
 .drag-handle {
-  height: calc($main-tray-height - 18px);
-  width: calc(($total-item-width / 3) + 2px);
+  height: calc($main-tray-height - 1.125rem);
+  width: calc(($total-item-width / 3) + 0.125rem);
   background: linear-gradient(180deg, #920000, #c93232);
-  outline: 4px solid #5b5b5b;
-  outline-offset: -3px;
+  outline: 0.25rem solid #5b5b5b;
+  outline-offset: -0.1875rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
-  box-shadow: inset 0px 0px 10px 3px #000000;
+  font-size: 1.625rem;
+  box-shadow: inset 0rem 0rem 0.625rem 0.1875rem #000000;
   &:hover {
     background: linear-gradient(180deg, #ca0202, #f53d3d);
   }
 }
 .drag-spacer {
-  height: calc($main-tray-height - 14px);
-  width: calc(($total-item-width / 3) + 2px);
+  height: calc($main-tray-height - 0.875rem);
+  width: calc(($total-item-width / 3) + 0.125rem);
   position: absolute;
   background: #5b5b5b;
-  right: 0px;
+  right: 0rem;
   z-index: 3;
 }
 
@@ -1155,7 +1167,7 @@ $tray-button-background: rgb(97, 97, 95);
   justify-content: flex-start;
   overflow: visible;
   // overflow-y: visible;
-  clip-path: inset(-7px var(--stacked-spacer-width) -5px -5px);
+  clip-path: inset(-0.4375rem var(--stacked-spacer-width) -0.3125rem -0.3125rem);
 }
 
 .common {
