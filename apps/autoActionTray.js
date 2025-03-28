@@ -18,8 +18,6 @@ import { StackedTray } from './components/stackedTray.js'
 import { TargetHelper } from './helpers/targetHelper.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
-  // Constructor
-
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
     super(options)

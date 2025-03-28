@@ -5,6 +5,8 @@ export class TargetHelper {
     this.stage = canvas.stage
     this.color = 0xffff00
     this.glowColor = 0xff0000
+    this.outOfRangeColor = 0xff1100
+    this.outOfRangeGlowColor = 0xff6600
     this.activity = null
     this.activityRange = 0
     this.activityTargetCount = 3
@@ -20,6 +22,8 @@ export class TargetHelper {
     this.mouseMoveHandler = null
     this.selectedTargets = null
     this.rejectTargets = null
+    this.throttleSpeed = 50
+    this.gridSize = game.canvas.scene.grid.size
   }
 
   setActor(actor) {
@@ -28,6 +32,7 @@ export class TargetHelper {
   }
   setActivity(activity) {
     this.activity = activity
+
   }
   clearData() {
     this.actor = null
@@ -132,6 +137,8 @@ export class TargetHelper {
   }
 
   drawCurve(line, endPos) {
+    let inRange = this.checkInRange(this.actor, endPos, this.activityRange)
+
     line.clear()
     let midpoint1 = {
       x: this.startPos.x + (endPos.x - this.startPos.x) / 3,
@@ -142,11 +149,11 @@ export class TargetHelper {
       y: endPos.y - 200,
     }
     if (line == this.currentGlowLine) {
-      line.lineStyle(3, this.glowColor, 1)
+      line.lineStyle(3, (inRange)?this.glowColor: this.outOfRangeGlowColor, 1)
     } else {
-      line.lineStyle(2, this.color, 1)
+      line.lineStyle(2, (inRange)?this.color: this.outOfRangeColor, 1)
     }
-    line.moveTo(this.startPos.x, this.startPos.y) // Set a starting point
+    line.moveTo(this.startPos.x, this.startPos.y)
     line.bezierCurveTo(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y, endPos.x, endPos.y)
     if (line == this.currentGlowLine) {
       gsap.set(line, {
@@ -160,8 +167,10 @@ export class TargetHelper {
   }
 
   moveText(endPos) {
-    this.targetText.position.set(endPos.x + 10, endPos.y + 10)
-    canvas.app.stage.addChild(this.targetText)
+    if (this.targetText) {
+      this.targetText.position.set(endPos.x + 10, endPos.y + 10)
+      canvas.app.stage.addChild(this.targetText)
+    }
   }
 
   async requestTargets(item, activity, actor, targetCount) {
@@ -171,18 +180,17 @@ export class TargetHelper {
     let activityData = this.getActivityData(item, activity)
     this.activityRange = activityData.range
     this.activityTargetCount = targetCount || 1
+    this.gridSize = game.canvas.scene.grid.size
 
     this.selectingTargets = true
     game.user.updateTokenTargets([])
     this.newTargetLine()
     this.newTargetText()
 
-    this.mouseMoveHandler = async (event) => {
-      let endPos = await TargetHelper.getCursorCoordinates(event)
-      this.drawCurve(this.currentLine, endPos)
-      this.drawCurve(this.currentGlowLine, endPos)
-      this.moveText(endPos)
-    }
+    this.mouseMoveHandler = foundry.utils.throttle(
+      (event) => this._onMouseMove(event),
+      this.throttleSpeed,
+    )
 
     document.addEventListener('mousemove', this.mouseMoveHandler)
 
@@ -196,6 +204,15 @@ export class TargetHelper {
       console.log('AAT - Target selection canceled')
       targets = null
     }
+  }
+
+  async _onMouseMove(event) {
+    if (!this.selectingTargets) return
+    let endPos = await TargetHelper.getCursorCoordinates(event)
+
+    this.drawCurve(this.currentLine, endPos)
+    this.drawCurve(this.currentGlowLine, endPos)
+    this.moveText(endPos)
   }
 
   static getPositionFromActor(actor) {
@@ -225,13 +242,26 @@ export class TargetHelper {
     if (!activity) {
       activity = item.system.activities.contents[0]
     }
-    let range = item.system.activities.get(activity.itemId)?.range?.value || -1
+    let range = activity.range?.value || activity.range?.reach || 0
     let targetCount = item.system.activities.get(activity.itemId)?.target?.affect?.count || 1
 
     return {
-      range: range,
+      range: range/5,
       targetCount: targetCount,
     }
+  }
+
+  checkInRange(actor, endPos, range) {
+    let token = actor.getActiveTokens()[0]
+    if (range <= 0) return true
+    let dx =
+      Math.min(Math.abs(token.x - endPos.x), Math.abs(token.x + token.shape.width - endPos.x)) /
+      this.gridSize
+    let dy =
+      Math.min(Math.abs(token.y - endPos.y), Math.abs(token.y + token.shape.height - endPos.y)) /
+      this.gridSize
+    if (dx > range || dy > range) return false
+    return true
   }
 
   static cancelSelection(event, target) {
@@ -241,10 +271,9 @@ export class TargetHelper {
 
   static checkTargetCount(item, activity, spellLevel) {
     let targetCount
-    if (!activity) { 
+    if (!activity) {
       activity = item.system.activities.contents[0]
     }
-
 
     if (DamageCalc.checkOverride(item)) {
       let castLevel = spellLevel.slot == 'pact' ? 0 : parseInt(spellLevel.slot.replace('spell', ''))
@@ -253,7 +282,7 @@ export class TargetHelper {
         castLevel,
         DamageCalc.getOverrideDamageParts(item),
       )
-      return targetCount+1
+      return targetCount + 1
     }
 
     switch (true) {
