@@ -242,7 +242,7 @@ export class TargetHelper {
     if (!activity) {
       activity = item.system.activities.contents[0]
     }
-    let range = activity.range?.value || activity.range?.reach || 0
+    let range = activity.range?.value || activity.range?.reach || (activity.range?.units=='touch') ? 5:0 || 0
     let targetCount = item.system.activities.get(activity.itemId)?.target?.affect?.count || 1
 
     return {
