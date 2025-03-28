@@ -221,10 +221,10 @@ export class Actions {
     let targets = null
     if (this.trayOptions['enableTargetHelper'] && targetCount > 0) {
       targets = await this.targetHelper.requestTargets(item, activity, this.actor, targetCount)
-      if(targets == null) return
+      if (targets == null) return
     }
     if (targets && targets.individual == true) {
-      let slotUse = (activity?.useSlot != undefined && activity?.useSlot == false) ? 0:1
+      let slotUse = activity?.useSlot != undefined && activity?.useSlot == false ? 0 : 1
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
         await item.system.activities
@@ -232,12 +232,12 @@ export class Actions {
           .use(
             {
               spell: selectedSpellLevel,
-              consume: { spellSlot: slotUse ==1 ? true : false },
+              consume: { spellSlot: slotUse == 1 ? true : false },
             },
             { configure: false },
             target,
-        )
-        slotUse = 0;
+          )
+        slotUse = 0
       }
     } else {
       item.system.activities
@@ -258,10 +258,22 @@ export class Actions {
 
     let skipDialog = this.trayOptions['fastForward'] ? { fastForward: true } : null
 
+    const params = {
+      dialog: {
+        configure: !skipDialog,
+      
+      },
+      message: {
+        rollMode: 'publicroll',
+      },
+    }
+
     if (type == 'skill') {
-      this.actor.rollSkill(skillsave, skipDialog)
+      params.roll = { skill: skillsave }
+      this.actor.rollSkill(params.roll, params.dialog, params.message)
     } else {
-      this.actor.rollAbilitySave(skillsave, skipDialog)
+      params.roll = { ability: skillsave }
+      this.actor.rollSavingThrow(params.roll, params.dialog, params.message)
     }
   }
 
