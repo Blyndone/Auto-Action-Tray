@@ -98,6 +98,7 @@ export class TargetHelper {
     this.item = null
     this.targets = []
     this.clearTargetLines()
+    
     this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
     this.targetLines = []
     this.itemRange = 0
@@ -196,6 +197,7 @@ export class TargetHelper {
     try {
       this.targetLines.forEach((lineCombo) => lineCombo.destroyLines())
       this.targetLines = []
+      this.currentLine.destroyLines()
     } catch (error) {}
   }
   newTargetLine() {
