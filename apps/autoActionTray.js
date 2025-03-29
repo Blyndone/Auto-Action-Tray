@@ -33,7 +33,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     
     this.actor = null
     this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
-    this.socket.register("phantom", this.targetHelper.drawPhantomLines);
+    
     this.meleeWeapon = null
     this.rangedWeapon = null
     this.hpTextActive = false

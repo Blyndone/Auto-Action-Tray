@@ -1,9 +1,11 @@
 import { DamageCalc } from './damageCalc.js'
+import { TargetLineCombo } from './targetLineCombo.js'
 
 export class TargetHelper {
   constructor(options) {
     this.socket = options.socket
     this.hotbar = options.hotbar
+    // this.socket.register('phantom', this.drawPhantomLines.bind(this))
     this.stage = canvas.stage
     this.color = 0xffff00
     this.glowColor = 0xff0000
@@ -16,8 +18,9 @@ export class TargetHelper {
     this.targets = []
     this.targetLines = []
     this.targetGlowLines = []
+
     this.currentLine = null
-    this.currentGlowLine = null
+
     this.targetText
     this.startPos
     this.selectingTargets = false
@@ -28,59 +31,6 @@ export class TargetHelper {
     this.gridSize = game.canvas.scene.grid.size
   }
 
-  drawPhantomLines(startPos, endPos) {
-    let currentLine = new PIXI.Graphics()
-    let currentGlowLine = new PIXI.Graphics()
-    canvas.app.stage.addChild(currentLine)
-    canvas.app.stage.addChild(currentGlowLine)
-
-    let midpoint1 = {
-      x: startPos.x + (endPos.x - startPos.x) / 3,
-      y: startPos.y - 200,
-    }
-    let midpoint2 = {
-      x: endPos.x - (endPos.x - startPos.x) / 3,
-      y: endPos.y - 200,
-    }
-
-    currentGlowLine.lineStyle(3, 0xff0000, 1)
-
-    currentLine.lineStyle(2, 0xffff00, 1)
-
-    currentLine.moveTo(startPos.x, startPos.y)
-    currentLine.bezierCurveTo(
-      midpoint1.x,
-      midpoint1.y,
-      midpoint2.x,
-      midpoint2.y,
-      endPos.x,
-      endPos.y,
-    )
-    currentGlowLine.moveTo(startPos.x, startPos.y)
-    currentGlowLine.bezierCurveTo(
-      midpoint1.x,
-      midpoint1.y,
-      midpoint2.x,
-      midpoint2.y,
-      endPos.x,
-      endPos.y,
-    )
-
-    gsap.set(currentGlowLine, {
-      pixi: { blur: 10, alpha: 0.8, saturation: 3 },
-    })
-
-    gsap.set(currentLine, {
-      pixi: { blur: 1, alpha: 1 },
-    })
-    setTimeout(() => {
-      currentLine.clear()
-      currentGlowLine.clear()
-      currentLine.destroy()
-      currentGlowLine.destroy()
-    }, 50)
-  }
-
   setActor(actor) {
     this.actor = actor
     this.startPos = TargetHelper.getPositionFromActor(actor)
@@ -88,147 +38,25 @@ export class TargetHelper {
   setActivity(activity) {
     this.activity = activity
   }
+  setData(actor, activity) {
+    this.setActor(actor)
+    this.setActivity(activity)
+  }
+
   clearData() {
     this.actor = null
     this.item = null
     this.targets = []
+    this.clearTargetLines()
     this.targetLines = []
-    this.targetGlowLines = []
-    this.targetText = null
     this.itemRange = 0
     this.itemTargetCount = 0
     try {
       document.removeEventListener('mousemove', this.mouseMoveHandler)
     } catch (error) {}
   }
-  setData(actor, activity) {
-    this.setActor(actor)
-    this.setActivity(activity)
-  }
-
-  selectTarget(token) {
-    if (this.targets.length == 0) {
-      token.setTarget(true, { releaseOthers: false })
-    }
-    this.targets.push(token)
-    token.setTarget(true, { releaseOthers: false })
-    this.setTargetLine(token)
-
-    if (this.targets.length < this.activityTargetCount) {
-      this.targetText.text = `${this.targets.length}/${this.activityTargetCount}`
-
-      this.newTargetLine()
-    } else {
-      document.removeEventListener('mousemove', this.mouseMoveHandler)
-      this.targetText.text = `${this.targets.length}/${this.activityTargetCount}`
-      this.selectingTargets = false
-      this.selectedTargets({ targets: this.targets, individual: true })
-      this.targetText.destroy()
-
-      setTimeout(() => {
-        if (this.selectingTargets) return
-        this.currentLine.clear()
-        this.currentGlowLine.clear()
-        this.targets = []
-        this.clearTargetLines()
-      }, 3000)
-    }
-  }
-
-  removeTarget() {
-    if (this.targets.length == 0) {
-      document.removeEventListener('mousemove', this.mouseMoveHandler)
-      this.rejectTargets(new Error('No targets to remove'))
-      this.currentLine.clear()
-      this.currentGlowLine.clear()
-      this.clearTargetLines()
-      this.clearData()
-      this.selectingTargets = false
-      return
-    }
-    let token = this.targets.pop()
-    token.setTarget(false, { releaseOthers: false })
-    if (this.targetLines.length > 1) {
-      this.targetLines.at(-2)?.clear()
-      this.targetLines.splice(-2, 1)
-    }
-
-    if (this.targetGlowLines.length > 1) {
-      this.targetGlowLines.at(-2)?.clear()
-      this.targetGlowLines.splice(-2, 1)
-    }
-
-    this.targetText.destroy()
-    this.newTargetText()
-  }
-
-  newTargetLine() {
-    this.currentLine = new PIXI.Graphics()
-    this.currentGlowLine = new PIXI.Graphics()
-    canvas.app.stage.addChild(this.currentLine)
-    canvas.app.stage.addChild(this.currentGlowLine)
-    this.targetLines.push(this.currentLine)
-    this.targetGlowLines.push(this.currentGlowLine)
-  }
-  setTargetLine(token) {
-    let endPos = TargetHelper.getPositionFromActor(token.actor)
-    this.drawCurve(this.currentLine, endPos)
-    this.drawCurve(this.currentGlowLine, endPos)
-  }
-  newTargetText() {
-    this.targetText = new PIXI.Text(`${this.targets.length}/${this.activityTargetCount}`, {
-      fontFamily: 'Arial',
-      fontSize: 20,
-      fill: 0xffffff,
-    })
-  }
-  clearTargetLines() {
-    try {
-      this.targetLines ? this.targetLines.forEach((line) => line.clear()) : null
-      this.targetGlowLines ? this.targetGlowLines.forEach((line) => line.clear()) : null
-      this.targetText ? this.targetText.destroy() : null
-    } catch (error) {}
-  }
-
-  drawCurve(line, endPos) {
-    let inRange = this.checkInRange(this.actor, endPos, this.activityRange)
-
-    line.clear()
-    let midpoint1 = {
-      x: this.startPos.x + (endPos.x - this.startPos.x) / 3,
-      y: this.startPos.y - 200,
-    }
-    let midpoint2 = {
-      x: endPos.x - (endPos.x - this.startPos.x) / 3,
-      y: endPos.y - 200,
-    }
-    if (line == this.currentGlowLine) {
-      line.lineStyle(3, inRange ? this.glowColor : this.outOfRangeGlowColor, 1)
-    } else {
-      line.lineStyle(2, inRange ? this.color : this.outOfRangeColor, 1)
-    }
-    line.moveTo(this.startPos.x, this.startPos.y)
-    line.bezierCurveTo(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y, endPos.x, endPos.y)
-    if (line == this.currentGlowLine) {
-      gsap.set(line, {
-        pixi: { blur: 10, alpha: 0.8, saturation: 3 },
-      })
-    } else {
-      gsap.set(line, {
-        pixi: { blur: 1, alpha: 1 },
-      })
-    }
-  }
-
-  moveText(endPos) {
-    if (this.targetText) {
-      this.targetText.position.set(endPos.x + 10, endPos.y + 10)
-      canvas.app.stage.addChild(this.targetText)
-    }
-  }
 
   async requestTargets(item, activity, actor, targetCount) {
-    this.clearTargetLines()
     this.clearData()
     this.setData(actor, activity)
     let activityData = this.getActivityData(item, activity)
@@ -238,9 +66,8 @@ export class TargetHelper {
 
     this.selectingTargets = true
     game.user.updateTokenTargets([])
-    this.newTargetLine()
-    this.newTargetText()
-
+    this.currentLine = new TargetLineCombo({ startPos: this.startPos })
+    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     this.mouseMoveHandler = foundry.utils.throttle(
       (event) => this._onMouseMove(event),
       this.throttleSpeed,
@@ -260,14 +87,81 @@ export class TargetHelper {
     }
   }
 
-  async _onMouseMove(event) {
-    if (!this.selectingTargets) return
-    let endPos = await TargetHelper.getCursorCoordinates(event)
+  selectTarget(token) {
+    if (this.targets.length == 0) {
+      token.setTarget(true, { releaseOthers: false })
+    }
+    this.targets.push(token)
+    token.setTarget(true, { releaseOthers: false })
+    this.setTargetLine(token)
 
-    this.drawCurve(this.currentLine, endPos)
-    this.drawCurve(this.currentGlowLine, endPos)
-    this.moveText(endPos)
-    this.socket.executeForOthers('phantom', this.startPos, endPos)
+    if (this.targets.length < this.activityTargetCount) {
+      this.newTargetLine()
+      this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    } else {
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      // this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+      this.selectingTargets = false
+      this.selectedTargets({ targets: this.targets, individual: true })
+      this.currentLine.clearText()
+
+      setTimeout(() => {
+        if (this.selectingTargets) return
+        this.currentLine.clearLines()
+        this.clearTargetLines()
+      }, 3000)
+    }
+  }
+
+  removeTarget() {
+    if (this.targets.length == 0) {
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      this.rejectTargets(new Error('No targets to remove'))
+      this.currentLine.clearLines()
+      this.clearData()
+      this.selectingTargets = false
+      return
+    }
+    let token = this.targets.pop()
+    token.setTarget(false, { releaseOthers: false })
+    if (this.targetLines.length > 0) {
+      this.targetLines.at(-1)?.clearLines()
+      this.targetLines.pop()
+    }
+    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+  }
+
+  static cancelSelection(event, target) {
+    this.rejectTargets(new Error('User canceled Target selection'))
+    this.activityTray.rejectActivity = null
+  }
+
+  clearTargetLines() {
+    try {
+      this.targetLines.forEach((lineCombo) => lineCombo.clearLines())
+      this.targetLines = []
+    } catch (error) {}
+  }
+  newTargetLine() {
+    let endPos = this.startPos
+    if (this.currentLine) {
+      endPos = this.currentLine.lastPos
+    }
+    this.currentLine = new TargetLineCombo({ startPos: this.startPos })
+    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.drawLines(endPos)
+  }
+  setTargetLine(token) {
+    let lastPos = this.currentLine.lastPos
+    let endPos = TargetHelper.getPositionFromActor(token.actor)
+    this.targetLines.push(this.currentLine)
+    this.currentLine.drawLines(endPos)
+    this.currentLine.lastPos = lastPos
+    this.currentLine.clearText()
+  }
+
+  moveText(endPos) {
+    this.currentLine.moveText(endPos)
   }
 
   static getPositionFromActor(actor) {
@@ -278,11 +172,14 @@ export class TargetHelper {
     return pos
   }
 
-  /**
-   * @description Executes callback function for a (left-)click event
-   * @param {event} onClickEvent
-   * @returns {object} returns data object with x and y canvas coordinates, scaled to canvas size
-   */
+  async _onMouseMove(event) {
+    if (!this.selectingTargets) return
+    let endPos = await TargetHelper.getCursorCoordinates(event)
+    this.currentLine.setInRange(this.checkInRange(this.actor, endPos, this.activityRange))
+    this.currentLine.drawLines(endPos)
+    // this.socket.executeForOthers('phantom', this.startPos, endPos)
+  }
+
   static async getCursorCoordinates(onClickEvent) {
     const [x, y] = [onClickEvent.clientX, onClickEvent.clientY]
     const t = canvas.app.stage.worldTransform
@@ -298,9 +195,10 @@ export class TargetHelper {
       activity = item.system.activities.contents[0]
     }
     let range =
-      activity.range?.value || activity.range?.reach || activity.range?.units == 'touch'
-        ? 5
-        : 0 || 0
+      activity.range?.value ??
+      activity.range?.reach ??
+      (activity.range?.units === 'touch' ? 5 : 0) ??
+      0
     let targetCount = item.system.activities.get(activity.itemId)?.target?.affect?.count || 1
 
     return {
@@ -320,11 +218,6 @@ export class TargetHelper {
       this.gridSize
     if (dx > range || dy > range) return false
     return true
-  }
-
-  static cancelSelection(event, target) {
-    this.rejectTargets(new Error('User canceled Target selection'))
-    this.activityTray.rejectActivity = null
   }
 
   static checkTargetCount(item, activity, spellLevel) {
