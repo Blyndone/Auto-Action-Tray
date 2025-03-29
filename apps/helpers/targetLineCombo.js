@@ -1,10 +1,11 @@
 export class TargetLineCombo {
   constructor(options) {
+    this.yOffset = options.yOffset || 0;
     this.phantom = options.phantom || false;
     this.id = options.id || foundry.utils.randomID();
     this.actorId = options.actorId;
-    this.line = new TargetLine(options);
-    this.glowLine = new GlowLine(options);
+    this.line = new TargetLine({ ...options, yOffset: this.yOffset });
+    this.glowLine = new GlowLine({ ...options, yOffset: this.yOffset });
     this.text = !this.phantom ? new TargetText(options) : null;
     this.startPos = options.startPos;
     this.lastPos = options.startPos;
@@ -52,11 +53,17 @@ export class TargetLineCombo {
     this.line.inRange = inRange;
     this.glowLine.inRange = inRange;
   }
+  setYOffset(yOffset) {
+    this.yOffset = yOffset;
+    this.line.yOffset = yOffset;
+    this.glowLine.yOffset = yOffset;
+  }
 }
 class protoLine {
   constructor(options) {
     this.startPos = options.startPos;
     this.inRange = true;
+    this.yOffset = options.yOffset || 0;
   }
   destroy() {
     gsap.to(this.line, {
@@ -74,11 +81,12 @@ class protoLine {
     this.clear();
     let midpoint1 = {
       x: this.startPos.x + (endPos.x - this.startPos.x) / 3,
-      y: this.startPos.y - 200
+      y: this.startPos.y - 200 - this.yOffset * 50
     };
+
     let midpoint2 = {
       x: endPos.x - (endPos.x - this.startPos.x) / 3,
-      y: endPos.y - 200
+      y: endPos.y - 200 - this.yOffset * 50
     };
     this.line.lineStyle(
       this.width,

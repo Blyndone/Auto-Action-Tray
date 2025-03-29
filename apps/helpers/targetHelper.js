@@ -11,6 +11,7 @@ export class TargetHelper {
     this.socket.register('clearAllPhantomLines', this.clearAllPhantomLines.bind(this))
     this.socket.register('setPhantomInRange', this.setPhantomInRange.bind(this))
     this.socket.register('destroyPhantomLine', this.destroyPhantomLine.bind(this))
+    this.socket.register('setPhantomYOffset', this.setPhantomYOffset.bind(this))
 
 
     this.stage = canvas.stage
@@ -65,6 +66,11 @@ export class TargetHelper {
   setPhantomInRange(id, inRange) {
     let line = this.phantomLines.find((line) => line.id == id)
     line.setInRange(inRange)
+  }
+
+  setPhantomYOffset(id, yOffset) {
+    let line = this.phantomLines.find((line) => line.id == id)
+    line.setYOffset(yOffset)
   }
 
 
@@ -208,7 +214,10 @@ export class TargetHelper {
     let lastPos = this.currentLine.lastPos
     let endPos = TargetHelper.getPositionFromActor(token.actor)
     this.targetLines.push(this.currentLine)
+    let offset = this.targets.filter((t) => t.id == token.id).length -1
+    this.currentLine.setYOffset(offset)
     this.currentLine.drawLines(endPos)
+    this.socket.executeForOthers('setPhantomYOffset', this.currentLine.id, offset)
     this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)
     this.currentLine.lastPos = lastPos
     this.currentLine.clearText()
