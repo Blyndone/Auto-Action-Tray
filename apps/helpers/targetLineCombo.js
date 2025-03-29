@@ -8,6 +8,8 @@ export class TargetLineCombo {
     this.text = !this.phantom ? new TargetText(options) : null;
     this.startPos = options.startPos;
     this.lastPos = options.startPos;
+    this.color = options.color || game.user.color.css || 0xffff00;
+    this.inRange = true;
   }
 
   clearLines() {
@@ -17,6 +19,14 @@ export class TargetLineCombo {
       this.clearText();
     }
   }
+  destroyLines() {
+    this.line.destroy();
+    this.glowLine.destroy();
+    if (!this.phantom) {
+      this.clearText();
+    }
+  }
+
   drawLines(endPos) {
     this.line.drawLine(endPos);
     this.glowLine.drawLine(endPos);
@@ -38,6 +48,7 @@ export class TargetLineCombo {
     this.text.clear();
   }
   setInRange(inRange) {
+    this.inRange = inRange;
     this.line.inRange = inRange;
     this.glowLine.inRange = inRange;
   }
@@ -46,6 +57,15 @@ class protoLine {
   constructor(options) {
     this.startPos = options.startPos;
     this.inRange = true;
+  }
+  destroy() {
+    gsap.to(this.line, {
+      pixi: { blur: 0, alpha: 0 },
+      duration: 0.5,
+      onComplete: () => {
+        this.line.clear();
+      }
+    });
   }
   clear() {
     this.line.clear();
@@ -81,29 +101,33 @@ class protoLine {
   }
 }
 
-class GlowLine extends protoLine {
-  constructor(options) {
-    super(options);
-    this.line = new PIXI.Graphics();
-    this.color = options.color || 0xff0000;
-    this.outOfRangeColor = options.outOfRangeColor || 0xff0000;
-    this.blur = options.blur || 10;
-    this.saturation = options.saturation || 3;
-    this.width = options.width || 3;
-    this.alpha = options.alpha || 0.8;
-  }
-}
-
 class TargetLine extends protoLine {
   constructor(options) {
     super(options);
     this.line = new PIXI.Graphics();
-    this.color = options.color || 0xffff00;
-    this.outOfRangeColor = options.outOfRangeColor || 0xff0000;
+    this.color = options.color
+      ? Color.fromString(options.color).add(Color.fromString("#333333")).css
+      : game.user.color.add(Color.fromString("#333333")).css || 0xffff00;
+    this.outOfRangeColor =
+      Color.fromString(this.color).multiply(0.5) || 0xff0000;
     this.blur = options.blur || 1;
     this.saturation = options.saturation || 1;
     this.width = options.width || 2;
     this.alpha = options.alpha || 1;
+  }
+}
+
+class GlowLine extends protoLine {
+  constructor(options) {
+    super(options);
+    this.line = new PIXI.Graphics();
+    this.color = options.color || game.user.color.css || 0xff0000;
+    this.outOfRangeColor =
+      Color.fromString(this.color).multiply(0.5) || 0xff0000;
+    this.blur = options.blur || 10;
+    this.saturation = options.saturation || 3;
+    this.width = options.width || 3;
+    this.alpha = options.alpha || 0.8;
   }
 }
 

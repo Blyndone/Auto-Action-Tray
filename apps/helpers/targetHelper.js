@@ -9,7 +9,10 @@ export class TargetHelper {
     this.socket.register('drawPhantomLine', this.drawPhantomLine.bind(this))
     this.socket.register('clearPhantomLine', this.clearPhantomLine.bind(this))
     this.socket.register('clearAllPhantomLines', this.clearAllPhantomLines.bind(this))
-    
+    this.socket.register('setPhantomInRange', this.setPhantomInRange.bind(this))
+    this.socket.register('destroyPhantomLine', this.destroyPhantomLine.bind(this))
+
+
     this.stage = canvas.stage
     this.color = 0xffff00
     this.glowColor = 0xff0000
@@ -44,12 +47,13 @@ export class TargetHelper {
     this.setActivity(activity)
   }
 
-  newPhantomLine(id, actorId, startPos) {
+  newPhantomLine(id, actorId, startPos, color) {
     let line = new TargetLineCombo({
       startPos: startPos,
       actorId: actorId,
       phantom: true,
       id: id,
+      color: color,
     })
     this.phantomLines.push(line)
     return line
@@ -58,14 +62,24 @@ export class TargetHelper {
     let line = this.phantomLines.find((line) => line.id == id)
     line.drawLines(endPos)
   }
+  setPhantomInRange(id, inRange) {
+    let line = this.phantomLines.find((line) => line.id == id)
+    line.setInRange(inRange)
+  }
+
+
   clearPhantomLine(id) {
     let line = this.phantomLines.find((line) => line.id == id)
     line.clearLines()
   }
+  destroyPhantomLine(id) {
+    let line = this.phantomLines.find((line) => line.id == id)
+    line.destroyLines()
+  }
   clearAllPhantomLines(actorId) {
     this.phantomLines = this.phantomLines.filter((line) => {
       if (line.actorId === actorId) {
-        line.clearLines() 
+        line.destroyLines() 
         return false 
       }
       return true 
@@ -98,7 +112,7 @@ export class TargetHelper {
     this.selectingTargets = true
     game.user.updateTokenTargets([])
     this.currentLine = new TargetLineCombo({ startPos: this.startPos, actorId: actor.id })
-    this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos)
+    this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos, this.currentLine.color)
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     this.mouseMoveHandler = foundry.utils.throttle(
       (event) => this._onMouseMove(event),
@@ -129,7 +143,7 @@ export class TargetHelper {
 
     if (this.targets.length < this.activityTargetCount) {
       this.newTargetLine()
-      this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos)
+      this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos, this.currentLine.color)
       this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     } else {
       document.removeEventListener('mousemove', this.mouseMoveHandler)
@@ -140,8 +154,8 @@ export class TargetHelper {
 
       setTimeout(() => {
         if (this.selectingTargets) return
-        this.currentLine.clearLines()
-        this.socket.executeForOthers('clearPhantomLine', this.currentLine.id)
+        this.currentLine.destroyLines()
+        this.socket.executeForOthers('destroyPhantomLine', this.currentLine.id)
         this.clearTargetLines()
         this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
       }, 3000)
@@ -174,7 +188,7 @@ export class TargetHelper {
 
   clearTargetLines() {
     try {
-      this.targetLines.forEach((lineCombo) => lineCombo.clearLines())
+      this.targetLines.forEach((lineCombo) => lineCombo.destroyLines())
       this.targetLines = []
     } catch (error) {}
   }
@@ -184,7 +198,7 @@ export class TargetHelper {
       endPos = this.currentLine.lastPos
     }
     this.currentLine = new TargetLineCombo({ startPos: this.startPos, actorId: this.actor.id })
-    this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos)
+    this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos, this.currentLine.color)
 
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     this.currentLine.drawLines(endPos)
@@ -217,7 +231,9 @@ export class TargetHelper {
     let endPos = await TargetHelper.getCursorCoordinates(event)
     this.currentLine.setInRange(this.checkInRange(this.actor, endPos, this.activityRange))
     this.currentLine.drawLines(endPos)
+    this.socket.executeForOthers('setPhantomInRange', this.currentLine.id, this.currentLine.inRange)
     this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)
+
     // this.socket.executeForOthers('phantom', this.startPos, endPos)
   }
 
