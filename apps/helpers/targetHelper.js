@@ -180,8 +180,8 @@ export class TargetHelper {
     let token = this.targets.pop()
     token.setTarget(false, { releaseOthers: false })
     if (this.targetLines.length > 0) {
-      this.socket.executeForOthers('clearPhantomLine', this.targetLines.at(-1)?.id)
-      this.targetLines.at(-1)?.clearLines()
+      this.socket.executeForOthers('destroyPhantomLine', this.targetLines.at(-1)?.id)
+      this.targetLines.at(-1)?.destroyLines()
       this.targetLines.pop()
     }
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)

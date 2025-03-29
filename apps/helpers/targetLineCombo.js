@@ -70,7 +70,7 @@ class protoLine {
       pixi: { blur: 0, alpha: 0 },
       duration: 0.5,
       onComplete: () => {
-        this.line.clear();
+        canvas.app.stage.removeChild(this.line);
       }
     });
   }
