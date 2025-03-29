@@ -1,9 +1,11 @@
 export class TargetLineCombo {
   constructor(options) {
     this.phantom = options.phantom || false;
+    this.id = options.id || foundry.utils.randomID();
+    this.actorId = options.actorId;
     this.line = new TargetLine(options);
     this.glowLine = new GlowLine(options);
-    this.text = new TargetText(options);
+    this.text = !this.phantom ? new TargetText(options) : null;
     this.startPos = options.startPos;
     this.lastPos = options.startPos;
   }
@@ -11,21 +13,28 @@ export class TargetLineCombo {
   clearLines() {
     this.line.clear();
     this.glowLine.clear();
-    this.clearText();
+    if (!this.phantom) {
+      this.clearText();
+    }
   }
   drawLines(endPos) {
     this.line.drawLine(endPos);
     this.glowLine.drawLine(endPos);
-    this.text.moveText(endPos);
+    if (!this.phantom) {
+      this.text.moveText(endPos);
+    }
     this.lastPos = endPos;
   }
   setText(newText) {
+    if (this.phantom) return;
     this.text.setText(newText);
   }
   moveText(endPos) {
+    if (this.phantom) return;
     this.text.moveText(endPos);
   }
   clearText() {
+    if (this.phantom) return;
     this.text.clear();
   }
   setInRange(inRange) {
