@@ -8,7 +8,7 @@ export class CustomNpcTray extends AbilityTray {
     this.id = options.id
     this.type = 'custom'
     this.multiattackIndexGroups = []
-    this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
+    
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
       // console.log('Generating Custom Trays');

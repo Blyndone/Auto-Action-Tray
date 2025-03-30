@@ -1,85 +1,109 @@
-import { AbilityTray } from './abilityTray.js';
+import { AbilityTray } from './abilityTray.js'
 
 export class CustomStaticTray extends AbilityTray {
-
-static overrides = {
-      barbarian: ['rage'],
-      bard: ['bardic inspiration'],
-      cleric: ['channel divinity'],
-      druid: ['wild shape', 'wildshape'],
-      fighter: ['superiority die', 'superiority dice', 'arcane shot'],
-      monk: ['ki', 'ki points'],
-      paladin: ['channel divinity'],
-      sorcerer: ['sorcery points'],
-    };
+  static overrides = {
+    barbarian: ['rage'],
+    bard: ['bardic inspiration'],
+    cleric: ['channel divinity'],
+    druid: ['wild shape', 'wildshape'],
+    fighter: ['superiority die', 'superiority dice', 'arcane shot'],
+    monk: ['ki', 'ki points'],
+    paladin: ['channel divinity'],
+    sorcerer: ['sorcery points'],
+    legendary: ['legendary actions', 'legendary action'],
+  }
 
   constructor(options = {}) {
-    super(options);
-    this.id = null;
-    this.keyItem;
-    this.keyItemUuid = options.keyItemUuid;
-    this.keyItemUses;
-    this.keyItemUsesMax;
-    this.type = 'static';
-    this.category = 'customStaticTray';
-    this.setInactive();
-    this.actorUuid = options.actorUuid || null;
- 
-    this.generateTray();
+    super(options)
+    this.id = null
+    this.keyItem
+    this.keyItemUuid = options.keyItemUuid
+    this.keyItemUses = 0
+    this.keyItemUsesMax = 0
+    this.type = 'static'
+    this.category = 'customStaticTray'
+    this.setInactive()
+    this.actorUuid = options.actorUuid || null
+
+    this.generateTray()
+  }
+
+  generateLegandaryTray(actor) {
+    this.keyItemUsesMax = actor.system.resources?.legact?.max
+    this.keyItemUses = actor.system.resources?.legact?.value
+    this.keyItem = actor.items.find((e) => e.id == this.keyItemUuid)
+
+    let allItems = actor.items.filter((e) => e.system?.activities?.size)
+
+    this.abilities.push(
+      ...allItems.filter(
+        (e) =>
+          e.system.activities.contents[0]?.activation.type == 'legendary' ||
+          e.system?.activities?.contents[0]?.consumption?.targets[0]?.target ==
+            'resources.legact.value',
+      ),
+    )
+
+    while (this.abilities.length % this.rowCount !== 0) {
+      this.abilities.push(null)
+    }
+    this.abilities.push(this.keyItem)
+
+    this.id = 'customStaticTray' + '-' + this.keyItemUuid
+
+    this.icon = this.getIcon(this.keyItem, actor)
   }
 
   generateTray() {
-    let actor = fromUuidSync(this.actorUuid);
-    let allItems = actor.items.filter((e) => e.system?.activities?.size);
+    let actor = fromUuidSync(this.actorUuid)
+    if (this.label == 'Legendary Actions') {
+      this.generateLegandaryTray(actor)
+      return
+    }
+    let allItems = actor.items.filter((e) => e.system?.activities?.size)
 
-    this.keyItem = actor.items.find((e) => e.id == this.keyItemUuid);
-    this.abilities.push(this.keyItem);
-    this.keyItemUses = this.keyItem.system?.uses?.value;
-    this.keyItemUsesMax = this.keyItem.system?.uses?.max;
+    this.keyItem = actor.items.find((e) => e.id == this.keyItemUuid)
+    this.abilities.push(this.keyItem)
+    this.keyItemUses = this.keyItem.system?.uses?.value
+    this.keyItemUsesMax = this.keyItem.system?.uses?.max
     this.abilities.push(
       ...allItems.filter((e) =>
         e.system.activities?.some((activity) =>
-          activity.consumption?.targets?.some(
-            (target) => target.target === this.keyItemUuid
-          )
-        )
-      )
-    );
+          activity.consumption?.targets?.some((target) => target.target === this.keyItemUuid),
+        ),
+      ),
+    )
 
-    this.id = 'customStaticTray' + '-' + this.keyItemUuid;
+    this.id = 'customStaticTray' + '-' + this.keyItemUuid
 
-    this.icon = this.getIcon(this.keyItem, actor);
+    this.icon = this.getIcon(this.keyItem, actor)
   }
 
   static setCustomStaticTray(itemUuid, actor) {
     if (actor != null) {
-      let data = actor.getFlag('auto-action-tray', 'data');
+      let data = actor.getFlag('auto-action-tray', 'data')
       if (data) {
         if (data.customStaticTrays != null) {
-          data = JSON.parse(data.customStaticTrays.trays);
+          data = JSON.parse(data.customStaticTrays.trays)
         } else {
-          data = [];
+          data = []
         }
       }
 
-      let temparr = [...new Set([...data, itemUuid])];
+      let temparr = [...new Set([...data, itemUuid])]
       actor.setFlag('auto-action-tray', 'data', {
         customStaticTrays: { trays: JSON.stringify(temparr) },
-      });
+      })
     }
-
   }
 
   static getCustomStaticTrays(actor) {
-    let data = actor.getFlag('auto-action-tray', 'data')?.customStaticTrays?.trays || [];
+    let data = actor.getFlag('auto-action-tray', 'data')?.customStaticTrays?.trays || []
     if (data.length > 0) {
-      data = JSON.parse(data);
+      data = JSON.parse(data)
     }
-      let config = actor.getFlag('auto-action-tray', 'config')?.customStaticTrays || [];
-      return [...data, ...config];
-      
-    
-    
+    let config = actor.getFlag('auto-action-tray', 'config')?.customStaticTrays || []
+    return [...data, ...config]
   }
 
   getIcon(keyItem, actor) {
@@ -97,41 +121,42 @@ static overrides = {
       sorcerer: '<i class="fa-solid fa-hand-sparkles icon-custom"></i>',
       warlock: '<i class="fa-solid fa-eye-evil icon-custom"></i>',
       wizard: '<i class="fa-solid fa-wand-magic-sparkles icon-custom"></i>',
-    };
-
-    let ret = Object.keys(CustomStaticTray.overrides).find((key) =>
-      CustomStaticTray.overrides[key].includes(keyItem.name.toLocaleLowerCase())
-    );
-    if (ret != undefined) {
-      return classIcons[ret];
+      legendary: '<i class="fa-solid fa-crown icon-custom"></i>',
     }
 
-    let requirements = keyItem.system?.requirements;
-    let parse = Object.keys(classIcons).filter((e) =>
-      keyItem?.requirements?.toLocaleLowerCase().includes(e)
-    )[0];
-    let actorClasses = actor._classes;
-    let classarr = Object.keys(actor._classes);
-    classarr = classarr.sort(
-      (a, b) => actorClasses[b].system.levels - actorClasses[a].system.levels
-    );
-    let primaryclass = classarr[0];
-    return classIcons[primaryclass];
+    let ret = Object.keys(CustomStaticTray.overrides).find((key) =>
+      CustomStaticTray.overrides[key].includes(keyItem.name.toLocaleLowerCase()),
+    )
+    if (ret != undefined) {
+      return classIcons[ret]
+    }
 
-    return '<i class="fa-solid fa-flask"></i>';
+    let requirements = keyItem.system?.requirements
+    let parse = Object.keys(classIcons).filter((e) =>
+      keyItem?.requirements?.toLocaleLowerCase().includes(e),
+    )[0]
+    let actorClasses = actor._classes
+    let classarr = Object.keys(actor._classes)
+    classarr = classarr.sort(
+      (a, b) => actorClasses[b].system.levels - actorClasses[a].system.levels,
+    )
+    let primaryclass = classarr[0]
+    return classIcons[primaryclass]
+
+    return '<i class="fa-solid fa-flask"></i>'
   }
 
   static checkOverride(keyItem) {
     if (!keyItem?.name) {
-      keyItem = fromUuidSync(keyItem);
+      keyItem = fromUuidSync(keyItem)
     }
 
     let ret = Object.keys(CustomStaticTray.overrides).find((key) =>
-      CustomStaticTray.overrides[key].includes(keyItem.name.toLocaleLowerCase())
-    );
+      CustomStaticTray.overrides[key].includes(keyItem.name.toLocaleLowerCase()),
+    )
     if (ret != undefined) {
-      return true;
+      return true
     }
-    return false;
+    return false
   }
 }

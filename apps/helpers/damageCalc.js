@@ -9,14 +9,16 @@ export class DamageCalc {
     options.data.root['actionType'] = ''
     options.data.root['saveType'] = ''
     let currentTray = options.data.root.currentTray
-    let bonus = 0
+    let i = 0
+
+    options.data.root['actionType'] = this.getActionType(item, options)
 
     let activities = this.getActivities(item)
+
     if (activities.length == 0 || (activities.length == 1 && activities[0].type == 'utility')) {
       return ''
     }
 
-    let i = 0
     let activity = activities[i]
     let scaling = this.getScaling(item, currentTray.spellLevel)
 
@@ -43,16 +45,12 @@ export class DamageCalc {
     if (rollData && rollData.rolls.length > 0) {
       data = this.parseData(rollData, overrideScale)
     }
-   
 
     if (saveDc[i].saveType != '') {
       options.data.root['saveType'] = `    ${saveDc[i].saveType.toUpperCase()} - DC ${
         saveDc[i].saveDc
       }`
     }
-    options.data.root['actionType'] = this.capitalize(
-      item.system?.activities?.contents[i]?.activation?.type,
-    )
 
     if (data == '') {
       return
@@ -216,7 +214,7 @@ export class DamageCalc {
     if (item.actorSpellData) {
       castLevel = item.actorSpellData.level
     }
-    if (castLevel?.slot == 'pact') { 
+    if (castLevel?.slot == 'pact') {
       castLevel = item.actor.system.spells.pact.level
     }
     let scaling = 0
@@ -306,5 +304,27 @@ export class DamageCalc {
     }
 
     return rollConfig
+  }
+  static getActionType(item, options) { 
+    let activation
+    activation = item.system?.activities?.contents?.[0]?.activation
+    switch (true) { 
+      case activation?.type == undefined:
+        return 'Passive'
+      case options.data.root.currentTray.id == 'ritual':
+        let time = (activation.type == 'minute' || activation.type == 'hour') ? `+ ${activation.value} ${this.capitalize(activation.type)}` : ''      
+        return `10 Minutes ${time}`
+      case activation.type == 'minute':
+        return (activation.value>1) ? `${activation.value} Minutes` :  `${activation.value} Minute`
+      case activation.type == 'hour':
+        return (activation.value > 1) ? `${activation.value} Hours` : `${activation.value} Hour`
+      case activation.type == 'legendary':
+        return (activation.value > 1) ? `${activation.value} Legendary Actions` : `${activation.value} Legendary Action`
+      default:
+        return this.capitalize(activation.type)
+    }
+
+    
+    
   }
 }

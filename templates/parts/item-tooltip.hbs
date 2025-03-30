@@ -22,9 +22,7 @@
   </div>
 
   <div class='tooltip-footer'>
-    <span class='action-tag'>{{#if
-        (eq @root.actionType '')
-      }}Passive{{else}}{{@root.actionType}}{{/if}}</span>
+    <span class='action-tag'>{{@root.actionType}}</span>
 
     <span class='tooltip-info'>
       {{#if system.activities.contents.0.range.reach}}

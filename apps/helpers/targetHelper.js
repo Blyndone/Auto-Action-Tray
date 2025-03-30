@@ -23,6 +23,7 @@ export class TargetHelper {
     this.phantomLines = []
     this.currentLine = null
     this.startPos
+    this.startLinePos
     this.selectingTargets = false
     this.mouseMoveHandler = null
     this.selectedTargets = null
@@ -33,7 +34,9 @@ export class TargetHelper {
 
   setActor(actor) {
     this.actor = actor
+    this.actorId = actor.id
     this.startPos = TargetHelper.getPositionFromActor(actor)
+    this.startLinePos = TargetHelper.getLinePositionFromActor(actor)
   }
   setActivity(activity) {
     this.activity = activity
@@ -43,14 +46,8 @@ export class TargetHelper {
     this.setActivity(activity)
   }
 
-  newPhantomLine(id, actorId, startPos, color) {
-    let line = new TargetLineCombo({
-      startPos: startPos,
-      actorId: actorId,
-      phantom: true,
-      id: id,
-      color: color,
-    })
+  newPhantomLine(options) {
+    let line = new TargetLineCombo(options)
     this.phantomLines.push(line)
     return line
   }
@@ -110,14 +107,22 @@ export class TargetHelper {
     this.gridSize = game.canvas.scene.grid.size
     this.selectingTargets = true
     game.user.updateTokenTargets([])
-    this.currentLine = new TargetLineCombo({ startPos: this.startPos, actorId: actor.id })
-    this.socket.executeForOthers(
-      'newPhantomLine',
-      this.currentLine.id,
-      this.actorId,
-      this.startPos,
-      this.currentLine.color,
-    )
+    this.currentLine = new TargetLineCombo({
+      startPos: this.startPos,
+      startLinePos: this.startLinePos,
+      actorId: actor.id,
+      itemName: item.name,
+      itemType: item.type,
+    })
+    this.socket.executeForOthers('newPhantomLine', {
+      id: this.currentLine.id,
+      actorId: this.actorId,
+      startPos: this.startPos,
+      startLinePos: this.startLinePos,
+      color: this.currentLine.color,
+      itemName: item.name,
+      itemType: item.type,
+    })
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     this.mouseMoveHandler = foundry.utils.throttle(
       (event) => this._onMouseMove(event),
@@ -149,11 +154,13 @@ export class TargetHelper {
     if (this.targets.length < this.activityTargetCount) {
       this.newTargetLine()
       this.socket.executeForOthers(
-        'newPhantomLine',
-        this.currentLine.id,
-        this.actorId,
-        this.startPos,
-        this.currentLine.color,
+        'newPhantomLine', {
+          id: this.currentLine.id,
+          actorId: this.actorId,
+          startPos: this.startPos,
+          startLinePos: this.startLinePos,
+          color: this.currentLine.color,
+        }
       )
       this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     } else {
@@ -182,10 +189,16 @@ export class TargetHelper {
       this.selectingTargets = false
       return
     }
+
     let token = this.targets.pop()
     token.setTarget(false, { releaseOthers: false })
     if (this.targetLines.length > 0) {
       this.socket.executeForOthers('destroyPhantomLine', this.targetLines.at(-1)?.id)
+      if (this.targetLines.length == 1) {
+        this.targetLines.at(-1)?.setFirstLine(false)
+        this.currentLine.setFirstLine(true)
+        this.currentLine.transferTargettingText(this.targetLines.at(-1)?.targettingText)
+      }
       this.targetLines.at(-1)?.destroyLines()
       this.targetLines.pop()
     }
@@ -209,7 +222,12 @@ export class TargetHelper {
     if (this.currentLine) {
       endPos = this.currentLine.lastPos
     }
-    this.currentLine = new TargetLineCombo({ startPos: this.startPos, actorId: this.actor.id })
+    this.currentLine = new TargetLineCombo({
+      startPos: this.startPos,
+      startLinePos: this.startLinePos,
+      actorId: this.actor.id,
+      firstLine: this.targetLines.length == 0,
+    })
     this.socket.executeForOthers(
       'newPhantomLine',
       this.currentLine.id,
@@ -224,7 +242,7 @@ export class TargetHelper {
   }
   setTargetLine(token) {
     let lastPos = this.currentLine.lastPos
-    let endPos = TargetHelper.getPositionFromActor(token.actor)
+    let endPos = TargetHelper.getLinePositionFromActor(token.actor)
     this.targetLines.push(this.currentLine)
     let offset = this.targets.filter((t) => t.id == token.id).length - 1
     this.currentLine.setYOffset(offset)
@@ -242,9 +260,16 @@ export class TargetHelper {
   static getPositionFromActor(actor) {
     let token = actor.getActiveTokens()[0]
     const pos = token.getCenterPoint()
-
-    pos.y -= token.shape.height / 4
     return pos
+  }
+
+  static getLinePositionFromActor(actor) {
+    let token = actor.getActiveTokens()[0]
+    const pos = token.getCenterPoint()
+    return {
+      x: pos.x,
+      y: pos.y - token.shape.height / 4,
+    }
   }
 
   async _onMouseMove(event) {
@@ -305,7 +330,7 @@ export class TargetHelper {
     if (DamageCalc.checkOverride(item)) {
       let targetCount = DamageCalc.getOverrideScaling(
         item,
-        slotLevel ||selectedSpellLevel,
+        slotLevel || selectedSpellLevel,
         DamageCalc.getOverrideDamageParts(item),
       )
       return targetCount + 1

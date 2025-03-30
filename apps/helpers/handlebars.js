@@ -39,8 +39,8 @@ export function registerHandlebarsHelpers() {
   })
 
   Handlebars.registerHelper('getRomanNumeral', function (spellLvl) {
-    let romanNumeral = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
-    return romanNumeral[spellLvl - 1]
+    let romanNumeral = ['','I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
+    return romanNumeral[spellLvl]
   })
 
   Handlebars.registerHelper('multiGroup', function (tray, index) {

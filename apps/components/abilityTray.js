@@ -8,6 +8,7 @@ export class AbilityTray {
     this.type = '';
     this.application = options.application || null;
     this.label = options.label || '';
+    this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
   }
 
   static padArray(arr, length = 20, filler = null) {
