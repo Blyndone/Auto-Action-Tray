@@ -207,6 +207,7 @@ export class AbilityTray {
         this.abilities = JSON.parse(data[this.id].abilities).map((e) =>
           e ? actor.items.get(e) : null
         );
+        this.abilities = AbilityTray.padArray(this.abilities);
         if (
           this.abilities.length == 0 ||
           this.abilities.every((item) => item === null)

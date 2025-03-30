@@ -216,6 +216,9 @@ export class DamageCalc {
     if (item.actorSpellData) {
       castLevel = item.actorSpellData.level
     }
+    if (castLevel?.slot == 'pact') { 
+      castLevel = item.actor.system.spells.pact.level
+    }
     let scaling = 0
     let lvl = 0
     Object.keys(item.actor.classes).forEach((e) => (lvl += item.actor.classes[e].system.levels))

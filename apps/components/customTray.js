@@ -60,7 +60,7 @@ export class CustomTray extends AbilityTray {
         break
     }
 
-    this.abilities = AbilityTray.padArray(this.abilities, 20)
+    this.abilities = AbilityTray.padArray(this.abilities)
   }
 
   static generateCustomTrays(actor) {
@@ -76,7 +76,7 @@ export class CustomTray extends AbilityTray {
     let classTray = new CustomTray({
       category: 'classFeatures',
       id: 'classFeatures',
-      label: 'Class Features',
+      label: 'Features',
       actorUuid: actor.uuid,
     })
     let consumablesTray = new CustomTray({

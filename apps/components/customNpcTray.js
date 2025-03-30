@@ -130,7 +130,7 @@ export class CustomNpcTray extends AbilityTray {
         this.id = 'custom'
         break
     }
-    this.abilities = AbilityTray.padArray(this.abilities, 20)
+    this.abilities = AbilityTray.padArray(this.abilities)
 
     return
   }

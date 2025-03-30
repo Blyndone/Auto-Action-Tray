@@ -13,12 +13,7 @@ export class TargetHelper {
     this.socket.register('destroyPhantomLine', this.destroyPhantomLine.bind(this))
     this.socket.register('setPhantomYOffset', this.setPhantomYOffset.bind(this))
 
-
     this.stage = canvas.stage
-    this.color = 0xffff00
-    this.glowColor = 0xff0000
-    this.outOfRangeColor = 0xff1100
-    this.outOfRangeGlowColor = 0xff6600
     this.activity = null
     this.activityRange = 0
     this.activityTargetCount = 3
@@ -73,7 +68,6 @@ export class TargetHelper {
     line.setYOffset(yOffset)
   }
 
-
   clearPhantomLine(id) {
     let line = this.phantomLines.find((line) => line.id == id)
     line.clearLines()
@@ -85,20 +79,19 @@ export class TargetHelper {
   clearAllPhantomLines(actorId) {
     this.phantomLines = this.phantomLines.filter((line) => {
       if (line.actorId === actorId) {
-        line.destroyLines() 
-        return false 
+        line.destroyLines()
+        return false
       }
-      return true 
+      return true
     })
   }
-
 
   clearData() {
     this.actor = null
     this.item = null
     this.targets = []
     this.clearTargetLines()
-    
+
     this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
     this.targetLines = []
     this.itemRange = 0
@@ -112,14 +105,19 @@ export class TargetHelper {
     this.clearData()
     this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
     this.setData(actor, activity)
-    let activityData = this.getActivityData(item, activity)
-    this.activityRange = activityData.range
-    this.activityTargetCount = targetCount || 1
+    this.activityRange = this.getActivityRange(item, activity)
+    this.activityTargetCount = targetCount
     this.gridSize = game.canvas.scene.grid.size
     this.selectingTargets = true
     game.user.updateTokenTargets([])
     this.currentLine = new TargetLineCombo({ startPos: this.startPos, actorId: actor.id })
-    this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos, this.currentLine.color)
+    this.socket.executeForOthers(
+      'newPhantomLine',
+      this.currentLine.id,
+      this.actorId,
+      this.startPos,
+      this.currentLine.color,
+    )
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     this.mouseMoveHandler = foundry.utils.throttle(
       (event) => this._onMouseMove(event),
@@ -150,7 +148,13 @@ export class TargetHelper {
 
     if (this.targets.length < this.activityTargetCount) {
       this.newTargetLine()
-      this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos, this.currentLine.color)
+      this.socket.executeForOthers(
+        'newPhantomLine',
+        this.currentLine.id,
+        this.actorId,
+        this.startPos,
+        this.currentLine.color,
+      )
       this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     } else {
       document.removeEventListener('mousemove', this.mouseMoveHandler)
@@ -206,7 +210,13 @@ export class TargetHelper {
       endPos = this.currentLine.lastPos
     }
     this.currentLine = new TargetLineCombo({ startPos: this.startPos, actorId: this.actor.id })
-    this.socket.executeForOthers('newPhantomLine', this.currentLine.id, this.actorId, this.startPos, this.currentLine.color)
+    this.socket.executeForOthers(
+      'newPhantomLine',
+      this.currentLine.id,
+      this.actorId,
+      this.startPos,
+      this.currentLine.color,
+    )
 
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     this.currentLine.drawLines(endPos)
@@ -216,7 +226,7 @@ export class TargetHelper {
     let lastPos = this.currentLine.lastPos
     let endPos = TargetHelper.getPositionFromActor(token.actor)
     this.targetLines.push(this.currentLine)
-    let offset = this.targets.filter((t) => t.id == token.id).length -1
+    let offset = this.targets.filter((t) => t.id == token.id).length - 1
     this.currentLine.setYOffset(offset)
     this.currentLine.drawLines(endPos)
     this.socket.executeForOthers('setPhantomYOffset', this.currentLine.id, offset)
@@ -258,23 +268,6 @@ export class TargetHelper {
     }
   }
 
-  getActivityData(item, activity) {
-    if (!activity) {
-      activity = item.system.activities.contents[0]
-    }
-    let range =
-      activity.range?.value ??
-      activity.range?.reach ??
-      (activity.range?.units === 'touch' ? 5 : 0) ??
-      0
-    let targetCount = item.system.activities.get(activity.itemId)?.target?.affect?.count || 1
-
-    return {
-      range: range / 5,
-      targetCount: targetCount,
-    }
-  }
-
   checkInRange(actor, endPos, range) {
     let token = actor.getActiveTokens()[0]
     if (range <= 0) return true
@@ -288,33 +281,49 @@ export class TargetHelper {
     return true
   }
 
-  static checkTargetCount(item, activity, spellLevel) {
-    let targetCount
+  getActivityRange(item, activity) {
     if (!activity) {
       activity = item.system.activities.contents[0]
     }
+    let range =
+      activity.range?.value ??
+      activity.range?.reach ??
+      (activity.range?.units === 'touch' ? 5 : activity.range?.units === 'self' ? -1 : 0)
+    return range > 0 ? range / 5 : range
+  }
+
+  getTargetCount(item, activity, selectedSpellLevel) {
+    if (!activity) {
+      activity = item.system.activities.contents[0]
+    }
+    let slotLevel
+    if (activity.itemId) {
+      slotLevel = parseInt(activity.selectedSpellLevel)
+      activity = item.system.activities.get(activity.itemId)
+    }
 
     if (DamageCalc.checkOverride(item)) {
-      let castLevel = spellLevel.slot == 'pact' ? 0 : parseInt(spellLevel.slot.replace('spell', ''))
-      targetCount = DamageCalc.getOverrideScaling(
+      let targetCount = DamageCalc.getOverrideScaling(
         item,
-        castLevel,
+        slotLevel ||selectedSpellLevel,
         DamageCalc.getOverrideDamageParts(item),
       )
       return targetCount + 1
     }
 
     switch (true) {
-      case item.type == 'weapon' &&
-        (item.system.activities.contents[0].type == 'attack' ||
-          item.system.activities.get(activity.itemId)?.type == 'attack'):
+      case item.type == 'weapon' && activity.type == 'attack':
         return 1
 
       case item.type == 'spell' && item.hasIndividualTarget == 'creature':
-        targetCount = item.system.activities?.get(activity.itemId)?.target?.affect?.count || 1
-        return targetCount
-    }
+        return activity.target?.affects?.count || 1
 
-    return -1
+      case activity?.target.template?.count > 0:
+        return 0
+      case activity?.target?.affects?.type == 'self':
+        return 0
+      default:
+        return activity?.target?.affect?.count || 1
+    }
   }
 }

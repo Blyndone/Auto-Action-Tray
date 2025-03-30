@@ -217,9 +217,9 @@ export class Actions {
       item.system.preparation?.mode == 'pact'
         ? { slot: 'pact' }
         : { slot: 'spell' + selectedSpellLevel }
-    let targetCount = TargetHelper.checkTargetCount(item, activity, selectedSpellLevel)
+    let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
-    if (this.trayOptions['enableTargetHelper'] && targetCount > 0) {
+    if (this.trayOptions['enableTargetHelper'] && targetCount > 0 && targetCount.range != 'self') {
       targets = await this.targetHelper.requestTargets(item, activity, this.actor, targetCount)
       if (targets == null) return
     }
