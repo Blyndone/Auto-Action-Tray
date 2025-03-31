@@ -228,7 +228,7 @@ class TargettingText extends protoText {
       30;
     if (this.text) {
       let prefix = itemType === "spell" ? "Casting " : "Using ";
-      this.text.text = `   ${prefix} ${itemName}   `;
+      this.text.text = `   ${prefix} ${itemName}...   `;
       this.text.anchor.set(0.5, 0.5);
       this.text.position.set(pos.x, pos.y - anchor);
 

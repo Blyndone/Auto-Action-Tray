@@ -5,6 +5,7 @@
   --item-tray-item-height-count: 2;
   --character-health-percent: 100;
   --stacked-spacer-width: 0rem;
+  --concentration-color: #9600d1;
 }
 
 $item-tray-item-width-count: var(--item-tray-item-width-count);
@@ -297,9 +298,10 @@ $tray-button-background: rgb(97, 97, 95);
   }
   .concentrating {
     box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-      inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), 0 0 0.9375rem #9600d1;
+      inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
+      0 0 0.9375rem var(--concentration-color);
     border: $inset-border solid #2f2f2f;
-    outline: 0.1875rem solid #8500a0;
+    outline: 0.1875rem solid var(--concentration-color);
   }
   img {
     align-items: center;

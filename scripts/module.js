@@ -104,22 +104,20 @@ Hooks.once('ready', async function () {
   game.settings.register('auto-action-tray', 'enable', {
     name: 'Enabled',
     hint: 'Enable or Disable the Hotbar',
-    scope: 'client', // "world" = sync to db, "client" = local storage
-    config: true, // false if you dont want it to show in module config
+    scope: 'client', 
+    config: true, 
 
     type: Boolean,
     default: false,
 
-    requiresReload: true, // true if you want to prompt the user to reload
-    /** Creates a select dropdown */
+    requiresReload: true, 
   })
 
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',
     hint: 'Select Number of Rows',
-    scope: 'client', // "world" = sync to db, "client" = local storage
-    config: true, // false if you dont want it to show in module config
-
+    scope: 'client', 
+    config: true, 
     type: Number,
     default: 2,
 
@@ -129,16 +127,14 @@ Hooks.once('ready', async function () {
       4: '4 Rows',
     },
 
-    requiresReload: true, // true if you want to prompt the user to reload
-    /** Creates a select dropdown */
+    requiresReload: true, 
   })
 
   game.settings.register('auto-action-tray', 'columnCount', {
     name: 'Number of Columns',
     hint: 'Select Number of Columns',
-    scope: 'client', // "world" = sync to db, "client" = local storage
-    config: true, // false if you dont want it to show in module config
-
+    scope: 'client', 
+    config: true, 
     type: Number,
     default: 10,
 
@@ -148,15 +144,14 @@ Hooks.once('ready', async function () {
       20: '20 Columns',
     },
 
-    requiresReload: true, // true if you want to prompt the user to reload
-    /** Creates a select dropdown */
+    requiresReload: true, 
   })
 
   game.settings.register('auto-action-tray', 'iconSize', {
     name: 'Icon Size',
     hint: 'Select Icon Size',
-    scope: 'client', // "world" = sync to db, "client" = local storage
-    config: true, // false if you dont want it to show in module config
+    scope: 'client', 
+    config: true, 
 
     type: Number,
     default: 75,
@@ -167,9 +162,54 @@ Hooks.once('ready', async function () {
       max: 100,
     },
 
-    requiresReload: true, // true if you want to prompt the user to reload
-    /** Creates a select dropdown */
+    requiresReload: true, 
   })
+
+    game.settings.register('auto-action-tray', 'recieveTargetLines', {
+    name: 'Recieve Target Lines',
+    hint: 'Recieve Target Lines from other players',
+    scope: 'client', 
+    config: true, 
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: true, 
+    })
+  
+      game.settings.register('auto-action-tray', 'sendTargetLines', {
+    name: 'Send Target Lines',
+    hint: 'Send Target Lines from other players',
+    scope: 'client', 
+    config: true, 
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: true, 
+      })
+  
+    game.settings.register('auto-action-tray', 'targetLinePollRate', {
+    name: 'Target Line Poll Rate',
+    hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
+    scope: 'world', 
+    config: true, 
+
+    type: Number,
+    default: 50,
+
+    range: {
+      min: 10,
+      step: 10,
+      max: 1000,
+    },
+
+    requiresReload: true, 
+  })
+  
+  
+
+  
 
   if (game.settings.get('auto-action-tray', 'enable')) {
     hotbar = new AutoActionTray({

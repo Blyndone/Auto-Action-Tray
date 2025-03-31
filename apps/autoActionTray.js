@@ -71,10 +71,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       imageX: 0,
       imageY: 0,
       healthIndicator: true,
-      concentrationColor: '#ff0000',
       customStaticTrays: [],
       autoAddItems: true,
       enableTargetHelper: true,
+      concentrationColor: '#9600d1'
     }
 
     let rowCount = 2
@@ -291,10 +291,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       imageX: 0,
       imageY: 0,
       healthIndicator: true,
-      concentrationColor: '#ff0000',
       customStaticTrays: [],
       autoAddItems: true,
       enableTargetHelper: true,
+      concentrationColor: '#9600d1',
     }
     let config = this.getTrayConfig()
     if (config) {
@@ -471,9 +471,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
             imageX: 0,
             imageY: 0,
             healthIndicator: true,
-            concentrationColor: '#ff0000',
             customStaticTrays: [],
             autoAddItems: true,
+            enableTargetHelper: true,
+            concentrationColor: '#9600d1',
           }
           this.render(true)
         },
