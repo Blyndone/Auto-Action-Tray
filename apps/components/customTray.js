@@ -11,18 +11,13 @@ export class CustomTray extends AbilityTray {
     this.xPos = 0
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
-      // console.log('Generating Custom Trays');
-
       this.generateTray()
     } else {
-      //   console.log('Getting Saved Data');
       this.getSavedData()
     }
   }
 
   generateTray() {
-    // Common, Class, Consumables
-
     let actor = fromUuidSync(this.actorUuid)
     let allItems = actor.items.filter((e) => e.system?.activities?.size)
     switch (this.category) {
@@ -33,6 +28,7 @@ export class CustomTray extends AbilityTray {
               e.system?.activities?.some((activity) => activity?.activation?.type === 'bonus')) &&
             e.type != 'spell',
         )
+  
         this.id = 'common'
         break
       case 'classFeatures':
@@ -63,7 +59,7 @@ export class CustomTray extends AbilityTray {
     this.abilities = AbilityTray.padArray(this.abilities)
   }
 
-  static generateCustomTrays(actor) {
+  static generateCustomTrays(actor, options = {}) {
     if (actor.type === 'npc') {
       return CustomNpcTray.generateCustomTrays(actor)
     }
@@ -72,24 +68,28 @@ export class CustomTray extends AbilityTray {
       id: 'common',
       label: 'Common',
       actorUuid: actor.uuid,
+      application: options.application,
     })
     let classTray = new CustomTray({
       category: 'classFeatures',
       id: 'classFeatures',
       label: 'Features',
       actorUuid: actor.uuid,
+      application: options.application,
     })
     let consumablesTray = new CustomTray({
       category: 'items',
       id: 'items',
       label: 'Consumables',
       actorUuid: actor.uuid,
+      application: options.application,
     })
     let passiveTray = new CustomTray({
       category: 'passive',
       id: 'passive',
       label: 'Passive',
       actorUuid: actor.uuid,
+      application: options.application,
     })
 
     let reactionTray = new CustomTray({
@@ -97,6 +97,7 @@ export class CustomTray extends AbilityTray {
       id: 'reaction',
       label: 'Reactions',
       actorUuid: actor.uuid,
+      application: options.application,
     })
 
     let customTray = new CustomTray({
@@ -104,6 +105,7 @@ export class CustomTray extends AbilityTray {
       id: 'custom',
       label: 'Custom',
       actorUuid: actor.uuid,
+      application: options.application,
     })
 
     let exclusions = new Set([

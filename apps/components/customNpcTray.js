@@ -11,11 +11,9 @@ export class CustomNpcTray extends AbilityTray {
     
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
-      // console.log('Generating Custom Trays');
 
       this.generateNpcTray()
     } else {
-      //   console.log('Getting Saved Data');
       this.getSavedData()
     }
   }

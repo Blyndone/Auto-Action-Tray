@@ -179,7 +179,6 @@ export class TargetHelper {
       this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     } else {
       document.removeEventListener('mousemove', this.mouseMoveHandler)
-      // this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
       this.selectingTargets = false
       this.selectedTargets({ targets: this.targets, individual: true })
       this.currentLine.clearText()

@@ -53,7 +53,6 @@ export class CombatHandler {
       return;
     }
     this.getInitPlacement();
-    // this.hotbar.refresh();
     let start = this.previousCircleValue
       ? this.previousCircleValue
       : 100 * (1 - (this.tillNextTurn + 1) / this.combat.turns.length);

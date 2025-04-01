@@ -28,7 +28,7 @@ export class CustomStaticTray extends AbilityTray {
     this.generateTray()
   }
 
-  generateLegandaryTray(actor) {
+  generateLegendaryTray(actor) {
     this.keyItemUsesMax = actor.system.resources?.legact?.max
     this.keyItemUses = actor.system.resources?.legact?.value
     this.keyItem = actor.items.find((e) => e.id == this.keyItemUuid)
@@ -57,7 +57,7 @@ export class CustomStaticTray extends AbilityTray {
   generateTray() {
     let actor = fromUuidSync(this.actorUuid)
     if (this.label == 'Legendary Actions') {
-      this.generateLegandaryTray(actor)
+      this.generateLegendaryTray(actor)
       return
     }
     let allItems = actor.items.filter((e) => e.system?.activities?.size)

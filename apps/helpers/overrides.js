@@ -1,9 +1,8 @@
-import { count } from "console";
-
 export class Overrides {
   constructor() {
     let template = {
       name: "Item Name",
+
       damageLabel: {
         damageMin: 0,
         damageMax: 0,
@@ -16,6 +15,16 @@ export class Overrides {
       },
       target: {
         count: 1
+      },
+      scaling: {
+        scalingType: ["cantrip, whole, half"],
+        scaleTargets: true,
+        scaleDamage: true,
+        scaleDamageType: "Dice, Attacks"
+      },
+      spell: {
+        spellLevel: 0,
+        castLevel: 0
       }
     };
   }

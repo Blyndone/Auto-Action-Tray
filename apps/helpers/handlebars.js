@@ -46,11 +46,11 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('multiGroup', function (tray, index) {
     if (!tray.multiattackIndexGroups) return false
 
-    let trayIndex = null // Stores the index of the tray that contains the group
+    let trayIndex = null 
 
     tray.multiattackIndexGroups.forEach((group, groupIndex) => {
       if (group.includes(index)) {
-        trayIndex = groupIndex // Store the tray index where the group is found
+        trayIndex = groupIndex 
       }
     })
 

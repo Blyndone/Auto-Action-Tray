@@ -22,7 +22,7 @@ export class TrayConfig {
       hint: 'Clear previous custom Static Trays',
     })
 
-    const concentrationColor = fields.create({
+    const concentrationColor = fields.createTextInput({
       name: 'concentrationColor',
       value: this.trayOptions['concentrationColor'],
     })
@@ -103,7 +103,7 @@ export class TrayConfig {
     const autoAddItemsGroup = fields.createFormGroup({
       input: autoAddItems,
       label: 'Auto Add Items ',
-      hint: 'Automattily add items to the tray when they are created.',
+      hint: 'Automatically add items to the tray when they are created.',
     })
 
     const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`

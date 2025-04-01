@@ -161,7 +161,6 @@ export class Actions {
     const regex = /^[+-]?\d*/
 
     if (!regex.test(data)) {
-      // If not valid, sanitize by removing any invalid characters
       return
     } else {
       const matches = data.match(regex)

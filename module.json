@@ -1,7 +1,6 @@
 {
   "title": "Auto Action Tray",
   "id": "auto-action-tray",
-  "description": "",
   "version": "#{VERSION}#",
   "compatibility": {
     "minimum": "11.302",
@@ -20,7 +19,8 @@
       },
       {
         "id": "socketlib",
-        "type": "module"
+        "type": "module",
+        "compatibility": {}
       }
     ],
     "systems": [
@@ -45,7 +45,6 @@
     "/styles/styles.css"
   ],
   "socket": true,
-  "languages": [],
   "url": "#{URL}#",
   "manifest": "#{MANIFEST}#",
   "download": "#{DOWNLOAD}#",
@@ -54,7 +53,32 @@
   "media": [
     {
       "type": "icon",
-      "url": ""
+      "loop": false,
+      "flags": {}
+    }
+  ],
+  "packs": [
+    {
+      "name": "aat-default-actions",
+      "label": "AAT - Default Actions",
+      "path": "packs/aat-default-actions",
+      "type": "Item",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "dnd5e"
+    },
+    {
+      "name": "aat-action-override",
+      "label": "AAT - Action Override",
+      "path": "packs/aat-action-override",
+      "type": "Item",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "dnd5e"
     }
   ]
 }
