@@ -179,10 +179,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     },
   }
 
-  testAnimation() {
-   console.log("Test")
-  }
-
   static PARTS = {
     characterImage: {
       template: 'modules/auto-action-tray/templates/topParts/character-image.hbs',

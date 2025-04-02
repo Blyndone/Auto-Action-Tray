@@ -248,13 +248,13 @@ export class TargetHelper {
       firstLine: this.targetLines.length == 0,
     })
     if (this.sendTargetLines) {
-      this.socket.executeForOthers(
-        'newPhantomLine',
-        this.currentLine.id,
-        this.actorId,
-        this.startPos,
-        this.currentLine.color,
-      )
+      this.socket.executeForOthers('newPhantomLine', {
+        id: this.currentLine.id,
+        actorId: this.actorId,
+        startLinePos: this.startLinePos,
+        color: this.currentLine.color,
+        firstLine: this.targetLines.length == 0,
+      })
     }
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
     this.currentLine.drawLines(endPos)

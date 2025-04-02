@@ -1,16 +1,17 @@
 <div class='hp-container'>
   
 
-    <div class='hp-form'>
+    <div class=
+        {{#if hpTextActive}}'hp-form' 
+        {{else}}'hp-form  hidden-disabled '
+        {{/if}}>
 
       <input
         id='hpinput'
         name='hpinputText'
         type='text'
-        class=
-        {{#if hpTextActive}}'hpinput'
-        {{else}}'hpinput hidden-disabled '
-        {{/if}}
+        class='hpinput'
+      
         placeholder='{{actor.system.attributes.hp.value}}'
    
       />

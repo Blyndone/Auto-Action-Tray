@@ -1,6 +1,6 @@
 {{#if (eq @root.skillTrayPage 0)}}
 {{#each skillTray.currentSkills as |skill|}}
-<div class="
+<div class=" small-button 
     {{#if (eq skill.type 'save')}}
     small-button-save
     {{else}}
@@ -18,7 +18,7 @@ expertise
 {{/each}}
 {{else}}
 {{#each skillTray.secondarySkills as |skill|}}
-<div class="
+<div class=" small-button
     {{#if (eq skill.type 'save')}}
     small-button-save
     {{else}}

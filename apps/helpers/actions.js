@@ -35,6 +35,7 @@ export class Actions {
   }
 
   static openSheet(event, target) {
+    this.initialTraySetup(this.actor)
     this.actor.sheet.render(true)
   }
 
@@ -260,7 +261,6 @@ export class Actions {
     const params = {
       dialog: {
         configure: !skipDialog,
-      
       },
       message: {
         rollMode: 'publicroll',

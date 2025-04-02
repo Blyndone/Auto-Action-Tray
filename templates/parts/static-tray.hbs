@@ -5,8 +5,6 @@
   {{#if (eq @root.currentTray.id tray.id)}}
    static-tray-active
   {{/if}}
-
-  {{log tray}}
   {{#if (eq tray.availableSlots 0)}}
   {{#if (neq tray.totalSlots 0)}}
   static-tray-no-slots

@@ -95,20 +95,31 @@ class protoLine {
   }
   drawLine(endPos) {
     this.clear();
+
+    let dx = endPos.x - this.startLinePos.x;
+    let dy = endPos.y - this.startLinePos.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    let curveHeight = Math.max(50, distance * 0.1);
+
+    let apexY =
+      Math.min(this.startLinePos.y, endPos.y) - curveHeight - this.yOffset * 50;
+
     let midpoint1 = {
-      x: this.startLinePos.x + (endPos.x - this.startLinePos.x) / 3,
-      y: this.startLinePos.y - 200 - this.yOffset * 50
+      x: this.startLinePos.x + dx / 3,
+      y: apexY
     };
 
     let midpoint2 = {
-      x: endPos.x - (endPos.x - this.startLinePos.x) / 3,
-      y: endPos.y - 200 - this.yOffset * 50
+      x: this.startLinePos.x + 2 * dx / 3,
+      y: apexY
     };
+
     this.line.lineStyle(
       this.width,
       this.inRange ? this.color : this.outOfRangeColor,
       this.alpha
     );
+
     this.line.moveTo(this.startLinePos.x, this.startLinePos.y);
     this.line.bezierCurveTo(
       midpoint1.x,
@@ -118,9 +129,11 @@ class protoLine {
       endPos.x,
       endPos.y
     );
+
     gsap.set(this.line, {
       pixi: { blur: this.blur, alpha: this.alpha, saturation: this.saturation }
     });
+
     canvas.app.stage.addChild(this.line);
   }
 }
@@ -181,6 +194,9 @@ class GlowLine extends protoLine {
 class TargettingText extends protoText {
   constructor(options) {
     super(options);
+    if (!options.itemName || !options.itemType) {
+      return;
+    }
     this.itemName = options.itemName || "itemName";
     this.itemType = options.itemType || "itemType";
     this.startPos = options.startPos;

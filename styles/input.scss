@@ -267,6 +267,9 @@ $tray-button-background: rgb(97, 97, 95);
   text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
+.character-image {
+  position: relative;
+}
 
 .character-image-container {
   @include center;
@@ -343,7 +346,8 @@ $tray-button-background: rgb(97, 97, 95);
 
 .misc-tray-container {
   @include inset-tray;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   grid-template-columns: repeat(2, 1fr);
   width: calc($small-button-width * 2 + $main-tray-padding * 2);
   height: calc($main-tray-height - $total-item-height - $main-tray-padding);
@@ -351,7 +355,6 @@ $tray-button-background: rgb(97, 97, 95);
   justify-content: center;
   align-items: flex-start;
   padding: $main-tray-padding;
-  gap: 0.125rem;
 }
 
 .ability-selection-input {
@@ -390,52 +393,34 @@ $tray-button-background: rgb(97, 97, 95);
   flex-grow: 1;
   box-sizing: border-box;
   font-size: 100%;
+  height: calc(100% / 3);
+  width: calc(100% / 2);
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .small-button-active {
-  @include center;
-  @include button-style;
-  width: calc($small-button-width - $main-tray-padding);
-  height: 100%;
-  flex-grow: 1;
-  box-sizing: border-box;
-  font-size: 100%;
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }
 
 .small-button-skill {
-  @include center;
-  @include button-style;
-  width: calc($small-button-width + $main-tray-padding);
-  height: $main-tray-height / 6;
-  flex-grow: 1;
-  box-sizing: border-box;
-  font-size: 100%;
+  height: calc(100% / 6);
 }
 .small-button-save {
-  @include center;
-  @include button-style;
   background: linear-gradient(180deg, #5b9fa4, #0f5753);
   border: 0.125rem solid #004a74;
-  width: calc($small-button-width + $main-tray-padding);
-  height: $main-tray-height / 6;
-
-  flex-grow: 1;
-  box-sizing: border-box;
-  font-size: 100%;
+  height: calc(100% / 6);
 }
 
 .proficient {
   border: 0.125rem inset #92cdff;
-
   text-decoration: underline;
   text-decoration-color: #1e70b9;
 }
 
 .expertise {
   border: 0.125rem inset #bca4eb;
-
   text-decoration: underline double;
   text-decoration-color: #005b8d;
 }
@@ -730,20 +715,14 @@ $tray-button-background: rgb(97, 97, 95);
 }
 .skill-tray-container {
   @include inset-tray;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(6, auto);
-  grid-auto-flow: column;
-  gap: 0.125rem;
+  display: flex;
   justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
   height: $main-tray-height;
-  min-width: calc($small-button-width * 2 + $main-tray-padding * 2);
-
+  min-width: calc($total-item-width * 2 + $main-tray-padding * 2);
   height: $main-tray-height;
   padding: $main-tray-padding;
-  gap: 0.125rem;
 }
 .end-turn-container {
   @include center;
@@ -924,9 +903,10 @@ $tray-button-background: rgb(97, 97, 95);
   align-items: center;
   justify-content: center;
   text-align: center;
-  bottom: 0.9375rem;
+  bottom: 0px;
   width: 10.625rem;
   z-index: 2;
+  margin-bottom: 0.5rem;
 }
 @mixin hp {
   font-weight: bold;
