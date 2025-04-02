@@ -11,9 +11,11 @@ id="health-percent"
 </div>
   <img src={{#if this.actor.img}}
   {{#if (eq trayOptions.imageType 'token')}}
-  {{actor.prototypeToken.texture.src}}{{else}}
+
+  {{formatLink actor.prototypeToken.texture.src}}
+  {{else}}
   
-  {{actor.img}}
+  {{formatLink actor.img}}
   {{/if}}
   
   

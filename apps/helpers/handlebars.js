@@ -133,6 +133,12 @@ export function registerHandlebarsHelpers() {
     document.documentElement.style.setProperty('--concentration-color', color)
   })
 
+  Handlebars.registerHelper('formatLink', function (link) {
+    return link.replace(/ /g, "%20");
+  })
+  
+    
+
   //  Handlebars.registerHelper('getCircleColor', function (tillNextTurn) {
   //   if (tillNextTurn === 0) return '#9600d1'; // Brighter purple
   //   if (tillNextTurn === 1) return '#a000c9'; // Slightly different purple

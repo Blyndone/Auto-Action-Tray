@@ -10,6 +10,7 @@
 
 
     <img
+    class='{{equipmentTray.meleeWeapon.system.rarity}}'
       data-item-id='{{equipmentTray.meleeWeapon._id}}'
       data-drag='true'
       data-action='useItem'
@@ -28,7 +29,7 @@
 {{/if}}
 {{#if equipmentTray.rangedWeapon}}
   <img
-    class='item-button'
+    class='{{equipmentTray.rangedWeapon.system.rarity}}'
     data-drag='true'
     data-item-id='{{equipmentTray.rangedWeapon._id}}'
     data-action='useItem'

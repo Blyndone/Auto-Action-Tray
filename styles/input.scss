@@ -500,36 +500,6 @@ $tray-button-background: rgb(97, 97, 95);
     @include hover;
   }
 
-  img.common {
-    border: 0.125rem solid #333;
-    @include hover;
-  }
-
-  img.uncommon {
-    border: 0.125rem solid #11cf00;
-    @include hover;
-  }
-
-  img.rare {
-    border: 0.125rem solid #164cfc;
-    @include hover;
-  }
-
-  img.veryRare {
-    border: 0.125rem solid #a665e4;
-    @include hover;
-  }
-
-  img.legendary {
-    border: 0.125rem solid #e29404;
-    @include hover;
-  }
-
-  img.artifact {
-    border: 0.125rem solid #c00505;
-    @include hover;
-  }
-
   .ability-button-passive img {
     @include center;
     @include hover;
@@ -574,7 +544,35 @@ $tray-button-background: rgb(97, 97, 95);
     align-items: center;
   }
 }
+img.common {
+  border: 0.125rem solid #333;
+  @include hover;
+}
 
+img.uncommon {
+  border: 0.125rem solid #11cf00;
+  @include hover;
+}
+
+img.rare {
+  border: 0.125rem solid #164cfc;
+  @include hover;
+}
+
+img.veryRare {
+  border: 0.125rem solid #a665e4;
+  @include hover;
+}
+
+img.legendary {
+  border: 0.125rem solid #e29404;
+  @include hover;
+}
+
+img.artifact {
+  border: 0.125rem solid #c00505;
+  @include hover;
+}
 .activity-button {
   position: relative;
   outline: 0.125rem outset #00aaff;

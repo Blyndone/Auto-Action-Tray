@@ -477,48 +477,6 @@
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }
-.ability-tray-container img.common {
-  border: 0.125rem solid #333;
-}
-.ability-tray-container img.common:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
-}
-.ability-tray-container img.uncommon {
-  border: 0.125rem solid #11cf00;
-}
-.ability-tray-container img.uncommon:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
-}
-.ability-tray-container img.rare {
-  border: 0.125rem solid #164cfc;
-}
-.ability-tray-container img.rare:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
-}
-.ability-tray-container img.veryRare {
-  border: 0.125rem solid #a665e4;
-}
-.ability-tray-container img.veryRare:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
-}
-.ability-tray-container img.legendary {
-  border: 0.125rem solid #e29404;
-}
-.ability-tray-container img.legendary:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
-}
-.ability-tray-container img.artifact {
-  border: 0.125rem solid #c00505;
-}
-.ability-tray-container img.artifact:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
-}
 .ability-tray-container .ability-button-passive img {
   display: flex;
   justify-content: center;
@@ -567,6 +525,54 @@
   margin: calc(var(--text-scale-ratio) * 0.7rem);
   width: calc(var(--item-size) * 0.8);
   height: calc(var(--item-size) * 0.8);
+}
+
+img.common {
+  border: 0.125rem solid #333;
+}
+img.common:hover {
+  border: 0.125rem solid #c9593f;
+  box-shadow: 0 0 0.3125rem #c9593f;
+}
+
+img.uncommon {
+  border: 0.125rem solid #11cf00;
+}
+img.uncommon:hover {
+  border: 0.125rem solid #c9593f;
+  box-shadow: 0 0 0.3125rem #c9593f;
+}
+
+img.rare {
+  border: 0.125rem solid #164cfc;
+}
+img.rare:hover {
+  border: 0.125rem solid #c9593f;
+  box-shadow: 0 0 0.3125rem #c9593f;
+}
+
+img.veryRare {
+  border: 0.125rem solid #a665e4;
+}
+img.veryRare:hover {
+  border: 0.125rem solid #c9593f;
+  box-shadow: 0 0 0.3125rem #c9593f;
+}
+
+img.legendary {
+  border: 0.125rem solid #e29404;
+}
+img.legendary:hover {
+  border: 0.125rem solid #c9593f;
+  box-shadow: 0 0 0.3125rem #c9593f;
+}
+
+img.artifact {
+  border: 0.125rem solid #c00505;
+}
+img.artifact:hover {
+  border: 0.125rem solid #c9593f;
+  box-shadow: 0 0 0.3125rem #c9593f;
 }
 
 .activity-button {
