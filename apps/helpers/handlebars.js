@@ -12,8 +12,9 @@ export function registerHandlebarsHelpers() {
     return a === b
   })
 
-    Handlebars.registerHelper('neq', function (a, b) {
-    return a != b  })
+  Handlebars.registerHelper('neq', function (a, b) {
+    return a != b
+  })
 
   Handlebars.registerHelper('capitalize', function (str) {
     if (!str) return ''
@@ -34,23 +35,25 @@ export function registerHandlebarsHelpers() {
     let rounds = duration.rounds
     let turns = duration.turns
     if (!(seconds || rounds || turns)) return 'Ongoing'
-    txt = ` ${(rounds) ? rounds + ' Rounds' : ''} ${(turns) ? turns + ' Turns' : ''} ${(seconds) ? seconds + ' Seconds' : ''}`
+    txt = ` ${rounds ? rounds + ' Rounds' : ''} ${turns ? turns + ' Turns' : ''} ${
+      seconds ? seconds + ' Seconds' : ''
+    }`
     return txt
   })
 
   Handlebars.registerHelper('getRomanNumeral', function (spellLvl) {
-    let romanNumeral = ['','I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
+    let romanNumeral = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
     return romanNumeral[spellLvl]
   })
 
   Handlebars.registerHelper('multiGroup', function (tray, index) {
     if (!tray.multiattackIndexGroups) return false
 
-    let trayIndex = null 
+    let trayIndex = null
 
     tray.multiattackIndexGroups.forEach((group, groupIndex) => {
       if (group.includes(index)) {
-        trayIndex = groupIndex 
+        trayIndex = groupIndex
       }
     })
 
@@ -86,6 +89,9 @@ export function registerHandlebarsHelpers() {
 
     switch (trayIcon) {
       case 'slot':
+        if (tray.totalSlots == 0) {
+          return '<i class="fa-solid fa-square-plus icon-default"></i>'
+        }
         return (
           icons.slot.repeat(tray.availableSlots) +
           icons.slotSpent.repeat(tray.totalSlots - tray.availableSlots)
@@ -107,7 +113,7 @@ export function registerHandlebarsHelpers() {
         return icons.ritual
 
       default:
-        return ''
+        return '<i class="fa-solid fa-flask icon-default"></i>'
     }
   })
 
@@ -125,9 +131,7 @@ export function registerHandlebarsHelpers() {
 
   Handlebars.registerHelper('setConcentrationColor', function (color) {
     document.documentElement.style.setProperty('--concentration-color', color)
-    })
-   
-  
+  })
 
   //  Handlebars.registerHelper('getCircleColor', function (tillNextTurn) {
   //   if (tillNextTurn === 0) return '#9600d1'; // Brighter purple
