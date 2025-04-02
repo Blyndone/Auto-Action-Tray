@@ -325,6 +325,8 @@ export class DamageCalc {
         return (activation.value > 1) ? `${activation.value} Hours` : `${activation.value} Hour`
       case activation.type == 'legendary':
         return (activation.value > 1) ? `${activation.value} Legendary Actions` : `${activation.value} Legendary Action`
+      case activation.type == '':
+        return 'None'
       default:
         return this.capitalize(activation.type)
     }
