@@ -395,8 +395,11 @@ $tray-button-background: rgb(97, 97, 95);
   font-size: 100%;
   height: calc(100% / 3);
   width: calc(100% / 2);
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+}
+.small-button-skill-save {
+  justify-content: space-between;
 }
 
 .small-button-active {
