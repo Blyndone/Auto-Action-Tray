@@ -82,7 +82,11 @@ export class ActivityTray extends AbilityTray {
       act = null;
     }
     hotbar.selectingActivity = false;
-    hotbar.trayInformation = "";
+    if (hotbar.currentTray.type == "static") {
+      hotbar.trayInformation = hotbar.currentTray.label;
+    } else {
+      hotbar.trayInformation = "";
+    }
     if (!hotbar.trayOptions.enableTargetHelper) {
       hotbar.animationHandler.animateTrays(
         hotbar.targetTray.id,
@@ -129,7 +133,21 @@ export class ActivityTray extends AbilityTray {
   }
   static cancelSelection(event, target) {
     if (this.currentTray instanceof ActivityTray) {
-      this.activityTray.rejectActivity();
+      this.activityTray.rejectActivity(
+        new Error("User canceled activity selection")
+      );
+      this.activityTray.rejectActivity = null;
+      if (this.targetTray.type == "static") {
+        this.trayInformation = this.targetTray.label;
+      } else {
+        this.trayInformation = "";
+      }
+      this.animationHandler.animateTrays(
+        this.targetTray.id,
+        this.currentTray.id,
+        this
+      );
+    } else {
       this.animationHandler.animateTrays("stacked", this.currentTray.id, this);
       this.trayInformation = "";
     }

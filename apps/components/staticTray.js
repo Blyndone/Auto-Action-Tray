@@ -13,6 +13,7 @@ export class StaticTray extends AbilityTray {
     this.generateTray()
  
   }
+  
 
   generateTray() {
     let actor = fromUuidSync(this.actorUuid)

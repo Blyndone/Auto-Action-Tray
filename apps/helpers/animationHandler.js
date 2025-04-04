@@ -69,12 +69,13 @@ export class AnimationHandler {
     Promise.all([p1, p2])
       .then(() => {
         hotbar.animating = false
+        trayIn = hotbar.getTray(trayInId)
+        trayOut = hotbar.getTray(trayOutId)
         if (trayIn.id == 'stacked') {
-          trayIn.setActive()
+
           trayOut.setInactive()
           trayIn.setActive()
         } else if (trayOut.id == 'stacked') {
-          trayOut.setInactive()
           trayOut.setInactive()
           trayIn.setActive()
         } else {
