@@ -1,7 +1,7 @@
 <li {{#if tray.multiattackIndexGroups}} class={{multiGroup tray @index}} {{/if}}>
 
   {{#if item}}
-    <div {{#if (eq tray.type 'static' )}} {{else}} data-drag='true' {{/if}} data-item-id='{{item._id}}'
+    <div  data-drag='true' data-item-id='{{item._id}}'
       data-index='{{@index}}' data-trayid='{{tray.id}}' data-tooltip="{{> 'AAT.item-tooltip' }}"
       data-tooltip-direction='UP' {{#if (eq item.system.activities.size 0)}} data-action='viewItem'
       class='ability-button ability-button-passive' {{else}} data-action='useItem' class='ability-button' {{/if}}>

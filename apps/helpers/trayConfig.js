@@ -105,7 +105,6 @@ export class TrayConfig {
       label: 'Auto Add Items ',
       hint: 'Automatically add items to the tray when they are created.',
     })
-
     const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
 
     const method = await foundry.applications.api.DialogV2.wait({
@@ -113,6 +112,7 @@ export class TrayConfig {
       window: { title: 'Tray Quick Config' },
       content: content,
       modal: false,
+      rejectClose: false,
 
       buttons: [
         {
@@ -127,6 +127,7 @@ export class TrayConfig {
         },
       ],
     }).then((result) => {
+      if(result == null)  return
       if (result['imageType'] == '') {
         result['imageType'] = this.trayOptions['imageType']
       }

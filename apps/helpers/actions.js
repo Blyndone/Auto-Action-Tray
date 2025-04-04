@@ -1,5 +1,6 @@
 import { AnimationHandler } from './animationHandler.js'
 import { TargetHelper } from './targetHelper.js'
+import { ItemConfig } from './itemConfig.js'
 
 export class Actions {
   static setDefaultTray() {
@@ -107,6 +108,7 @@ export class Actions {
 
   static toggleItemSelector() {
     this.itemSelectorEnabled = !this.itemSelectorEnabled
+
     this.render({ parts: ['equipmentMiscTray'] })
   }
   static minimizeTray() {
@@ -219,7 +221,20 @@ export class Actions {
         : { slot: 'spell' + selectedSpellLevel }
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
-    if (this.trayOptions['enableTargetHelper'] && targetCount > 0 && targetCount.range != 'self') {
+    let itemConfig = ItemConfig.getItemConfig(item)
+    if (itemConfig) {
+      if (itemConfig['numTargets'] != undefined) {
+        if (!itemConfig['useDefaultTargetCount']) {
+          targetCount = itemConfig['numTargets']
+        }
+      }
+    }
+    if (
+      this.trayOptions['enableTargetHelper'] &&
+      targetCount > 0 &&
+      targetCount.range != 'self' &&
+      (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
+    ) {
       targets = await this.targetHelper.requestTargets(item, activity, this.actor, targetCount)
       if (targets == null) return
     }
