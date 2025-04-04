@@ -40,7 +40,7 @@ export class DragDropHandler {
       hotbar.actor.items.get(event.target.parentElement.dataset.itemId)
 
     let index = event.target.dataset.index
-    if (hotbar.currentTray instanceof StaticTray && index != 'itemConfig')  {
+    if (hotbar.currentTray instanceof StaticTray && index != 'itemConfig' && index != 'meleeWeapon' && index != 'rangedWeapon') { 
       return
     }
     if (event.target.parentElement.dataset.index === 'meleeWeapon') {

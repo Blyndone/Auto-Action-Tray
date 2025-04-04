@@ -13,9 +13,13 @@ export class AnimationHandler {
     // if (tray1ID == "activity" || tray2ID == "activity") {
     //   duration = 0.5;
     // }
+    if (trayOutId == 'target-helper' && trayInId == 'activity') {
+      trayInId = 'stacked'
+    }
 
     let trayIn = this.findTray(trayInId, hotbar)
     let trayOut = this.findTray(trayOutId, hotbar)
+
     hotbar.animating = true
     trayIn.setActive()
     trayOut.setActive()
@@ -94,8 +98,9 @@ export class AnimationHandler {
 
   animateTrayIn(tray) {
     return new Promise((resolve) => {
-      hotbar.animating = true
-      hotbar.targetTray = tray
+      this.hotbar.animating = true
+      this.hotbar.targetTray = tray
+
       tray.setActive()
       let xOffset = 0
       let yOffset = 0
@@ -108,6 +113,9 @@ export class AnimationHandler {
           break
         case 'custom':
           xOffset = 1000
+          break
+        case 'target':
+          yOffset = -200
           break
       }
 
@@ -137,8 +145,8 @@ export class AnimationHandler {
       })
     }
     return new Promise((resolve) => {
-      hotbar.animating = true
-      hotbar.currentTray = tray
+      this.hotbar.animating = true
+      this.hotbar.currentTray = tray
 
       tray.setActive()
       let xOffset = 0
@@ -152,6 +160,9 @@ export class AnimationHandler {
           break
         case 'custom':
           xOffset = 1000
+          break
+        case 'target':
+          yOffset = -200
           break
       }
 
@@ -311,7 +322,6 @@ export class AnimationHandler {
   }
 
   getAdjustedColor(baseColor, percentage) {
-
     function hexToHSL(hex) {
       let r = parseInt(hex.substring(1, 3), 16) / 255
       let g = parseInt(hex.substring(3, 5), 16) / 255
@@ -324,7 +334,7 @@ export class AnimationHandler {
         l = (max + min) / 2
 
       if (max === min) {
-        h = s = 0 
+        h = s = 0
       } else {
         let d = max - min
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
@@ -358,12 +368,11 @@ export class AnimationHandler {
 
     let hsl = hexToHSL(baseColor)
 
-
     let minLightness = 0.4
     let maxLightness = 0.9
 
-    let lightnessFactor = percentage / 100 
-    let newLightness = hsl.l + (lightnessFactor - 0.5) * 0.6 
+    let lightnessFactor = percentage / 100
+    let newLightness = hsl.l + (lightnessFactor - 0.5) * 0.6
 
     newLightness = Math.max(minLightness, Math.min(maxLightness, newLightness))
 

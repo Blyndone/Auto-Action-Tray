@@ -32,6 +32,14 @@ export class TargetLineCombo {
       this.clearText();
     }
   }
+  forceDestroyLines() {
+    this.line.forceDestroy();
+    this.glowLine.forceDestroy();
+    this.firstLine ? this.targettingText.clear() : null;
+    if (!this.phantom) {
+      this.clearText();
+    }
+  }
 
   drawLines(endPos) {
     this.line.drawLine(endPos);
@@ -89,6 +97,11 @@ class protoLine {
         tween.kill();
       }.bind(this)
     });
+  }
+  forceDestroy() {
+    if (this.line) {
+      canvas.app.stage.removeChild(this.line);
+    }
   }
   clear() {
     this.line.clear();
@@ -278,7 +291,7 @@ class TargetText extends protoText {
   }
   moveText(endPos) {
     if (this.text) {
-      this.text.position.set(endPos.x + 15, endPos.y + 15);
+      this.text.position.set(endPos.x + 15, endPos.y - 30);
       // canvas.app.stage.addChild(this.targetText);
     }
   }

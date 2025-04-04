@@ -44,6 +44,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.staticTrays = []
     this.activityTray = null
     this.equipmentTray = null
+    
     this.itemConfigItem = null
     this.skillTray = null
     this.stackedTray = new StackedTray({
@@ -176,7 +177,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       cancelSelection: ActivityTray.cancelSelection,
       useSlot: ActivityTray.useSlot,
       rollD20: AutoActionTray.rollDice,
-      testAnimation: AutoActionTray.testAnimation,
+      increaseTargetCount: AutoActionTray.increaseTargetCount,
+      decreaseTargetCount: AutoActionTray.decreaseTargetCount,
+      confirmTargets: AutoActionTray.confirmTargets,
+      
     },
   }
 
@@ -360,7 +364,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (hotbar.targetHelper.selectingTargets) {
+    if (hotbar.targetHelper.active) {
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
@@ -370,7 +374,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
-    if (hotbar.targetHelper.selectingTargets) {
+    if (hotbar.targetHelper.active) {
       let token = event.interactionData.object
       hotbar.targetHelper.removeTarget(token)
       return event.stopPropagation()
@@ -412,6 +416,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       effectsTray: this.effectsTray,
       stackedTray: this.stackedTray,
       itemConfigItem: this.itemConfigItem,
+      targetHelper: this.targetHelper,
+      
     }
 
     return context
@@ -613,6 +619,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   static selectWeapon(event, target) {
     Actions.selectWeapon.bind(this)(event, target)
+  }
+
+  static increaseTargetCount() {
+    Actions.increaseTargetCount.bind(this)()
+  }
+  static decreaseTargetCount() {
+    Actions.decreaseTargetCount.bind(this)()
+  }
+  static confirmTargets() {
+    Actions.confirmTargets.bind(this)()
   }
 
   //#region DragDrop

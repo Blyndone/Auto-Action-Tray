@@ -1,0 +1,64 @@
+<div data-data-id='{{{tray.id}}}'>
+
+  <ol class='activity-ol'>
+    <div class='activity-selection-text'>
+
+      Change Target Count or Confirm Targets:
+
+    </div>
+
+    <li>
+
+      <div
+        class='ability-button activity-button target-tray-icon-container'
+        data-action='increaseTargetCount'
+      >
+        <i
+          class='fa-solid fa-square-plus target-tray-icon'
+          data-action='increaseTargetCount'
+          data-tooltip='Increase Target Count'
+          data-tooltip-direction='UP'
+        ></i>
+      </div>
+    </li><li>
+      <div
+        class='ability-button activity-button target-tray-icon-container'
+        data-action='decreaseTargetCount'
+      >
+        <i
+          class='fa-solid fa-square-minus target-tray-icon'
+          data-action='decreaseTargetCount'
+          data-tooltip='Decrease Target Count'
+          data-tooltip-direction='UP'
+        ></i>
+      </div>
+    </li><li>
+      <div
+        class='ability-button activity-button target-tray-icon-container'
+        data-id='force'
+        data-action='confirmTargets'
+      >
+        <i
+          class='fa-solid fa-square-check target-tray-icon'
+          data-id='force'
+          data-action='confirmTargets'
+          data-tooltip='Confirm Targets'
+          data-tooltip-direction='UP'
+        ></i>
+      </div>
+
+    </li>
+
+  </ol>
+  {{#if (eq item.type 'spell')}}<div class='use-slot-text-container'>
+      Use Slot:<input
+        id='useSlot'
+        name='useSlot'
+        type='checkbox'
+        class='use-slot-checkbox'
+        checked='true'
+        data-action='useSlot'
+      /></div>
+  {{/if}}
+
+</div>

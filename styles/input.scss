@@ -237,6 +237,20 @@ $tray-button-background: rgb(97, 97, 95);
   }
 }
 
+.target-tray-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.target-tray-icon {
+  font-size: calc(var(--text-scale-ratio) * 1.56rem);
+  color: #00aaff;
+  text-shadow: 0 0 0.5rem rgb(67 67 67 / 80%);
+  filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
+  font-size: calc(var(--text-scale-ratio) * 3rem);
+}
+
 .static-spell-level-container {
   position: relative;
 }

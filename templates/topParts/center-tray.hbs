@@ -33,6 +33,12 @@
         </div>
           {{/if}}
 
+          {{#if targetHelper.active}}
+        <div class="abilities-tray  target-tray target-helper">
+          {{> "AAT.target-tray" item=targetHelper.item }}
+        </div>
+          {{/if}}
+
       
      
         </div>

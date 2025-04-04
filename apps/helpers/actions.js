@@ -31,7 +31,8 @@ export class Actions {
     return (
       this.staticTrays.find((tray) => tray.id == trayId) ||
       this.customTrays.find((tray) => tray.id == trayId) ||
-      [this.activityTray].find((tray) => tray.id == trayId)
+      [this.activityTray].find((tray) => tray.id == trayId) ||
+      ((trayId == 'target-helper') ? this.targetHelper : null)
     )
   }
 
@@ -208,7 +209,7 @@ export class Actions {
         if (activity == null) return
         selectedSpellLevel = !selectedSpellLevel ? activity['selectedSpellLevel'] : ''
       } else {
-        activity = item.system.activities[0]
+        activity = item.system.activities.contents[0]
       }
     } else {
       activity = item.system.activities.contents[0]
@@ -317,5 +318,15 @@ export class Actions {
       return
     }
     target.classList.add('selected')
+  }
+
+   static increaseTargetCount() {
+   this.targetHelper.increaseTargetCount()
+  }
+  static decreaseTargetCount() {
+    this.targetHelper.decreaseTargetCount()
+  }
+  static confirmTargets() {
+   this.targetHelper.confirmTargets()
   }
 }
