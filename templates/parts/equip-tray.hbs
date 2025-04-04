@@ -1,10 +1,26 @@
 {{#if itemSelectorEnabled}}
+{{#if itemConfigItem}}
+  <div class='transparent-box ability-selection-input'
+    style='position: absolute; '>
+   <img
+    class='{{itemConfigItem.system.rarity}}'
+    data-drag='true'
+    data-item-id='{{equipmentTray.rangedWeapon._id}}'
+    data-index='itemConfigItem'
+    src='{{itemConfigItem.img}}'
+    alt='{{itemConfigItem.name}}'
+    data-tooltip="{{> 'AAT.item-tooltip' item=itemConfigItem}}"
+    data-tooltip-direction='UP'
+  />
+  </div>
+{{else}}
   <div
     class='transparent-box ability-selection-input'
     style='position: absolute; '
     data-drag='true'
-    data-index='abilitySelection'
+    data-index='itemConfig'
   ></div>
+  {{/if}}
 {{/if}}
 {{#if equipmentTray.meleeWeapon}}
 

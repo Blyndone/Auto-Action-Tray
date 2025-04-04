@@ -23,17 +23,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     super(options)
     this.socket = options.socket
     this.debugtime = 0
-    
+
     this.animating = false
     this.selectingActivity = false
     this.animationDuration = 0.7
-    
+
     this.#dragDrop = this.#createDragDropHandlers()
     this.isEditable = true
-    
+
     this.actor = null
     this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
-    
+
     this.meleeWeapon = null
     this.rangedWeapon = null
     this.hpTextActive = false
@@ -44,6 +44,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.staticTrays = []
     this.activityTray = null
     this.equipmentTray = null
+    this.itemConfigItem = null
     this.skillTray = null
     this.stackedTray = new StackedTray({
       id: 'stacked',
@@ -74,7 +75,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       customStaticTrays: [],
       autoAddItems: true,
       enableTargetHelper: true,
-      concentrationColor: '#9600d1'
+      concentrationColor: '#9600d1',
     }
 
     let rowCount = 2
@@ -222,10 +223,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   initialTraySetup(actor) {
-
-
-    
-    
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
@@ -414,6 +411,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       currentDice: this.currentDice,
       effectsTray: this.effectsTray,
       stackedTray: this.stackedTray,
+      itemConfigItem: this.itemConfigItem,
     }
 
     return context
@@ -472,7 +470,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
             enableTargetHelper: true,
             concentrationColor: '#9600d1',
           }
-          this.render(true)
+          this.initialTraySetup(this.actor)
+          this.render()
         },
       },
     ]
@@ -571,6 +570,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static toggleItemSelector() {
+    Actions.toggleItemSelector.bind(this)()
+  }
+  toggleItemSelector() {
     Actions.toggleItemSelector.bind(this)()
   }
   static minimizeTray() {

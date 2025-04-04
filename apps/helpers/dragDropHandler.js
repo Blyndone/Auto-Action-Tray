@@ -1,5 +1,6 @@
 import { StaticTray } from '../components/staticTray.js'
 import { CustomStaticTray } from '../components/customStaticTray.js'
+import { ItemConfig } from './itemConfig.js'
 export class DragDropHandler {
   static _onDragStart(event, hotbar) {
     game.tooltip.deactivate()
@@ -22,9 +23,7 @@ export class DragDropHandler {
   static _onDragOver(event, hotbar) {}
 
   static async _onDrop(event, hotbar) {
-    if (hotbar.currentTray instanceof StaticTray) {
-      return
-    }
+
     const dragData =
       event.dataTransfer.getData('application/json') || event.dataTransfer.getData('text/plain')
     if (!dragData) return
@@ -41,7 +40,9 @@ export class DragDropHandler {
       hotbar.actor.items.get(event.target.parentElement.dataset.itemId)
 
     let index = event.target.dataset.index
-
+    if (hotbar.currentTray instanceof StaticTray && index != 'itemConfig')  {
+      return
+    }
     if (event.target.parentElement.dataset.index === 'meleeWeapon') {
       hotbar.equipmentTray.setMeleeWeapon(fromUuidSync(data.uuid))
       hotbar.render({ parts: ['equipmentMiscTray'] })
@@ -65,11 +66,11 @@ export class DragDropHandler {
       hotbar.render({ parts: ['equipmentMiscTray'] })
       return
     }
-    if (index == 'abilitySelection') {
-      let itemUuid = fromUuidSync(data.uuid).id
-      CustomStaticTray.setCustomStaticTray(itemUuid, hotbar.actor)
-      hotbar.staticTrays = StaticTray.generateStaticTrays(hotbar.actor)
-      hotbar.render({ parts: ['centerTray'] })
+    if (index == 'itemConfig') {
+      let item = fromUuidSync(data.uuid)
+      hotbar.itemConfigItem = item
+      hotbar.render({ parts: ['equipmentMiscTray'] })
+      ItemConfig.itemConfig.bind(hotbar)(item)
       return
     }
 
@@ -92,6 +93,9 @@ export class DragDropHandler {
   }
   static _onDropCanvas(data, hotbar) {
     if (data.src != 'AAT') return
+    if (hotbar.currentTray instanceof StaticTray) {
+      return
+    }
     if (data.index == 'meleeWeapon') {
       hotbar.equipmentTray.setMeleeWeapon(null)
       hotbar.render({ parts: ['equipmentMiscTray'] })
