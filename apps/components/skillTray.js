@@ -80,12 +80,12 @@ export class SkillTray {
     };
 
     this.savesNames = {
-      str: "Strength",
-      dex: "Dexterity",
-      con: "Constitution",
-      int: "Intelligence",
-      wis: "Wisdom",
-      cha: "Charisma"
+      str: "Strength Save",
+      dex: "Dexterity Save",
+      con: "Constitution Save",
+      int: "Intelligence Save",
+      wis: "Wisdom Save",
+      cha: "Charisma Save"
     };
     this.saveIcons = {
       str: '<i class="fa-solid fa-dumbbell"></i>',
