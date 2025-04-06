@@ -16,14 +16,23 @@ Auto Action Tray is a custom action bar and character tray for Foundry VTT, insp
 ✅ **Automatically Sorted Trays** – Categorically sorted trays for commonly used item types.
 
 ✅ **Dynamic Tooltips** – Custom tooltips that display total damage ranges and critical information.
+![image](https://github.com/user-attachments/assets/21da81bd-0c34-46b1-8f4a-8043fd875d10)  ![image-1](https://github.com/user-attachments/assets/b7eae61a-ed5f-4425-8228-31c313f16364)   ![image-2](https://github.com/user-attachments/assets/8a2df9e4-b5eb-4241-9c04-81ccb1c86281)   ![image-3](https://github.com/user-attachments/assets/3f55239c-32f7-430d-b483-4996a60e49d6)
+
 
 ✅ **Customizable UI** – Custom trays that can be rearranged and saved on a per-token basis.
+![Animation8](https://github.com/user-attachments/assets/28b3f6a1-827b-4fca-bfd9-c88a034556a5)
 
 ✅ **Dynamically Set Static Trays** – Actions, class features, and spells are displayed in set trays.
+![image-4](https://github.com/user-attachments/assets/f376c383-7222-4423-afae-54273b37c1d4)
 
 ✅ **Quick Access Skill/Saves** – Access to all skills and saves on a condensed bar.
+![image-5](https://github.com/user-attachments/assets/c9875d52-75f7-4f90-8f03-c6f276799501)  ![image-6](https://github.com/user-attachments/assets/e57cf11f-e017-4c74-8c4e-3e08dd4bb87f)
+
 
 ✅ **Target Helper** – Targeting lines provide targeting feedback to all players.
+![image-7](https://github.com/user-attachments/assets/be29250a-c811-4a9f-9784-4409d22d23f7)
+
+![image-8](https://github.com/user-attachments/assets/d9f78af1-68c5-44a5-929b-aa509de31b8c)
 
 ## 📥 Installation
 
