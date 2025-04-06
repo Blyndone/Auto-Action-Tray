@@ -16,6 +16,7 @@ Auto Action Tray is a custom action bar and character tray for Foundry VTT, insp
 ✅ **Automatically Sorted Trays** – Categorically sorted trays for commonly used item types.
 
 ✅ **Dynamic Tooltips** – Custom tooltips that display total damage ranges and critical information.
+
 ![image](https://github.com/user-attachments/assets/21da81bd-0c34-46b1-8f4a-8043fd875d10)  ![image-1](https://github.com/user-attachments/assets/b7eae61a-ed5f-4425-8228-31c313f16364)   ![image-2](https://github.com/user-attachments/assets/8a2df9e4-b5eb-4241-9c04-81ccb1c86281)   ![image-3](https://github.com/user-attachments/assets/3f55239c-32f7-430d-b483-4996a60e49d6)
 
 
