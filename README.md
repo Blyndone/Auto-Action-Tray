@@ -1,6 +1,7 @@
 # Auto Action Tray – A Dynamic Character Action Bar
 
-![image](https://github.com/user-attachments/assets/67617b12-6306-4642-bc9b-f2f42d352681)
+![image](https://github.com/user-attachments/assets/9472a2f4-a2ce-4969-ad21-7e3636addac3)
+
 
 
 
