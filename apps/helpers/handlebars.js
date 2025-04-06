@@ -94,7 +94,7 @@ export function registerHandlebarsHelpers() {
         }
         return (
           icons.slot.repeat(tray.availableSlots) +
-          icons.slotSpent.repeat(tray.totalSlots - tray.availableSlots)
+          icons.slotSpent.repeat(Math.max(0,tray.totalSlots - tray.availableSlots))
         )
       case 'action':
         return icons.action

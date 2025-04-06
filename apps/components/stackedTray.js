@@ -37,6 +37,12 @@ export class StackedTray {
     });
   }
 
+  deleteItem(itemId) {
+    this.trays.forEach(tray => {
+      tray.deleteItem(itemId);
+    });
+  }
+
   setTrayPositions(trayPositions) {
     this.trays[0].xPos =
       trayPositions[0] >= 0 &&
@@ -62,7 +68,6 @@ export class StackedTray {
     this.setSavedData();
   }
 
-  //[tray1, tray2, tray3]
   setTrays(trayArray) {
     this.trays = trayArray;
   }

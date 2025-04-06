@@ -524,7 +524,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       //   this.actor.items.get(li.dataset.itemId).sheet.render(true);
       //   break;
       case 'remove':
-        this.currentTray.abilities[li.dataset.index] = null
+        this.currentTray.deleteItem(li.dataset.itemId)
         this.render(true)
         break
     }

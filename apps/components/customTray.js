@@ -134,5 +134,3 @@ export class CustomTray extends AbilityTray {
     return trays
   }
 }
-// fromUuid(this.actorUuid).then((actor) => {
-//     tmpActor = actor

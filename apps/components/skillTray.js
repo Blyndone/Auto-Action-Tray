@@ -99,20 +99,6 @@ export class SkillTray {
     this.generateTray();
   }
 
-  //PC
-  //out of combat
-  //in combat
-  //NPC
-
-  // {
-  // name: "Name",
-  // abbreviation: "abr",
-  // type: "skill||save",
-  // ability: "str||dex||con||int||wis||cha",
-  // modifier: "int",
-  // proficient: "0,1,2",
-  //  }
-
   generateTray() {
     let actor = fromUuidSync(this.actorUuid);
 

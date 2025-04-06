@@ -20,6 +20,10 @@ export class DamageCalc {
     }
 
     let activity = activities[i]
+    if (activity.type == 'cast') { 
+      return
+      }
+    
     let scaling = this.getScaling(item, currentTray.spellLevel)
 
     if (scaling['scaling'] == undefined || isNaN(scaling['scaling'])) {

@@ -19,7 +19,6 @@ export class EquipmentTray extends CustomTray {
   }
 
   generateTray() {
-    // Common, Class, Consumables
     let tmpActor
     let actor = fromUuidSync(this.actorUuid)
     tmpActor = actor

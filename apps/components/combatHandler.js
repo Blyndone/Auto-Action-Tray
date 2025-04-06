@@ -75,6 +75,4 @@ export class CombatHandler {
     this.isNext = diff == 1;
     this.tillNextTurn = diff;
   }
-
-  //
 }
