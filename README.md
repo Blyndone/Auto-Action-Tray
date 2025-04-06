@@ -45,7 +45,7 @@ Auto Action Tray is a custom action bar and character tray for Foundry VTT, insp
 
 ![npc1](https://github.com/user-attachments/assets/e5fe6661-5309-464c-90f3-f7910d0c5884)
 
-✅ **NPC MultiAttack** – NPC Multi Attacks are parsed and displayed as separate items with differnt groups Highlighted.  
+✅ **NPC MultiAttack** – NPC Multi Attacks are parsed and displayed as separate items with different groups Highlighted.  
 
 ![npc2](https://github.com/user-attachments/assets/772d864a-6b35-455f-a172-b592a3fd4b2d)
 
