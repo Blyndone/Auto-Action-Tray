@@ -45,7 +45,7 @@ Auto Action Tray is a custom action bar and character tray for Foundry VTT, insp
 
 ![npc1](https://github.com/user-attachments/assets/e5fe6661-5309-464c-90f3-f7910d0c5884)
 
-✅ **NPC MultiAttack** – NPC Multi Attacks are parsed and displayed as separate items with different groups Highlighted.  
+✅ **NPC Multiattack** – NPC Multiattacks are parsed and displayed as separate items with different groups Highlighted.  
 
 ![npc2](https://github.com/user-attachments/assets/772d864a-6b35-455f-a172-b592a3fd4b2d)
 
@@ -65,47 +65,7 @@ Auto Action Tray is a custom action bar and character tray for Foundry VTT, insp
 Copy and paste the following manifest URL into Foundry VTT’s **Module Installation** screen:
 
 ```
-https://github.com/Blyndone/Auto-Action-Tray/releases/latest/module.json
+https://github.com/Blyndone/Auto-Action-Tray/releases/latest/download/module.json
 ```
-
-## ⚙️ How to Use
-
-Auto Action Tray is designed to be intuitive and require minimal setup for both players and Game Masters. Most characters and NPCs can be run fully without any additional modifications.
-
-## 🛠️ Custom Trays
-
-Custom trays allow users to create and organize their own action bars, ensuring frequently used actions and abilities are always at hand. These trays can be customized and saved per token.
-
-## 🛠️ Static Trays
-
-Static trays categorize commonly used actions, such as attacks, class features, and spells, ensuring consistency in gameplay organization.
-
-## 🛠️ NPC Trays
-
-NPCs have dedicated trays that automatically pull in their available abilities, spells, and attacks, making running encounters smoother and more efficient.
-
-## 🛠️ Tooltips
-
-Tooltips dynamically display important information such as damage calculations, status effects, and relevant conditions for abilities and spells.
-
-## 🛠️ Character Tray
-
-The character tray provides an overview of the character’s essential actions, including attack rolls, spellcasting, and feature usage.
-
-## 🛠️ Skill / Save Tray
-
-A dedicated tray for quickly rolling skill checks and saving throws, ensuring fast-paced gameplay without needing to open the character sheet.
-
-## 🛠️ Quick Dice
-
-A built-in quick dice roller allows users to roll custom dice directly from the tray without navigating through menus.
-
-## 🛠️ Turn Tracker Integration
-
-The Auto Action Tray integrates seamlessly with the Turn Tracker, ensuring that players can access their most relevant abilities at a glance during combat.
-
-## 🛠️ Tray Settings
-
-Comprehensive settings allow customization of tray placement, visibility, and organization, catering to different playstyles and preferences.
 
 ---
