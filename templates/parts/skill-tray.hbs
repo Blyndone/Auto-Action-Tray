@@ -1,37 +1,31 @@
 {{#if (eq @root.skillTrayPage 0)}}
-{{#each skillTray.currentSkills as |skill|}}
-<div class=" small-button small-button-skill-save
-    {{#if (eq skill.type 'save')}}
-    small-button-save
-    {{else}}
-    small-button-skill
-    {{/if}}
-    {{#if (eq skill.proficient 1)}}
-proficient
-{{/if}}
-{{#if (eq skill.proficient 2)}}
-expertise
-{{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave' data-tooltip={{capitalize skill.name}} data-tooltip-direction='UP'>
-
-  {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
-</div>
-{{/each}}
+  {{#each skillTray.currentSkills as |skill|}}
+    <div
+      class="small-button small-button-skill-save
+        {{#if (eq skill.type 'save')}} small-button-save{{else}} small-button-skill{{/if}}
+        {{#if (eq skill.proficient 1)}} proficient{{/if}}
+        {{#if (eq skill.proficient 2)}} expertise{{/if}}"
+      data-skill='{{skill.abbreviation}}'
+      data-type='{{skill.type}}'
+      data-action='useSkillSave'
+      data-tooltip='{{capitalize skill.name}}'
+      data-tooltip-direction='UP'
+    >
+      {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
+    </div>
+  {{/each}}
 {{else}}
-{{#each skillTray.secondarySkills as |skill|}}
-<div class=" small-button small-button-skill-save
-    {{#if (eq skill.type 'save')}}
-    small-button-save
-    {{else}}
-    small-button-skill
-    {{/if}}
-    {{#if (eq skill.proficient 1)}}
-proficient
-{{/if}}
-{{#if (eq skill.proficient 2)}}
-expertise
-{{/if}}" data-skill='{{skill.abbreviation}}' data-type='{{skill.type}}' data-action='useSkillSave'>
-
-  {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
-</div>
-{{/each}}
+  {{#each skillTray.secondarySkills as |skill|}}
+    <div
+      class="small-button small-button-skill-save
+        {{#if (eq skill.type 'save')}} small-button-save{{else}} small-button-skill{{/if}}
+        {{#if (eq skill.proficient 1)}} proficient{{/if}}
+        {{#if (eq skill.proficient 2)}} expertise{{/if}}"
+      data-skill='{{skill.abbreviation}}'
+      data-type='{{skill.type}}'
+      data-action='useSkillSave'
+    >
+      {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
+    </div>
+  {{/each}}
 {{/if}}

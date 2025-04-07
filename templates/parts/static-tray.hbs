@@ -1,36 +1,30 @@
 {{#each staticTrays as |tray|}}
+  <div class='static-spell-level-container'>
+    <div
+      class='static-tray-button
+        {{#if (eq @root.currentTray.id tray.id)}} static-tray-active{{/if}}
+        {{#if (eq tray.availableSlots 0)}}
+          {{#if (neq tray.totalSlots 0)}} static-tray-no-slots{{/if}}
+        {{/if}}
+        {{#if (eq tray.keyItemUses 0)}} static-tray-no-slots{{/if}}'
+      data-id='{{this.id}}'
+      data-action='setTray'
+      data-index={{@index}}
+      data-type='static'
+    >
+      <div class="static-tray-button-container">
+        {{#if tray.icon}}
+          {{{tray.icon}}}
+        {{else}}
+          {{{getIcon tray}}}
+        {{/if}}
+      </div>
 
-<div class='static-spell-level-container'>
-  <div class='static-tray-button
-  {{#if (eq @root.currentTray.id tray.id)}}
-   static-tray-active
-  {{/if}}
-  {{#if (eq tray.availableSlots 0)}}
-  {{#if (neq tray.totalSlots 0)}}
-  static-tray-no-slots
-  {{/if}}
-  {{/if}}
-  {{#if (eq tray.keyItemUses 0)}}
-  static-tray-no-slots
-  {{/if}}
-  '
+      <div class='static-spell-level'>{{@root.spellLevel}}</div>
 
-   data-id='{{this.id}}' data-action='setTray'
-    data-index={{@index}} data-type='static'>
-    <div class="static-tray-button-container">
-
-    {{#if tray.icon}}
-    {{{tray.icon}}}
-    {{else}}
-    {{{getIcon tray}}}
-    {{/if}}
-  </div>
-  <div class='static-spell-level '>{{@root.spellLevel}}</div>
-  {{#if (eq tray.category 'customStaticTray')}}
-
-  <div class='static-item-uses'>{{tray.keyItemUses}}</div>
-  {{/if}}
-  
+      {{#if (eq tray.category 'customStaticTray')}}
+        <div class='static-item-uses'>{{tray.keyItemUses}}</div>
+      {{/if}}
     </div>
-</div>
+  </div>
 {{/each}}

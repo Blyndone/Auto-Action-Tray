@@ -2,13 +2,10 @@
 
   <ol class='activity-ol'>
     <div class='activity-selection-text'>
-
       Change Target Count or Confirm Targets:
-
     </div>
 
     <li>
-
       <div
         class='ability-button activity-button target-tray-icon-container'
         data-action='increaseTargetCount'
@@ -20,7 +17,9 @@
           data-tooltip-direction='UP'
         ></i>
       </div>
-    </li><li>
+    </li>
+
+    <li>
       <div
         class='ability-button activity-button target-tray-icon-container'
         data-action='decreaseTargetCount'
@@ -32,7 +31,9 @@
           data-tooltip-direction='UP'
         ></i>
       </div>
-    </li><li>
+    </li>
+
+    <li>
       <div
         class='ability-button activity-button target-tray-icon-container'
         data-id='force'
@@ -46,19 +47,22 @@
           data-tooltip-direction='UP'
         ></i>
       </div>
-
     </li>
 
   </ol>
-  {{#if (eq item.type 'spell')}}<div class='use-slot-text-container'>
-      Use Slot:<input
+
+  {{#if (eq item.type 'spell')}}
+    <div class='use-slot-text-container'>
+      Use Slot:
+      <input
         id='useSlot'
         name='useSlot'
         type='checkbox'
         class='use-slot-checkbox'
         checked='true'
         data-action='useSlot'
-      /></div>
+      />
+    </div>
   {{/if}}
 
 </div>

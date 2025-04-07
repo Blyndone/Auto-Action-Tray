@@ -1,26 +1,25 @@
-
 {{#if trayInformation}}
-<div class="tray-information">{{trayInformation}} <i class="fa-solid fa-circle-x icon-cancel" data-action="cancelSelection"></i></div>
+  <div class="tray-information">
+    {{trayInformation}} 
+    <i class="fa-solid fa-circle-x icon-cancel" data-action="cancelSelection"></i>
+  </div>
 {{else}}
 
+  {{#each customTrays as |tray|}}
+    <div
+      class={{#if (eq @root.currentTray.id tray.id)}}'custom-tray-active'{{else}}'custom-tray-button'{{/if}}
+      data-id={{tray.id}}
+      data-action='setTray'
+      data-type='custom'
+    >
+      {{{tray.label}}}
 
-{{#each customTrays as |tray|}}
-<div
-  class=
-  {{#if (eq @root.currentTray.id tray.id)}} 'custom-tray-active' 
-    {{else}}
-  'custom-tray-button'
-  {{/if}}
-  data-id={{tray.id}}
-  data-action='setTray'
-  data-type='custom'
->
-{{{tray.label}}}
-{{#if (eq @root.currentTray.id tray.id)}} 
-<div class="selected-tray-indicator">
-<i class="fa-solid fa-chevrons-up"></i>
-</div>
-{{/if}}
-</div>
-{{/each}}
+      {{#if (eq @root.currentTray.id tray.id)}}
+        <div class="selected-tray-indicator">
+          <i class="fa-solid fa-chevrons-up"></i>
+        </div>
+      {{/if}}
+    </div>
+  {{/each}}
+
 {{/if}}

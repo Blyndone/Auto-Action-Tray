@@ -1,49 +1,53 @@
 <div class="center-tray-container">
-      {{#if staticTrays}}
-      <div class='static-tray-container'>{{> "AAT.static-tray" }}</div>
-      {{/if}}
-      <div class='ability-tray-container'>
-        <div class="stacked-tray-spacer-container">
 
-        {{#each staticTrays as |tray|}}
+  {{#if staticTrays}}
+    <div class='static-tray-container'>
+      {{> "AAT.static-tray" }}
+    </div>
+  {{/if}}
+
+  <div class='ability-tray-container'>
+    <div class="stacked-tray-spacer-container">
+
+      {{#each staticTrays as |tray|}}
         {{#if tray.active}}
-        <div class="abilities-tray static-tray  {{tray.id}}">
-          {{> "AAT.full-tray" tray=tray}}
-        </div>
+          <div class="abilities-tray static-tray {{tray.id}}">
+            {{> "AAT.full-tray" tray=tray }}
+          </div>
         {{/if}}
-        {{/each}}
+      {{/each}}
 
-
-        {{#each customTrays as |tray|}}
+      {{#each customTrays as |tray|}}
         {{#if tray.active}}
-        {{#if (eq tray.type 'custom')}}
- 
-        {{#if @root.stackedTray.active}}
-          {{> "AAT.full-tray-dragable" tray=tray}}
-        {{else}}
-        {{> "AAT.full-tray" tray=tray}}
-        {{/if}}
-        {{/if}}
-        {{/if}}
-        {{/each}}
-
-        {{#if activityTray.active}}
-        <div class="abilities-tray activity-tray activity">
-          {{> "AAT.activity-tray" activities=activityTray.abilities}}
-        </div>
+          {{#if (eq tray.type 'custom')}}
+            {{#if @root.stackedTray.active}}
+              {{> "AAT.full-tray-dragable" tray=tray }}
+            {{else}}
+              {{> "AAT.full-tray" tray=tray }}
+            {{/if}}
           {{/if}}
+        {{/if}}
+      {{/each}}
 
-          {{#if targetHelper.active}}
-        <div class="abilities-tray  target-tray target-helper">
+      {{#if activityTray.active}}
+        <div class="abilities-tray activity-tray activity">
+          {{> "AAT.activity-tray" activities=activityTray.abilities }}
+        </div>
+      {{/if}}
+
+      {{#if targetHelper.active}}
+        <div class="abilities-tray target-tray target-helper">
           {{> "AAT.target-tray" item=targetHelper.item }}
         </div>
-          {{/if}}
-
-      
-     
-        </div>
-      </div>
-    {{#if customTrays}}
-      <div class='custom-tray-container'>{{> "AAT.custom-tray" customTrays=customTrays}}</div>
       {{/if}}
+
     </div>
+  </div>
+
+  {{#if customTrays}}
+    <div class='custom-tray-container'>
+      {{> "AAT.custom-tray" customTrays=customTrays }}
+    </div>
+  {{/if}}
+
+</div>

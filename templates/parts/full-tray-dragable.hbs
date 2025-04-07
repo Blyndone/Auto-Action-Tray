@@ -1,19 +1,17 @@
-        <div class="abilities-tray custom-tray drag-tray-container container-{{tray.id}}  {{tray.id}}">
+<div class="abilities-tray custom-tray drag-tray-container container-{{tray.id}} {{tray.id}}">
 
+  {{#if (neq tray.id 'common')}}
+    <div class="drag-handle handle-{{tray.id}}">
+      <i class="fa-regular fa-grip-lines-vertical"></i>
+    </div>
+  {{/if}}
 
-{{#if (neq tray.id 'common')}}
-<div class='drag-handle handle-{{tray.id}}'> <i class="fa-regular fa-grip-lines-vertical"></i></div>
-{{/if}}
-  <ol class='ability-ol'>
+  <ol class="ability-ol">
     {{#each tray.abilities as |item|}}
-        {{#indexRange '0' @index @root.totalabilities }}
-      {{> AAT.item item=item tray=../tray index=@index}} 
-        {{/indexRange}}
+      {{#indexRange '0' @index @root.totalabilities}}
+        {{> AAT.item item=item tray=../tray index=@index}} 
+      {{/indexRange}}
     {{/each}}
-
   </ol>
 
-
-
-
-          </div>
+</div>

@@ -1,14 +1,45 @@
-<div class={{#if trayOptions.fastForward}} 'small-button small-button-active' {{else}} 'small-button' {{/if}}
-  data-action='toggleFastForward' data-tooltip='Fast Forward Ability Uses' data-tooltip-direction='UP'><i
-    class='fa-solid fa-forward'></i></div>
-<div class={{#if trayOptions.enableTargetHelper}} 'small-button small-button-active' {{else}} 'small-button' {{/if}} data-action="toggleTargetHelper"  data-tooltip='Target Helper' data-tooltip-direction='UP'><i class="fa-solid fa-bullseye"></i></div>
-<div class='small-button' data-action='trayConfig' data-tooltip="Tray Config" data-tooltip-direction="UP"><i class="fa-solid fa-gear"></i></div>
-<div class='small-button' data-action='toggleItemSelector'  data-tooltip='Item Configuration' data-tooltip-direction='UP'><i class="fa-solid fa-square-dashed"></i></div>
-<div class='small-button' data-action="minimizeTray" data-tooltip='Minimize Auto Action Tray' data-tooltip-direction='UP'><i class="fa-solid fa-minimize"></i></div>
-<div data-action='toggleLock' data-tooltip='Lock/Unlock Tray' data-tooltip-direction='UP' class="small-button">
+<div class="{{#if trayOptions.fastForward}}small-button small-button-active{{else}}small-button{{/if}}"
+  data-action="toggleFastForward"
+  data-tooltip="Fast Forward Ability Uses"
+  data-tooltip-direction="UP">
+  <i class="fa-solid fa-forward"></i>
+</div>
+
+<div class="{{#if trayOptions.enableTargetHelper}}small-button small-button-active{{else}}small-button{{/if}}"
+  data-action="toggleTargetHelper"
+  data-tooltip="Target Helper"
+  data-tooltip-direction="UP">
+  <i class="fa-solid fa-bullseye"></i>
+</div>
+
+<div class="small-button"
+  data-action="trayConfig"
+  data-tooltip="Tray Config"
+  data-tooltip-direction="UP">
+  <i class="fa-solid fa-gear"></i>
+</div>
+
+<div class="small-button"
+  data-action="toggleItemSelector"
+  data-tooltip="Item Configuration"
+  data-tooltip-direction="UP">
+  <i class="fa-solid fa-square-dashed"></i>
+</div>
+
+<div class="small-button"
+  data-action="minimizeTray"
+  data-tooltip="Minimize Auto Action Tray"
+  data-tooltip-direction="UP">
+  <i class="fa-solid fa-minimize"></i>
+</div>
+
+<div data-action="toggleLock"
+  data-tooltip="Lock/Unlock Tray"
+  data-tooltip-direction="UP"
+  class="small-button">
   {{#if @root.locked}}
-  <i class='fa-solid fa-lock'></i>
+    <i class="fa-solid fa-lock"></i>
   {{else}}
-  <i class='fa-solid fa-lock-open'></i>
+    <i class="fa-solid fa-lock-open"></i>
   {{/if}}
 </div>

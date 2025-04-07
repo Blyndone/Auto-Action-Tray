@@ -32,8 +32,31 @@ export class Actions {
       this.staticTrays.find((tray) => tray.id == trayId) ||
       this.customTrays.find((tray) => tray.id == trayId) ||
       [this.activityTray].find((tray) => tray.id == trayId) ||
-      ((trayId == 'target-helper') ? this.targetHelper : null)
+      (trayId == 'target-helper' ? this.targetHelper : null)
     )
+  }
+
+  static async deleteData(actor) {
+    await this.actor.unsetFlag('auto-action-tray', 'data')
+    await this.actor.unsetFlag('auto-action-tray', 'config')
+    this.trayOptions = {
+      locked: false,
+      enableTargetHelper: true,
+      skillTrayPage: 0,
+      currentTray: 'common',
+      fastForward: true,
+      imageType: 'portrait',
+      imageScale: 1,
+      imageX: 0,
+      imageY: 0,
+      healthIndicator: true,
+      customStaticTrays: [],
+      autoAddItems: true,
+      enableTargetHelper: true,
+      concentrationColor: '#9600d1',
+    }
+    this.initialTraySetup(this.actor)
+    this.render(true)
   }
 
   static openSheet(event, target) {
@@ -320,13 +343,13 @@ export class Actions {
     target.classList.add('selected')
   }
 
-   static increaseTargetCount() {
-   this.targetHelper.increaseTargetCount()
+  static increaseTargetCount() {
+    this.targetHelper.increaseTargetCount()
   }
   static decreaseTargetCount() {
     this.targetHelper.decreaseTargetCount()
   }
   static confirmTargets() {
-   this.targetHelper.confirmTargets()
+    this.targetHelper.confirmTargets()
   }
 }

@@ -1,57 +1,56 @@
 <div class='spell-item-container'>
-{{# if (eq item.system.preparation.mode 'pact')}}
- {{> AAT.item-spell-pact item=item index=@index tray=tray}}
- {{else}}
-
-
-  {{#if (eq tray.id 'ritual')}}
-    <img
-      src='{{item.img}}'
-      alt='{{item.name}}'
-      data-item-id='{{item._id}}'
-      data-index='{{@index}}'
-       data-trayid='{{tray.id}}'
-    />
+  {{#if (eq item.system.preparation.mode 'pact')}}
+    {{> AAT.item-spell-pact item=item index=@index tray=tray}}
   {{else}}
-    {{#if (eq tray.type 'static')}}
-      {{#if (eq item.system.level tray.spellLevel)}}
-        <img
-          src='{{item.img}}'
-          alt='{{item.name}}'
-          data-item-id='{{item._id}}'
-          data-index='{{@index}}'
-           data-trayid='{{tray.id}}'
-        />
-      {{else}}
-        <img
-          src='{{item.img}}'
-          alt='{{item.name}}'
-          data-item-id='{{item._id}}'
-          data-index='{{@index}}'
-           data-trayid='{{tray.id}}'
-          class='spell-item-container-img-upcast'
-        />
-        <div class='spell-item-container-text-upcast'>+</div>
-      {{/if}}
-    {{else}}
-      <img
-        src='{{item.img}}'
-        alt='{{item.name}}'
-        data-item-id='{{item._id}}'
-        data-index='{{@index}}'
-         data-trayid='{{tray.id}}'
+  
+    {{#if (eq tray.id 'ritual')}}
+      <img 
+        src='{{item.img}}' 
+        alt='{{item.name}}' 
+        data-item-id='{{item._id}}' 
+        data-index='{{@index}}' 
+        data-trayid='{{tray.id}}' 
       />
+    {{else}}
+      {{#if (eq tray.type 'static')}}
+        {{#if (eq item.system.level tray.spellLevel)}}
+          <img 
+            src='{{item.img}}' 
+            alt='{{item.name}}' 
+            data-item-id='{{item._id}}' 
+            data-index='{{@index}}' 
+            data-trayid='{{tray.id}}' 
+          />
+        {{else}}
+          <img 
+            src='{{item.img}}' 
+            alt='{{item.name}}' 
+            data-item-id='{{item._id}}' 
+            data-index='{{@index}}' 
+            data-trayid='{{tray.id}}' 
+            class='spell-item-container-img-upcast' 
+          />
+          <div class='spell-item-container-text-upcast'>+</div>
+        {{/if}}
+      {{else}}
+        <img 
+          src='{{item.img}}' 
+          alt='{{item.name}}' 
+          data-item-id='{{item._id}}' 
+          data-index='{{@index}}' 
+          data-trayid='{{tray.id}}' 
+        />
+      {{/if}}
+    {{/if}}
+  
+    {{#if (eq item.system.uses.max '')}}
+      <div class='spell-item-container-text'>
+        {{getRomanNumeral item.system.level}}
+      </div>
+    {{else}}
+      <div class='consumable-count'>
+        {{item.system.uses.value}} / {{item.system.uses.max}}
+      </div>
     {{/if}}
   {{/if}}
-  {{#if (eq item.system.uses.max '')}}
-    <div class='spell-item-container-text'>{{getRomanNumeral
-        item.system.level
-      }}</div>
-  {{else}}
-    <div class='consumable-count'>
-      {{item.system.uses.value}}
-      /
-      {{item.system.uses.max}}</div>
-  {{/if}}
-{{/if}}
 </div>

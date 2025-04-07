@@ -1,48 +1,45 @@
 {{#if itemSelectorEnabled}}
-{{#if itemConfigItem}}
-  <div class='transparent-box ability-selection-input'
-    style='position: absolute; '>
-   <img
-    class='{{itemConfigItem.system.rarity}}'
-    data-drag='true'
-    data-item-id='{{equipmentTray.rangedWeapon._id}}'
-    data-index='itemConfigItem'
-    src='{{itemConfigItem.img}}'
-    alt='{{itemConfigItem.name}}'
-    data-tooltip="{{> 'AAT.item-tooltip' item=itemConfigItem}}"
-    data-tooltip-direction='UP'
-  />
-  </div>
-{{else}}
-  <div
-    class='transparent-box ability-selection-input'
-    style='position: absolute; '
-    data-drag='true'
-    data-index='itemConfig'
-  ></div>
+  {{#if itemConfigItem}}
+    <div class='transparent-box ability-selection-input' style='position: absolute;'>
+      <img
+        class='{{itemConfigItem.system.rarity}}'
+        data-drag='true'
+        data-item-id='{{equipmentTray.rangedWeapon._id}}'
+        data-index='itemConfigItem'
+        src='{{itemConfigItem.img}}'
+        alt='{{itemConfigItem.name}}'
+        data-tooltip="{{> 'AAT.item-tooltip' item=itemConfigItem}}"
+        data-tooltip-direction='UP'
+      />
+    </div>
+  {{else}}
+    <div
+      class='transparent-box ability-selection-input'
+      style='position: absolute;'
+      data-drag='true'
+      data-index='itemConfig'
+    ></div>
   {{/if}}
 {{/if}}
+
 {{#if equipmentTray.meleeWeapon}}
-
-
-    <img
+  <img
     class='{{equipmentTray.meleeWeapon.system.rarity}}'
-      data-item-id='{{equipmentTray.meleeWeapon._id}}'
-      data-drag='true'
-      data-action='useItem'
-      data-index='meleeWeapon'
-      src='{{equipmentTray.meleeWeapon.img}}'
-      alt='{{equipmentTray.meleeWeapon.name}}'
-      
- {{#with equipmentTray.meleeWeapon}}
-  data-tooltip="{{> 'AAT.item-tooltip' item=this}}"
-{{/with}}
-      data-tooltip-direction='UP'
-    />
- 
+    data-item-id='{{equipmentTray.meleeWeapon._id}}'
+    data-drag='true'
+    data-action='useItem'
+    data-index='meleeWeapon'
+    src='{{equipmentTray.meleeWeapon.img}}'
+    alt='{{equipmentTray.meleeWeapon.name}}'
+    {{#with equipmentTray.meleeWeapon}}
+      data-tooltip="{{> 'AAT.item-tooltip' item=this}}"
+    {{/with}}
+    data-tooltip-direction='UP'
+  />
 {{else}}
   <div class='transparent-box' data-drag='true' data-index='meleeWeapon'></div>
 {{/if}}
+
 {{#if equipmentTray.rangedWeapon}}
   <img
     class='{{equipmentTray.rangedWeapon.system.rarity}}'
@@ -53,9 +50,9 @@
     src='{{equipmentTray.rangedWeapon.img}}'
     alt='{{equipmentTray.rangedWeapon.name}}'
     {{#with equipmentTray.rangedWeapon}}
-  data-tooltip="{{> 'AAT.item-tooltip' item=this}}"
-{{/with}}
-      data-tooltip-direction='UP'
+      data-tooltip="{{> 'AAT.item-tooltip' item=this}}"
+    {{/with}}
+    data-tooltip-direction='UP'
   />
 {{else}}
   <div class='transparent-box' data-drag='true' data-index='rangedWeapon'></div>

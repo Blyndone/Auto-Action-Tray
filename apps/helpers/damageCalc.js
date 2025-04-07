@@ -1,5 +1,3 @@
-
-
 export class DamageCalc {
   static damageCalc(item, options) {
     if (options.data.root['animating']) {
@@ -20,10 +18,10 @@ export class DamageCalc {
     }
 
     let activity = activities[i]
-    if (activity.type == 'cast') { 
+    if (activity.type == 'cast') {
       return
-      }
-    
+    }
+
     let scaling = this.getScaling(item, currentTray.spellLevel)
 
     if (scaling['scaling'] == undefined || isNaN(scaling['scaling'])) {
@@ -127,17 +125,11 @@ export class DamageCalc {
     if (item.actorSpellData) {
       castLevel = item.actorSpellData.level
     }
-
-    let mode =
-      item.system.activities.contents[0]?.damage?.parts[0]?.scaling.mode ||
-      item.system.activities.contents[0]?.healing?.scaling.mode
+    let activity = item.system.activities.contents[0]
+    let mode = activity?.damage?.parts[0]?.scaling.mode || activity?.healing?.scaling.mode
     let scaling = 0
-    let number =
-      item.system.activities.contents[0]?.damage?.parts[0]?.scaling.number ||
-      item.system.activities.contents[0]?.healing?.scaling.number
-    let formula =
-      item.system.activities.contents[0]?.damage?.parts[0]?.scaling.formula ||
-      item.system.activities.contents[0]?.healing?.scaling.formula
+    let number = activity?.damage?.parts[0]?.scaling.number || activity?.healing?.scaling.number
+    let formula = activity?.damage?.parts[0]?.scaling.formula || activity?.healing?.scaling.formula
     let itemLevel = item.system.level
     let lvl = 0
     Object.keys(item.actor.classes).forEach((e) => (lvl += item.actor.classes[e].system.levels))
@@ -218,10 +210,10 @@ export class DamageCalc {
     if (item.actorSpellData) {
       castLevel = item.actorSpellData.level
     }
-    if (castLevel?.slot){
+    if (castLevel?.slot) {
       if (castLevel?.slot == 'pact') {
         castLevel = item.actor.system.spells.pact.level
-      } else { 
+      } else {
         castLevel = parseInt(castLevel?.slot.replace('spell', ''))
       }
     }
@@ -314,28 +306,30 @@ export class DamageCalc {
 
     return rollConfig
   }
-  static getActionType(item, options) { 
+  static getActionType(item, options) {
     let activation
     activation = item.system?.activities?.contents?.[0]?.activation
-    switch (true) { 
+    switch (true) {
       case activation?.type == undefined:
         return 'Passive'
       case options.data.root.currentTray.id == 'ritual':
-        let time = (activation.type == 'minute' || activation.type == 'hour') ? `+ ${activation.value} ${this.capitalize(activation.type)}` : ''      
+        let time =
+          activation.type == 'minute' || activation.type == 'hour'
+            ? `+ ${activation.value} ${this.capitalize(activation.type)}`
+            : ''
         return `10 Minutes ${time}`
       case activation.type == 'minute':
-        return (activation.value>1) ? `${activation.value} Minutes` :  `${activation.value} Minute`
+        return activation.value > 1 ? `${activation.value} Minutes` : `${activation.value} Minute`
       case activation.type == 'hour':
-        return (activation.value > 1) ? `${activation.value} Hours` : `${activation.value} Hour`
+        return activation.value > 1 ? `${activation.value} Hours` : `${activation.value} Hour`
       case activation.type == 'legendary':
-        return (activation.value > 1) ? `${activation.value} Legendary Actions` : `${activation.value} Legendary Action`
+        return activation.value > 1
+          ? `${activation.value} Legendary Actions`
+          : `${activation.value} Legendary Action`
       case activation.type == '':
         return 'None'
       default:
         return this.capitalize(activation.type)
     }
-
-    
-    
   }
 }

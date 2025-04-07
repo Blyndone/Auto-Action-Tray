@@ -1,32 +1,31 @@
- 
-<div  class="character-image" >
-<div class="image-container {{#if (concentration this.actor)}}
-{{setConcentrationColor trayOptions.concentrationColor}}
-concentrating {{/if}}">
-<div class="image-border" 
+<div class="character-image">
+  <div class="image-container 
+    {{#if (concentration this.actor)}}
+      {{setConcentrationColor trayOptions.concentrationColor}}
+      concentrating 
+    {{/if}}">
+    
+    <div class="image-border"
+      {{#if trayOptions.healthIndicator}}
+        id="health-percent"
+      {{/if}}>
+    </div>
+    
+    <img 
+      src="{{#if this.actor.img}} 
+        {{#if (eq trayOptions.imageType 'token')}}
+          {{formatLink actor.prototypeToken.texture.src}}
+        {{else}}
+          {{formatLink actor.img}}
+        {{/if}}
+      {{else}}
+        ./icons/svg/mystery-man.svg
+      {{/if}}" 
+      alt="{{this.actor.name}}" 
+      data-action="openSheet"
+      style="transform: scale({{trayOptions.imageScale}}) translate({{trayOptions.imageX}}px, {{trayOptions.imageY}}px)"
+    />
+  </div>
 
-{{#if trayOptions.healthIndicator}}
-id="health-percent"
-{{/if}}>
+  {{> "AAT.character-hp" actor=actor}}
 </div>
-  <img src={{#if this.actor.img}}
-  {{#if (eq trayOptions.imageType 'token')}}
-
-  {{formatLink actor.prototypeToken.texture.src}}
-  {{else}}
-  
-  {{formatLink actor.img}}
-  {{/if}}
-  
-  
-  {{else}}"./icons/svg/mystery-man.svg"{{/if}} alt="{{this.actor.name}}" 
-  data-action="openSheet"
-  style="transform: scale({{trayOptions.imageScale}}) translate({{trayOptions.imageX}}px, {{trayOptions.imageY}}px)"
-
-
-  
-  />
-</div>
-
-  {{>  "AAT.character-hp" actor=actor}}
-<div>

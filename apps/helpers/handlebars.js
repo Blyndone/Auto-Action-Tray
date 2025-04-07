@@ -42,8 +42,7 @@ export function registerHandlebarsHelpers() {
   })
 
   Handlebars.registerHelper('getRomanNumeral', function (spellLvl) {
-    let romanNumeral = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
-    return romanNumeral[spellLvl]
+    return dnd5e.utils.formatNumber(spellLvl, {numerals:true})
   })
 
   Handlebars.registerHelper('multiGroup', function (tray, index) {
@@ -63,8 +62,7 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('getIcon', function (tray, options) {
     let spellLvl = tray.spellLevel == 0 ? '' : tray.spellLevel
     if (spellLvl != '') {
-      let romanNumeral = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
-      options.data.root['spellLevel'] = romanNumeral[spellLvl - 1]
+      options.data.root['spellLevel'] = dnd5e.utils.formatNumber(spellLvl, {numerals:true})
     }
 
     let icons = {
@@ -137,11 +135,4 @@ export function registerHandlebarsHelpers() {
     return link.replace(/ /g, "%20");
   })
   
-    
-
-  //  Handlebars.registerHelper('getCircleColor', function (tillNextTurn) {
-  //   if (tillNextTurn === 0) return '#9600d1'; // Brighter purple
-  //   if (tillNextTurn === 1) return '#a000c9'; // Slightly different purple
-  //   return '#8500a0'; // Default stroke color
-  // });
 }

@@ -44,7 +44,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.staticTrays = []
     this.activityTray = null
     this.equipmentTray = null
-    
+
     this.itemConfigItem = null
     this.skillTray = null
     this.stackedTray = new StackedTray({
@@ -180,7 +180,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       increaseTargetCount: AutoActionTray.increaseTargetCount,
       decreaseTargetCount: AutoActionTray.decreaseTargetCount,
       confirmTargets: AutoActionTray.confirmTargets,
-      
     },
   }
 
@@ -417,7 +416,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       stackedTray: this.stackedTray,
       itemConfigItem: this.itemConfigItem,
       targetHelper: this.targetHelper,
-      
     }
 
     return context
@@ -457,27 +455,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       {
         name: 'Reset Data',
         icon: '<i class="fa-solid fa-delete-right"></i>',
-        callback: (li) => {
-          this.actor.unsetFlag('auto-action-tray', 'data')
-          this.actor.unsetFlag('auto-action-tray', 'config')
-          this.trayOptions = {
-            locked: false,
-            enableTargetHelper: true,
-            skillTrayPage: 0,
-            currentTray: 'common',
-            fastForward: true,
-            imageType: 'portrait',
-            imageScale: 1,
-            imageX: 0,
-            imageY: 0,
-            healthIndicator: true,
-            customStaticTrays: [],
-            autoAddItems: true,
-            enableTargetHelper: true,
-            concentrationColor: '#9600d1',
-          }
-          this.initialTraySetup(this.actor)
-          this.render()
+        callback: () => {
+          this.deleteData(this.actor)
         },
       },
     ]
@@ -537,6 +516,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   setTrayConfig(config) {
     this.actor.setFlag('auto-action-tray', 'config', config)
+  }
+
+  async deleteData(actor) {
+    Actions.deleteData.bind(this)(actor)
   }
 
   getTrayConfig() {

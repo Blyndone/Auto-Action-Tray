@@ -1,37 +1,30 @@
 <div class='hp-container'>
-  
 
-    <div class=
-        {{#if hpTextActive}}'hp-form' 
-        {{else}}'hp-form  hidden-disabled '
-        {{/if}}>
-
-      <input
-        id='hpinput'
-        name='hpinputText'
-        type='text'
-        class='hpinput'
-      
-        placeholder='{{actor.system.attributes.hp.value}}'
-   
-      />
-    </div>
+  <div class={{#if hpTextActive}}'hp-form'{{else}}'hp-form hidden-disabled'{{/if}}>
+    <input
+      id='hpinput'
+      name='hpinputText'
+      type='text'
+      class='hpinput'
+      placeholder='{{actor.system.attributes.hp.value}}'
+    />
+  </div>
 
   <div class='hp-text' data-action='toggleHpText'>
     {{#if actor.system.attributes.hp}}
-
-      {{actor.system.attributes.hp.value}}
-      /
+      {{actor.system.attributes.hp.value}} /
       {{actor.system.attributes.hp.max}}
     {{/if}}
-    {{#if actor.system.attributes.hp.tempmax includeZero=false}}
-      +
-      {{actor.system.attributes.hp.tempmax}}
-    {{/if}}
 
+    {{#if actor.system.attributes.hp.tempmax includeZero=false}}
+      +{{actor.system.attributes.hp.tempmax}}
+    {{/if}}
   </div>
 
   {{#if actor.system.attributes.hp.temp}}
-    <div class='temp-hp-text' data-action='toggleHpText'>+{{actor.system.attributes.hp.temp}} </div>
+    <div class='temp-hp-text' data-action='toggleHpText'>
+      +{{actor.system.attributes.hp.temp}}
+    </div>
   {{/if}}
+
 </div>

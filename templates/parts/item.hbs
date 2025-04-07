@@ -1,10 +1,21 @@
 <li {{#if tray.multiattackIndexGroups}} class={{multiGroup tray @index}} {{/if}}>
 
   {{#if item}}
-    <div  data-drag='true' data-item-id='{{item._id}}'
-      data-index='{{@index}}' data-trayid='{{tray.id}}' data-tooltip="{{> 'AAT.item-tooltip' }}"
-      data-tooltip-direction='UP' {{#if (eq item.system.activities.size 0)}} data-action='viewItem'
-      class='ability-button ability-button-passive' {{else}} data-action='useItem' class='ability-button' {{/if}}>
+    <div 
+      data-drag='true' 
+      data-item-id='{{item._id}}'
+      data-index='{{@index}}' 
+      data-trayid='{{tray.id}}' 
+      data-tooltip="{{> 'AAT.item-tooltip' }}"
+      data-tooltip-direction='UP' 
+      {{#if (eq item.system.activities.size 0)}} 
+        data-action='viewItem' 
+        class='ability-button ability-button-passive' 
+      {{else}} 
+        data-action='useItem' 
+        class='ability-button' 
+      {{/if}}>
+
       {{#if (eq item.system.activities.size 0)}}
         <div class='transparent-box-passive' data-index='{{@index}}'>
           <img src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item._id}}' data-trayid='{{tray.id}}'
@@ -13,27 +24,33 @@
       {{else}}
         {{#if (eq item.type 'spell')}}
           {{> AAT.item-spell item=item index=@index tray=tray}}
-
         {{else}}
-          <img class='{{item.system.rarity}}' src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item._id}}'
-            data-trayid='{{tray.id}}' data-index='{{@index}}' />
+          <img 
+            class='{{item.system.rarity}}' 
+            src='{{item.img}}' 
+            alt='{{item.name}}' 
+            data-item-id='{{item._id}}'
+            data-trayid='{{tray.id}}' 
+            data-index='{{@index}}' />
         {{/if}}
       {{/if}}
+
       {{#if (eq item.type 'consumable')}}
-        <div class='consumable-count'> {{item.system.quantity}}</div>
+        <div class='consumable-count'>
+          {{item.system.quantity}}
+        </div>
       {{else}}
         {{#if (eq item.system.uses.max '')}}
         {{else}}
           <div class='consumable-count'>
-            {{item.system.uses.value}}
-            /
-            {{item.system.uses.max}}
+            {{item.system.uses.value}} / {{item.system.uses.max}}
           </div>
         {{/if}}
       {{/if}}
-    </div>
 
+    </div>
   {{else}}
     <div class='transparent-box' data-index='{{@index}}' data-trayid='{{tray.id}}'></div>
   {{/if}}
+
 </li>
