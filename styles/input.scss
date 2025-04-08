@@ -561,32 +561,32 @@ $tray-button-background: rgb(97, 97, 95);
     align-items: center;
   }
 }
-img.common {
+img.common-item {
   border: 0.125rem solid #333;
   @include hover;
 }
 
-img.uncommon {
+img.uncommon-item {
   border: 0.125rem solid #11cf00;
   @include hover;
 }
 
-img.rare {
+img.rare-item {
   border: 0.125rem solid #164cfc;
   @include hover;
 }
 
-img.veryRare {
+img.veryRare-item {
   border: 0.125rem solid #a665e4;
   @include hover;
 }
 
-img.legendary {
+img.legendary-item {
   border: 0.125rem solid #e29404;
   @include hover;
 }
 
-img.artifact {
+img.artifact-item {
   border: 0.125rem solid #c00505;
   @include hover;
 }

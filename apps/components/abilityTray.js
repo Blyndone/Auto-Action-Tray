@@ -11,7 +11,7 @@ export class AbilityTray {
     this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
   }
 
-  static padArray(arr, length = 20, filler = null) {
+  static padArray(arr, filler = null) {
     let rowCount = 2
     let columnCount = 10
     if (game.settings.get('auto-action-tray', 'rowCount')) {
@@ -26,7 +26,7 @@ export class AbilityTray {
 
     let totalabilities = rowCount * columnCount
 
-    if (arr == null) return new Array(length).fill(filler)
+    if (arr == null) return new Array(totalabilities).fill(filler)
     return [...arr, ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)]
   }
 
@@ -120,7 +120,7 @@ export class AbilityTray {
       AbilityTray.setDelayedData(item, item.parent)
     }
 
-    //flag for addition to custom tray
+
   }
 
   static _onDeleteItem(item) {
@@ -155,8 +155,13 @@ export class AbilityTray {
     tray.abilities[index] = item
     tray.setSavedData()
   }
+
   checkSavedData() {
     let actor = fromUuidSync(this.actorUuid)
+
+    if (!this.saveNpcData() && actor.type == 'npc') {
+      return
+    }
     if (actor != null) {
       return actor.getFlag('auto-action-tray', 'data.' + this.id) != null
     }
@@ -165,6 +170,9 @@ export class AbilityTray {
   getSavedData() {
     let actor = fromUuidSync(this.actorUuid)
 
+    if (!this.saveNpcData() && actor.type == 'npc') {
+      return
+    }
     let data = actor.getFlag('auto-action-tray', 'data')
     if (data) {
       if (data[this.id]?.abilities != null) {
@@ -182,6 +190,10 @@ export class AbilityTray {
   }
 
   static setDelayedData(item, actor) {
+    if (!this.saveNpcData() && actor.type == 'npc') {
+      return
+    }
+
     if (game.user.isGM) {
       let existingDelayItems = actor.getFlag('auto-action-tray', 'delayedItems')
       let delayItems = []
@@ -195,6 +207,9 @@ export class AbilityTray {
 
   setSavedData() {
     let actor = fromUuidSync(this.actorUuid)
+    if (!this.saveNpcData() && actor.type == 'npc') {
+      return
+    }
     if (actor != null) {
       let temparr = this.abilities.map((e) => (e ? e.id : null))
       if (temparr.length == 0) {
@@ -221,5 +236,9 @@ export class AbilityTray {
   }
   setInactive() {
     this.active = false
+  }
+
+  saveNpcData() {
+    return game.settings.get('auto-action-tray', 'saveNpcData')
   }
 }

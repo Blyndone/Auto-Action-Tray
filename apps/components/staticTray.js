@@ -89,7 +89,7 @@ export class StaticTray extends AbilityTray {
         this.id = 'ritual'
         break
     }
-  }
+      }
 
   static generateStaticTrays(actor) {
     let actionTray = new StaticTray({
@@ -173,7 +173,7 @@ export class StaticTray extends AbilityTray {
 
     staticTrays = staticTrays.filter((e) => e.abilities && e.abilities.length > 0)
     staticTrays.forEach((e) => {
-      e.abilities = AbilityTray.padArray(e.abilities, 20)
+      e.abilities = AbilityTray.padArray(e.abilities)
     })
 
     return staticTrays

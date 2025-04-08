@@ -89,9 +89,7 @@ Hooks.once("socketlib.ready", () => {
 
 
 Hooks.once('ready', async function () {
-  console.log('-------Ready-----------')
-
-  if (!game.modules.get('lib-wrapper')?.active && game.user.isGM)
+   if (!game.modules.get('lib-wrapper')?.active && game.user.isGM)
     ui.notifications.error(
       "Auto Action Tray requires the 'libWrapper' module. Please install and activate it.",
     )
@@ -204,6 +202,18 @@ Hooks.once('ready', async function () {
       step: 10,
       max: 1000,
     },
+
+    requiresReload: true, 
+    })
+  
+    game.settings.register('auto-action-tray', 'saveNpcData', {
+    name: 'Save Npc Data',
+    hint: 'Save Confioguration for Npc Tokens',
+    scope: 'world', 
+    config: true, 
+
+    type: Boolean,
+    default: true,
 
     requiresReload: true, 
   })

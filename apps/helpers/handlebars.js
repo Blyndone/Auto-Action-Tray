@@ -42,7 +42,7 @@ export function registerHandlebarsHelpers() {
   })
 
   Handlebars.registerHelper('getRomanNumeral', function (spellLvl) {
-    return dnd5e.utils.formatNumber(spellLvl, {numerals:true})
+    return dnd5e.utils.formatNumber(spellLvl, { numerals: true })
   })
 
   Handlebars.registerHelper('multiGroup', function (tray, index) {
@@ -62,7 +62,7 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('getIcon', function (tray, options) {
     let spellLvl = tray.spellLevel == 0 ? '' : tray.spellLevel
     if (spellLvl != '') {
-      options.data.root['spellLevel'] = dnd5e.utils.formatNumber(spellLvl, {numerals:true})
+      options.data.root['spellLevel'] = dnd5e.utils.formatNumber(spellLvl, { numerals: true })
     }
 
     let icons = {
@@ -92,7 +92,7 @@ export function registerHandlebarsHelpers() {
         }
         return (
           icons.slot.repeat(tray.availableSlots) +
-          icons.slotSpent.repeat(Math.max(0,tray.totalSlots - tray.availableSlots))
+          icons.slotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
         )
       case 'action':
         return icons.action
@@ -132,7 +132,12 @@ export function registerHandlebarsHelpers() {
   })
 
   Handlebars.registerHelper('formatLink', function (link) {
-    return link.replace(/ /g, "%20");
+    return link.replace(/ /g, '%20')
   })
-  
+
+  //  Handlebars.registerHelper('enrichText', function (text) {
+  //   return TextEditor.enrichHTML(text, {
+    
+  //   })
+  // })
 }

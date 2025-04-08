@@ -545,50 +545,50 @@
   height: calc(var(--item-size) * 0.8);
 }
 
-img.common {
+img.common-item {
   border: 0.125rem solid #333;
 }
-img.common:hover {
+img.common-item:hover {
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }
 
-img.uncommon {
+img.uncommon-item {
   border: 0.125rem solid #11cf00;
 }
-img.uncommon:hover {
+img.uncommon-item:hover {
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }
 
-img.rare {
+img.rare-item {
   border: 0.125rem solid #164cfc;
 }
-img.rare:hover {
+img.rare-item:hover {
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }
 
-img.veryRare {
+img.veryRare-item {
   border: 0.125rem solid #a665e4;
 }
-img.veryRare:hover {
+img.veryRare-item:hover {
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }
 
-img.legendary {
+img.legendary-item {
   border: 0.125rem solid #e29404;
 }
-img.legendary:hover {
+img.legendary-item:hover {
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }
 
-img.artifact {
+img.artifact-item {
   border: 0.125rem solid #c00505;
 }
-img.artifact:hover {
+img.artifact-item:hover {
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
 }

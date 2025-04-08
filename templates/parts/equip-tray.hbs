@@ -2,7 +2,7 @@
   {{#if itemConfigItem}}
     <div class='transparent-box ability-selection-input' style='position: absolute;'>
       <img
-        class='{{itemConfigItem.system.rarity}}'
+        class='{{itemConfigItem.system.rarity}}-item'
         data-drag='true'
         data-item-id='{{equipmentTray.rangedWeapon._id}}'
         data-index='itemConfigItem'
@@ -24,7 +24,7 @@
 
 {{#if equipmentTray.meleeWeapon}}
   <img
-    class='{{equipmentTray.meleeWeapon.system.rarity}}'
+    class='{{equipmentTray.meleeWeapon.system.rarity}}-item'
     data-item-id='{{equipmentTray.meleeWeapon._id}}'
     data-drag='true'
     data-action='useItem'
@@ -42,7 +42,7 @@
 
 {{#if equipmentTray.rangedWeapon}}
   <img
-    class='{{equipmentTray.rangedWeapon.system.rarity}}'
+    class='{{equipmentTray.rangedWeapon.system.rarity}}-item'
     data-drag='true'
     data-item-id='{{equipmentTray.rangedWeapon._id}}'
     data-action='useItem'

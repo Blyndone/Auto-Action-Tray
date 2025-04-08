@@ -156,7 +156,7 @@ class protoText {
     this.actorId = options.actorId;
     this.color = options.color || game.user.color.css || 0xffff00;
     this.text = new PIXI.Text("");
-
+    this.text.eventMode = "none";
     this.text.zIndex = 1;
 
     this.alpha = options.alpha || 1;

@@ -1,0 +1,41 @@
+    <!-- Generic Abilities -->
+    <div class="abilities-section">
+
+      {{#each abilities as |item|}}
+
+        <button class="item-button" data-item-id="{{item._id}}"><img
+            src="{{item.img}}"
+            alt="{{item.name}}"
+          /></button>
+
+      {{/each}}
+    </div>
+    <div class="divider"></div>
+    <!-- Spells -->
+    <div class="spells-section">
+
+      {{#each this.spells as |item|}}
+        <div data-drag="true" data-item-id="{{item._id}}">
+
+          <button class="item-button" data-item-id="{{item._id}}"><img
+              src="{{item.img}}"
+              alt="{{item.name}}"
+              data-item-id="{{item._id}}"
+            /></button>
+        </div>
+
+      {{/each}}
+
+    </div>
+    <div class="divider"></div>
+    <!-- Consumables -->
+    <div class="consumables-section">
+
+      {{#each this.consumables as |item|}}
+
+        <button class="item-button" data-item-id="{{item._id}}"><img
+            src="{{item.img}}"
+            alt="{{item.name}}"
+          /></button>
+
+      {{/each}}
