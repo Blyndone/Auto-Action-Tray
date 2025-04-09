@@ -191,7 +191,7 @@ export class AnimationHandler {
   async animateSpacer(width) {
     gsap.to('.stacked-tray-spacer-container', {
       clipPath: `inset(-7px ${width}px -5px -5px)`,
-      duration: this.animationDuration,
+      duration: .4,
       onComplete: () => {
         document.documentElement.style.setProperty('--stacked-spacer-width', width + 'px')
       },
