@@ -362,7 +362,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (hotbar.targetHelper.active) {
+    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
@@ -372,7 +372,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
-    if (hotbar.targetHelper.active) {
+    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
       let token = event.interactionData.object
       hotbar.targetHelper.removeTarget(token)
       return event.stopPropagation()

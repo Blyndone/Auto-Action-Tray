@@ -195,6 +195,24 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  game.settings.register('auto-action-tray', 'muliItemUseDelay', {
+    name: 'Multi Item Use Delay',
+    hint: 'Delay in miliseconds between using multiple items.',
+    scope: 'client',
+    config: true,
+
+    type: Number,
+    default: 1000,
+
+    range: {
+      min: 0,
+      step: 100,
+      max: 3000,
+    },
+
+    requiresReload: true,
+  })
+
   game.settings.register('auto-action-tray', 'targetLinePollRate', {
     name: 'Target Line Poll Rate',
     hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',

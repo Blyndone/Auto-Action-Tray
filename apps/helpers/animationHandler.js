@@ -6,13 +6,20 @@ export class AnimationHandler {
   findTray(trayId, hotbar) {
     return this.hotbar.getTray(trayId)
   }
+  static getAnimationDuration(trayId) { 
+    switch (trayId) {
+      case 'activity':
+        return 0.25
+      case 'target-helper':
+        return 0.25
+      default:
+        return .4
+    }
+  }
 
   async animateTrays(trayInId, trayOutId, hotbar) {
     if (trayInId == trayOutId) return
-    // let duration = hotbar.animationDuration;
-    // if (tray1ID == "activity" || tray2ID == "activity") {
-    //   duration = 0.5;
-    // }
+
     if (trayOutId == 'target-helper' && trayInId == 'activity') {
       trayInId = 'stacked'
     }
@@ -130,7 +137,7 @@ export class AnimationHandler {
         opacity: 1,
         y: 0,
         x: 0,
-        duration: this.animationDuration,
+        duration: AnimationHandler.getAnimationDuration(tray.id),
         onComplete: () => {
           resolve()
           return
@@ -172,7 +179,7 @@ export class AnimationHandler {
         y: yOffset,
         x: xOffset,
         inherit: true,
-        duration: this.animationDuration,
+        duration: AnimationHandler.getAnimationDuration(tray.id) ,
         onComplete: () => {
           resolve()
           return
@@ -203,7 +210,7 @@ export class AnimationHandler {
           gsap.to(`.container-${tray.id}`, {
             opacity: 1,
             x: xOffset,
-            duration: this.animationDuration,
+            duration: AnimationHandler.getAnimationDuration(tray.id) ,
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
               return
@@ -213,7 +220,7 @@ export class AnimationHandler {
           gsap.to(`.container-${tray.id}`, {
             opacity: 1,
             x: 1000,
-            duration: this.animationDuration,
+            duration: AnimationHandler.getAnimationDuration(tray.id) ,
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
               return
@@ -232,7 +239,7 @@ export class AnimationHandler {
         gsap.to(`.container-${tray.id}`, {
           opacity: 1,
           x: tray.xPos,
-          duration: this.animationDuration,
+          duration: AnimationHandler.getAnimationDuration(tray.id) ,
           onComplete: () => {
             animationComplete > 0 ? resolve() : animationComplete--
             return

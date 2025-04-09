@@ -4,7 +4,7 @@ import { TargetLineCombo } from './targetLineCombo.js'
 export class TargetHelper {
   constructor(options) {
     this.id = 'target-helper'
-    this.type='target'
+    this.type = 'target'
     this.socket = options.socket
     this.hotbar = options.hotbar
     this.socket.register('newPhantomLine', this.newPhantomLine.bind(this))
@@ -27,6 +27,7 @@ export class TargetHelper {
     this.startPos
     this.startLinePos
     this.active = false
+    this.selectingTargets = false
     this.item = null
     this.mouseMoveHandler = null
     this.selectedTargets = null
@@ -52,7 +53,7 @@ export class TargetHelper {
     this.setActivity(activity)
   }
 
-  setActive() { 
+  setActive() {
     this.active = true
   }
   setInactive() {
@@ -120,6 +121,7 @@ export class TargetHelper {
   }
 
   async requestTargets(item, activity, actor, targetCount) {
+    this.selectingTargets = true
     this.clearData()
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
@@ -128,7 +130,11 @@ export class TargetHelper {
     this.activityRange = this.getActivityRange(item, activity)
     this.activityTargetCount = targetCount
     this.gridSize = game.canvas.scene.grid.size
-       this.hotbar.animationHandler.animateTrays('target-helper', this.hotbar.currentTray.id, this.hotbar)
+    this.hotbar.animationHandler.animateTrays(
+      'target-helper',
+      this.hotbar.currentTray.id,
+      this.hotbar,
+    )
 
     game.user.updateTokenTargets([])
     this.currentLine = new TargetLineCombo({
@@ -196,13 +202,26 @@ export class TargetHelper {
   }
 
   confirmTargets() {
-
+    this.selectingTargets = false
     document.removeEventListener('mousemove', this.mouseMoveHandler)
-    this.selectedTargets({ targets: this.targets, individual: true })
     this.currentLine.clearText()
-    this.clearRangeBoundary();
-    this.hotbar.animationHandler.animateTrays(this.hotbar.targetTray.id, 'target-helper', this.hotbar)
-    if (event.target.dataset.action == 'confirmTargets') { 
+    this.clearRangeBoundary()
+
+    if (this.hotbar.animating) {
+      setTimeout(() => {
+        this.confirmTargets()
+        return
+      }, 250)
+      return
+    } 
+    this.selectedTargets({ targets: this.targets, individual: true })
+      this.hotbar.animationHandler.animateTrays(
+        this.hotbar.targetTray.id,
+        'target-helper',
+        this.hotbar,
+      )
+    
+    if (event?.target.dataset.action == 'confirmTargets') {
       this.currentLine.clearLines()
       this.currentLine.forceDestroyLines()
     }
@@ -236,12 +255,16 @@ export class TargetHelper {
 
   removeTarget() {
     if (this.targets.length == 0) {
+      this.selectingTargets = false
       document.removeEventListener('mousemove', this.mouseMoveHandler)
       this.rejectTargets(new Error('No targets to remove'))
       this.currentLine.clearLines()
       this.clearData()
-      this.hotbar.animationHandler.animateTrays(this.hotbar.targetTray.id, 'target-helper', this.hotbar)
-      
+      this.hotbar.animationHandler.animateTrays(
+        this.hotbar.targetTray.id,
+        'target-helper',
+        this.hotbar,
+      )
 
       return
     }
@@ -275,11 +298,10 @@ export class TargetHelper {
       this.currentLine.destroyLines()
     } catch (error) {}
   }
-  clearRangeBoundary() { 
+  clearRangeBoundary() {
     try {
-     this.targetLines.forEach((lineCombo) => lineCombo.clearRangeBoundary())
-    }
-    catch (error) {}
+      this.targetLines.forEach((lineCombo) => lineCombo.clearRangeBoundary())
+    } catch (error) {}
   }
   newTargetLine() {
     let endPos = this.startPos
@@ -342,7 +364,13 @@ export class TargetHelper {
   }
 
   async _onMouseMove(event) {
-    if (!this.active || (event.target.closest('#auto-action-tray') &&!event.target.closest('.effect-tray-container') && event.target.checkVisibility() )) return
+    if (
+      !this.active ||
+      (event.target.closest('#auto-action-tray') &&
+        !event.target.closest('.effect-tray-container') &&
+        event.target.checkVisibility())
+    )
+      return
     let endPos = await TargetHelper.getCursorCoordinates(event)
     this.currentLine.setInRange(this.checkInRange(this.actor, endPos, this.activityRange))
     this.currentLine.drawLines(endPos)
@@ -369,7 +397,7 @@ export class TargetHelper {
   }
 
   checkInRange(actor, endPos, range) {
-    if(!actor) return false
+    if (!actor) return false
     let token = actor.getActiveTokens()[0]
     if (range <= 0) return true
     let dx =

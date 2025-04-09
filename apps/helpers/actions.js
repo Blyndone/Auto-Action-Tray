@@ -257,6 +257,8 @@ export class Actions {
       if (targets == null) return
     }
     if (targets && targets.individual == true) {
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
       let slotUse = activity?.useSlot != undefined && activity?.useSlot == false ? 0 : 1
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
@@ -271,6 +273,7 @@ export class Actions {
             target,
           )
         slotUse = 0
+        await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
       }
     } else {
       item.system.activities
