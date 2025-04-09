@@ -85,18 +85,12 @@ export class Actions {
       return
     }
     this.combatHandler.combat.nextTurn()
-    // this.actor.unsetFlag('auto-action-tray', 'data');
-    // this.actor.unsetFlag('auto-action-tray', 'config');
   }
 
   static async setTray(event, target) {
     if (this.animating == true || this.selectingActivity == true) return
     let trayIn = this.getTray(target.dataset.id)
-    // if (target.dataset.id == 'stacked') {
-    //   this.animationHandler.animateTrayOut(this.animationHandler.findTray(this.currentTray.id))
-    //   this.animationHandler.animateStackedTray(this.animationHandler.findTray(target.dataset.id))
-    //   return
-    // }
+
     if (trayIn.type == 'static') {
       this.trayInformation = trayIn.label
     } else {

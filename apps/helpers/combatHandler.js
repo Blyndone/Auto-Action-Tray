@@ -1,4 +1,3 @@
-import { AnimationHandler } from "../helpers/animationHandler.js";
 export class CombatHandler {
   constructor(options = {}) {
     this.actor;

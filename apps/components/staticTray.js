@@ -1,3 +1,4 @@
+
 import { AbilityTray } from './abilityTray.js'
 import { CustomStaticTray } from './customStaticTray.js'
 
@@ -11,9 +12,7 @@ export class StaticTray extends AbilityTray {
     this.type = 'static'
     this.setInactive()
     this.generateTray()
- 
   }
-  
 
   generateTray() {
     let actor = fromUuidSync(this.actorUuid)
@@ -63,11 +62,12 @@ export class StaticTray extends AbilityTray {
         this.abilities = allItems
           .filter(
             (e) =>
-              (e.system.level <= this.spellLevel && e.system.level != 0) &&
+              e.system.level <= this.spellLevel &&
+              e.system.level != 0 &&
               (e.system.preparation?.prepared == true ||
-              e.system.preparation?.mode == 'innate' ||
-              e.system.preparation?.mode == 'always' ||
-              e.system.preparation?.mode == 'atwill'),
+                e.system.preparation?.mode == 'innate' ||
+                e.system.preparation?.mode == 'always' ||
+                e.system.preparation?.mode == 'atwill'),
           )
           .sort((a, b) => b.system.level - a.system.level)
 
@@ -89,18 +89,20 @@ export class StaticTray extends AbilityTray {
         this.id = 'ritual'
         break
     }
-      }
+  }
 
-  static generateStaticTrays(actor) {
+  static generateStaticTrays(actor, options = {}) {
     let actionTray = new StaticTray({
       category: 'action',
       label: 'Action',
       actorUuid: actor.uuid,
+      application: options.application,
     })
     let bonusTray = new StaticTray({
       category: 'bonus',
       label: 'Bonus Action',
       actorUuid: actor.uuid,
+      application: options.application,
     })
 
     let customStaticTraysUuids = new Set([
@@ -116,6 +118,7 @@ export class StaticTray extends AbilityTray {
           actorUuid: actor.uuid,
           label: actor.items.get(e).name,
           keyItemUuid: e,
+          application: options.application,
         }),
     )
 
@@ -142,7 +145,8 @@ export class StaticTray extends AbilityTray {
           actorUuid: actor.uuid,
           spellLevel: level,
           totalSlots: actor.system?.spells['spell' + level]?.max,
-          availableSlots: (level ==0)? 1: actor.system?.spells['spell' + level]?.value,
+          availableSlots: level == 0 ? 1 : actor.system?.spells['spell' + level]?.value,
+      application: options.application
         }),
       )
     })
@@ -154,12 +158,14 @@ export class StaticTray extends AbilityTray {
       spellLevel: actor.system.spells.pact.level,
       totalSlots: actor.system.spells.pact.max,
       availableSlots: actor.system.spells.pact.value,
+      application: options.application
     })
 
     let ritualTray = new StaticTray({
       category: 'ritual',
       label: 'Rituals',
       actorUuid: actor.uuid,
+      application: options.application
     })
 
     let staticTrays = [
@@ -174,6 +180,7 @@ export class StaticTray extends AbilityTray {
     staticTrays = staticTrays.filter((e) => e.abilities && e.abilities.length > 0)
     staticTrays.forEach((e) => {
       e.abilities = AbilityTray.padArray(e.abilities)
+      e._onCompleteGeneration()
     })
 
     return staticTrays

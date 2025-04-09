@@ -1,6 +1,7 @@
 export class AbilityTray {
   constructor(options = {}) {
     this.id = null
+    this.application = options.application || null
     this.abilities = []
     this.category = options.category || null
     this.actorUuid = options.actorUuid || null
@@ -9,6 +10,9 @@ export class AbilityTray {
     this.application = options.application || null
     this.label = options.label || ''
     this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
+  }
+  async _onCompleteGeneration() {
+    this.enrichTrayDescriptions(this)
   }
 
   static padArray(arr, filler = null) {
@@ -119,8 +123,6 @@ export class AbilityTray {
     } else {
       AbilityTray.setDelayedData(item, item.parent)
     }
-
-
   }
 
   static _onDeleteItem(item) {
@@ -240,5 +242,22 @@ export class AbilityTray {
 
   saveNpcData() {
     return game.settings.get('auto-action-tray', 'saveNpcData')
+  }
+
+  async enrichTrayDescriptions(tray) {
+    tray.abilities = await Promise.all(
+      tray.abilities.map(async (item) => {
+        if (item) {
+          return this.enrichDescription(item)
+        } else {
+          return item
+        }
+      }),
+    )
+  }
+
+  async enrichDescription(item) {
+    item['enrichedDescription'] = await TextEditor.enrichHTML(item.system.description.value, {})
+    return item
   }
 }

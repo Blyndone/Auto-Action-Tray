@@ -31,7 +31,7 @@ export class TrayConfig {
       input: concentrationColor,
 
       label: 'Concentration Color',
-      hint: 'Input a color for concentration highlight.  Colors should be in Hex; Ex. #ff0000',
+      hint: 'Input a color for concentration highlight.  Colors should be in Hex; Ex. #c9593f',
     })
 
     const selectInput = fields.createSelectInput({

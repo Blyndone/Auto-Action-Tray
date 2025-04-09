@@ -2,11 +2,10 @@ const { ApplicationV2 } = foundry.applications.api
 const { api, sheets } = foundry.applications
 import { CustomTray } from './components/customTray.js'
 import { StaticTray } from './components/staticTray.js'
-import { CustomStaticTray } from './components/customStaticTray.js'
 import { ActivityTray } from './components/activityTray.js'
 import { EquipmentTray } from './components/equipmentTray.js'
 import { SkillTray } from './components/skillTray.js'
-import { CombatHandler } from './components/combatHandler.js'
+import { CombatHandler } from './helpers/combatHandler.js'
 import { registerHandlebarsHelpers } from './helpers/handlebars.js'
 import { AnimationHandler } from './helpers/animationHandler.js'
 import { DragDropHandler } from './helpers/dragDropHandler.js'
@@ -141,6 +140,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       this.initialTraySetup(this.actor)
     }
+  
   }
 
   static DEFAULT_OPTIONS = {

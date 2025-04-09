@@ -134,7 +134,9 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('formatLink', function (link) {
     return link.replace(/ /g, '%20')
   })
-
+  Handlebars.registerHelper('removeEnrichment', function (text) {
+    
+  })
   //  Handlebars.registerHelper('enrichText', function (text) {
   //   return TextEditor.enrichHTML(text, {
     

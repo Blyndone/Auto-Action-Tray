@@ -28,7 +28,7 @@ export class CustomTray extends AbilityTray {
               e.system?.activities?.some((activity) => activity?.activation?.type === 'bonus')) &&
             e.type != 'spell',
         )
-  
+
         this.id = 'common'
         break
       case 'classFeatures':
@@ -130,7 +130,10 @@ export class CustomTray extends AbilityTray {
         e.category == 'items' ||
         e.cataegory === 'custom',
     )
-
+    trays.forEach((e) => {
+      e._onCompleteGeneration()
+    })
+   
     return trays
   }
 }

@@ -14,8 +14,11 @@
   </div>
 
   <div class='tooltip-description'>
-    {{system.description.value}}
-
+    {{#if (eq enrichedDescription undefined)}}
+      {{system.description.value}}
+    {{else}}
+      {{enrichedDescription}}
+    {{/if}}
   </div>
 
   <div class='tooltip-footer'>

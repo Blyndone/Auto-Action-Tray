@@ -1,5 +1,4 @@
 import { AbilityTray } from "./abilityTray.js";
-import { AnimationHandler } from "./../helpers/animationHandler.js";
 export class ActivityTray extends AbilityTray {
   constructor(options = {}) {
     super(options);
