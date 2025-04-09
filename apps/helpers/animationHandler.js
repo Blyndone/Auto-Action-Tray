@@ -2,30 +2,68 @@ export class AnimationHandler {
   constructor(options = {}) {
     this.hotbar = options.hotbar
     this.animationDuration = 0.5
+    this.animationStack = []
+    this.defaultTray = options.defaultTray || 'stacked'
   }
+
+  async pushTray(trayId) {
+    if (this.animationStack.at(-1) == 'activity' && trayId == 'target-helper') { 
+      this.setTray('target-helper')
+      return
+    }
+    this.animationStack.push(trayId)
+    await this.animateTrays(trayId, this.animationStack.at(-2), this.hotbar)
+  }
+
+  async popTray(animate = true) {
+    if (this.animationStack.length > 1 && animate) {
+      await this.animateTrays(this.animationStack.at(-2), this.animationStack.pop(), this.hotbar)
+    }
+  }
+
+  async setTray(trayId) {
+    if (this.animationStack.length == 1) {
+      this.animationStack.push(trayId)
+      await this.animateTrays(trayId, this.animationStack.at(-2), this.hotbar)
+    } else {
+      let trayOut = this.animationStack.pop()
+      this.animationStack.push(trayId)
+      await this.animateTrays(trayId, trayOut, this.hotbar)
+    }
+  }
+
+  async clearStack() {
+    this.animationStack = [this.defaultTray]
+  }
+
+  setDefaultTray(trayId) {
+    this.defaultTray = trayId
+  }
+
   findTray(trayId, hotbar) {
     return this.hotbar.getTray(trayId)
   }
-  static getAnimationDuration(trayId) { 
+  static getAnimationDuration(trayId) {
     switch (trayId) {
       case 'activity':
         return 0.25
       case 'target-helper':
         return 0.25
       default:
-        return .4
+        return 0.5
     }
   }
 
   async animateTrays(trayInId, trayOutId, hotbar) {
     if (trayInId == trayOutId) return
-
+    
     if (trayOutId == 'target-helper' && trayInId == 'activity') {
       trayInId = 'stacked'
     }
 
     let trayIn = this.findTray(trayInId, hotbar)
     let trayOut = this.findTray(trayOutId, hotbar)
+    hotbar.trayInformation = trayIn.label
 
     hotbar.animating = true
     trayIn.setActive()
@@ -79,7 +117,6 @@ export class AnimationHandler {
         trayIn = hotbar.getTray(trayInId)
         trayOut = hotbar.getTray(trayOutId)
         if (trayIn.id == 'stacked') {
-
           trayOut.setInactive()
           trayIn.setActive()
         } else if (trayOut.id == 'stacked') {
@@ -179,7 +216,7 @@ export class AnimationHandler {
         y: yOffset,
         x: xOffset,
         inherit: true,
-        duration: AnimationHandler.getAnimationDuration(tray.id) ,
+        duration: AnimationHandler.getAnimationDuration(tray.id),
         onComplete: () => {
           resolve()
           return
@@ -191,7 +228,7 @@ export class AnimationHandler {
   async animateSpacer(width) {
     gsap.to('.stacked-tray-spacer-container', {
       clipPath: `inset(-7px ${width}px -5px -5px)`,
-      duration: .4,
+      duration: 0.4,
       onComplete: () => {
         document.documentElement.style.setProperty('--stacked-spacer-width', width + 'px')
       },
@@ -210,7 +247,7 @@ export class AnimationHandler {
           gsap.to(`.container-${tray.id}`, {
             opacity: 1,
             x: xOffset,
-            duration: AnimationHandler.getAnimationDuration(tray.id) ,
+            duration: AnimationHandler.getAnimationDuration(tray.id),
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
               return
@@ -220,7 +257,7 @@ export class AnimationHandler {
           gsap.to(`.container-${tray.id}`, {
             opacity: 1,
             x: 1000,
-            duration: AnimationHandler.getAnimationDuration(tray.id) ,
+            duration: AnimationHandler.getAnimationDuration(tray.id),
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
               return
@@ -239,7 +276,7 @@ export class AnimationHandler {
         gsap.to(`.container-${tray.id}`, {
           opacity: 1,
           x: tray.xPos,
-          duration: AnimationHandler.getAnimationDuration(tray.id) ,
+          duration: AnimationHandler.getAnimationDuration(tray.id),
           onComplete: () => {
             animationComplete > 0 ? resolve() : animationComplete--
             return

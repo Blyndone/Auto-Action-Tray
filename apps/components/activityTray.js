@@ -11,6 +11,7 @@ export class ActivityTray extends AbilityTray {
     this.selectedActivity = null;
     this.rejectActivity = null;
     this.useSlot = true;
+    this.label = "";
   }
 
   generateTray() {}
@@ -58,17 +59,9 @@ export class ActivityTray extends AbilityTray {
   }
 
   async selectAbility(item, actor, hotbar) {
-    if (item.type == "spell") {
-      hotbar.trayInformation = `${item.name}`;
-    } else {
-      hotbar.trayInformation = `${item.name}`;
-    }
+    this.label = item.name;
     hotbar.selectingActivity = true;
-    hotbar.animationHandler.animateTrays(
-      "activity",
-      hotbar.currentTray.id,
-      hotbar
-    );
+    hotbar.animationHandler.pushTray("activity");
 
     let act;
     try {
@@ -81,19 +74,6 @@ export class ActivityTray extends AbilityTray {
       act = null;
     }
     hotbar.selectingActivity = false;
-    if (hotbar.currentTray.type == "static") {
-      hotbar.trayInformation = hotbar.currentTray.label;
-    } else {
-      hotbar.trayInformation = "";
-    }
-    if (!hotbar.trayOptions.enableTargetHelper) {
-      hotbar.animationHandler.animateTrays(
-        hotbar.targetTray.id,
-        "activity",
-        hotbar
-      );
-    }
-
     return act;
   }
 
@@ -131,25 +111,11 @@ export class ActivityTray extends AbilityTray {
     this.activityTray.useSlot = event.target.checked;
   }
   static cancelSelection(event, target) {
-    if (this.currentTray instanceof ActivityTray) {
-      this.activityTray.rejectActivity(
-        new Error("User canceled activity selection")
-      );
-      this.activityTray.rejectActivity = null;
-      if (this.targetTray.type == "static") {
-        this.trayInformation = this.targetTray.label;
-      } else {
-        this.trayInformation = "";
-      }
-      this.animationHandler.animateTrays(
-        this.targetTray.id,
-        this.currentTray.id,
-        this
-      );
-    } else {
-      this.animationHandler.animateTrays("stacked", this.currentTray.id, this);
-      this.trayInformation = "";
-    }
+    this.activityTray.rejectActivity(
+      new Error("User canceled activity selection")
+    );
+    this.rejectActivity = null;
+    this.animationHandler.popTray();
   }
   rejectActivity() {
     if (this.rejectActivity) {

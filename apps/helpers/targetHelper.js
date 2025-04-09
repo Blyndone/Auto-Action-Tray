@@ -4,6 +4,7 @@ import { TargetLineCombo } from './targetLineCombo.js'
 export class TargetHelper {
   constructor(options) {
     this.id = 'target-helper'
+    this.label = ''
     this.type = 'target'
     this.socket = options.socket
     this.hotbar = options.hotbar
@@ -130,11 +131,10 @@ export class TargetHelper {
     this.activityRange = this.getActivityRange(item, activity)
     this.activityTargetCount = targetCount
     this.gridSize = game.canvas.scene.grid.size
-    this.hotbar.animationHandler.animateTrays(
-      'target-helper',
-      this.hotbar.currentTray.id,
-      this.hotbar,
-    )
+
+    let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
+    this.label = `${prefix} ${item.name}...   `
+    this.hotbar.animationHandler.pushTray('target-helper')
 
     game.user.updateTokenTargets([])
     this.currentLine = new TargetLineCombo({
@@ -213,14 +213,10 @@ export class TargetHelper {
         return
       }, 250)
       return
-    } 
+    }
     this.selectedTargets({ targets: this.targets, individual: true })
-      this.hotbar.animationHandler.animateTrays(
-        this.hotbar.targetTray.id,
-        'target-helper',
-        this.hotbar,
-      )
-    
+    this.hotbar.animationHandler.popTray()
+
     if (event?.target.dataset.action == 'confirmTargets') {
       this.currentLine.clearLines()
       this.currentLine.forceDestroyLines()
@@ -260,11 +256,7 @@ export class TargetHelper {
       this.rejectTargets(new Error('No targets to remove'))
       this.currentLine.clearLines()
       this.clearData()
-      this.hotbar.animationHandler.animateTrays(
-        this.hotbar.targetTray.id,
-        'target-helper',
-        this.hotbar,
-      )
+      this.hotbar.animationHandler.popTray()
 
       return
     }
@@ -278,7 +270,10 @@ export class TargetHelper {
       if (this.targetLines.length == 1) {
         this.targetLines.at(-1)?.setFirstLine(false)
         this.currentLine.setFirstLine(true)
-        this.currentLine.transferTargettingText(this.targetLines.at(-1)?.targettingText)
+        this.currentLine.transferBoundaryAndText(
+          this.targetLines.at(-1)?.targettingText,
+          this.targetLines.at(-1)?.rangeBoundary,
+        )
       }
       this.targetLines.at(-1)?.destroyLines()
       this.targetLines.pop()
@@ -287,8 +282,11 @@ export class TargetHelper {
   }
 
   static cancelSelection(event, target) {
-    this.rejectTargets(new Error('User canceled Target selection'))
-    this.activityTray.rejectActivity = null
+    this.targetHelper.rejectTargets(new Error('User canceled Target selection'))
+    this.targetHelper.rejectTargets = null
+    this.targetHelper.currentLine.clearLines()
+    this.targetHelper.clearData()
+    this.animationHandler.popTray()
   }
 
   clearTargetLines() {

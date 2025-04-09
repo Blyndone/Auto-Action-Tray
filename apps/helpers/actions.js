@@ -1,14 +1,20 @@
 import { AnimationHandler } from './animationHandler.js'
 import { TargetHelper } from './targetHelper.js'
 import { ItemConfig } from './itemConfig.js'
+import { ActivityTray } from '../components/activityTray.js'
+
 
 export class Actions {
   static setDefaultTray() {
     if (this.actor.type === 'npc') {
       this.currentTray = this.customTrays.find((e) => e.id == 'common')
+      this.animationHandler.setDefaultTray('common')
+      this.animationHandler.clearStack()
       this.currentTray.setActive()
     } else {
       this.currentTray = this.customTrays.find((e) => e.id == 'stacked')
+      this.animationHandler.setDefaultTray('stacked')
+      this.animationHandler.clearStack()
       this.currentTray.setActive()
     }
     // this.render({ parts: ['centerTray'] });
@@ -91,12 +97,7 @@ export class Actions {
     if (this.animating == true || this.selectingActivity == true) return
     let trayIn = this.getTray(target.dataset.id)
 
-    if (trayIn.type == 'static') {
-      this.trayInformation = trayIn.label
-    } else {
-      this.trayInformation = ''
-    }
-    this.animationHandler.animateTrays(target.dataset.id, this.currentTray.id, this)
+    this.animationHandler.setTray(target.dataset.id)
   }
 
   static toggleLock() {
@@ -212,14 +213,9 @@ export class Actions {
 
   static useSlot(event, target) {}
 
-  static async useItem(event, target) {
-    game.tooltip.deactivate()
-    let itemId = target.dataset.itemId
-    let item = this.actor.items.get(itemId)
-    this.activityTray.getActivities(item, this.actor)
-    let selectedSpellLevel = null,
-      activity = null
-
+  static async selectActivity(item) {
+    let activity = null
+    let selectedSpellLevel = null
     if (!this.trayOptions['fastForward']) {
       if (this.activityTray?.abilities?.length > 1) {
         activity = await this.activityTray.selectAbility(item, this.actor, this)
@@ -237,16 +233,20 @@ export class Actions {
       item.system.preparation?.mode == 'pact'
         ? { slot: 'pact' }
         : { slot: 'spell' + selectedSpellLevel }
+
+    return { activity: activity, selectedSpellLevel: selectedSpellLevel }
+  }
+
+  static async getTargets(item, activity, selectedSpellLevel) {
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
     let itemConfig = ItemConfig.getItemConfig(item)
-    if (itemConfig) {
-      if (itemConfig['numTargets'] != undefined) {
-        if (!itemConfig['useDefaultTargetCount']) {
-          targetCount = itemConfig['numTargets']
-        }
-      }
-    }
+
+    targetCount =
+      itemConfig && itemConfig['numTargets'] != undefined && !itemConfig['useDefaultTargetCount']
+        ? itemConfig['numTargets']
+        : targetCount
+
     if (
       this.trayOptions['enableTargetHelper'] &&
       targetCount > 0 &&
@@ -256,6 +256,22 @@ export class Actions {
       targets = await this.targetHelper.requestTargets(item, activity, this.actor, targetCount)
       if (targets == null) return
     }
+    return targets
+  }
+
+  static async useItem(event, target) {
+    game.tooltip.deactivate()
+    let itemId = target.dataset.itemId
+    let item = this.actor.items.get(itemId)
+    this.activityTray.getActivities(item, this.actor)
+
+    let options = await Actions.selectActivity.bind(this)(item)
+    if (!options) return
+    let selectedSpellLevel = options.selectedSpellLevel,
+      activity = options.activity
+
+    let targets = await Actions.getTargets.bind(this)(item, activity, selectedSpellLevel)
+
     if (targets && targets.individual == true) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -276,6 +292,10 @@ export class Actions {
         await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
       }
     } else {
+      // if (!this.fastForward) {
+      //   this.animationHandler.animateTrays(this.targetTray.id, this.currentTray.id, this)
+      // }
+
       item.system.activities
         .get(activity?.itemId || activity?._id || item.system.activities.contents[0].id)
         .use(
@@ -285,6 +305,9 @@ export class Actions {
           },
           { configure: false },
         )
+    }
+    if (this.currentTray instanceof ActivityTray) {
+      this.animationHandler.popTray()
     }
   }
 
@@ -348,5 +371,16 @@ export class Actions {
   }
   static confirmTargets() {
     this.targetHelper.confirmTargets()
+  }
+  static cancelSelection(event, target) {
+    if (this.currentTray instanceof ActivityTray) {
+      ActivityTray.cancelSelection.bind(this)(event, target)
+    }
+    if (this.currentTray instanceof TargetHelper) {
+      TargetHelper.cancelSelection.bind(this)(event, target)
+    } else { 
+      this.animationHandler.popTray()  
+    }
+
   }
 }

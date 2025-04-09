@@ -52,7 +52,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       name: 'stacked',
     })
     this.effectsTray = new EffectTray()
-    this.animationHandler = new AnimationHandler({ hotbar: this })
+    this.animationHandler = new AnimationHandler({ hotbar: this, defaultTray: 'stacked' })
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
@@ -173,7 +173,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       trayConfig: AutoActionTray.trayConfig,
       toggleHpText: AutoActionTray.toggleHpText,
       useActivity: ActivityTray.useActivity,
-      cancelSelection: ActivityTray.cancelSelection,
+      cancelSelection: Actions.cancelSelection,
       useSlot: ActivityTray.useSlot,
       rollD20: AutoActionTray.rollDice,
       increaseTargetCount: AutoActionTray.increaseTargetCount,

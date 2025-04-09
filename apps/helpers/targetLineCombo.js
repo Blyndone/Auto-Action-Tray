@@ -73,8 +73,9 @@ export class TargetLineCombo {
   setFirstLine(firstLine) {
     this.firstLine = firstLine;
   }
-  transferTargettingText(targettingText) {
+  transferBoundaryAndText(targettingText, rangeBoundary) {
     this.targettingText = targettingText;
+    this.rangeBoundary = rangeBoundary;
   }
   moveText(endPos) {
     if (this.phantom) return;

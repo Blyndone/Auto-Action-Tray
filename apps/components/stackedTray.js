@@ -7,7 +7,8 @@ export class StackedTray {
     this.id = options.id;
     this.type = "stacked";
     this.name = "stacked";
-    this.label = '<i class="fa-solid fa-layer-group fa-rotate-270" /></i>';
+    this.label = "";
+    this.trayLabel = '<i class="fa-solid fa-layer-group fa-rotate-270" /></i>';
     this.positions = [];
     this.savedData = false;
   }

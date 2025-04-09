@@ -9,6 +9,7 @@ export class CustomTray extends AbilityTray {
     this.id = options.id
     this.type = 'custom'
     this.xPos = 0
+    this.trayLabel = options.trayLabel
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
       this.generateTray()
@@ -66,28 +67,28 @@ export class CustomTray extends AbilityTray {
     let commonTray = new CustomTray({
       category: 'common',
       id: 'common',
-      label: 'Common',
+      trayLabel: 'Common',
       actorUuid: actor.uuid,
       application: options.application,
     })
     let classTray = new CustomTray({
       category: 'classFeatures',
       id: 'classFeatures',
-      label: 'Features',
+      trayLabel: 'Features',
       actorUuid: actor.uuid,
       application: options.application,
     })
     let consumablesTray = new CustomTray({
       category: 'items',
       id: 'items',
-      label: 'Consumables',
+      trayLabel: 'Consumables',
       actorUuid: actor.uuid,
       application: options.application,
     })
     let passiveTray = new CustomTray({
       category: 'passive',
       id: 'passive',
-      label: 'Passive',
+      trayLabel: 'Passive',
       actorUuid: actor.uuid,
       application: options.application,
     })
@@ -95,7 +96,7 @@ export class CustomTray extends AbilityTray {
     let reactionTray = new CustomTray({
       category: 'reaction',
       id: 'reaction',
-      label: 'Reactions',
+      trayLabel: 'Reactions',
       actorUuid: actor.uuid,
       application: options.application,
     })
@@ -103,7 +104,7 @@ export class CustomTray extends AbilityTray {
     let customTray = new CustomTray({
       category: 'custom',
       id: 'custom',
-      label: 'Custom',
+      trayLabel: 'Custom',
       actorUuid: actor.uuid,
       application: options.application,
     })
