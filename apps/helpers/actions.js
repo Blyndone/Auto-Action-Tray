@@ -3,7 +3,6 @@ import { TargetHelper } from './targetHelper.js'
 import { ItemConfig } from './itemConfig.js'
 import { ActivityTray } from '../components/activityTray.js'
 
-
 export class Actions {
   static setDefaultTray() {
     if (this.actor.type === 'npc') {
@@ -254,7 +253,7 @@ export class Actions {
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
       targets = await this.targetHelper.requestTargets(item, activity, this.actor, targetCount)
-      if (targets == null) return
+      if (targets == null) return { canceled: true }
     }
     return targets
   }
@@ -271,7 +270,7 @@ export class Actions {
       activity = options.activity
 
     let targets = await Actions.getTargets.bind(this)(item, activity, selectedSpellLevel)
-
+    if (targets?.canceled == true) return
     if (targets && targets.individual == true) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -378,9 +377,8 @@ export class Actions {
     }
     if (this.currentTray instanceof TargetHelper) {
       TargetHelper.cancelSelection.bind(this)(event, target)
-    } else { 
-      this.animationHandler.popTray()  
+    } else {
+      this.animationHandler.popTray()
     }
-
   }
 }
