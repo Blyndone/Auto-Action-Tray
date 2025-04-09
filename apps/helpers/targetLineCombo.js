@@ -4,15 +4,23 @@ export class TargetLineCombo {
     this.phantom = options.phantom || false;
     this.id = options.id || foundry.utils.randomID();
     this.actorId = options.actorId;
-    this.line = new TargetLine({ ...options, yOffset: this.yOffset });
-    this.glowLine = new GlowLine({ ...options, yOffset: this.yOffset });
+    this.line = new TargetLine({
+      ...options,
+      yOffset: this.yOffset
+    });
+    this.glowLine = new GlowLine({
+      ...options,
+      yOffset: this.yOffset
+    });
     this.text = !this.phantom ? new TargetText(options) : null;
     this.firstLine = options.firstLine !== undefined ? options.firstLine : true;
     this.targettingText = this.firstLine ? new TargettingText(options) : null;
+    this.rangeBoundary = this.firstLine ? new TargetBoundary(options) : null;
     this.startPos = options.startPos;
     this.startLinePos = options.startLinePos;
     this.lastPos = options.startPos;
     this.color = options.color || game.user.color.css || 0xffff00;
+    this.activityRange = options.activityRange || 0;
     this.inRange = true;
   }
 
@@ -20,14 +28,19 @@ export class TargetLineCombo {
     this.line.clear();
     this.glowLine.clear();
     this.firstLine ? this.targettingText.clear() : null;
+    this.firstLine ? this.rangeBoundary.clear() : null;
     if (!this.phantom) {
       this.clearText();
     }
+  }
+  clearRangeBoundary() {
+    this.rangeBoundary.clear();
   }
   destroyLines() {
     this.line.destroy();
     this.glowLine.destroy();
     this.firstLine ? this.targettingText.clear() : null;
+    this.firstLine ? this.rangeBoundary.clear() : null;
     if (!this.phantom) {
       this.clearText();
     }
@@ -36,6 +49,7 @@ export class TargetLineCombo {
     this.line.forceDestroy();
     this.glowLine.forceDestroy();
     this.firstLine ? this.targettingText.clear() : null;
+    this.firstLine ? this.rangeBoundary.clear() : null;
     if (!this.phantom) {
       this.clearText();
     }
@@ -293,6 +307,96 @@ class TargetText extends protoText {
     if (this.text) {
       this.text.position.set(endPos.x + 15, endPos.y - 30);
       // canvas.app.stage.addChild(this.targetText);
+    }
+  }
+}
+
+class TargetBoundary {
+  constructor(options) {
+    this.enabled = game.settings.get("auto-action-tray", "enableRangeBoundary");
+    this.activityRange = options.activityRange || 0;
+    if (this.enabled && this.activityRange > 0) {
+      this.actorId = options.actorId;
+      this.startPos = options.startPos;
+      this.color = options.color || game.user.color.css || 0xffff00;
+      this.box = new PIXI.Graphics();
+      this.alpha = options.alpha || 1;
+      canvas.app.stage.addChild(this.box);
+      this.gridSize = game.canvas.scene.grid.size;
+      this.animation;
+      this.blur = options.blur || 4;
+      this.alpha = options.alpha || 0.8;
+      this.saturation = options.saturation || 3;
+      this.tokenSize = this.getTokenSize();
+      this.convertRangeToPixels();
+      this.drawBoundary();
+    }
+  }
+
+  getTokenSize() {
+    const token = game.actors.get(this.actorId).prototypeToken;
+    if (token) {
+      return {
+        x: token.width * this.gridSize,
+        y: token.height * this.gridSize
+      };
+    }
+  }
+
+  convertRangeToPixels() {
+    if (this.activityRange) {
+      this.activityRange = this.activityRange * this.gridSize;
+    }
+  }
+
+  drawBoundary() {
+    if (this.activityRange <= 0) return;
+    this.box.clear();
+    this.box.lineStyle(3, this.color, this.alpha);
+    this.box.drawRect(
+      this.startPos.x - this.tokenSize.x / 2 - this.activityRange,
+      this.startPos.y - this.tokenSize.y / 2 - this.activityRange,
+      this.activityRange * 2 + this.tokenSize.x,
+      this.activityRange * 2 + this.tokenSize.y
+    );
+    this.box.endFill();
+    gsap.set(this.box, {
+      pixi: {
+        blur: this.blur,
+        alpha: this.alpha,
+        saturation: this.saturation
+      }
+    });
+    this.animation = gsap.to(this.box, {
+      alpha: 0.7,
+      duration: 2,
+      pixi: {
+        blur: 5,
+        alpha: 0.9,
+        saturation: 3
+      },
+      repeat: -1,
+      ease: "sine.inOut",
+      yoyo: true
+    });
+  }
+
+  clear() {
+    if (this.animation) {
+      if (this.box) {
+        gsap.killTweensOf(this.box);
+        gsap.to(this.box, {
+          pixi: { blur: 0, alpha: 0 },
+          duration: 0.5,
+          onComplete: function() {
+            this.animation.kill();
+            if (this.box) {
+              this.box.destroy();
+              this.box = null;
+            }
+          }.bind(this)
+        });
+      }
     }
   }
 }

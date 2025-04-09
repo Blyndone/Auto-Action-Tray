@@ -21,7 +21,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     gsap.registerPlugin(DrawSVGPlugin)
     super(options)
     this.socket = options.socket
-    this.debugtime = 0
 
     this.animating = false
     this.selectingActivity = false

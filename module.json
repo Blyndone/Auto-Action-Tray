@@ -38,8 +38,7 @@
     "/scripts/module.js"
   ],
   "scripts": [
-    "greensock/dist/gsap.min.js",
-    "/scripts/lib/lib.js"
+    "greensock/dist/gsap.min.js"
   ],
   "styles": [
     "/styles/styles.css"

@@ -22,7 +22,7 @@ export async function preloadHandlebarsTemplates() {
     'modules/auto-action-tray/templates/parts/tray-controls.hbs',
     'modules/auto-action-tray/templates/parts/character-tray.hbs',
     'modules/auto-action-tray/templates/parts/activity-tray.hbs',
-     'modules/auto-action-tray/templates/parts/target-tray.hbs',
+    'modules/auto-action-tray/templates/parts/target-tray.hbs',
   ]
   const paths = {}
   for (const path of partials) {
@@ -80,43 +80,38 @@ Hooks.once('init', async function () {
   preloadHandlebarsTemplates()
 })
 
-
-Hooks.once("socketlib.ready", () => {
-	socket = socketlib.registerModule("auto-action-tray");
-
-
-});
-
+Hooks.once('socketlib.ready', () => {
+  socket = socketlib.registerModule('auto-action-tray')
+})
 
 Hooks.once('ready', async function () {
-   if (!game.modules.get('lib-wrapper')?.active && game.user.isGM)
+  if (!game.modules.get('lib-wrapper')?.active && game.user.isGM)
     ui.notifications.error(
       "Auto Action Tray requires the 'libWrapper' module. Please install and activate it.",
     )
-  
-    if (!game.modules.get('socketlib')?.active && game.user.isGM)
+
+  if (!game.modules.get('socketlib')?.active && game.user.isGM)
     ui.notifications.error(
       "Auto Action Tray requires the 'socketlib' module. Please install and activate it.",
     )
 
-
   game.settings.register('auto-action-tray', 'enable', {
     name: 'Enabled',
     hint: 'Enable or Disable the Hotbar',
-    scope: 'client', 
-    config: true, 
+    scope: 'client',
+    config: true,
 
     type: Boolean,
     default: false,
 
-    requiresReload: true, 
+    requiresReload: true,
   })
 
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',
     hint: 'Select Number of Rows',
-    scope: 'client', 
-    config: true, 
+    scope: 'client',
+    config: true,
     type: Number,
     default: 2,
 
@@ -126,14 +121,14 @@ Hooks.once('ready', async function () {
       4: '4 Rows',
     },
 
-    requiresReload: true, 
+    requiresReload: true,
   })
 
   game.settings.register('auto-action-tray', 'columnCount', {
     name: 'Number of Columns',
     hint: 'Select Number of Columns',
-    scope: 'client', 
-    config: true, 
+    scope: 'client',
+    config: true,
     type: Number,
     default: 10,
 
@@ -143,14 +138,14 @@ Hooks.once('ready', async function () {
       20: '20 Columns',
     },
 
-    requiresReload: true, 
+    requiresReload: true,
   })
 
   game.settings.register('auto-action-tray', 'iconSize', {
     name: 'Icon Size',
     hint: 'Select Icon Size',
-    scope: 'client', 
-    config: true, 
+    scope: 'client',
+    config: true,
 
     type: Number,
     default: 75,
@@ -161,38 +156,50 @@ Hooks.once('ready', async function () {
       max: 100,
     },
 
-    requiresReload: true, 
+    requiresReload: true,
   })
 
-    game.settings.register('auto-action-tray', 'recieveTargetLines', {
+  game.settings.register('auto-action-tray', 'enableRangeBoundary', {
+    name: 'Enable Range Boundary',
+    hint: 'Enable Range Boundary',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'recieveTargetLines', {
     name: 'Recieve Target Lines',
     hint: 'Recieve Target Lines from other players',
-    scope: 'client', 
-    config: true, 
+    scope: 'client',
+    config: true,
 
     type: Boolean,
     default: true,
 
-    requiresReload: true, 
-    })
-  
-      game.settings.register('auto-action-tray', 'sendTargetLines', {
+    requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'sendTargetLines', {
     name: 'Send Target Lines',
     hint: 'Send Target Lines from other players',
-    scope: 'client', 
-    config: true, 
+    scope: 'client',
+    config: true,
 
     type: Boolean,
     default: true,
 
-    requiresReload: true, 
-      })
-  
-    game.settings.register('auto-action-tray', 'targetLinePollRate', {
+    requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'targetLinePollRate', {
     name: 'Target Line Poll Rate',
     hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
-    scope: 'world', 
-    config: true, 
+    scope: 'world',
+    config: true,
 
     type: Number,
     default: 50,
@@ -203,29 +210,25 @@ Hooks.once('ready', async function () {
       max: 1000,
     },
 
-    requiresReload: true, 
-    })
-  
-    game.settings.register('auto-action-tray', 'saveNpcData', {
+    requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'saveNpcData', {
     name: 'Save Npc Data',
     hint: 'Save Confioguration for Npc Tokens',
-    scope: 'world', 
-    config: true, 
+    scope: 'world',
+    config: true,
 
     type: Boolean,
     default: true,
 
-    requiresReload: true, 
+    requiresReload: true,
   })
-  
-  
-
-  
 
   if (game.settings.get('auto-action-tray', 'enable')) {
     hotbar = new AutoActionTray({
       id: 'auto-action-tray',
-      socket: socket
+      socket: socket,
     })
     hotbar.render(true)
   }

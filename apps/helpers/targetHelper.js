@@ -137,6 +137,7 @@ export class TargetHelper {
       actorId: actor.id,
       itemName: item.name,
       itemType: item.type,
+      activityRange: this.activityRange,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -199,6 +200,7 @@ export class TargetHelper {
     document.removeEventListener('mousemove', this.mouseMoveHandler)
     this.selectedTargets({ targets: this.targets, individual: true })
     this.currentLine.clearText()
+    this.clearRangeBoundary();
     this.hotbar.animationHandler.animateTrays(this.hotbar.targetTray.id, 'target-helper', this.hotbar)
     if (event.target.dataset.action == 'confirmTargets') { 
       this.currentLine.clearLines()
@@ -272,6 +274,12 @@ export class TargetHelper {
       this.targetLines = []
       this.currentLine.destroyLines()
     } catch (error) {}
+  }
+  clearRangeBoundary() { 
+    try {
+     this.targetLines.forEach((lineCombo) => lineCombo.clearRangeBoundary())
+    }
+    catch (error) {}
   }
   newTargetLine() {
     let endPos = this.startPos
