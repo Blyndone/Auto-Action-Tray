@@ -1,4 +1,3 @@
-import { AnimationHandler } from './animationHandler.js'
 import { TargetHelper } from './targetHelper.js'
 import { ItemConfig } from './itemConfig.js'
 import { ActivityTray } from '../components/activityTray.js'

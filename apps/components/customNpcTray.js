@@ -8,6 +8,7 @@ export class CustomNpcTray extends AbilityTray {
     this.id = options.id
     this.type = 'custom'
     this.multiattackIndexGroups = []
+    this.trayLabel = options.trayLabel
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
       this.generateNpcTray()
@@ -135,28 +136,28 @@ export class CustomNpcTray extends AbilityTray {
     let commonTray = new CustomNpcTray({
       category: 'common',
       id: 'common',
-      label: 'Common',
+      trayLabel: 'Common',
       actorUuid: actor.uuid,
       application: this.application,
     })
     let classTray = new CustomNpcTray({
       category: 'classFeatures',
       id: 'classFeatures',
-      label: 'Class Features',
+      trayLabel: 'Class Features',
       actorUuid: actor.uuid,
       application: this.application,
     })
     let consumablesTray = new CustomNpcTray({
       category: 'items',
       id: 'items',
-      label: 'Consumables',
+      trayLabel: 'Consumables',
       actorUuid: actor.uuid,
       application: this.application,
     })
     let passiveTray = new CustomNpcTray({
       category: 'passive',
       id: 'passive',
-      label: 'Passive',
+      trayLabel: 'Passive',
       actorUuid: actor.uuid,
       application: this.application,
     })
@@ -164,7 +165,7 @@ export class CustomNpcTray extends AbilityTray {
     let reactionTray = new CustomNpcTray({
       category: 'reaction',
       id: 'reaction',
-      label: 'Reactions',
+      trayLabel: 'Reactions',
       actorUuid: actor.uuid,
       application: this.application,
     })
@@ -172,7 +173,7 @@ export class CustomNpcTray extends AbilityTray {
     let customTray = new CustomNpcTray({
       category: 'custom',
       id: 'custom',
-      label: 'Custom',
+      trayLabel: 'Custom',
       actorUuid: actor.uuid,
       application: this.application,
     })
