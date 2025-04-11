@@ -12,7 +12,7 @@ export class ItemConfig {
     });
     const useTargetHelperGroup = fields.createFormGroup({
       input: useTargetHelper,
-      label: "Enable Target Helper ",
+      label: "Enable Target Helper",
       hint: "Use the Target Helper for this item."
     });
 
@@ -26,6 +26,16 @@ export class ItemConfig {
       hint: "Use the Default Target Count of the item"
     });
 
+    const rollIndividual = fields.createCheckboxInput({
+      name: "rollIndividual",
+      value: flags ? flags["rollIndividual"] : true
+    });
+    const rollIndividualGroup = fields.createFormGroup({
+      input: rollIndividual,
+      label: "Roll Individual Attacks",
+      hint: "Roll Individual Attacks for this item."
+    });
+
     const numTargets = fields.createNumberInput({
       name: "numTargets",
       value: flags ? flags["numTargets"] : null
@@ -36,7 +46,7 @@ export class ItemConfig {
       hint: "Override the Number of Targets for this item."
     });
 
-    const content = `${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
+    const content = `${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${rollIndividualGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
 
     const method = await foundry.applications.api.DialogV2
       .wait({
@@ -76,6 +86,9 @@ export class ItemConfig {
         if (result === "reset") {
           item.unsetFlag("auto-action-tray", "itemConfig");
         } else {
+          if (result.numTargets != null) {
+            result.useDefaultTargetCount = false;
+          }
           item.setFlag(
             "auto-action-tray",
             "itemConfig",

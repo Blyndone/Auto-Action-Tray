@@ -21,6 +21,7 @@ export class TargetHelper {
     this.activityRange = 0
     this.activityTargetCount = 3
     this.actor = null
+    this.singleRoll = false
     this.targets = []
     this.targetLines = []
     this.phantomLines = []
@@ -59,6 +60,10 @@ export class TargetHelper {
   }
   setInactive() {
     this.active = false
+  }
+
+  setSingleRoll(singleRoll) {
+    this.singleRoll = singleRoll
   }
 
   newPhantomLine(options) {
@@ -108,6 +113,7 @@ export class TargetHelper {
   clearData() {
     this.actor = null
     this.item = null
+    this.singleRoll = false
     this.targets = []
     this.clearTargetLines()
     if (this.sendTargetLines) {
@@ -121,9 +127,10 @@ export class TargetHelper {
     } catch (error) {}
   }
 
-  async requestTargets(item, activity, actor, targetCount) {
+  async requestTargets(item, activity, actor, targetCount, singleRoll) {
     this.selectingTargets = true
     this.clearData()
+    this.setSingleRoll(singleRoll)
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
     }
@@ -177,6 +184,9 @@ export class TargetHelper {
   }
 
   selectTarget(token) {
+    if (this.singleRoll  && this.targets.includes(token)) {
+      return      
+    }
     if (this.targets.length == 0) {
       token.setTarget(true, { releaseOthers: false })
     }

@@ -22,6 +22,7 @@
           data-type='{{activity.type}}'
           data-selectedSpellLevel='{{activity.actorSpellData.level}}'
           data-tooltip-direction='UP'
+          data-action='useActivity'
           {{#if activity.system}}
             data-tooltip="{{> 'AAT.item-tooltip' item=activity}}"
           {{else}}
@@ -30,7 +31,7 @@
           {{#if (eq activity.actorSpellData.value 0)}}
             class='ability-button activity-button-inactive'
           {{else}}
-            data-action='useActivity'
+ 
             class='ability-button activity-button'
           {{/if}}
         >

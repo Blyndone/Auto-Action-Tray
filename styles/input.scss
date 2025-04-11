@@ -877,6 +877,9 @@ img.artifact-item {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 15;
   overflow: hidden;
+  a {
+    color: #2b2b2b;
+  }
 }
 
 .tooltip-effect {
