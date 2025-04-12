@@ -370,6 +370,21 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else return wrapped(...args)
   }
 
+    static _onTokenSelect2(hotbar, wrapped, ...args) {
+    const [event] = args
+
+    if (!event) {
+      return wrapped(...args)
+    }
+
+    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+      let token = event.currentTarget
+
+      hotbar.targetHelper.selectTarget(token)
+      return event.stopPropagation()
+    } else return wrapped(...args)
+  }
+
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
     if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {

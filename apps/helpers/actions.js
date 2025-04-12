@@ -270,7 +270,7 @@ export class Actions {
 
     let
       { targets, itemConfig } = await Actions.getTargets.bind(this)(item, activity, selectedSpellLevel)
-    if (targets?.canceled == true) return
+    if (targets?.canceled == true || targets === undefined) return
     if (targets && targets.individual == true && (itemConfig?.rollIndividual ?? true)) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

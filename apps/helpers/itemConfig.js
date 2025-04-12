@@ -48,7 +48,7 @@ export class ItemConfig {
 
     const content = `${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${rollIndividualGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
 
-    const method = await foundry.applications.api.DialogV2
+    await foundry.applications.api.DialogV2
       .wait({
         position: { width: 600 },
         window: { title: `Item Config  - ${item.name}` },
