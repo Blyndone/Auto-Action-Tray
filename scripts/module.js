@@ -1,5 +1,5 @@
 import { AutoActionTray } from '../apps/autoActionTray.js'
-// import { registerHooks } from "./hooks.js";
+import { ConditionTray } from '../apps/components/conditionsTray.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -244,6 +244,18 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  game.settings.register('auto-action-tray', 'customConditionIcons', {
+    name: 'Custom Condition Icons',
+    hint: 'Use Custom Condition Icons',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: true,
+  })
+
   game.settings.register('auto-action-tray', 'saveNpcData', {
     name: 'Save Npc Data',
     hint: 'Save Confioguration for Npc Tokens',
@@ -255,6 +267,10 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
+
+  if (game.settings.get('auto-action-tray', 'customConditionIcons')) {
+    ConditionTray.setCustomIcons()
+  }
 
   if (game.settings.get('auto-action-tray', 'enable')) {
     hotbar = new AutoActionTray({

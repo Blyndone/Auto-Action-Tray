@@ -57,7 +57,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
-    this.conditionTray = new ConditionTray({application:this})
+    this.conditionTray = new ConditionTray({ application: this })
 
     this.itemSelectorEnabled = false
     this.currentDice = 0
@@ -141,7 +141,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       this.initialTraySetup(this.actor)
     }
-  
   }
 
   static DEFAULT_OPTIONS = {
@@ -182,6 +181,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       decreaseTargetCount: AutoActionTray.decreaseTargetCount,
       confirmTargets: AutoActionTray.confirmTargets,
       toggleCondition: AutoActionTray.toggleCondition,
+      toggleConditionTray: AutoActionTray.toggleConditionTray,
     },
   }
 
@@ -299,10 +299,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
 
-    this.conditionTray.setActive()
+    // this.conditionTray.setActive()
     this.conditionTray.setActor(actor)
-    this.animationHandler.pushTray('condition')
-
+    // this.animationHandler.pushTray('condition')
 
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
@@ -378,7 +377,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else return wrapped(...args)
   }
 
-    static _onTokenSelect2(hotbar, wrapped, ...args) {
+  static _onTokenSelect2(hotbar, wrapped, ...args) {
     const [event] = args
 
     if (!event) {
@@ -637,8 +636,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.confirmTargets.bind(this)()
   }
 
-  static async toggleCondition(event, target) { 
+  static async toggleCondition(event, target) {
     this.conditionTray.toggleCondition(event, target)
+  }
+
+  static toggleConditionTray(event, target) {
+    if (this.animating || this.selectingActivity || this.targetHelper.selectingTargets) return
+    if (this.conditionTray.active) {
+      this.animationHandler.popTray()
+    } else {
+      this.animationHandler.pushTray('condition')
+    }
   }
 
   //#region DragDrop
