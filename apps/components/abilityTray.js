@@ -118,7 +118,7 @@ export class AbilityTray {
           break
       }
 
-      this.render(['centerTray'])
+      this.render({ parts: ['centerTray'] })
       return
     } else {
       AbilityTray.setDelayedData(item, item.parent)
@@ -135,7 +135,7 @@ export class AbilityTray {
     trays.forEach((tray) => {
       tray.deleteItem(item.id)
     })
-    this.render(['centerTray'])
+    this.render({ parts: ['centerTray'] })
   }
 
   deleteItem(itemId) {

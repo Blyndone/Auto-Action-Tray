@@ -240,7 +240,7 @@ export class Actions {
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
     let itemConfig = ItemConfig.getItemConfig(item)
-    let singleRoll = ((itemConfig && !itemConfig?.rollIndividual) ?? false)
+    let singleRoll = (itemConfig && !itemConfig?.rollIndividual) ?? false
     targetCount =
       itemConfig && itemConfig['numTargets'] != undefined && !itemConfig['useDefaultTargetCount']
         ? itemConfig['numTargets']
@@ -252,7 +252,13 @@ export class Actions {
       targetCount.range != 'self' &&
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
-      targets = await this.targetHelper.requestTargets(item, activity, this.actor, targetCount, singleRoll)
+      targets = await this.targetHelper.requestTargets(
+        item,
+        activity,
+        this.actor,
+        targetCount,
+        singleRoll,
+      )
       if (targets == null) return { canceled: true }
     }
     return { targets, itemConfig }
@@ -269,13 +275,23 @@ export class Actions {
     let selectedSpellLevel = options.selectedSpellLevel,
       activity = options.activity
 
-    let
-      { targets, itemConfig } = await Actions.getTargets.bind(this)(item, activity, selectedSpellLevel)
+    let { targets, itemConfig } = await Actions.getTargets.bind(this)(
+      item,
+      activity,
+      selectedSpellLevel,
+    )
     if (targets?.canceled == true || targets === undefined) return
     if (targets && targets.individual == true && (itemConfig?.rollIndividual ?? true)) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-      let slotUse = activity?.useSlot != undefined && activity?.useSlot == false ? 0 : 1
+      let slotUse
+
+      if (activity.useSlot !== undefined) {
+        slotUse = activity.useSlot ? 1 : 0
+      } else {
+        slotUse = this.activityTray.useSlot === true ? 1 : 0
+      }
+
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
         await item.system.activities

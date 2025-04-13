@@ -66,7 +66,7 @@ export class ConditionTray {
     this.actor = actor
     this.active = false
     this.setConditions()
-    this.application.render(['centerTray'])
+    this.application.render({ parts: ['centerTray'] })
   }
   async setConditions() {
     let concentration = this.actor.collections.effects.find((e) =>

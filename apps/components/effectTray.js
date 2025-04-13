@@ -11,29 +11,32 @@ export class EffectTray {
     await this.setEffects();
   }
   async setEffects() {
-    let effectsPromises = this.actor.appliedEffects.map(async effect => {
-      let desc = await this.getDescription(effect);
-      return {
-        id: effect._id,
-        name: effect.name,
-        description: desc,
-        img: effect.img,
-        duration: effect.duration,
-        type: effect.type,
-        isTemporary: effect.isTemporary
-      };
-    });
+    const effects = await Promise.all(
+      this.actor.appliedEffects.map(async effect => {
+        const description = await this.getDescription(effect);
+        return {
+          id: effect._id,
+          name: effect.name,
+          description: description,
+          img: effect.img,
+          duration: effect.duration,
+          type: effect.type,
+          isTemporary: effect.isTemporary
+        };
+      })
+    );
 
-    await Promise.all(effectsPromises).then(effects => {
-      this.effects = effects;
+    this.effects = effects;
+    if (!this.hotbar.animating) {
       this.hotbar.render({ parts: ["effectsTray"] });
-    });
+    }
   }
-
   static async removeEffect(event, element) {
     await foundry.applications.api.DialogV2
       .confirm({
-        window: { title: `Delete Active Effect: ${event.dataset.name} ` },
+        window: {
+          title: `Delete Active Effect: ${event.dataset.name} `
+        },
         content: `<p>Remove the Active Effect -  ${event.dataset.name}</p>`,
         modal: true
       })

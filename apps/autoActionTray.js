@@ -115,10 +115,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateItem', this._onUpdateItem.bind(this))
     Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
     Hooks.on('dnd5e.beginConcentrating', (actor) => {
-      if (actor == this.actor) this.render(this.render({ parts: ['characterImage'] }))
+      if (actor == this.actor) this.render({parts: ["characterImage"]})
     })
     Hooks.on('dnd5e.endConcentration', (actor) => {
-      if (actor == this.actor) this.render({ parts: ['characterImage'] })
+      if (actor == this.actor) this.render({parts: ["characterImage"]})
     })
     Hooks.on('updateCombat', this._onUpdateCombat.bind(this))
     Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this))
