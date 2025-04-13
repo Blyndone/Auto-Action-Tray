@@ -115,10 +115,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateItem', this._onUpdateItem.bind(this))
     Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
     Hooks.on('dnd5e.beginConcentrating', (actor) => {
-      if (actor == this.actor) this.render({parts: ["characterImage"]})
+      if (actor == this.actor) this.render({ parts: ['characterImage'] })
     })
     Hooks.on('dnd5e.endConcentration', (actor) => {
-      if (actor == this.actor) this.render({parts: ["characterImage"]})
+      if (actor == this.actor) this.render({ parts: ['characterImage'] })
     })
     Hooks.on('updateCombat', this._onUpdateCombat.bind(this))
     Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this))
@@ -352,14 +352,26 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onCreateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
+    if (this.currentTray.id == 'condition') {
+      this.conditionTray.setConditions()
+      this.render({ parts: ['centerTray'] })
+    }
   }
   _onDeleteActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
+    if (this.currentTray.id == 'condition') {
+      this.conditionTray.setConditions()
+      this.render({ parts: ['centerTray'] })
+    }
   }
   _onUpdateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
+    if (this.currentTray.id == 'condition') {
+      this.conditionTray.setConditions()
+      this.render({ parts: ['centerTray'] })
+    }
   }
 
   static _onTokenSelect(hotbar, wrapped, ...args) {
