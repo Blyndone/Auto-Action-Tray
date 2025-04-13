@@ -30,6 +30,8 @@ export function registerHandlebarsHelpers() {
   })
 
   Handlebars.registerHelper('getDuration', function (duration) {
+    if (duration == 'Condition') return 'Condition'
+    if (!duration) return ''
     let txt = ''
     let seconds = duration.seconds
     let rounds = duration.rounds

@@ -8,7 +8,12 @@
 
   <div class='ability-tray-container'>
     <div class="stacked-tray-spacer-container">
-
+      {{#if conditionTray.active}}
+        <div class="abilities-tray activity-tray condition">
+          {{> "AAT.condition-tray" conditions=conditionTray.conditions }}
+        </div>
+      {{/if}}
+      
       {{#each staticTrays as |tray|}}
         {{#if tray.active}}
           <div class="abilities-tray static-tray {{tray.id}}">
@@ -34,6 +39,7 @@
           {{> "AAT.activity-tray" activities=activityTray.abilities }}
         </div>
       {{/if}}
+
 
       {{#if targetHelper.active}}
         <div class="abilities-tray target-tray target-helper">

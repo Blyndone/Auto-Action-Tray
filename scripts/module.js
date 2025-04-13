@@ -1,5 +1,5 @@
 import { AutoActionTray } from '../apps/autoActionTray.js'
-// import { registerHooks } from "./hooks.js";
+import { ConditionTray } from '../apps/components/conditionsTray.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -23,6 +23,7 @@ export async function preloadHandlebarsTemplates() {
     'modules/auto-action-tray/templates/parts/character-tray.hbs',
     'modules/auto-action-tray/templates/parts/activity-tray.hbs',
     'modules/auto-action-tray/templates/parts/target-tray.hbs',
+    'modules/auto-action-tray/templates/parts/condition-tray.hbs',
   ]
   const paths = {}
   for (const path of partials) {
@@ -47,7 +48,7 @@ Hooks.once('init', async function () {
     'MIXED',
   )
 
-    libWrapper.register(
+  libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'Token.prototype._onClickLeft2',
     function (wrapped, ...args) {
@@ -57,7 +58,6 @@ Hooks.once('init', async function () {
     },
     'MIXED',
   )
-
 
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
@@ -244,6 +244,18 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  game.settings.register('auto-action-tray', 'customConditionIcons', {
+    name: 'Custom Condition Icons',
+    hint: 'Use Custom Condition Icons',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: true,
+  })
+
   game.settings.register('auto-action-tray', 'saveNpcData', {
     name: 'Save Npc Data',
     hint: 'Save Confioguration for Npc Tokens',
@@ -255,6 +267,10 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
+
+  if (game.settings.get('auto-action-tray', 'customConditionIcons')) {
+    ConditionTray.setCustomIcons()
+  }
 
   if (game.settings.get('auto-action-tray', 'enable')) {
     hotbar = new AutoActionTray({

@@ -560,6 +560,34 @@ $tray-button-background: rgb(97, 97, 95);
     padding: 0rem;
     align-items: center;
   }
+  .condition-ol {
+    li {
+      margin: calc(var(--text-scale-ratio) * 1rem);
+
+      width: calc($total-item-width * 0.8);
+      height: calc($total-item-height * 0.9);
+      .condition-label {
+        font-size: calc(var(--text-scale-ratio) * 1.125rem);
+        color: #f1f1f1;
+        font-family: serif;
+        text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+        margin: 0.3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        white-space: nowrap;
+      }
+    }
+    @include center;
+    width: calc($total-item-width * $item-tray-item-width-count);
+    height: calc($total-item-height * $item-tray-item-height-count);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    list-style-type: none;
+    padding: 0rem;
+    align-items: center;
+  }
 }
 img.common-item {
   border: 0.125rem solid #333;
@@ -976,8 +1004,20 @@ img.artifact-item {
 
   bottom: 0rem + $main-tray-padding;
   left: 0rem;
-  width: 1.5625rem;
-  height: 1.5625rem;
+  width: 2rem;
+  height: 2rem;
+  margin: 0.1875rem;
+  border-radius: 50%;
+}
+.toggle-condition-tray-button {
+  @include center;
+  @include button-style;
+  position: absolute;
+
+  top: 0rem + $main-tray-padding;
+  left: 0rem;
+  width: 2rem;
+  height: 2rem;
   margin: 0.1875rem;
   border-radius: 50%;
 }

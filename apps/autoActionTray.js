@@ -1,5 +1,5 @@
 const { ApplicationV2 } = foundry.applications.api
-const { api, sheets } = foundry.applications
+const { api } = foundry.applications
 import { CustomTray } from './components/customTray.js'
 import { StaticTray } from './components/staticTray.js'
 import { ActivityTray } from './components/activityTray.js'
@@ -15,6 +15,7 @@ import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
 import { TargetHelper } from './helpers/targetHelper.js'
+import { ConditionTray } from './components/conditionsTray.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
@@ -56,6 +57,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
+    this.conditionTray = new ConditionTray({ application: this })
 
     this.itemSelectorEnabled = false
     this.currentDice = 0
@@ -113,7 +115,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateItem', this._onUpdateItem.bind(this))
     Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
     Hooks.on('dnd5e.beginConcentrating', (actor) => {
-      if (actor == this.actor) this.render(this.render({ parts: ['characterImage'] }))
+      if (actor == this.actor) this.render({ parts: ['characterImage'] })
     })
     Hooks.on('dnd5e.endConcentration', (actor) => {
       if (actor == this.actor) this.render({ parts: ['characterImage'] })
@@ -139,7 +141,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       this.initialTraySetup(this.actor)
     }
-  
   }
 
   static DEFAULT_OPTIONS = {
@@ -179,6 +180,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       increaseTargetCount: AutoActionTray.increaseTargetCount,
       decreaseTargetCount: AutoActionTray.decreaseTargetCount,
       confirmTargets: AutoActionTray.confirmTargets,
+      toggleCondition: AutoActionTray.toggleCondition,
+      toggleConditionTray: AutoActionTray.toggleConditionTray,
     },
   }
 
@@ -296,6 +299,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
 
+    // this.conditionTray.setActive()
+    this.conditionTray.setActor(actor)
+    // this.animationHandler.pushTray('condition')
+
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
@@ -345,14 +352,26 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onCreateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
+    if (this.currentTray.id == 'condition') {
+      this.conditionTray.setConditions()
+      this.render({ parts: ['centerTray'] })
+    }
   }
   _onDeleteActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
+    if (this.currentTray.id == 'condition') {
+      this.conditionTray.setConditions()
+      this.render({ parts: ['centerTray'] })
+    }
   }
   _onUpdateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
+    if (this.currentTray.id == 'condition') {
+      this.conditionTray.setConditions()
+      this.render({ parts: ['centerTray'] })
+    }
   }
 
   static _onTokenSelect(hotbar, wrapped, ...args) {
@@ -370,7 +389,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else return wrapped(...args)
   }
 
-    static _onTokenSelect2(hotbar, wrapped, ...args) {
+  static _onTokenSelect2(hotbar, wrapped, ...args) {
     const [event] = args
 
     if (!event) {
@@ -428,6 +447,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       currentDice: this.currentDice,
       effectsTray: this.effectsTray,
       stackedTray: this.stackedTray,
+      conditionTray: this.conditionTray,
       itemConfigItem: this.itemConfigItem,
       targetHelper: this.targetHelper,
     }
@@ -626,6 +646,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   static confirmTargets() {
     Actions.confirmTargets.bind(this)()
+  }
+
+  static async toggleCondition(event, target) {
+    this.conditionTray.toggleCondition(event, target)
+  }
+
+  static toggleConditionTray(event, target) {
+    if (this.animating || this.selectingActivity || this.targetHelper.selectingTargets) return
+    if (this.conditionTray.active) {
+      this.animationHandler.popTray()
+    } else {
+      this.animationHandler.pushTray('condition')
+    }
   }
 
   //#region DragDrop

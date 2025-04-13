@@ -424,9 +424,21 @@ export class TargetHelper {
     }
     let range =
       activity.range?.value ??
+      item.system.range?.value ??
       activity.range?.reach ??
-      (activity.range?.units === 'touch' ? 5 : activity.range?.units === 'self' ? -1 : 0)
-    return range > 0 ? range / 5 : range
+      item.system.range?.reach ??
+      (
+        activity.range?.units === 'touch' ? 5 :
+          activity.range?.units === 'self' ? -1 :
+            null
+      ) ??
+      (
+        item.system.range?.units === 'touch' ? 5 :
+          item.system.range?.units === 'self' ? -1 :
+            0
+      );
+
+    return range > 0 ? range / 5 : range;
   }
 
   getTargetCount(item, activity, selectedSpellLevel) {
