@@ -23,6 +23,7 @@ export async function preloadHandlebarsTemplates() {
     'modules/auto-action-tray/templates/parts/character-tray.hbs',
     'modules/auto-action-tray/templates/parts/activity-tray.hbs',
     'modules/auto-action-tray/templates/parts/target-tray.hbs',
+    'modules/auto-action-tray/templates/parts/condition-tray.hbs',
   ]
   const paths = {}
   for (const path of partials) {
@@ -47,7 +48,7 @@ Hooks.once('init', async function () {
     'MIXED',
   )
 
-    libWrapper.register(
+  libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'Token.prototype._onClickLeft2',
     function (wrapped, ...args) {
@@ -57,7 +58,6 @@ Hooks.once('init', async function () {
     },
     'MIXED',
   )
-
 
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,

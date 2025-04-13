@@ -34,6 +34,11 @@
           {{> "AAT.activity-tray" activities=activityTray.abilities }}
         </div>
       {{/if}}
+      {{#if conditionTray.active}}
+        <div class="abilities-tray activity-tray condition">
+          {{> "AAT.condition-tray" conditions=conditionTray.conditions }}
+        </div>
+      {{/if}}
 
       {{#if targetHelper.active}}
         <div class="abilities-tray target-tray target-helper">

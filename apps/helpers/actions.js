@@ -35,6 +35,7 @@ export class Actions {
     return (
       this.staticTrays.find((tray) => tray.id == trayId) ||
       this.customTrays.find((tray) => tray.id == trayId) ||
+      [this.conditionTray].find((tray) => tray.id == trayId) ||
       [this.activityTray].find((tray) => tray.id == trayId) ||
       (trayId == 'target-helper' ? this.targetHelper : null)
     )

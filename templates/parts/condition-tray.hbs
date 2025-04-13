@@ -1,0 +1,24 @@
+<div data-data-id='{{{tray.id}}}'>
+  <ol class='activity-ol'>
+
+    {{#each conditions as |condition|}}
+      <li>
+        <div 
+          data-id='{{condition.id}}' 
+          data-index='{{@index}}' 
+          data-tooltip-direction='UP'
+          data-action='toggleCondition' 
+          data-tooltip="{{> 'AAT.effect-tooltip' condition }}"
+          class='ability-button {{#if condition.active}}activity-button-inactive{{else}}activity-button{{/if}}'
+        >
+          <img 
+            src='{{condition.icon}}' 
+            alt='{{condition.name}}' 
+            data-item-id='{{condition.id}}' 
+            data-index='{{@index}}' 
+          />
+        </div>
+      </li>
+    {{/each}}
+  </ol>
+</div>

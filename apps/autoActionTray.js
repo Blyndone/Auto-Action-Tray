@@ -1,5 +1,5 @@
 const { ApplicationV2 } = foundry.applications.api
-const { api, sheets } = foundry.applications
+const { api } = foundry.applications
 import { CustomTray } from './components/customTray.js'
 import { StaticTray } from './components/staticTray.js'
 import { ActivityTray } from './components/activityTray.js'
@@ -15,6 +15,7 @@ import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
 import { TargetHelper } from './helpers/targetHelper.js'
+import { ConditionTray } from './components/conditionsTray.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
@@ -56,6 +57,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
+    this.conditionTray = new ConditionTray({application:this})
 
     this.itemSelectorEnabled = false
     this.currentDice = 0
@@ -179,6 +181,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       increaseTargetCount: AutoActionTray.increaseTargetCount,
       decreaseTargetCount: AutoActionTray.decreaseTargetCount,
       confirmTargets: AutoActionTray.confirmTargets,
+      toggleCondition: AutoActionTray.toggleCondition,
     },
   }
 
@@ -295,6 +298,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
+
+    this.conditionTray.setActive()
+    this.conditionTray.setActor(actor)
+    this.animationHandler.pushTray('condition')
+
 
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
@@ -428,6 +436,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       currentDice: this.currentDice,
       effectsTray: this.effectsTray,
       stackedTray: this.stackedTray,
+      conditionTray: this.conditionTray,
       itemConfigItem: this.itemConfigItem,
       targetHelper: this.targetHelper,
     }
@@ -626,6 +635,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   static confirmTargets() {
     Actions.confirmTargets.bind(this)()
+  }
+
+  static async toggleCondition(event, target) { 
+    this.conditionTray.toggleCondition(event, target)
   }
 
   //#region DragDrop
