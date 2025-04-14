@@ -41,6 +41,12 @@ Auto Action Tray is a custom action bar and character tray for Foundry VTT, insp
 
 ![scor](https://github.com/user-attachments/assets/1d228fa4-b824-4657-a90a-28c8082a5b5d)
 
+
+✅ **Custom Condition Handling** – Easy to access Condition Tray with Custom Condition Icons.
+
+![condition](https://github.com/user-attachments/assets/5bb91354-a3da-4751-84cf-429913ff69fb)
+
+
 ✅ **NPC Handling** – NPC Trays make it easy to run multiple different NPC's. 
 
 ![npc1](https://github.com/user-attachments/assets/e5fe6661-5309-464c-90f3-f7910d0c5884)
