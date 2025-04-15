@@ -314,7 +314,7 @@ export class Actions {
     )
     if (targets?.canceled == true || targets === undefined) return
 
-    if (targets && targets.individual == true && (itemConfig?.rollIndividual ?? true)) {
+    if (targets && targets.individual == true && (itemConfig?.rollIndividual ?? true) && !item?.system?.properties.has('concentration')) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
       let slotUse

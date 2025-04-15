@@ -870,6 +870,16 @@ img.artifact-item {
   position: relative;
   text-align: left;
 }
+.tooltip-header {
+  position: relative;
+}
+
+.tooltip-upper-icon {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  margin: 0.5rem;
+}
 
 .tooltip-header h2 {
   padding: 0.125rem;

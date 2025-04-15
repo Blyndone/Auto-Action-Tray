@@ -2,6 +2,7 @@
   <div class='tooltip-header'>
     <h2>{{name}}</h2>
     <p class='tooltip-subtitle'>{{capitalize type}}</p>
+
   </div>
 
   <div class='tooltip-damage'>
@@ -22,7 +23,8 @@
   </div>
 
   <div class='tooltip-footer'>
-    <span class='action-tag'>{{@root.actionType}}</span>
+
+    <span class='action-tag'>{{@root.actionType}} </span>
 
     <span class='tooltip-info'>
       {{#if system.activities.contents.0.range.reach}}
@@ -58,5 +60,9 @@
         {{/if}}
       </span>
     </span>
+  </div>
+
+  <div class='tooltip-upper-icon'>
+    {{@root.concentration}}
   </div>
 </div>

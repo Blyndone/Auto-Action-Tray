@@ -6,11 +6,12 @@ export class DamageCalc {
     options.data.root['diceFormula'] = ''
     options.data.root['actionType'] = ''
     options.data.root['saveType'] = ''
+    options.data.root['concentration'] = ''
     let currentTray = options.data.root.currentTray
     let i = 0
 
     options.data.root['actionType'] = this.getActionType(item, options)
-
+    options.data.root['concentration'] = item?.system?.properties.has('concentration') ? 'Concentration' : ''
     let activities = this.getActivities(item)
 
     if (activities.length == 0 || (activities.length == 1 && activities[0].type == 'utility')) {
