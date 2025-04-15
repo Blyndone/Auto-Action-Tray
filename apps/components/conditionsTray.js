@@ -1,5 +1,3 @@
-import { br } from '../../foundry/common/prosemirror/schema/core.mjs'
-
 export class ConditionTray {
   constructor(options) {
     this.dndConditions = ConditionTray.dndConditions
