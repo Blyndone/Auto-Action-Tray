@@ -251,7 +251,19 @@ Hooks.once('ready', async function () {
     config: true,
 
     type: Boolean,
-    default: false,
+    default: true,
+
+    requiresReload: true,
+  })
+
+    game.settings.register('auto-action-tray', 'promptConcentrationOverwrite', {
+    name: 'Prompt Concentration Overwrite',
+    hint: 'Prompt to overwrite Concentration when using a new spell',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
 
     requiresReload: true,
   })

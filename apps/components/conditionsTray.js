@@ -37,7 +37,7 @@ export class ConditionTray {
             img: condition.img,
             reference: null,
             description: condition.description,
-            duration: 'Condition',
+            duration: condition?.duration || 'Condition',
             active: false,
           }
 
@@ -137,7 +137,7 @@ export class ConditionTray {
           description: condition.description,
           statuses: [],
           duration: {
-            seconds: 999,
+            seconds: condition.duration == 'Condition' ? 999 : condition.duration,
           },
         })
         await this.actor.createEmbeddedDocuments('ActiveEffect', [effect])
@@ -159,6 +159,14 @@ export class ConditionTray {
     return TextEditor.enrichHTML(document?.text?.content || 'No content available.')
   }
 
+  checkConcentration() {
+    const effect = this.actor.collections.effects.find((e) => e.name.startsWith('Concentrating'))
+
+    if (!effect) return null
+    const parts = effect.name.split(': ')
+    return parts.length > 1 ? parts[1] : 'Concentration Spell'
+  }
+
   static dndConditions = {
     coreConditions: [
       {
@@ -176,6 +184,7 @@ export class ConditionTray {
         icon: 'modules/auto-action-tray/icons/base/HeldAction.svg',
         description: 'You are holding an action.',
         marker: true,
+        duration: 6,
       },
       {
         id: 'advantage',

@@ -565,7 +565,7 @@ $tray-button-background: rgb(97, 97, 95);
       margin: calc(var(--text-scale-ratio) * 1rem);
 
       width: calc($total-item-width * 0.8);
-      height: calc($total-item-height * 0.9);
+      height: calc($total-item-height * 1);
       .condition-label {
         font-size: calc(var(--text-scale-ratio) * 1.125rem);
         color: #f1f1f1;

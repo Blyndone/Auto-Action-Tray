@@ -264,6 +264,26 @@ export class Actions {
     return { targets, itemConfig }
   }
 
+  static async concentrationDialog(currentSpellName, name) {
+    const result = await foundry.applications.api.DialogV2.confirm({
+      window: {
+        title: `End Concentration on "${currentSpellName}"?`,
+      },
+      content: `
+      <p>You are about to cast <strong>${name}</strong>.</p>
+      <p>This will end concentration on <strong>${currentSpellName}</strong>.</p>
+      <p>Do you wish to proceed?</p>
+    `,
+      modal: true,
+    })
+
+    if (!result && this.currentTray instanceof ActivityTray) {
+      this.animationHandler.popTray()
+    }
+
+    return result
+  }
+
   static async useItem(event, target) {
     game.tooltip.deactivate()
     let itemId = target.dataset.itemId
@@ -275,12 +295,25 @@ export class Actions {
     let selectedSpellLevel = options.selectedSpellLevel,
       activity = options.activity
 
+    let endConcentration = true
+    let currentSpellName = this.conditionTray.checkConcentration()
+    game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')
+    if ( item?.system?.properties.has('concentration')  && currentSpellName != null&& game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')) {
+      endConcentration = await Actions.concentrationDialog.bind(this)(currentSpellName, item.name).catch(() => { 
+        return true
+      })
+    }
+    if (!endConcentration) {
+      return
+    }
+
     let { targets, itemConfig } = await Actions.getTargets.bind(this)(
       item,
       activity,
       selectedSpellLevel,
     )
     if (targets?.canceled == true || targets === undefined) return
+
     if (targets && targets.individual == true && (itemConfig?.rollIndividual ?? true)) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

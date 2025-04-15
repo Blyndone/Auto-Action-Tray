@@ -114,7 +114,7 @@ export class ActivityTray extends AbilityTray {
     let spellLevel = selectedSpellLevel || this.activityTray.slot;
 
     let slot = spellLevel == "pact" ? pact : `spell${spellLevel}`;
-    if (this.actor.system.spells[slot].value == 0) {
+    if (this.actor.system?.spells[slot]?.value == 0) {
       ui.notifications.warn(
         `You don't have a slot of level ${spellLevel} available`
       );

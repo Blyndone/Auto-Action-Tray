@@ -24,8 +24,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.socket = options.socket
 
     this.animating = false
-    this.selectingActivity = false
-    this.animationDuration = 0.7
+
+    // this.animationDuration = 0.7
 
     this.#dragDrop = this.#createDragDropHandlers()
     this.isEditable = true
@@ -39,6 +39,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.actorHealthPercent = 100
     this.currentTray = null
     this.targetTray = null
+
     this.customTrays = []
     this.staticTrays = []
     this.activityTray = null
@@ -217,6 +218,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   //#region Hooks
   _onControlToken = (event, controlled) => {
+    if(this.targetHelper.selectingTargets) return
     this.hpTextActive = false
     switch (true) {
       case event == null || controlled == false || this.actor == event.actor:
@@ -232,21 +234,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
     }
-    this.actorHealthPercent = this.updateActorHealthPercent(actor)
-    this.stackedTray.setInactive()
-    this.staticTrays = StaticTray.generateStaticTrays(actor, {
-      application: this,
-    })
-    this.customTrays = CustomTray.generateCustomTrays(actor, {
-      application: this,
-    })
-    this.stackedTray.setTrays(this.customTrays.slice(0, 3))
-    this.stackedTray.setActor(actor)
+    
+    this.generateTrays(this.actor)
+    this.setActor(actor)
+    this.setDefaultTray()
 
-    this.customTrays = [this.stackedTray, ...this.customTrays]
     document.documentElement.style.setProperty('--stacked-spacer-width', 17 + 'px')
 
-    this.effectsTray.setActor(actor, this)
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
       let delayedItems = JSON.parse(data)
@@ -266,18 +260,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
     }
 
-    this.equipmentTray = EquipmentTray.generateCustomTrays(actor, {
-      application: this,
-    })
-    this.activityTray = ActivityTray.generateActivityTray(actor, {
-      application: this,
-    })
-
-    this.setDefaultTray()
-    this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
-    this.rangedWeapon = this.equipmentTray.getRangedWeapon()
-    this.skillTray = SkillTray.generateCustomTrays(actor)
-    this.combatHandler.setActor(actor)
     this.trayInformation = ''
     this.trayOptions = {
       locked: false,
@@ -298,14 +280,38 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
-
-    // this.conditionTray.setActive()
-    this.conditionTray.setActor(actor)
-    // this.animationHandler.pushTray('condition')
-
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
+  }
+
+  generateTrays(actor) {
+    this.staticTrays = StaticTray.generateStaticTrays(actor, {
+      application: this,
+    })
+    this.customTrays = CustomTray.generateCustomTrays(actor, {
+      application: this,
+    })
+    this.equipmentTray = EquipmentTray.generateCustomTrays(actor, {
+      application: this,
+    })
+    this.activityTray = ActivityTray.generateActivityTray(actor, {
+      application: this,
+    })
+    this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
+    this.rangedWeapon = this.equipmentTray.getRangedWeapon()
+    this.skillTray = SkillTray.generateCustomTrays(actor)
+    this.stackedTray.setInactive()
+    this.stackedTray.setTrays(this.customTrays.slice(0, 3))
+    this.customTrays = [this.stackedTray, ...this.customTrays]
+  }
+
+  setActor(actor) {
+    this.actorHealthPercent = this.updateActorHealthPercent(actor)
+    this.effectsTray.setActor(actor, this)
+    this.combatHandler.setActor(actor)
+    this.conditionTray.setActor(actor)
+    this.stackedTray.setActor(actor)
   }
 
   _onUpdateItem(item, change, options, userId) {
