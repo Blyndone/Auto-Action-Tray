@@ -123,6 +123,7 @@ jobs:
             scripts/                             \
             apps/                                \
             styles/                              \
+            icons/
             packs/                               \
             language/                            \
             lang/
