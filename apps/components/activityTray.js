@@ -1,4 +1,5 @@
 import { AbilityTray } from "./abilityTray.js";
+
 export class ActivityTray extends AbilityTray {
   constructor(options = {}) {
     super(options);
@@ -24,12 +25,21 @@ export class ActivityTray extends AbilityTray {
     });
   }
 
+  static checkSpellConfigurable(item) { 
+    if (item.type != "spell") {
+      return true;
+    } else { 
+      return item.system.uses.max != '' || item.system.preparation.mode == 'innate' || item.system.preparation.mode == 'atwill'
+    }
+  }
+
   async setActivities(item, actor) {
     this.abilities = [];
     if (
       item.type == "spell" &&
       item.system.activities.size == 1 &&
-      item.system.level > 0
+      item.system.level > 0 &&
+      ActivityTray.checkSpellConfigurable(item)
     ) {
       Object.keys(actor.system.spells).forEach(spell => {
         if (

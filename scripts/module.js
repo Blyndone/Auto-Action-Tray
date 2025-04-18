@@ -126,12 +126,13 @@ Hooks.once('ready', async function () {
     scope: 'client',
     config: true,
     type: Number,
-    default: 2,
+    default: 3,
 
     choices: {
-      2: '2 Rows',
+      // 2: '2 Rows',
       3: '3 Rows',
       4: '4 Rows',
+
     },
 
     requiresReload: true,

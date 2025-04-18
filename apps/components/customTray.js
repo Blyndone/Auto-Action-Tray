@@ -1,5 +1,6 @@
 import { AbilityTray } from './abilityTray.js'
 import { CustomNpcTray } from './customNpcTray.js'
+import { ActivityTray } from './activityTray.js'
 
 export class CustomTray extends AbilityTray {
   constructor(options = {}) {
@@ -27,7 +28,10 @@ export class CustomTray extends AbilityTray {
           (e) =>
             (e.system?.activities?.some((activity) => activity?.activation?.type === 'action') ||
               e.system?.activities?.some((activity) => activity?.activation?.type === 'bonus')) &&
-            e.type != 'spell',
+            (e.type != 'spell' ||
+              e.system.uses.max != '' ||
+              e.system.preparation.mode == 'innate' ||
+              e.system.preparation.mode == 'atwill'),
         )
 
         this.id = 'common'
@@ -134,7 +138,7 @@ export class CustomTray extends AbilityTray {
     trays.forEach((e) => {
       e._onCompleteGeneration()
     })
-   
+
     return trays
   }
 }

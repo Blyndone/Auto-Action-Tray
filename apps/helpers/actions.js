@@ -103,7 +103,7 @@ export class Actions {
     if (this.selectingActivity) return
     this.trayOptions['locked'] = !this.trayOptions['locked']
     this.setTrayConfig({ locked: this.trayOptions['locked'] })
-    this.render({ parts: ['equipmentMiscTray'] })
+    this.render({ parts: ['equipmentMiscTray', 'centerTray'] })
   }
   static toggleSkillTrayPage() {
     if (this.selectingActivity) return
@@ -215,7 +215,18 @@ export class Actions {
   static async selectActivity(item) {
     let activity = null
     let selectedSpellLevel = null
-    if (!this.trayOptions['fastForward']) {
+    let itemConfig = ItemConfig.getItemConfig(item)
+    let fastForward =
+      itemConfig?.fastForward == 'always'
+        ? true
+        : itemConfig?.fastForward == 'never'
+        ? false
+        : this.trayOptions['fastForward']
+
+    if (fastForward) {
+      selectedSpellLevel = this.currentTray.spellLevel
+      activity = item.system.activities.contents[0]
+    } else {
       if (this.activityTray?.abilities?.length > 1) {
         activity = await this.activityTray.selectAbility(item, this.actor, this)
         if (activity == null) return
@@ -223,9 +234,6 @@ export class Actions {
       } else {
         activity = item.system.activities.contents[0]
       }
-    } else {
-      activity = item.system.activities.contents[0]
-      selectedSpellLevel = this.currentTray.spellLevel
     }
 
     selectedSpellLevel =
@@ -298,10 +306,16 @@ export class Actions {
     let endConcentration = true
     let currentSpellName = this.conditionTray.checkConcentration()
     game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')
-    if ( item?.system?.properties.has('concentration')  && currentSpellName != null&& game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')) {
-      endConcentration = await Actions.concentrationDialog.bind(this)(currentSpellName, item.name).catch(() => { 
-        return true
-      })
+    if (
+      item?.system?.properties.has('concentration') &&
+      currentSpellName != null &&
+      game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')
+    ) {
+      endConcentration = await Actions.concentrationDialog
+        .bind(this)(currentSpellName, item.name)
+        .catch(() => {
+          return true
+        })
     }
     if (!endConcentration) {
       return
@@ -314,7 +328,12 @@ export class Actions {
     )
     if (targets?.canceled == true || targets === undefined) return
 
-    if (targets && targets.individual == true && (itemConfig?.rollIndividual ?? true) && !item?.system?.properties.has('concentration')) {
+    if (
+      targets &&
+      targets.individual == true &&
+      (itemConfig?.rollIndividual ?? true) &&
+      !item?.system?.properties.has('concentration')
+    ) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
       let slotUse

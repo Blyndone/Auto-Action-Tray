@@ -36,6 +36,31 @@ export class ItemConfig {
       hint: "Roll Individual Attacks for this item."
     });
 
+    const fastForward = fields.createSelectInput({
+      options: [
+        {
+          label: "Tray Default",
+          value: "default"
+        },
+        {
+          label: "Always",
+          value: "always"
+        },
+        {
+          label: "Never",
+          value: "never"
+        }
+      ],
+      name: "fastForward",
+      value: flags ? flags["fastForward"] : "default"
+    });
+
+    const fastForwardGroup = fields.createFormGroup({
+      input: fastForward,
+      label: "Always Fast Forward",
+      hint: "Always Fast Forward this item Roll."
+    });
+
     const numTargets = fields.createNumberInput({
       name: "numTargets",
       value: flags ? flags["numTargets"] : null
@@ -46,7 +71,7 @@ export class ItemConfig {
       hint: "Override the Number of Targets for this item."
     });
 
-    const content = `${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${rollIndividualGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
+    const content = `${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${rollIndividualGroup.outerHTML} ${fastForwardGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
 
     await foundry.applications.api.DialogV2
       .wait({

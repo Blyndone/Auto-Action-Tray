@@ -1,6 +1,6 @@
-
 import { AbilityTray } from './abilityTray.js'
 import { CustomStaticTray } from './customStaticTray.js'
+import { ActivityTray } from './activityTray.js'
 
 export class StaticTray extends AbilityTray {
   constructor(options = {}) {
@@ -64,11 +64,14 @@ export class StaticTray extends AbilityTray {
             (e) =>
               e.system.level <= this.spellLevel &&
               e.system.level != 0 &&
+              (e.system.uses?.max == '' ||
+                (ActivityTray.checkSpellConfigurable(e) && e.system.level == this.spellLevel)) &&
               (e.system.preparation?.prepared == true ||
                 e.system.preparation?.mode == 'innate' ||
                 e.system.preparation?.mode == 'always' ||
                 e.system.preparation?.mode == 'atwill'),
           )
+
           .sort((a, b) => b.system.level - a.system.level)
 
         this.id = 'spell-' + this.spellLevel
@@ -146,7 +149,7 @@ export class StaticTray extends AbilityTray {
           spellLevel: level,
           totalSlots: actor.system?.spells['spell' + level]?.max,
           availableSlots: level == 0 ? 1 : actor.system?.spells['spell' + level]?.value,
-      application: options.application
+          application: options.application,
         }),
       )
     })
@@ -158,14 +161,14 @@ export class StaticTray extends AbilityTray {
       spellLevel: actor.system.spells.pact.level,
       totalSlots: actor.system.spells.pact.max,
       availableSlots: actor.system.spells.pact.value,
-      application: options.application
+      application: options.application,
     })
 
     let ritualTray = new StaticTray({
       category: 'ritual',
       label: 'Rituals',
       actorUuid: actor.uuid,
-      application: options.application
+      application: options.application,
     })
 
     let staticTrays = [

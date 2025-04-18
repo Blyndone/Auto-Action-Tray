@@ -11,7 +11,7 @@ export class DamageCalc {
     let i = 0
 
     options.data.root['actionType'] = this.getActionType(item, options)
-    options.data.root['concentration'] = item?.system?.properties.has('concentration') ? 'Concentration' : ''
+    options.data.root['concentration'] = item.requiresConcentration ? 'Concentration' : ''
     let activities = this.getActivities(item)
 
     if (activities.length == 0 || (activities.length == 1 && activities[0].type == 'utility')) {
