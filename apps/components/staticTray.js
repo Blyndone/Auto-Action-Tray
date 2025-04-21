@@ -17,12 +17,13 @@ export class StaticTray extends AbilityTray {
   generateTray() {
     let actor = fromUuidSync(this.actorUuid)
 
-    let allItems = actor.items.filter((e) => e.system?.activities?.size)
+    let allItems = this.application.getActorAbilities(this.actorUuid)
     switch (this.category) {
       case 'action':
         this.abilities = allItems.filter(
           (e) =>
-            e.system?.activities?.some((activity) => activity?.activation?.type === 'action') &&
+            e.isActive &&
+            e.activities.some((activity) => activity.activity?.activation?.type === 'action') &&
             e.type != 'spell',
         )
         this.id = 'action'
@@ -31,21 +32,24 @@ export class StaticTray extends AbilityTray {
       case 'bonus':
         this.abilities = allItems.filter(
           (e) =>
-            e.system?.activities?.some((activity) => activity?.activation?.type === 'bonus') &&
+            e.isActive &&
+            e.activities.some((activity) => activity.activity?.activation?.type === 'bonus') &&
             e.type != 'spell',
         )
         this.id = 'bonus'
         break
 
       case 'customStaticTray':
-        if (this.keyItemUuid) {
+        if (this.keyItemId) {
           this.abilities = allItems.filter((e) =>
-            e.system.activities?.some((activity) =>
-              activity.consumption?.targets?.some((target) => target.target === this.keyItemUuid),
+            e.activities?.some((activity) =>
+              activity.activity.consumption?.targets?.some(
+                (target) => target.target === this.keyItemId,
+              ),
             ),
           )
 
-          this.id = 'customStaticTray' + '-' + this.keyItemUuid
+          this.id = 'customStaticTray' + '-' + this.keyItemId
         }
 
         break
@@ -53,7 +57,7 @@ export class StaticTray extends AbilityTray {
       case 'spell':
         if (this.spellLevel == 0) {
           this.abilities = allItems.filter(
-            (e) => e.system.level == this.spellLevel && e.system.preparation?.prepared == true,
+            (e) => e.spellLevel == this.spellLevel && e.isPrepared,
           )
           this.id = 'spell-' + this.spellLevel
           break
@@ -62,32 +66,32 @@ export class StaticTray extends AbilityTray {
         this.abilities = allItems
           .filter(
             (e) =>
-              e.system.level <= this.spellLevel &&
-              e.system.level != 0 &&
-              (e.system.uses?.max == '' ||
-                (ActivityTray.checkSpellConfigurable(e) && e.system.level == this.spellLevel)) &&
-              (e.system.preparation?.prepared == true ||
-                e.system.preparation?.mode == 'innate' ||
-                e.system.preparation?.mode == 'always' ||
-                e.system.preparation?.mode == 'atwill'),
+               e.spellLevel <= this.spellLevel &&
+               e.spellLevel != 0 &&
+              (e.item.system.uses?.max == '' ||
+                (ActivityTray.checkSpellConfigurable(e.item) && e.item.system.level == this.spellLevel)) &&
+              (e.isPrepared == true ||
+                e.item.system.preparation?.mode == 'innate' ||
+                e.item.system.preparation?.mode == 'always' ||
+                e.item.system.preparation?.mode == 'atwill'),
           )
 
-          .sort((a, b) => b.system.level - a.system.level)
+          .sort((a, b) =>  b.spellLevel -  a.spellLevel)
 
         this.id = 'spell-' + this.spellLevel
         break
 
       case 'pact':
         this.abilities = allItems
-          .filter((e) => e.system.preparation?.mode == 'pact')
-          .sort((a, b) => b.system.level - a.system.level)
+          .filter((e) => e.item.system.preparation?.mode == 'pact')
+          .sort((a, b) =>  b.spellLevel -  a.spellLevel)
 
         this.id = 'pact'
         break
 
       case 'ritual':
         this.abilities = allItems.filter(
-          (e) => e.type === 'spell' && e.system.properties.has('ritual'),
+          (e) => e.type === 'spell' && e.isRitual,
         )
         this.id = 'ritual'
         break
@@ -120,7 +124,7 @@ export class StaticTray extends AbilityTray {
           category: 'customStaticTray',
           actorUuid: actor.uuid,
           label: actor.items.get(e).name,
-          keyItemUuid: e,
+          keyItemId: e,
           application: options.application,
         }),
     )
@@ -133,11 +137,11 @@ export class StaticTray extends AbilityTray {
       .filter((key) => slots[key].value > 0)
       .map((key) => slots[key].level)
 
-    let allItems = actor.items.filter((e) => e.system?.activities?.size)
-    let spells = allItems.filter((e) => e.type === 'spell' && e.system.preparation.prepared == true)
+    let allItems = options.application.getActorAbilities(actor.uuid)
+    let spells = allItems.filter((e) => e.type === 'spell' && e.isPrepared)
 
     if (spells.length > 0) {
-      levels = [...new Set([...levels, ...spells.map((x) => x.system.level)])].sort((a, b) => a - b)
+      levels = [...new Set([...levels, ...spells.map((x) => x.spellLevel)])].sort((a, b) => a - b)
     }
 
     levels.forEach((level) => {
@@ -183,7 +187,7 @@ export class StaticTray extends AbilityTray {
     staticTrays = staticTrays.filter((e) => e.abilities && e.abilities.length > 0)
     staticTrays.forEach((e) => {
       e.abilities = AbilityTray.padArray(e.abilities)
-      e._onCompleteGeneration()
+      e.onCompleteGeneration()
     })
 
     return staticTrays

@@ -25,6 +25,15 @@ export function registerHandlebarsHelpers() {
     return actor?.system?.parent?.statuses.filter((e) => e == 'concentrating').size > 0
   })
 
+  Handlebars.registerHelper('selectItemTooltip', function (item, tray) {
+    if (tray.type != 'static' || 'activity') return item.tooltip
+    if (tray.spellLevel) {
+      return item.defaultActivity.tooltips.find((e) => e.spellLevel == tray.spellLevel)
+    } else { 
+      return item.tooltip
+    }
+  })
+
   Handlebars.registerHelper('damageCal', function (item, options) {
     return DamageCalc.damageCalc(item, options)
   })
@@ -136,12 +145,10 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('formatLink', function (link) {
     return link.replace(/ /g, '%20')
   })
-  Handlebars.registerHelper('removeEnrichment', function (text) {
-    
-  })
+  Handlebars.registerHelper('removeEnrichment', function (text) {})
   //  Handlebars.registerHelper('enrichText', function (text) {
   //   return TextEditor.enrichHTML(text, {
-    
+
   //   })
   // })
 }

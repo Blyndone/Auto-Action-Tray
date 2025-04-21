@@ -16,6 +16,7 @@ import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
 import { TargetHelper } from './helpers/targetHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
+import { AATItem } from './items/item.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
@@ -44,6 +45,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.staticTrays = []
     this.activityTray = null
     this.equipmentTray = null
+
+    // { name: 'ActorName',
+    //   id: 'ActorId',
+    //   type: 'npc / pc',
+    //   abilities: [AATItem, AATItem]}
+    this.savedActors = []
 
     this.itemConfigItem = null
     this.skillTray = null
@@ -218,14 +225,40 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   //#region Hooks
   _onControlToken = (event, controlled) => {
-    if(this.targetHelper.selectingTargets) return
+    if (this.targetHelper.selectingTargets) return
     this.hpTextActive = false
     switch (true) {
       case event == null || controlled == false || this.actor == event.actor:
         return
       case controlled == true && this.actor != event.actor:
         this.actor = event.actor ? event.actor : event
+        this.generateActorItems(this.actor)
         this.initialTraySetup(this.actor)
+    }
+  }
+
+  generateActorItems(actor) {
+    if (this.savedActors.find((a) => a.id == actor.id)) { 
+      this.checkTrayDiff()
+      return
+    }
+    if (this.savedActors.length > 10) {
+      this.savedActors.shift();
+    }
+    this.savedActors.push({
+      name: actor.name,
+      id: actor.id,
+      type: actor.type,
+      abilities: actor.items.map((i) => new AATItem(i)),
+    })
+  }
+  getActorAbilities(actorUuid) {
+    return this.savedActors.find((actor) => actor.id == fromUuidSync(actorUuid).id).abilities
+  }
+  deleteActorAbility(itemId) {
+    const actor = this.savedActors.find((a) => a.id === this.actor.id)
+    if (actor) {
+      actor.abilities = actor.abilities.filter((e) => e.id !== itemId)
     }
   }
 
@@ -234,7 +267,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
     }
-    
+
     this.generateTrays(this.actor)
     this.setActor(actor)
     this.setDefaultTray()
@@ -316,19 +349,38 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return
-    this.staticTrays = StaticTray.generateStaticTrays(this.actor)
+
+    const abilities = this.getActorAbilities(this.actor.uuid)
+    const index = abilities.findIndex((e) => e.id === item.id)
+
+    if (index !== -1) {
+      abilities[index] = new AATItem(item)
+    }
+
+    this.staticTrays = StaticTray.generateStaticTrays(this.actor, { application: this })
     this.currentTray = this.getTray(this.currentTray.id)
     this.currentTray.setActive()
     this.effectsTray.setEffects()
     this.stackedTray.setActor(this.actor)
+    this.checkTrayDiff()
     if (this.animating == false) {
       this.render({ parts: ['centerTray'] })
     }
   }
 
+  checkTrayDiff() {
+    this.stackedTray.checkDiff()
+    this.customTrays.forEach((tray) => {
+      tray.checkDiff()
+    })
+    this.staticTrays.forEach((tray) => {
+      tray.checkDiff()
+    })
+  }
+
   async _onUpdateActor(actor, change, options, userId) {
     if (actor != this.actor || Object.keys(change).includes('flags')) return
-    this.staticTrays = StaticTray.generateStaticTrays(this.actor)
+    this.staticTrays = StaticTray.generateStaticTrays(this.actor, { application: this })
     this.currentTray = this.getTray(this.currentTray.id)
     this.currentTray.setActive()
     this.actorHealthPercent = this.updateActorHealthPercent(actor)

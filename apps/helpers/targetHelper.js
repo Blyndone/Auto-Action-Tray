@@ -184,8 +184,8 @@ export class TargetHelper {
   }
 
   selectTarget(token) {
-    if (this.singleRoll  && this.targets.includes(token)) {
-      return      
+    if (this.singleRoll && this.targets.includes(token)) {
+      return
     }
     if (this.targets.length == 0) {
       token.setTarget(true, { releaseOthers: false })
@@ -420,59 +420,37 @@ export class TargetHelper {
 
   getActivityRange(item, activity) {
     if (!activity) {
-      activity = item.system.activities.contents[0]
+      activity = item.defaultActivity
     }
+    item = item.item
+    activity = activity
     let range =
       activity.range?.value ??
       item.system.range?.value ??
       activity.range?.reach ??
       item.system.range?.reach ??
-      (
-        activity.range?.units === 'touch' ? 5 :
-          activity.range?.units === 'self' ? -1 :
-            null
-      ) ??
-      (
-        item.system.range?.units === 'touch' ? 5 :
-          item.system.range?.units === 'self' ? -1 :
-            0
-      );
+      (activity.range?.units === 'touch' ? 5 : activity.range?.units === 'self' ? -1 : null) ??
+      (item.system.range?.units === 'touch' ? 5 : item.system.range?.units === 'self' ? -1 : 0)
 
-    return range > 0 ? range / 5 : range;
+    return range > 0 ? range / 5 : range
   }
 
   getTargetCount(item, activity, selectedSpellLevel) {
+    let targetCount = 1
     if (!activity) {
-      activity = item.system.activities.contents[0]
+      activity = item.defaultActivity
     }
-    let slotLevel
-    if (activity.itemId) {
-      slotLevel = parseInt(activity.selectedSpellLevel)
-      activity = item.system.activities.get(activity.itemId)
+    if (!selectedSpellLevel.slot) {
+      return activity.tooltip?.targetCount
     }
-
-    if (DamageCalc.checkOverride(item)) {
-      let targetCount = DamageCalc.getOverrideScaling(
-        item,
-        slotLevel || selectedSpellLevel,
-        DamageCalc.getOverrideDamageParts(item),
-      )
-      return targetCount + 1
+    if (selectedSpellLevel.slot) {
+      selectedSpellLevel = parseInt(selectedSpellLevel.slot.replaceAll(/[a-zA-Z]/g, ''))
+      targetCount =
+        item.activities
+          .find((e) => e.id == activity.id)
+          .tooltips.find((e) => e.spellLevel == selectedSpellLevel).targetCount
     }
-
-    switch (true) {
-      case item.type == 'weapon' && activity.type == 'attack':
-        return 1
-
-      case item.type == 'spell' && item.hasIndividualTarget == 'creature':
-        return activity.target?.affects?.count || 1
-
-      case activity?.target.template?.count > 0:
-        return 0
-      case activity?.target?.affects?.type == 'self':
-        return 0
-      default:
-        return activity?.target?.affect?.count || 1
-    }
+  
+    return targetCount
   }
 }

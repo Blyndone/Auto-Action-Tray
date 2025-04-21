@@ -225,21 +225,19 @@ export class Actions {
 
     if (fastForward) {
       selectedSpellLevel = this.currentTray.spellLevel
-      activity = item.system.activities.contents[0]
+      activity = item.defaultActivity
     } else {
       if (this.activityTray?.abilities?.length > 1) {
         activity = await this.activityTray.selectAbility(item, this.actor, this)
         if (activity == null) return
         selectedSpellLevel = !selectedSpellLevel ? activity['selectedSpellLevel'] : ''
       } else {
-        activity = item.system.activities.contents[0]
+        activity = item.defaultActivity
       }
     }
 
     selectedSpellLevel =
-      item.system.preparation?.mode == 'pact'
-        ? { slot: 'pact' }
-        : { slot: 'spell' + selectedSpellLevel }
+      item?.preparationMode == 'pact' ? { slot: 'pact' } : { slot: selectedSpellLevel ? 'spell' + selectedSpellLevel : null }
 
     return { activity: activity, selectedSpellLevel: selectedSpellLevel }
   }
@@ -247,7 +245,7 @@ export class Actions {
   static async getTargets(item, activity, selectedSpellLevel) {
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
-    let itemConfig = ItemConfig.getItemConfig(item)
+    let itemConfig = item.itemConfig
     let singleRoll = (itemConfig && !itemConfig?.rollIndividual) ?? false
     targetCount =
       itemConfig && itemConfig['numTargets'] != undefined && !itemConfig['useDefaultTargetCount']
@@ -257,7 +255,6 @@ export class Actions {
     if (
       this.trayOptions['enableTargetHelper'] &&
       targetCount > 0 &&
-      targetCount.range != 'self' &&
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
       targets = await this.targetHelper.requestTargets(
@@ -295,7 +292,7 @@ export class Actions {
   static async useItem(event, target) {
     game.tooltip.deactivate()
     let itemId = target.dataset.itemId
-    let item = this.actor.items.get(itemId)
+    let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
     this.activityTray.getActivities(item, this.actor)
 
     let options = await Actions.selectActivity.bind(this)(item)
@@ -346,8 +343,8 @@ export class Actions {
 
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
-        await item.system.activities
-          .get(activity?.itemId || activity?._id || item.system.activities.contents[0].id)
+        await item.item.system.activities
+          .get(activity?.itemId || activity?._id || item.item.system.activities.contents[0].id)
           .use(
             {
               spell: selectedSpellLevel,
@@ -364,8 +361,8 @@ export class Actions {
       //   this.animationHandler.animateTrays(this.targetTray.id, this.currentTray.id, this)
       // }
 
-      item.system.activities
-        .get(activity?.itemId || activity?._id || item.system.activities.contents[0].id)
+      item.item.system.activities
+        .get(activity?.itemId || activity?._id || item.item.system.activities.contents[0].id)
         .use(
           {
             spell: selectedSpellLevel,

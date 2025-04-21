@@ -1,6 +1,7 @@
 import { StaticTray } from '../components/staticTray.js'
 import { CustomStaticTray } from '../components/customStaticTray.js'
 import { ItemConfig } from './itemConfig.js'
+import { AATItem } from '../items/item.js'
 export class DragDropHandler {
   static _onDragStart(event, hotbar) {
     game.tooltip.deactivate()
@@ -68,7 +69,7 @@ export class DragDropHandler {
     }
     if (index == 'itemConfig') {
       let item = fromUuidSync(data.uuid)
-      hotbar.itemConfigItem = item
+      hotbar.itemConfigItem = hotbar.getActorAbilities(hotbar.actor.uuid).find((e) => e.id == item.id)
       hotbar.render({ parts: ['equipmentMiscTray'] })
       ItemConfig.itemConfig.bind(hotbar)(item)
       return
@@ -82,7 +83,7 @@ export class DragDropHandler {
         let item = fromUuidSync(data.uuid)
         let sourceTray = hotbar.getTray(data.trayId)
         let targetTray = hotbar.getTray(event.target.dataset.trayid)
-        targetTray?.setAbility(index, item)
+        targetTray?.setAbility(index, new AATItem(item))
         sourceTray?.setAbility(data.index, null)
         hotbar.render({ parts: ['centerTray'] })
         break

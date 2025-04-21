@@ -21,10 +21,10 @@ export class CustomNpcTray extends AbilityTray {
     let actor = fromUuidSync(this.actorUuid)
 
     this.abilities = []
-    let allItems = actor.items.filter((e) => e.system?.activities?.size)
-    let multiattack = actor.items.find((e) => e.name === 'Multiattack')
+    let allItems = this.application.getActorAbilities(this.actorUuid)
+    let multiattack = allItems.find((e) => e.name === 'Multiattack')
     if (multiattack && this.category === 'common') {
-      let desc = multiattack.system.description.value
+      let desc = multiattack.description
       let itemNames = allItems.map((e) => e.name.toLowerCase())
       itemNames.push('melee')
       itemNames.push('ranged')
@@ -81,21 +81,20 @@ export class CustomNpcTray extends AbilityTray {
       })
     }
 
+ 
+
     switch (this.category) {
       case 'common':
         this.abilities = [
           ...this.abilities,
           ...allItems.filter(
             (e) =>
-              (e.type != 'spell' &&
-                !this.abilities.some((a) => a?.name === e.name) &&
-                e.system?.activities?.some(
-                  (activity) => activity?.activation?.type === 'action',
-                )) ||
-              e.system?.activities?.some((activity) => activity?.activation?.type === 'bonus'),
+              e.isActive &&
+              e.type !== 'spell' &&
+              e.type !== 'consumable' &&
+              !this.abilities.some((a) => a?.name === e.name),
           ),
         ]
-
         this.id = 'common'
         break
       case 'classFeatures':
@@ -106,19 +105,13 @@ export class CustomNpcTray extends AbilityTray {
         this.abilities = allItems.filter((e) => e.type === 'consumable')
         this.id = 'items'
         break
-      case 'items':
-        this.abilities = allItems.filter((e) => e.type === 'consumable')
-        this.id = 'items'
-        break
       case 'passive':
-        this.abilities = actor.items.filter(
-          (e) => e.system?.activities?.size < 1 && e.type !== 'equipment',
-        )
+        this.abilities = allItems.filter((e) => e.isActive && e.type !== 'equipment')
         this.id = 'passive'
         break
       case 'reaction':
         this.abilities = allItems.filter((e) =>
-          e.system?.activities?.some((activity) => activity?.activation?.type === 'reaction'),
+          e.activities?.some((activity) => activity.activity?.activation?.type === 'reaction'),
         )
         this.id = 'reaction'
         break
@@ -127,39 +120,40 @@ export class CustomNpcTray extends AbilityTray {
         this.id = 'custom'
         break
     }
+
     this.abilities = AbilityTray.padArray(this.abilities)
 
     return
   }
 
-  static generateCustomTrays(actor) {
+  static generateCustomTrays(actor, options) {
     let commonTray = new CustomNpcTray({
       category: 'common',
       id: 'common',
       trayLabel: 'Common',
       actorUuid: actor.uuid,
-      application: this.application,
+      application: options.application,
     })
     let classTray = new CustomNpcTray({
       category: 'classFeatures',
       id: 'classFeatures',
-      trayLabel: 'Class Features',
+      trayLabel: 'Features',
       actorUuid: actor.uuid,
-      application: this.application,
+      application: options.application,
     })
     let consumablesTray = new CustomNpcTray({
       category: 'items',
       id: 'items',
       trayLabel: 'Consumables',
       actorUuid: actor.uuid,
-      application: this.application,
+      application: options.application,
     })
     let passiveTray = new CustomNpcTray({
       category: 'passive',
       id: 'passive',
       trayLabel: 'Passive',
       actorUuid: actor.uuid,
-      application: this.application,
+      application: options.application,
     })
 
     let reactionTray = new CustomNpcTray({
@@ -167,7 +161,7 @@ export class CustomNpcTray extends AbilityTray {
       id: 'reaction',
       trayLabel: 'Reactions',
       actorUuid: actor.uuid,
-      application: this.application,
+      application: options.application,
     })
 
     let customTray = new CustomNpcTray({
@@ -175,7 +169,7 @@ export class CustomNpcTray extends AbilityTray {
       id: 'custom',
       trayLabel: 'Custom',
       actorUuid: actor.uuid,
-      application: this.application,
+      application: options.application,
     })
     let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]
 
@@ -207,7 +201,7 @@ export class CustomNpcTray extends AbilityTray {
 
     trays[0].abilities = AbilityTray.padArray(trays[0].abilities)
     trays.forEach((e) => {
-      e._onCompleteGeneration()
+      e.onCompleteGeneration()
     })
     return trays
   }

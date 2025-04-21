@@ -1,24 +1,91 @@
-import { ItemConfig } from "../helpers/itemConfig.js";
-import { Activity } from "./activities.js";
+import { ItemConfig } from '../helpers/itemConfig.js'
+import { AATActivity } from './activity.js'
+import { AATItemTooltip } from './itemTooltip.js'
 
-export class Item {
+export class AATItem {
   constructor(item) {
-    this.item = item;
-    this.actor = this.item.actor;
-    this.itemConfig = ItemConfig.getItemConfig(item);
-    this.isActive = item.isActive;
+    this.item = item
+    this.actor = this.item.actor
+    this.maxSpellLevel = this.getActorMaxSpellLevel(this.actor)
+    this.id = item.id
+    this.img = item.img
+    this.rarity = item.system?.rarity ?? ''
+    this.itemConfig = ItemConfig.getItemConfig(item)
+    this.isActive = item.isActive
+    this.isRitual = item.system?.properties?.has('ritual') ?? false
+    this.concentration = item.requiresConcentration
+    this.isScaledSpell = false
+    this.preparationMode = this.item.system?.preparation?.mode
 
-    this.desc = getDescription();
-    this.name = this.item.name;
-    this.type = this.item.type;
-    this.isNonScaledSpell = false;
-    this.fastForward;
-    this.useTargetHelper;
-    this.targetCount;
-    this.concentration = item.requiresConcentration;
-    this.damageLabel;
-    this.damageDiceLabel;
-    this.defaultActivity = new Activity(item.system?.activities?.contents?.[0]);
-    setItemValues();
+    this.description = item.system.description.value
+    this.name = this.item.name
+    this.type = this.item.type
+
+    this.setValues()
+
+    this.activities =
+      item.system?.activities?.contents.map((e) => {
+        return new AATActivity(this, e)
+      }) ?? []
+    this.defaultActivity = this.activities[0] ?? null
+
+    if (this.item.system?.activities?.contents.length > 0) {
+      this.fastForward = null
+      this.useTargetHelper = null
+      this.targetCount = null
+      this.tooltip = this.defaultActivity.tooltip
+      this.uses =
+        this.item.type == 'consumable'
+          ? this.item.system.quantity
+          : this.item.system?.uses?.value
+          ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
+          : ''
+    } else {
+      this.tooltip = new AATItemTooltip(this, null)
+    }
+
+    this.setDescription()
+  }
+  getActorMaxSpellLevel(actor) {
+    let slots = actor.system.spells
+
+    let levels = Object.keys(slots)
+      .filter((key) => slots[key].max > 0)
+      .map((key) => slots[key].level)
+
+    if (levels.length === 0) {
+      return 0
+    }
+    return Math.max(...levels)
+  }
+
+  setValues() {
+    this.isScaledSpell =
+      this.item.type == 'spell' &&
+      this.item.system?.uses?.max == '' &&
+      this.preparationMode != 'innate' &&
+      this.preparationMode != 'atwill'
+
+    this.uses =
+      this.item.type == 'consumable'
+        ? this.item.system.quantity
+        : this.item.system?.uses?.value
+        ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
+        : ''
+
+    this.isRitual = this.item.type == 'spell' && this.item.system.properties.has('ritual')
+    this.spellLevel = this.item.system?.level ?? null
+    this.isPrepared = this.item.system?.preparation?.prepared
+
+    this.fastForward = this.itemConfig?.fastForward ?? null
+    this.useTargetHelper = this.itemConfig?.useTargetHelper ?? null
+  }
+
+  async setDescription() {
+    this.description = await TextEditor.enrichHTML(this.item.system.description.value)
+    this.activities.forEach(async (activity) => {
+      activity.setAllDescriptions()
+    })
+    this.defaultActivity = this.activities[0]
   }
 }

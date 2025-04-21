@@ -20,20 +20,12 @@ export class CustomTray extends AbilityTray {
   }
 
   generateTray() {
-    let actor = fromUuidSync(this.actorUuid)
-    let allItems = actor.items.filter((e) => e.system?.activities?.size)
+    let allItems = this.application.getActorAbilities(this.actorUuid)
     switch (this.category) {
       case 'common':
         this.abilities = allItems.filter(
-          (e) =>
-            (e.system?.activities?.some((activity) => activity?.activation?.type === 'action') ||
-              e.system?.activities?.some((activity) => activity?.activation?.type === 'bonus')) &&
-            (e.type != 'spell' ||
-              e.system.uses.max != '' ||
-              e.system.preparation.mode == 'innate' ||
-              e.system.preparation.mode == 'atwill'),
+          (e) => e.isActive && e.type !== 'spell' && e.type !== 'consumable',
         )
-
         this.id = 'common'
         break
       case 'classFeatures':
@@ -45,14 +37,12 @@ export class CustomTray extends AbilityTray {
         this.id = 'items'
         break
       case 'passive':
-        this.abilities = actor.items.filter(
-          (e) => e.system?.activities?.size < 1 && e.type !== 'equipment',
-        )
+        this.abilities = allItems.filter((e) => !e.isActive && e.type !== 'equipment')
         this.id = 'passive'
         break
       case 'reaction':
         this.abilities = allItems.filter((e) =>
-          e.system?.activities?.some((activity) => activity?.activation?.type === 'reaction'),
+          e.activities?.some((activity) => activity.activity?.activation?.type === 'reaction'),
         )
         this.id = 'reaction'
         break
@@ -66,7 +56,7 @@ export class CustomTray extends AbilityTray {
 
   static generateCustomTrays(actor, options = {}) {
     if (actor.type === 'npc') {
-      return CustomNpcTray.generateCustomTrays(actor)
+      return CustomNpcTray.generateCustomTrays(actor, { application: options.application })
     }
     let commonTray = new CustomTray({
       category: 'common',
@@ -121,8 +111,12 @@ export class CustomTray extends AbilityTray {
 
     if (!commonTray.savedData) {
       commonTray.abilities = commonTray.abilities
-        .map((e) => (exclusions.has(e) ? null : e)) // Set exclusions to null
-        .sort((a, b) => (a === null ? 1 : -1))
+        .map((e) => (exclusions.has(e) ? null : e))
+        .sort((a, b) => {
+          if (a === null && b !== null) return 1
+          if (a !== null && b === null) return -1
+          return 0 
+        })
     }
 
     let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]
@@ -136,7 +130,7 @@ export class CustomTray extends AbilityTray {
         e.cataegory === 'custom',
     )
     trays.forEach((e) => {
-      e._onCompleteGeneration()
+      e.onCompleteGeneration()
     })
 
     return trays

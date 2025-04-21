@@ -1,68 +1,44 @@
 <div class='tooltip-container'>
+
   <div class='tooltip-header'>
     <h2>{{name}}</h2>
-    <p class='tooltip-subtitle'>{{capitalize type}}</p>
+    <p class='tooltip-subtitle'>{{type}}</p>
 
   </div>
 
   <div class='tooltip-damage'>
-    <h3>{{damageCal item}}</h3>
-    {{#if @root.diceFormula}}
-      <div class='damage-type'>
-        {{@root.diceFormula}}
-      </div>
-    {{/if}}
+    <h3>{{damageLabel}}</h3>
+
+    <div class='damage-type'>
+      {{diceLabel}}
+    </div>
+
   </div>
 
   <div class='tooltip-description'>
-    {{#if (eq enrichedDescription undefined)}}
-      {{system.description.value}}
-    {{else}}
-      {{enrichedDescription}}
-    {{/if}}
+    {{description}}
   </div>
 
   <div class='tooltip-footer'>
 
-    <span class='action-tag'>{{@root.actionType}} </span>
+    <span class='action-tag'>
+
+      {{#if (eq @root.currentTray.category 'ritual')}}
+        {{ritualActivationTimeLabel}}
+      {{else}}
+        {{activationTimeLabel}}
+      {{/if}}
+    </span>
 
     <span class='tooltip-info'>
-      {{#if system.activities.contents.0.range.reach}}
-        <span class='range-icon'>
-          <i class='fa-solid fa-swords'></i>
-        </span>
-        {{system.activities.contents.0.range.reach}}
-        ft. Melee
-      {{/if}}
-
-      {{#if system.activities.contents.0.range.value}}
-        {{#if (eq system.type 'spell')}}
-          <span class='range-icon'>
-            <i class='fa-solid fa-wand-sparkles'></i>
-          </span>
-        {{else}}
-          <span class='range-icon'>
-            <i class='fa-solid fa-bow-arrow'></i>
-          </span>
-        {{/if}}
-        {{system.activities.contents.0.range.value}}
-
-        {{#if system.activities.contents.0.range.long}}
-          /
-          {{system.activities.contents.0.range.long}}
-        {{/if}}
-        ft.
-      {{/if}}
-
+      {{rangeLabel}}
       <span>
-        {{#if @root.saveType}}
-          <i class='fa-solid fa-shield-halved'></i>{{@root.saveType}}
-        {{/if}}
+        {{saveLabel}}
       </span>
     </span>
   </div>
 
   <div class='tooltip-upper-icon'>
-    {{@root.concentration}}
+    {{concentrationLabel}}
   </div>
 </div>

@@ -1,3 +1,5 @@
+import { AATItem } from "../items/item.js"
+
 export class AbilityTray {
   constructor(options = {}) {
     this.id = null
@@ -11,8 +13,9 @@ export class AbilityTray {
     this.label = options.label || ''
     this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
   }
-  async _onCompleteGeneration() {
-    this.enrichTrayDescriptions(this)
+  async onCompleteGeneration() {
+    // this.enrichTrayDescriptions(this)
+    // this.generateTooltips(this)
   }
 
   static padArray(arr, filler = null) {
@@ -43,13 +46,14 @@ export class AbilityTray {
       return
     }
     if (item.parent == this.actor) {
+      this.generateActorItems(this.actor)
       let tray
       let commonTray = this.customTrays.find((e) => e.id == 'common')
       switch (true) {
         case item.system.activities.size == 0:
           tray = this.customTrays.find((e) => e.id == 'passive')
           if (tray) {
-            AbilityTray.addToTray(item, tray)
+            AbilityTray.addToTray(new AATItem(item), tray)
           } else {
             let passiveTray = new CustomTray({
               category: 'passive',
@@ -63,7 +67,7 @@ export class AbilityTray {
         case item.system?.activities.some((e) => e?.activation?.type == 'reaction'):
           tray = this.customTrays.find((e) => e.id == 'reaction')
           if (tray) {
-            AbilityTray.addToTray(item, tray)
+            AbilityTray.addToTray(new AATItem(item), tray)
           } else {
             let reactionTray = new CustomTray({
               category: 'reaction',
@@ -77,7 +81,7 @@ export class AbilityTray {
         case item.type == 'consumable':
           tray = this.customTrays.find((e) => e.id == 'items')
           if (tray) {
-            AbilityTray.addToTray(item, tray)
+            AbilityTray.addToTray(new AATItem(item), tray)
           } else {
             let consumableTray = new CustomTray({
               category: 'items',
@@ -92,7 +96,7 @@ export class AbilityTray {
           tray = this.customTrays.find((e) => e.id == 'classFeatures')
 
           if (tray) {
-            AbilityTray.addToTray(item, tray)
+            AbilityTray.addToTray(new AATItem(item), tray)
           } else {
             let classFeatureTray = new CustomTray({
               category: 'classFeatures',
@@ -106,7 +110,7 @@ export class AbilityTray {
 
         default:
           if (commonTray) {
-            AbilityTray.addToTray(item, commonTray)
+            AbilityTray.addToTray(new AATItem(item), commonTray)
           } else {
             let commonTray = new CustomTray({
               category: 'common',
@@ -121,7 +125,7 @@ export class AbilityTray {
       this.render({ parts: ['centerTray'] })
       return
     } else {
-      AbilityTray.setDelayedData(item, item.parent)
+      AbilityTray.setDelayedData(new AATItem(item), item.parent)
     }
   }
 
@@ -130,11 +134,12 @@ export class AbilityTray {
     if (actor != this.actor) {
       return
     }
-
+    this.deleteActorAbility(item.id)
     let trays = this.customTrays
     trays.forEach((tray) => {
       tray.deleteItem(item.id)
     })
+    this.checkTrayDiff() 
     this.render({ parts: ['centerTray'] })
   }
 
@@ -171,7 +176,7 @@ export class AbilityTray {
 
   getSavedData() {
     let actor = fromUuidSync(this.actorUuid)
-
+    let allItems = this.application.getActorAbilities(this.actorUuid)
     if (!this.saveNpcData() && actor.type == 'npc') {
       return
     }
@@ -179,7 +184,7 @@ export class AbilityTray {
     if (data) {
       if (data[this.id]?.abilities != null) {
         this.abilities = JSON.parse(data[this.id].abilities).map((e) =>
-          e ? actor.items.get(e) : null,
+          e ? allItems.find((item) => item.id === e) : null,
         )
         this.abilities = AbilityTray.padArray(this.abilities)
         if (this.abilities.length == 0 || this.abilities.every((item) => item === null)) {
@@ -192,7 +197,7 @@ export class AbilityTray {
   }
 
   static setDelayedData(item, actor) {
-    if (!this.saveNpcData() && actor.type == 'npc') {
+    if (!game.settings.get('auto-action-tray', 'saveNpcData') && actor.type == 'npc') {
       return
     }
 
@@ -244,6 +249,14 @@ export class AbilityTray {
     return game.settings.get('auto-action-tray', 'saveNpcData')
   }
 
+  checkDiff() {
+    let allItems = this.application.getActorAbilities(this.actorUuid)
+    this.abilities = this.abilities.map((e) => {
+      const match = allItems.find((item) => item?.id === e?.id)
+      return match || e
+    })
+  }
+
   async enrichTrayDescriptions(tray) {
     tray.abilities = await Promise.all(
       tray.abilities.map(async (item) => {
@@ -256,8 +269,24 @@ export class AbilityTray {
     )
   }
 
+  async generateTooltips(tray) {
+    tray.abilities = await Promise.all(
+      tray.abilities.map(async (item) => {
+        if (item) {
+          return this.generateTooltip(item)
+        } else {
+          return item
+        }
+      }),
+    )
+  }
+
   async enrichDescription(item) {
-    item['enrichedDescription'] = await TextEditor.enrichHTML(item.system.description.value, {})
+    item['enrichedDescription'] = await TextEditor.enrichHTML(item.description, {})
+    return item
+  }
+  async generateTooltip(item) {
+    // item['tooltip'] = await item.generateTooltip()
     return item
   }
 }

@@ -1,5 +1,5 @@
 <div class='spell-item-container'>
-  {{#if (eq item.system.preparation.mode 'pact')}}
+  {{#if (eq item.preparationMode 'pact')}}
     {{> AAT.item-spell-pact item=item index=@index tray=tray}}
   {{else}}
   
@@ -7,17 +7,18 @@
       <img 
         src='{{item.img}}' 
         alt='{{item.name}}' 
-        data-item-id='{{item._id}}' 
+        data-item-id='{{item.id}}' 
         data-index='{{@index}}' 
         data-trayid='{{tray.id}}' 
       />
     {{else}}
       {{#if (eq tray.type 'static')}}
-        {{#if (eq item.system.level tray.spellLevel)}}
+
+        {{#if (eq item.spellLevel tray.spellLevel)}}
           <img 
             src='{{item.img}}' 
             alt='{{item.name}}' 
-            data-item-id='{{item._id}}' 
+            data-item-id='{{item.id}}' 
             data-index='{{@index}}' 
             data-trayid='{{tray.id}}' 
           />
@@ -25,7 +26,7 @@
           <img 
             src='{{item.img}}' 
             alt='{{item.name}}' 
-            data-item-id='{{item._id}}' 
+            data-item-id='{{item.id}}' 
             data-index='{{@index}}' 
             data-trayid='{{tray.id}}' 
             class='spell-item-container-img-upcast' 
@@ -43,13 +44,13 @@
       {{/if}}
     {{/if}}
   
-    {{#if (eq item.system.uses.max '')}}
+    {{#if (eq item.uses '')}}
       <div class='spell-item-container-text'>
-        {{getRomanNumeral item.system.level}}
+        {{getRomanNumeral item.spellLevel}}
       </div>
     {{else}}
       <div class='consumable-count'>
-        {{item.system.uses.value}} / {{item.system.uses.max}}
+        {{item.uses}}
       </div>
     {{/if}}
   {{/if}}

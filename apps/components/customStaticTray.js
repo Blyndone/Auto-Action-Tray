@@ -33,7 +33,7 @@ export class CustomStaticTray extends AbilityTray {
     super(options)
     this.id = null
     this.keyItem
-    this.keyItemUuid = options.keyItemUuid
+    this.keyItemId = options.keyItemId
     this.keyItemUses = 0
     this.keyItemUsesMax = 0
     this.type = 'static'
@@ -47,15 +47,15 @@ export class CustomStaticTray extends AbilityTray {
   generateLegendaryTray(actor) {
     this.keyItemUsesMax = actor.system.resources?.legact?.max
     this.keyItemUses = actor.system.resources?.legact?.value
-    this.keyItem = actor.items.find((e) => e.id == this.keyItemUuid)
+    let allItems = this.application.getActorAbilities(this.actorUuid)
+    this.keyItem = allItems.find((e) => e.id == this.keyItemId)
 
-    let allItems = actor.items.filter((e) => e.system?.activities?.size)
 
     this.abilities.push(
       ...allItems.filter(
         (e) =>
-          e.system.activities.contents[0]?.activation.type == 'legendary' ||
-          e.system?.activities?.contents[0]?.consumption?.targets[0]?.target ==
+          e.item.system.activities.contents[0]?.activation.type == 'legendary' ||
+          e.item.system?.activities?.contents[0]?.consumption?.targets[0]?.target ==
             'resources.legact.value',
       ),
     )
@@ -63,12 +63,12 @@ export class CustomStaticTray extends AbilityTray {
     while (this.abilities.length % this.rowCount !== 0) {
       this.abilities.push(null)
     }
-    this.abilities.push(this.keyItem)
+    this.abilities.push(allItems.find(e => e.id == this.keyItem.id))
 
-    this.id = 'customStaticTray' + '-' + this.keyItemUuid
+    this.id = 'customStaticTray' + '-' + this.keyItemId
 
     this.icon = this.getIcon(this.keyItem, actor)
-    this._onCompleteGeneration()
+    this.onCompleteGeneration()
   }
 
   generateTray() {
@@ -77,24 +77,24 @@ export class CustomStaticTray extends AbilityTray {
       this.generateLegendaryTray(actor)
       return
     }
-    let allItems = actor.items.filter((e) => e.system?.activities?.size)
+    let allItems = this.application.getActorAbilities(this.actorUuid)
 
-    this.keyItem = actor.items.find((e) => e.id == this.keyItemUuid)
+    this.keyItem = allItems.find((e) => e.id == this.keyItemId)
     this.abilities.push(this.keyItem)
-    this.keyItemUses = this.keyItem.system?.uses?.value
-    this.keyItemUsesMax = this.keyItem.system?.uses?.max
+    this.keyItemUses = this.keyItem.item.system?.uses?.value
+    this.keyItemUsesMax = this.keyItem.item.system?.uses?.max
     this.abilities.push(
       ...allItems.filter((e) =>
-        e.system.activities?.some((activity) =>
-          activity.consumption?.targets?.some((target) => target.target === this.keyItemUuid),
+        e.activities?.some((activity) =>
+          activity.activity.consumption?.targets?.some((target) => target.target === this.keyItemId),
         ),
       ),
     )
 
-    this.id = 'customStaticTray' + '-' + this.keyItemUuid
+    this.id = 'customStaticTray' + '-' + this.keyItemId
 
     this.icon = this.getIcon(this.keyItem, actor)
-    this._onCompleteGeneration()
+    this.onCompleteGeneration()
   }
 
   static setCustomStaticTray(itemUuid, actor) {
@@ -108,7 +108,7 @@ export class CustomStaticTray extends AbilityTray {
         }
       }
 
-      let temparr = [...new Set([...data, itemUuid])]
+      let temparr = [...new Set([...data, itemId])]
       actor.setFlag('auto-action-tray', 'data', {
         customStaticTrays: { trays: JSON.stringify(temparr) },
       })
@@ -132,10 +132,10 @@ export class CustomStaticTray extends AbilityTray {
       return CustomStaticTray.classIcons[ret]
     }
 
-    let requirements = keyItem.system?.requirements
-    let parse = Object.keys(CustomStaticTray.classIcons).filter((e) =>
-      keyItem?.requirements?.toLocaleLowerCase().includes(e),
-    )[0]
+    // let requirements = keyItem.item?.system?.requirements
+    // let parse = Object.keys(CustomStaticTray.classIcons).filter((e) =>
+    //   keyItem?.requirements?.toLocaleLowerCase().includes(e),
+    // )[0]
     let actorClasses = actor._classes
     let classarr = Object.keys(actor._classes)
     classarr = classarr.sort(

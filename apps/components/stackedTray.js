@@ -44,6 +44,12 @@ export class StackedTray {
     });
   }
 
+  checkDiff() {
+    this.trays.forEach(tray => {
+      tray.checkDiff();
+    });
+  }
+
   setTrayPositions(trayPositions) {
     this.trays[0].xPos =
       trayPositions[0] >= 0 &&

@@ -1,18 +1,13 @@
 export class DamageCalc {
   static damageCalc(item, options) {
-    return
     if (options.data.root['animating']) {
       return
     }
     options.data.root['diceFormula'] = ''
-    options.data.root['actionType'] = ''
     options.data.root['saveType'] = ''
-    options.data.root['concentration'] = ''
     let currentTray = options.data.root.currentTray
     let i = 0
 
-    options.data.root['actionType'] = this.getActionType(item, options)
-    options.data.root['concentration'] = item.requiresConcentration ? 'Concentration' : ''
     let activities = this.getActivities(item)
 
     if (activities.length == 0 || (activities.length == 1 && activities[0].type == 'utility')) {
@@ -32,7 +27,6 @@ export class DamageCalc {
     }
 
     let rollData = this.getRollData(activity, scaling['scaling'])
-    let saveDc = activities.map((activity) => this.getSaveDc(activity))
 
     let dice = '<i class="fa-solid fa-dice-d6"></i> '
 
@@ -253,22 +247,18 @@ export class DamageCalc {
     return damageParts
   }
 
-  static getRollData(activity, scalingSteps) {
-    if (
-      !activity ||
-      activity.type == 'summon' ||
-      activity.type == 'enchantment' ||
-      activity.type == 'utility' ||
-      activity.type == 'forward' ||
-      activity.type == 'check'
-    )
+  static getRollData(activity, scalingSteps, config = {}) {
+    const excludedTypes = new Set(['summon', 'enchantment', 'utility', 'forward', 'check'])
+    if (!activity || excludedTypes.has(activity.type)) {
       return
+    }
+
     class Scaling {
+      #increase
+
       constructor(increase) {
         this.#increase = increase
       }
-
-      #increase
 
       get increase() {
         return this.#increase
@@ -284,30 +274,36 @@ export class DamageCalc {
     }
 
     let rollConfig = {}
-    let config = {}
-
     let rollData = activity.getRollData()
     rollData['scaling'] = new Scaling(scalingSteps - 1)
 
-    if (activity?.damage?.parts) {
+    if (activity?.damage?.parts?.length > 0) {
       rollConfig.rolls = activity.damage.parts
-        .map((d, index) => activity._processDamagePart(d, rollConfig, rollData, index))
-        .filter((d) => d.parts.length)
-        .concat(config.rolls ?? [])
-    } else {
-      const rollConfig = foundry.utils.mergeObject(
-        { critical: { allow: false }, scaling: 0 },
-        config,
-      )
-      rollConfig.rolls = [
-        activity._processDamagePart(activity.healing, rollConfig, rollData),
-      ].concat(config.rolls ?? [])
+        .map((part, index) => activity._processDamagePart(part, rollConfig, rollData, index))
+        .filter((processedPart) => processedPart.parts && processedPart.parts.length > 0)
 
-      return rollConfig
+      if (config.rolls) {
+        rollConfig.rolls = rollConfig.rolls.concat(config.rolls)
+      }
+    } else if (activity?.healing) {
+      foundry.utils.mergeObject(rollConfig, { critical: { allow: false }, scaling: 0 }, config)
+
+      const healingRollPart = activity._processDamagePart(activity.healing, rollConfig, rollData)
+
+      rollConfig.rolls =
+        healingRollPart.parts && healingRollPart.parts.length > 0 ? [healingRollPart] : []
+
+      if (config.rolls) {
+        rollConfig.rolls = rollConfig.rolls.concat(config.rolls)
+      }
+    } else {
+      // console.warn('Activity processed for rolls but has no damage or healing parts:', activity)
+      rollConfig.rolls = config.rolls ?? []
     }
 
     return rollConfig
   }
+
   static getActionType(item, options) {
     let activation
     activation = item.system?.activities?.contents?.[0]?.activation

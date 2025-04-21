@@ -1,151 +1,143 @@
-import { AbilityTray } from "./abilityTray.js";
+import { AbilityTray } from './abilityTray.js'
 
 export class ActivityTray extends AbilityTray {
   constructor(options = {}) {
-    super(options);
-    this.id = "activity";
-    this.abilities = [];
-    this.actorUuid = options.actorUuid || null;
-    this.setInactive();
-    this.type = "activity";
-    this.generateTray();
-    this.selectedActivity = null;
-    this.rejectActivity = null;
-    this.useSlot = true;
-    this.label = "";
+    super(options)
+    this.id = 'activity'
+    this.abilities = []
+    this.actorUuid = options.actorUuid || null
+    this.setInactive()
+    this.type = 'activity'
+    this.generateTray()
+    this.selectedActivity = null
+    this.rejectActivity = null
+    this.useSlot = true
+    this.label = ''
   }
 
   generateTray() {}
 
   static generateActivityTray(actor) {
     return new ActivityTray({
-      category: "activity",
-      id: "activity",
-      actorUuid: actor.uuid
-    });
+      category: 'activity',
+      id: 'activity',
+      actorUuid: actor.uuid,
+    })
   }
 
-  static checkSpellConfigurable(item) { 
-    if (item.type != "spell") {
-      return true;
-    } else { 
-      return item.system.uses.max != '' || item.system.preparation.mode == 'innate' || item.system.preparation.mode == 'atwill'
+  static checkSpellConfigurable(item) {
+    if (item.type != 'spell') {
+      return true
+    } else {
+      return item.isScaledSpell
     }
   }
 
   async setActivities(item, actor) {
-    this.abilities = [];
+    this.abilities = []
     if (
-      item.type == "spell" &&
-      item.system.activities.size == 1 &&
-      item.system.level > 0 &&
+      item.type == 'spell' &&
+      item.activities.length == 1 &&
+      item.spellLevel > 0 &&
       ActivityTray.checkSpellConfigurable(item)
     ) {
-      Object.keys(actor.system.spells).forEach(spell => {
+      Object.keys(actor.system.spells).forEach((spell) => {
         if (
-          item.system.level <= actor.system.spells[spell].level &&
+          item.spellLevel <= actor.system.spells[spell].level &&
           actor.system.spells[spell].max > 0
         ) {
-          let spellData = { actorSpellData: actor.system.spells[spell] };
-          let tempitem = item.clone();
-          tempitem.itemId = item.id;
-          foundry.utils.mergeObject(tempitem, spellData);
-
-          this.abilities.push(tempitem);
+          let spellData = { actorSpellData: actor.system.spells[spell] }
+          let tempitem =  {...item}
+          tempitem.itemId = item.id
+          tempitem.tooltip = tempitem.defaultActivity.tooltips.find(e=> e.spellLevel == spellData.actorSpellData.level)
+          foundry.utils.mergeObject(tempitem, spellData)
+          this.abilities.push(tempitem)
         }
-      });
+      })
     } else {
-      this.abilities = item.system.activities.map(e => e);
+      this.abilities = item.activities.map((e) => e)
     }
   }
 
   async getActivities(item, actor) {
-    this.setActivities(item, actor);
-    return this.abilities;
+    this.setActivities(item, actor)
+    return this.abilities
   }
 
   static checkActivity(item) {
-    return item.system.activities.size > 1;
+    return item.system.activities.size > 1
   }
 
   async selectAbility(item, actor, hotbar) {
-    this.label = item.name;
-    hotbar.selectingActivity = true;
-    hotbar.animationHandler.pushTray("activity");
+    this.label = item.name
+    hotbar.selectingActivity = true
+    hotbar.animationHandler.pushTray('activity')
 
-    let act;
+    let act
     try {
       act = await new Promise((resolve, reject) => {
-        this.selectedActivity = resolve;
-        this.rejectActivity = reject;
-      });
+        this.selectedActivity = resolve
+        this.rejectActivity = reject
+      })
     } catch (error) {
-      console.log("AAT - Activity selection canceled");
-      act = null;
+      console.log('AAT - Activity selection canceled')
+      act = null
     }
-    hotbar.selectingActivity = false;
-    return act;
+    hotbar.selectingActivity = false
+    return act
   }
 
   static useActivity(event, target) {
-    let selectedSpellLevel = target.dataset.selectedspelllevel;
-    let useSlot = this.activityTray.useSlot;
-    if (
-      useSlot &&
-      !ActivityTray.checkSlotAvailable.bind(this)(selectedSpellLevel)
-    ) {
-      return;
+    let selectedSpellLevel = target.dataset.selectedspelllevel
+    let useSlot = this.activityTray.useSlot
+    if (useSlot && !ActivityTray.checkSlotAvailable.bind(this)(selectedSpellLevel)) {
+      return
     }
-    let options = {};
+    let options = {}
 
-    let itemId;
-    if (target.dataset.type == "spell") {
-      itemId = this.actor.items.get(target.dataset.itemId).system.activities
-        .contents[0].id;
+    let itemId
+    if (target.dataset.type == 'spell') {
+      itemId = this.actor.items.get(target.dataset.itemId).system.activities.contents[0].id
     } else {
-      itemId = target.dataset.itemId;
+      itemId = target.dataset.itemId
     }
 
     if (useSlot) {
-      options = { slot: useSlot, selectedSpellLevel: selectedSpellLevel };
+      options = { slot: useSlot, selectedSpellLevel: selectedSpellLevel }
     }
 
     if (this.activityTray.selectedActivity) {
       this.activityTray.selectedActivity({
         itemId: itemId,
         selectedSpellLevel: selectedSpellLevel,
-        useSlot: useSlot
-      });
-      this.activityTray.selectedActivity = null;
-      this.activityTray.useSlot = true;
+        useSlot: useSlot,
+      })
+      this.activityTray.selectedActivity = null
+      this.activityTray.useSlot = true
     }
   }
   static checkSlotAvailable(selectedSpellLevel) {
-    let spellLevel = selectedSpellLevel || this.activityTray.slot;
+    let spellLevel = selectedSpellLevel || this.activityTray.slot
 
-    let slot = spellLevel == "pact" ? pact : `spell${spellLevel}`;
+    let slot = spellLevel == 'pact' ? pact : `spell${spellLevel}`
     if (this.actor.system?.spells[slot]?.value == 0) {
-      ui.notifications.warn(
-        `You don't have a slot of level ${spellLevel} available`
-      );
-      return false;
+      ui.notifications.warn(`You don't have a slot of level ${spellLevel} available`)
+      return false
     }
-    return true;
+    return true
   }
 
   static useSlot(event) {
-    this.activityTray.useSlot = event.target.checked;
+    this.activityTray.useSlot = event.target.checked
   }
   static cancelSelection(event, target) {
-    this.activityTray.rejectActivity(
-      new Error("User canceled activity selection")
-    );
-    this.rejectActivity = null;
+    this.activityTray.rejectActivity(new Error('User canceled activity selection'))
+    this.rejectActivity = null
   }
   rejectActivity() {
     if (this.rejectActivity) {
-      this.rejectActivity(new Error("User canceled activity selection"));
-      this.rejectActivity = null;
+      this.rejectActivity(new Error('User canceled activity selection'))
+      this.rejectActivity = null
     }
   }
 }

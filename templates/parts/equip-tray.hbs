@@ -2,13 +2,13 @@
   {{#if itemConfigItem}}
     <div class='transparent-box ability-selection-input' style='position: absolute;'>
       <img
-        class='{{itemConfigItem.system.rarity}}-item'
+        class='{{itemConfigItem.rarity}}-item'
         data-drag='true'
-        data-item-id='{{equipmentTray.rangedWeapon._id}}'
+        data-item-id='{{equipmentTray.rangedWeapon.id}}'
         data-index='itemConfigItem'
         src='{{itemConfigItem.img}}'
         alt='{{itemConfigItem.name}}'
-        data-tooltip="{{> 'AAT.item-tooltip' item=itemConfigItem}}"
+        data-tooltip="{{> 'AAT.item-tooltip' itemConfigItem.tooltip}}"
         data-tooltip-direction='UP'
       />
     </div>
@@ -24,15 +24,15 @@
 
 {{#if equipmentTray.meleeWeapon}}
   <img
-    class='{{equipmentTray.meleeWeapon.system.rarity}}-item'
-    data-item-id='{{equipmentTray.meleeWeapon._id}}'
+    class='{{equipmentTray.meleeWeapon.rarity}}-item'
+    data-item-id='{{equipmentTray.meleeWeapon.id}}'
     data-drag='true'
     data-action='useItem'
     data-index='meleeWeapon'
     src='{{equipmentTray.meleeWeapon.img}}'
     alt='{{equipmentTray.meleeWeapon.name}}'
-    {{#with equipmentTray.meleeWeapon}}
-      data-tooltip="{{> 'AAT.item-tooltip' item=this}}"
+    {{#with equipmentTray.meleeWeapon}}a
+      data-tooltip="{{> 'AAT.item-tooltip' this.tooltip}}"
     {{/with}}
     data-tooltip-direction='UP'
   />
@@ -42,15 +42,15 @@
 
 {{#if equipmentTray.rangedWeapon}}
   <img
-    class='{{equipmentTray.rangedWeapon.system.rarity}}-item'
+    class='{{equipmentTray.rangedWeapon.rarity}}-item'
     data-drag='true'
-    data-item-id='{{equipmentTray.rangedWeapon._id}}'
+    data-item-id='{{equipmentTray.rangedWeapon.id}}'
     data-action='useItem'
     data-index='rangedWeapon'
     src='{{equipmentTray.rangedWeapon.img}}'
     alt='{{equipmentTray.rangedWeapon.name}}'
     {{#with equipmentTray.rangedWeapon}}
-      data-tooltip="{{> 'AAT.item-tooltip' item=this}}"
+      data-tooltip="{{> 'AAT.item-tooltip' this.tooltip}}"
     {{/with}}
     data-tooltip-direction='UP'
   />
