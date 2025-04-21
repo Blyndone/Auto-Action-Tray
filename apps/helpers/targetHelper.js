@@ -1,5 +1,5 @@
-
 import { TargetLineCombo } from './targetLineCombo.js'
+import { AATActivity } from '../items/activity.js'
 
 export class TargetHelper {
   constructor(options) {
@@ -436,6 +436,10 @@ export class TargetHelper {
   }
 
   getTargetCount(item, activity, selectedSpellLevel) {
+    let spellLevel = selectedSpellLevel.slot
+    if (activity?.itemId && !(activity instanceof AATActivity)) {
+      activity = item.activities.find((e) => e.id == activity.itemId)
+    }
     let targetCount = 1
     if (!activity) {
       activity = item.defaultActivity
@@ -444,13 +448,17 @@ export class TargetHelper {
       return activity.tooltip?.targetCount
     }
     if (selectedSpellLevel.slot) {
-      selectedSpellLevel = parseInt(selectedSpellLevel.slot.replaceAll(/[a-zA-Z]/g, ''))
-      targetCount =
-        item.activities
-          .find((e) => e.id == activity.id)
-          .tooltips.find((e) => e.spellLevel == selectedSpellLevel).targetCount
+      if ( selectedSpellLevel.slot != 'pact') {
+        spellLevel = parseInt(selectedSpellLevel.slot.replaceAll(/[a-zA-Z]/g, ''))
+      } else { 
+        spellLevel = item.pactLevel
+      } 
+
+      targetCount = item.activities
+        .find((e) => e.id == activity.id)
+        .tooltips.find((e) => e.spellLevel == spellLevel).targetCount
     }
-  
+
     return targetCount
   }
 }

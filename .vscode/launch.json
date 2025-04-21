@@ -1,24 +1,37 @@
+// {
+//   "version": "0.2.0",
+//   "configurations": [
+//     {
+//       "name": "C/C++ Runner: Debug Session",
+//       "type": "cppdbg",
+//       "request": "launch",
+//       "args": [],
+//       "stopAtEntry": false,
+//       "externalConsole": true,
+//       "cwd": "c:/Users/Rickd/AppData/Local/FoundryVTT/Data/modules/auto-action-tray/foundry",
+//       "program": "c:/Users/Rickd/AppData/Local/FoundryVTT/Data/modules/auto-action-tray/foundry/build/Debug/outDebug",
+//       "MIMode": "gdb",
+//       "miDebuggerPath": "gdb",
+//       "setupCommands": [
+//         {
+//           "description": "Enable pretty-printing for gdb",
+//           "text": "-enable-pretty-printing",
+//           "ignoreFailures": true
+//         }
+//       ]
+//     }
+//   ]
+// }
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "C/C++ Runner: Debug Session",
-      "type": "cppdbg",
-      "request": "launch",
-      "args": [],
-      "stopAtEntry": false,
-      "externalConsole": true,
-      "cwd": "c:/Users/Rickd/AppData/Local/FoundryVTT/Data/modules/auto-action-tray/foundry",
-      "program": "c:/Users/Rickd/AppData/Local/FoundryVTT/Data/modules/auto-action-tray/foundry/build/Debug/outDebug",
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Foundry VTT",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true
     }
   ]
 }

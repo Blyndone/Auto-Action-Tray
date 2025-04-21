@@ -1,6 +1,5 @@
 import { AbilityTray } from './abilityTray.js'
 import { CustomNpcTray } from './customNpcTray.js'
-import { ActivityTray } from './activityTray.js'
 
 export class CustomTray extends AbilityTray {
   constructor(options = {}) {
@@ -23,13 +22,23 @@ export class CustomTray extends AbilityTray {
     let allItems = this.application.getActorAbilities(this.actorUuid)
     switch (this.category) {
       case 'common':
-        this.abilities = allItems.filter(
-          (e) => e.isActive && e.type !== 'spell' && e.type !== 'consumable',
-        )
+        this.abilities = allItems
+          .filter(
+            (e) =>
+              e.isActive &&
+              (e.type !== 'spell' || e.isScaledSpell == false) &&
+              e.type !== 'consumable',
+          )
+          .sort((a, b) => {
+            if (a.type === 'spell' && b.type !== 'spell') return 1
+            if (a.type !== 'spell' && b.type === 'spell') return -1
+            return 0
+          })
+
         this.id = 'common'
         break
       case 'classFeatures':
-        this.abilities = allItems.filter((e) => e.type === 'feat')
+        this.abilities = allItems.filter((e) => e.isActive && e.type === 'feat')
         this.id = 'classFeatures'
         break
       case 'items':
@@ -110,13 +119,15 @@ export class CustomTray extends AbilityTray {
     ])
 
     if (!commonTray.savedData) {
-      commonTray.abilities = commonTray.abilities
-        .map((e) => (exclusions.has(e) ? null : e))
-        .sort((a, b) => {
-          if (a === null && b !== null) return 1
-          if (a !== null && b === null) return -1
-          return 0 
-        })
+      const filtered = commonTray.abilities.map((e) => (exclusions.has(e) ? null : e))
+
+      const nonSpells = filtered.filter((e) => e !== null && e.type !== 'spell')
+      const spells = filtered.filter((e) => e !== null && e.type === 'spell')
+
+      while (nonSpells.length % commonTray.rowCount !== 0) {
+        nonSpells.push(null)
+      }
+      commonTray.abilities = AbilityTray.padArray([...nonSpells, ...spells])
     }
 
     let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]

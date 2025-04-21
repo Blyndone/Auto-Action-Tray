@@ -1,15 +1,17 @@
 import { AATItemTooltip } from "./itemTooltip.js";
+import { AATItem } from "./item.js";
 export class AATActivity {
   constructor(item, activity) {
     if (!activity) {
       return null;
     }
     this.item = item;
-    this.img = activity.img ? activity.img : item.img;
+
+    this.img = activity.type == "attack" ? item.img : activity.img;
+    this.id = activity.id ? activity.id : item.id;
     this.activity = activity;
     this.maxSpellLevel = item.maxSpellLevel;
     this.isScaledSpell = item.isScaledSpell;
-    this.maxSpellLevel = item.maxSpellLevel;
 
     if (
       item.type == "spell" &&
@@ -22,6 +24,17 @@ export class AATActivity {
       this.tooltip = new AATItemTooltip(item, this);
     }
     this.name = activity.name ? activity.name : activity.item.name;
+  }
+  static async create(item, activity) {
+    if (!activity) return null;
+
+    if (activity.type === "cast") {
+      const spell = await fromUuid(activity.spell.uuid);
+      spell.actor = item.actor;
+      item = new AATItem(spell);
+    }
+
+    return new AATActivity(item, activity);
   }
 
   generateSpellTooltips(item, activity) {

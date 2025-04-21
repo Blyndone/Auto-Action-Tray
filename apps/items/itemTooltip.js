@@ -396,17 +396,17 @@ export class AATItemTooltip {
       case item?.type == 'weapon' && activity?.type == 'attack':
         targetCount = 1
         break
+      case activity?.target?.affects?.type == 'self' || activity?.target?.affects?.type == 'space':
+        targetCount = 0
+        break
       case item.type == 'spell' && activity?.target?.affects?.count:
         targetCount = activity?.target?.affects?.count || 1
         break
       case activity?.target?.template?.count > 0:
         targetCount = 0
         break
-      case activity?.target?.affects?.type == 'self':
-        targetCount = 0
-        break
       default:
-        targetCount = activity?.target?.affect?.count || 1
+        targetCount = activity?.target?.affects?.count || 1
         break
     }
     this.targetCount = targetCount

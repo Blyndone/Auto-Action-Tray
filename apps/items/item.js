@@ -43,12 +43,18 @@ export class AATItem {
     } else {
       this.tooltip = new AATItemTooltip(this, null)
     }
+    if (this.preparationMode == 'pact') {
+      this.pactLevel = this.actor.system?.spells?.pact?.level
+      this.defaultActivity = this.activities.find((a) => a.tooltips.find(e=> e.spellLevel == this.pactLevel))
+      this.tooltip = this.defaultActivity.tooltips.find(e=> e.spellLevel == this.pactLevel)
+    }
 
+    this.checkActivities()
     this.setDescription()
   }
   getActorMaxSpellLevel(actor) {
     let slots = actor.system.spells
-
+    let pactLevel = actor.system.spells.pact?.level ?? 0
     let levels = Object.keys(slots)
       .filter((key) => slots[key].max > 0)
       .map((key) => slots[key].level)
@@ -56,7 +62,7 @@ export class AATItem {
     if (levels.length === 0) {
       return 0
     }
-    return Math.max(...levels)
+    return Math.max(...levels, pactLevel)
   }
 
   setValues() {
@@ -87,5 +93,19 @@ export class AATItem {
       activity.setAllDescriptions()
     })
     this.defaultActivity = this.activities[0]
+  }
+  async checkActivities() {
+    this.activities.forEach(async (activity) => {
+      if (activity.activity.type == 'cast') {
+        let spell = await fromUuid(activity?.activity?.spell?.uuid)
+        spell = { ...spell, actor: this.actor }
+        if (spell) {
+          activity = new AATActivity(spell, activity.activity)
+          activity.setAllDescriptions()
+        } else {
+          console.warn('AAT | Activity not found')
+        }
+      }
+    })
   }
 }

@@ -237,12 +237,17 @@ export class Actions {
     }
 
     selectedSpellLevel =
-      item?.preparationMode == 'pact' ? { slot: 'pact' } : { slot: selectedSpellLevel ? 'spell' + selectedSpellLevel : null }
+      item?.preparationMode == 'pact'
+        ? { slot: 'pact' }
+        : { slot: selectedSpellLevel ? 'spell' + selectedSpellLevel : null }
 
     return { activity: activity, selectedSpellLevel: selectedSpellLevel }
   }
 
   static async getTargets(item, activity, selectedSpellLevel) {
+    // if (selectedSpellLevel.slot == 'pact') {
+    //   selectedSpellLevel.slot = item.pactLevel
+    // }
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
     let itemConfig = item.itemConfig
@@ -291,9 +296,21 @@ export class Actions {
 
   static async useItem(event, target) {
     game.tooltip.deactivate()
+    let ritualCast = (target.dataset.trayId == 'ritual')
+
     let itemId = target.dataset.itemId
     let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
     this.activityTray.getActivities(item, this.actor)
+
+    if (ritualCast) {
+      await item.defaultActivity.activity.use(
+        {
+          consume: { spellSlot: false },
+        },
+        { configure: false },
+      )
+      return
+    }
 
     let options = await Actions.selectActivity.bind(this)(item)
     if (!options) return
@@ -304,7 +321,7 @@ export class Actions {
     let currentSpellName = this.conditionTray.checkConcentration()
     game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')
     if (
-      item?.system?.properties.has('concentration') &&
+      item?.concentration &&
       currentSpellName != null &&
       game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')
     ) {

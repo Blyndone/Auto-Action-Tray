@@ -98,7 +98,7 @@ export class CustomNpcTray extends AbilityTray {
         this.id = 'common'
         break
       case 'classFeatures':
-        this.abilities = allItems.filter((e) => e.type === 'feat')
+        this.abilities = allItems.filter((e) => e.isActive && e.type === 'feat')
         this.id = 'classFeatures'
         break
       case 'items':
@@ -106,7 +106,7 @@ export class CustomNpcTray extends AbilityTray {
         this.id = 'items'
         break
       case 'passive':
-        this.abilities = allItems.filter((e) => e.isActive && e.type !== 'equipment')
+        this.abilities = allItems.filter((e) => !e.isActive && e.type !== 'equipment')
         this.id = 'passive'
         break
       case 'reaction':

@@ -363,7 +363,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.effectsTray.setEffects()
     this.stackedTray.setActor(this.actor)
     this.checkTrayDiff()
-    if (this.animating == false) {
+    if (!this.animating) {
       this.render({ parts: ['centerTray'] })
     }
   }

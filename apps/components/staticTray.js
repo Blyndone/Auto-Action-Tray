@@ -67,7 +67,8 @@ export class StaticTray extends AbilityTray {
           .filter(
             (e) =>
                e.spellLevel <= this.spellLevel &&
-               e.spellLevel != 0 &&
+              e.spellLevel != 0 &&
+              e.isScaledSpell  &&
               (e.item.system.uses?.max == '' ||
                 (ActivityTray.checkSpellConfigurable(e.item) && e.item.system.level == this.spellLevel)) &&
               (e.isPrepared == true ||
