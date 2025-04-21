@@ -1,4 +1,4 @@
-import { DamageCalc } from './damageCalc.js'
+
 
 export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('indexRange', function (v1, v2, v3, options) {
@@ -34,9 +34,7 @@ export function registerHandlebarsHelpers() {
     }
   })
 
-  Handlebars.registerHelper('damageCal', function (item, options) {
-    return DamageCalc.damageCalc(item, options)
-  })
+
 
   Handlebars.registerHelper('getDuration', function (duration) {
     if (duration == 'Condition') return 'Condition'
