@@ -238,23 +238,45 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   generateActorItems(actor) {
-    if (this.savedActors.find((a) => a.id == actor.id)) { 
+    if (
+      this.savedActors.find((a) => a.tokenId == actor?.token?.id && a.id == actor.id ) 
+      ||
+      this.savedActors.find((a) => a.id == actor.id && a.tokenId == undefined)
+    ) {
       this.checkTrayDiff()
       return
     }
     if (this.savedActors.length > 10) {
-      this.savedActors.shift();
+      this.savedActors.shift()
+    }
+    let items
+    if (actor?.token?.isLinked || actor.token == null) {
+      items = actor.items
+    } else {
+      items = actor.token.delta.items
     }
     this.savedActors.push({
       name: actor.name,
       id: actor.id,
+      tokenId: actor?.token?.id,
       type: actor.type,
-      abilities: actor.items.map((i) => new AATItem(i)),
+      abilities: items.map((i) => new AATItem(i)),
     })
   }
   getActorAbilities(actorUuid) {
-    return this.savedActors.find((actor) => actor.id == fromUuidSync(actorUuid).id).abilities
+    const actorUuidObj = fromUuidSync(actorUuid)
+    const tokenId = actorUuidObj.token?.id
+    const actorId = actorUuidObj.id
+
+    if (tokenId) {
+      const savedToken = this.savedActors.find((token) => token.tokenId === tokenId)
+      return savedToken.abilities
+    } else {
+      const savedActor = this.savedActors.find((actor) => actor.id === actorId)
+      return savedActor?.abilities ?? null
+    }
   }
+
   deleteActorAbility(itemId) {
     const actor = this.savedActors.find((a) => a.id === this.actor.id)
     if (actor) {
