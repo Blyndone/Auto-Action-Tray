@@ -46,7 +46,10 @@ export class CustomTray extends AbilityTray {
         this.id = 'items'
         break
       case 'passive':
-        this.abilities = allItems.filter((e) => !e.isActive && e.type !== 'equipment')
+        const excludedTypes = ['equipment', 'loot', 'container', 'class', 'background', 'race', 'subclass', 'consumable']
+
+        this.abilities = allItems.filter((e) => !e.isActive && !excludedTypes.includes(e.type))
+
         this.id = 'passive'
         break
       case 'reaction':
