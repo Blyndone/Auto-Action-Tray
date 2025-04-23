@@ -296,7 +296,7 @@ export class Actions {
 
   static async useItem(event, target) {
     game.tooltip.deactivate()
-    let ritualCast = (target.dataset.trayId == 'ritual')
+    let ritualCast = (target.dataset.trayid == 'ritual')
 
     let itemId = target.dataset.itemId
     let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
