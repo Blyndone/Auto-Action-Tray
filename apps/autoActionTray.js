@@ -239,8 +239,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   generateActorItems(actor) {
     if (
-      this.savedActors.find((a) => a.tokenId == actor?.token?.id && a.id == actor.id ) 
-      ||
+      this.savedActors.find((a) => a.tokenId == actor?.token?.id && a.id == actor.id) ||
       this.savedActors.find((a) => a.id == actor.id && a.tokenId == undefined)
     ) {
       this.checkTrayDiff()
@@ -270,10 +269,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (tokenId) {
       const savedToken = this.savedActors.find((token) => token.tokenId === tokenId)
-      return savedToken.abilities
+      if (savedToken?.abilities) {
+        return savedToken.abilities
+      } else {
+        return []
+      }
+      return
     } else {
       const savedActor = this.savedActors.find((actor) => actor.id === actorId)
-      return savedActor?.abilities ?? null
+          if (savedActor?.abilities) {
+        return savedActor.abilities
+      } else {
+        return []
+      }
     }
   }
 

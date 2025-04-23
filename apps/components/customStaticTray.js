@@ -50,7 +50,6 @@ export class CustomStaticTray extends AbilityTray {
     let allItems = this.application.getActorAbilities(this.actorUuid)
     this.keyItem = allItems.find((e) => e.id == this.keyItemId)
 
-
     this.abilities.push(
       ...allItems.filter(
         (e) =>
@@ -63,7 +62,7 @@ export class CustomStaticTray extends AbilityTray {
     while (this.abilities.length % this.rowCount !== 0) {
       this.abilities.push(null)
     }
-    this.abilities.push(allItems.find(e => e.id == this.keyItem.id))
+    this.abilities.push(allItems.find((e) => e.id == this.keyItem.id))
 
     this.id = 'customStaticTray' + '-' + this.keyItemId
 
@@ -78,23 +77,26 @@ export class CustomStaticTray extends AbilityTray {
       return
     }
     let allItems = this.application.getActorAbilities(this.actorUuid)
-
-    this.keyItem = allItems.find((e) => e.id == this.keyItemId)
-    this.abilities.push(this.keyItem)
-    this.keyItemUses = this.keyItem.item.system?.uses?.value
-    this.keyItemUsesMax = this.keyItem.item.system?.uses?.max
-    this.abilities.push(
-      ...allItems.filter((e) =>
-        e.activities?.some((activity) =>
-          activity.activity.consumption?.targets?.some((target) => target.target === this.keyItemId),
+    if (this.keyItemId && allItems.length > 0) {
+      this.keyItem = allItems.find((e) => e.id == this.keyItemId)
+      this.abilities.push(this.keyItem)
+      this.keyItemUses = this.keyItem.item.system?.uses?.value
+      this.keyItemUsesMax = this.keyItem.item.system?.uses?.max
+      this.abilities.push(
+        ...allItems.filter((e) =>
+          e.activities?.some((activity) =>
+            activity.activity.consumption?.targets?.some(
+              (target) => target.target === this.keyItemId,
+            ),
+          ),
         ),
-      ),
-    )
-
-    this.id = 'customStaticTray' + '-' + this.keyItemId
-
-    this.icon = this.getIcon(this.keyItem, actor)
-    this.onCompleteGeneration()
+      )
+      
+      this.id = 'customStaticTray' + '-' + this.keyItemId
+      
+      this.icon = this.getIcon(this.keyItem, actor)
+      this.onCompleteGeneration()
+    }
   }
 
   static setCustomStaticTray(itemUuid, actor) {
