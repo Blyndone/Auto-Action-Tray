@@ -67,6 +67,7 @@ export class ConditionTray {
     this.application.render({ parts: ['centerTray'] })
   }
   async setConditions() {
+    if (this.conditions.length === 0) return
     let concentration = this.actor.collections.effects.find((e) =>
       e.name.startsWith('Concentrating'),
     )

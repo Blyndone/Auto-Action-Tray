@@ -146,8 +146,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     registerHandlebarsHelpers()
     if (!game.user.isGM) {
       this.actor = game.user.character
-
-      this.initialTraySetup(this.actor)
+      let event = null
+      this.generateActorItems(this.actor, event)
+      this.initialTraySetup(this.actor, event)
     }
   }
 
@@ -232,16 +233,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         return
       case controlled == true && this.actor != event.actor:
         this.actor = event.actor ? event.actor : event
-        this.generateActorItems(this.actor)
-        this.initialTraySetup(this.actor)
+        this.generateActorItems(this.actor, event)
+        this.initialTraySetup(this.actor, event)
     }
   }
 
-  generateActorItems(actor) {
-    if (
-      this.savedActors.find((a) => a.tokenId == actor?.token?.id && a.id == actor.id) ||
-      this.savedActors.find((a) => a.id == actor.id && a.tokenId == undefined)
-    ) {
+  //actor Actor5e, event Token5e
+  async generateActorItems(actor, event) {
+    let token = event == null ? await actor.getTokenDocument() : event.document
+    let savedActor = this.getSavedActor(actor, token)
+
+    if (savedActor) {
       this.checkTrayDiff()
       return
     }
@@ -249,7 +251,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.savedActors.shift()
     }
     let items
-    if (actor?.token?.isLinked || actor.token == null) {
+    if (token?.actorLink || actor.token == null) {
       items = actor.items
     } else {
       items = actor.token.delta.items
@@ -262,27 +264,23 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       abilities: items.map((i) => new AATItem(i)),
     })
   }
-  getActorAbilities(actorUuid) {
-    const actorUuidObj = fromUuidSync(actorUuid)
-    const tokenId = actorUuidObj.token?.id
-    const actorId = actorUuidObj.id
-
-    if (tokenId) {
-      const savedToken = this.savedActors.find((token) => token.tokenId === tokenId)
-      if (savedToken?.abilities) {
-        return savedToken.abilities
-      } else {
-        return []
-      }
-      return
+  // actor Actor5e, token TokenDocument5e
+  getSavedActor(actor, token) {
+    if (token.actorLink) {
+      return this.savedActors.find((a) => a.id == actor.id)
     } else {
-      const savedActor = this.savedActors.find((actor) => actor.id === actorId)
-          if (savedActor?.abilities) {
-        return savedActor.abilities
-      } else {
-        return []
-      }
+      return this.savedActors.find((a) => a.id == actor.id && a.tokenId == token.id)
     }
+  }
+  
+  getActorAbilities(actorUuid) {
+    const actor = fromUuidSync(actorUuid)
+    const token = actor?.token ? actor.token : actor.getTokenDocument()
+    let savedActor = this.getSavedActor(actor, token)
+    if (!savedActor) {
+      return []
+    }
+    return savedActor.abilities
   }
 
   deleteActorAbility(itemId) {
@@ -292,12 +290,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  initialTraySetup(actor) {
+  async initialTraySetup(actor, token = null) {
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
     }
 
+    await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
     this.setActor(actor)
     this.setDefaultTray()
@@ -474,7 +473,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       hotbar.targetHelper.selectTarget(token)
       return event.stopPropagation()
-    } else return wrapped(...args)
+    } else {
+      if (event.target.actor == hotbar.actor) {
+        hotbar.generateActorItems(hotbar.actor, event.target)
+        hotbar.initialTraySetup(hotbar.actor, event.target)
+      }
+      return wrapped(...args)
+    }
   }
 
   static _onTokenSelect2(hotbar, wrapped, ...args) {

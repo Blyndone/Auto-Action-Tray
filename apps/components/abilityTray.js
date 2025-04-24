@@ -50,7 +50,9 @@ export class AbilityTray {
       let tray
       let commonTray = this.customTrays.find((e) => e.id == 'common')
       switch (true) {
-        case item.system.activities.size == 0:
+        case item.type == 'container':
+          return;
+        case item.system.activities?.size == 0:
           tray = this.customTrays.find((e) => e.id == 'passive')
           if (tray) {
             AbilityTray.addToTray(new AATItem(item), tray)
@@ -64,7 +66,7 @@ export class AbilityTray {
           }
           break
 
-        case item.system?.activities.some((e) => e?.activation?.type == 'reaction'):
+        case item.system?.activities?.some((e) => e?.activation?.type == 'reaction'):
           tray = this.customTrays.find((e) => e.id == 'reaction')
           if (tray) {
             AbilityTray.addToTray(new AATItem(item), tray)

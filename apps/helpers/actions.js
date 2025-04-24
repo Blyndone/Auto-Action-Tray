@@ -303,7 +303,12 @@ export class Actions {
     this.activityTray.getActivities(item, this.actor)
 
     if (ritualCast) {
-      await item.defaultActivity.activity.use(
+      let activity = item.defaultActivity.activity
+      let options = await Actions.selectActivity.bind(this)(item)
+      if (options) { 
+        activity = options.activity.activity
+      }
+      await activity.use(
         {
           consume: { spellSlot: false },
         },

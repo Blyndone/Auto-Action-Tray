@@ -393,6 +393,9 @@ export class AATItemTooltip {
     }
 
     switch (true) {
+      case activity.target.affects?.type == 'self' || activity.range.units == 'self':
+        targetCount = 0
+        break
       case item?.type == 'weapon' && activity?.type == 'attack':
         targetCount = 1
         break

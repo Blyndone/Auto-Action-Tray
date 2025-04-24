@@ -37,7 +37,7 @@ export class AATItem {
       this.uses =
         this.item.type == 'consumable'
           ? this.item.system.quantity
-          : this.item.system?.uses?.value
+          : this.item.system?.uses?.max
           ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
           : ''
     } else {
