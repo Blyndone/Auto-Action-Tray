@@ -346,6 +346,9 @@ export class Actions {
       selectedSpellLevel,
     )
     if (targets?.canceled == true || targets === undefined) return
+    //Item Use
+    this.combatHandler.consumeAction(activity.tooltip.actionType)
+
 
     if (
       targets &&

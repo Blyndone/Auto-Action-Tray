@@ -160,6 +160,10 @@ $tray-button-background: rgb(97, 97, 95);
   font-size: calc(var(--text-scale-ratio) * 1.3rem);
 }
 
+.icon-depleted {
+  filter: brightness(0.5) contrast(1.2);
+}
+
 .icon-slot {
   color: #00aaff;
   text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
@@ -618,6 +622,10 @@ img.artifact-item {
   border: 0.125rem solid #c00505;
   @include hover;
 }
+img.item-equipped {
+  box-shadow: 0 0 0.7125rem #ffffff8d;
+}
+
 .activity-button {
   position: relative;
   outline: 0.125rem outset #00aaff;

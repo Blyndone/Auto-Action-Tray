@@ -543,6 +543,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       conditionTray: this.conditionTray,
       itemConfigItem: this.itemConfigItem,
       targetHelper: this.targetHelper,
+      actions: this.combatHandler.actions,
     }
 
     return context

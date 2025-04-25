@@ -8,6 +8,7 @@ export class AATItemTooltip {
     this.damageFormulaLabel = ''
     this.description = ''
     this.activationTimeLabel = ''
+    this.actionType = ''
     this.ritualActivationTimeLabel = ''
     this.rangeLabel = ''
     this.spellLevel = options.spellLevel ?? null
@@ -147,6 +148,21 @@ export class AATItemTooltip {
       this.ritualActivationTimeLabel = `10 Minutes + ${label}`
     }
     this.activationTimeLabel = label
+
+    switch (label) {
+      case 'Action':
+        this.actionType = 'action'
+        break
+      case 'Bonus':
+        this.actionType = 'bonus'
+        break
+      case 'Reaction':
+        this.actionType = 'reaction'
+        break
+      default:
+        ''
+        break
+    }
   }
 
   getScaling(item, activity, castLevel) {

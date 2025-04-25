@@ -25,6 +25,9 @@
           {{> AAT.item-spell item=item index=@index tray=tray}}
         {{else}}
           <img 
+          {{#if item.equipped}}
+            class='{{item.rarity}}-item item-equipped' 
+          {{/if}}
             class='{{item.rarity}}-item' 
             src='{{item.img}}' 
             alt='{{item.name}}' 

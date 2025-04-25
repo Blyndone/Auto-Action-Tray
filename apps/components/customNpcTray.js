@@ -48,7 +48,7 @@ export class CustomNpcTray extends AbilityTray {
         ten: 10,
       }
 
-      desc = desc.replaceAll('with its ', '')
+      desc = desc.replaceAll('with its ', '').toLowerCase()
       regexPattern = `\\b(or)\\b `
       regex = new RegExp(regexPattern, 'g')
       let orMatches = desc.match(regex)

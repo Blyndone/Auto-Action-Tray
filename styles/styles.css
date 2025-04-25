@@ -103,6 +103,10 @@
   font-size: calc(var(--text-scale-ratio) * 1.3rem);
 }
 
+.icon-depleted {
+  filter: brightness(0.5) contrast(1.2);
+}
+
 .icon-slot {
   color: #00aaff;
   text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
@@ -620,6 +624,10 @@ img.artifact-item {
 img.artifact-item:hover {
   border: 0.125rem solid #c9593f;
   box-shadow: 0 0 0.3125rem #c9593f;
+}
+
+img.item-equipped {
+  box-shadow: 0 0 0.7125rem rgba(255, 255, 255, 0.5529411765);
 }
 
 .activity-button {

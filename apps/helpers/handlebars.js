@@ -1,5 +1,3 @@
-
-
 export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('indexRange', function (v1, v2, v3, options) {
     if (parseInt(v1) <= v2 && v2 < parseInt(v3)) {
@@ -29,12 +27,10 @@ export function registerHandlebarsHelpers() {
     if (tray.type != 'static' || 'activity') return item.tooltip
     if (tray.spellLevel) {
       return item.defaultActivity.tooltips.find((e) => e.spellLevel == tray.spellLevel)
-    } else { 
+    } else {
       return item.tooltip
     }
   })
-
-
 
   Handlebars.registerHelper('getDuration', function (duration) {
     if (duration == 'Condition') return 'Condition'
@@ -79,11 +75,14 @@ export function registerHandlebarsHelpers() {
       slotSpent: `<i class="fa-solid fa-square icon-slot-spent"></i>`,
       action: `<i class="fa-solid fa-circle  icon-action"></i>`,
       bonus: `<i class="fa-solid fa-triangle icon-bonus"></i>`,
+      actionSpent: `<i class="fa-solid fa-circle  icon-action icon-depleted"></i>`,
+      bonusSpent: `<i class="fa-solid fa-triangle icon-bonus icon-depleted"></i>`,
       cantrip: `<i class="fa-solid fa-square-dashed icon-slot-cantrip"></i>`,
       pact: `<i class="fa-solid fa-square icon-pact"></i>`,
       pactSpent: `<i class="fa-solid fa-square icon-pact-spent"></i>`,
       ritual: `<i class="fa-solid fa-square icon-ritual"></i>`,
       customStaticTray: `<i class="fa-solid fa-swords icon-custom"></i>`,
+      bonusSpell: '<i class="fa-solid fa-square-plus icon-default"></i>',
     }
     let trayIcon =
       tray.id == 'spell-0'
@@ -104,9 +103,11 @@ export function registerHandlebarsHelpers() {
           icons.slotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
         )
       case 'action':
-        return icons.action
+        return this.application.combatHandler.actions.action == 0 ? icons.actionSpent : icons.action
       case 'bonus':
-        return icons.bonus
+        return this.application.combatHandler.actions.bonus == 0 ? icons.bonusSpent : icons.bonus
+      case 'bonusSpell':
+        return icons.bonusSpell
       case 'cantrip':
         return icons.cantrip
       case 'customStaticTray':

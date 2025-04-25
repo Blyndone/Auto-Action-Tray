@@ -27,26 +27,68 @@ export class CustomTray extends AbilityTray {
             (e) =>
               e.isActive &&
               (e.type !== 'spell' || e.isScaledSpell == false) &&
-              e.type !== 'consumable',
+              e.type !== 'consumable' && e.type != 'tool',
           )
           .sort((a, b) => {
-            if (a.type === 'spell' && b.type !== 'spell') return 1
-            if (a.type !== 'spell' && b.type === 'spell') return -1
-            return 0
-          })
+            const priority = {
+              weapon: 0,
+              default: 1,
+              spell: 2,
+            }
 
+            const aPriority = priority[a.type] ?? priority.default
+            const bPriority = priority[b.type] ?? priority.default
+
+            if (aPriority === bPriority) {
+              if (a.equipped && !b.equipped) return -1
+              if (!a.equipped && b.equipped) return 1
+              return 0
+            }
+
+            return aPriority - bPriority
+          })
         this.id = 'common'
         break
+
       case 'classFeatures':
-        this.abilities = allItems.filter((e) => e.isActive && e.type === 'feat')
+        this.abilities = allItems
+          .filter((e) => e.isActive && e.type === 'feat')
+          .sort((a, b) => {
+            const priority = {
+              class: 0,
+              race: 1,
+            }
+            const aPriority = priority[a.item.system.type.value] ?? 10
+            const bPriority = priority[b.item.system.type.value] ?? 10
+            return aPriority - bPriority
+          })
         this.id = 'classFeatures'
         break
       case 'items':
-        this.abilities = allItems.filter((e) => e.type === 'consumable')
+        this.abilities = allItems
+          .filter((e) => e.type === 'consumable')
+          .sort((a, b) => {
+            const priority = {
+              potion: 0,
+              scroll: 1,
+            }
+            const aPriority = priority[a.item.system.type.value] ?? 10
+            const bPriority = priority[b.item.system.type.value] ?? 10
+            return aPriority - bPriority
+          })
         this.id = 'items'
         break
       case 'passive':
-        const excludedTypes = ['equipment', 'loot', 'container', 'class', 'background', 'race', 'subclass', 'consumable']
+        const excludedTypes = [
+          'equipment',
+          'loot',
+          'container',
+          'class',
+          'background',
+          'race',
+          'subclass',
+          'consumable',
+        ]
 
         this.abilities = allItems.filter((e) => !e.isActive && !excludedTypes.includes(e.type))
 

@@ -10,6 +10,7 @@ export class AATItem {
     this.id = item.id
     this.img = item.img
     this.rarity = item.system?.rarity ?? ''
+    this.equipped = item.system?.equipped ?? false
     this.itemConfig = ItemConfig.getItemConfig(item)
     this.isActive = item.isActive
     this.isRitual = item.system?.properties?.has('ritual') ?? false

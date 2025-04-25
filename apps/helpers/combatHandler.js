@@ -10,11 +10,35 @@ export class CombatHandler {
     this.tillNextTurn = 0;
     this.hotbar = options.hotbar;
     this.previousCircleValue = null;
+    this.actions = {
+      action: 1,
+      bonus: 1,
+      movement: 30,
+      reaction: 1,
+      spellSlot: 1
+    };
   }
 
   async setActor(actor) {
     this.actor = actor;
+    this.setDefaultActions(actor);
     await this.setCombat(actor);
+  }
+  setDefaultActions(actor) {
+    this.actions = {
+      action: 1,
+      bonus: 1,
+      movement: actor.system.attributes.movement.walk,
+      reaction: 1,
+      spellSlot: 1
+    };
+  }
+  consumeAction(type, value = 1) {
+    if (!this.isTurn) return;
+    this.actions[type] -= value;
+    if (this.actions[type] < 0) {
+      this.actions[type] = 0;
+    }
   }
 
   async setCombat(actor) {
@@ -52,11 +76,17 @@ export class CombatHandler {
       return;
     }
     this.getInitPlacement();
+    if (!this.isTurn) {
+      this.setDefaultActions(this.actor);
+    }
     let start = this.previousCircleValue
       ? this.previousCircleValue
       : 100 * (1 - (this.tillNextTurn + 1) / this.combat.turns.length);
     let end = 100 * (1 - this.tillNextTurn / this.combat.turns.length);
     await this.hotbar.render({ parts: ["endTurn"] });
+    if (this.previousCircleValue >= 100) {
+      await this.hotbar.render({ parts: ["centerTray"] });
+    }
     this.hotbar.animationHandler.setCircle(start);
     this.hotbar.animationHandler.animateCircle(start, end, this);
     this.previousCircleValue = end >= 100 ? 0 : end;
