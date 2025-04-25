@@ -50,6 +50,7 @@ export class CombatHandler {
     this.tillNextTurn = 0;
     this.combat = null;
     let value = 0;
+    this.setDefaultActions(actor);
     if (this.inCombat && this.token && this.token.combatant) {
       this.combat = this.token.combatant.combat;
       this.combatantId = this.token.combatant.id;
@@ -71,6 +72,8 @@ export class CombatHandler {
       this.inCombat = false;
       this.tillNextTurn = 0;
       this.previousCircleValue = 0;
+      this.setDefaultActions(actor);
+      await this.hotbar.render({ parts: ["centerTray"] });
       await this.hotbar.render({ parts: ["endTurn"] });
       this.hotbar.animationHandler.setCircle(0);
       return;
