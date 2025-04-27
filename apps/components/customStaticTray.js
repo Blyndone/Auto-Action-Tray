@@ -53,7 +53,7 @@ export class CustomStaticTray extends AbilityTray {
     this.abilities.push(
       ...allItems.filter(
         (e) =>
-          e.item.system.activities.contents[0]?.activation.type == 'legendary' ||
+          e.item.system?.activities?.contents[0]?.activation.type == 'legendary' ||
           e.item.system?.activities?.contents[0]?.consumption?.targets[0]?.target ==
             'resources.legact.value',
       ),

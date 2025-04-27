@@ -179,6 +179,7 @@ export class TargetHelper {
       })
     } catch (error) {
       console.log('AAT - Target selection canceled')
+      this.selectingTargets = false
       targets = null
     }
   }

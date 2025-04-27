@@ -54,15 +54,16 @@ export class AATItemTooltip {
     if (rollData && rollData.rolls.length > 0) {
       data = this.parseData(rollData, overrideScale)
     }
-    if (data == '') return
+    if (data == '' || !data) return
 
     this.diceLabel =
       dice + data.map((x) => x.formula).join(' <br><i class="fa-solid fa-dice-d6"></i> ')
-    this.damageLabel =
-      `${data.reduce((sum, x) => sum + Number(x.min), 0)} ~ ${data.reduce(
-        (sum, x) => sum + Number(x.max),
-        0,
-      )}` + (data[0].damageTypes !== ' Healing' ? ' Damage' : ' Healing')
+    
+    const minDamage = data.reduce((sum, x) => sum + Number(x.min), 0)
+    const maxDamage = data.reduce((sum, x) => sum + Number(x.max), 0)
+    const damageType = data[0].damageTypes !== 'Healing' ? ' Damage' : ' Healing'
+
+    this.damageLabel = `${minDamage} ~ ${maxDamage}${damageType}`
   }
 
   setDescription() {

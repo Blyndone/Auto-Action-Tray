@@ -1,5 +1,4 @@
-<li {{#if tray.multiattackIndexGroups}} class={{multiGroup tray @index}} {{/if}}>
-
+<li  class= {{item.multigroup}} >
   {{#if item}}
     <div 
       data-drag='true' 
@@ -36,7 +35,12 @@
             data-index='{{@index}}' />
         {{/if}}
       {{/if}}
-     
+      {{#if item.wildcard}}
+     <div class='wildcard-icon'><i class="fa-solid fa-asterisk"></i></div>
+      {{/if}}
+      {{#if (eq item.multigroup 'multi-additional')}}
+     <div class='wildcard-icon'><i class="fa-solid fa-sparkles"></i></i></div>
+      {{/if}}
         <div class='consumable-count'>
            {{item.uses}}
         </div>

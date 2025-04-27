@@ -51,21 +51,15 @@ export class StackedTray {
   }
 
   setTrayPositions(trayPositions) {
-    this.trays[0].xPos =
-      trayPositions[0] >= 0 &&
-      trayPositions[0] < this.hotbar.iconSize * this.hotbar.columnCount
-        ? trayPositions[0]
-        : 0;
-    this.trays[1].xPos =
-      trayPositions[1] >= 0 &&
-      trayPositions[1] < this.hotbar.iconSize * this.hotbar.columnCount
-        ? trayPositions[1]
-        : 150;
-    this.trays[2].xPos =
-      trayPositions[2] >= 0 &&
-      trayPositions[2] < this.hotbar.iconSize * this.hotbar.columnCount
-        ? trayPositions[2]
-        : 300;
+    const defaults = [0, 150, 300];
+    const maxPos = this.hotbar.iconSize * this.hotbar.columnCount;
+
+    for (let i = 0; i < 3; i++) {
+      this.trays[i].xPos =
+        trayPositions[i] >= 0 && trayPositions[i] < maxPos
+          ? trayPositions[i]
+          : defaults[i];
+    }
   }
 
   setTrayPosition(trayId, xPos) {

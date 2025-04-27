@@ -16,6 +16,17 @@ export class CustomNpcTray extends AbilityTray {
       this.getSavedData()
     }
   }
+  getMatch(pattern, string) {
+    let regex = new RegExp(pattern, 'g')
+    let matches = []
+    let match
+
+    while ((match = regex.exec(string)) !== null) {
+      matches.push({ match: match[0], index: match.index })
+    }
+
+    return matches
+  }
 
   generateNpcTray() {
     let actor = fromUuidSync(this.actorUuid)
@@ -24,15 +35,17 @@ export class CustomNpcTray extends AbilityTray {
     let allItems = this.application.getActorAbilities(this.actorUuid)
     let multiattack = allItems.find((e) => e.name === 'Multiattack')
     if (multiattack && this.category === 'common') {
+      let multigroupIndex = 0
       let desc = multiattack.description
       let itemNames = allItems.map((e) => e.name.toLowerCase())
-      itemNames.push('melee')
-      itemNames.push('ranged')
-      itemNames.push('spell')
+      // itemNames.push('melee')
+      // itemNames.push('ranged')
+      // itemNames.push('spell')
 
       let regex
-      let regexPattern
-      let matches
+      let basicAttackPattern
+      let numberMatches
+      let useMatches
       let split
 
       let num = {
@@ -49,39 +62,99 @@ export class CustomNpcTray extends AbilityTray {
       }
 
       desc = desc.replaceAll('with its ', '').toLowerCase()
-      regexPattern = `\\b(or)\\b `
-      regex = new RegExp(regexPattern, 'g')
-      let orMatches = desc.match(regex)
+      desc = desc.replaceAll('its ', '').toLowerCase()
+
+      let orMatches = this.getMatch(`\\b(or)\\b `, desc)
+
       if (orMatches) {
         split = desc.split(' or ')
       } else {
         split = [desc]
       }
-      split.forEach((e) => {
-        regexPattern = `\\b(one|two|three|four|five|six|seven|eight|nine|ten)\\b (${itemNames.join(
-          '|',
-        )})`
-        regex = new RegExp(regexPattern, 'g')
-        matches = e.match(regex)
-        if (matches) {
+      basicAttackPattern = `\\b(${Object.keys(num).join('|')})\\b (${itemNames.join('|')})`
+      const combinationAttackPattern = `\\b(${Object.keys(num).join(
+        '|',
+      )})\\s(attack|attacks)\\b.*?(${itemNames.join('|')}).*?(in any combination)`
+
+      let combinationMatches = this.getMatch(combinationAttackPattern, desc)
+      if (combinationMatches.length > 0) {
+        let count =
+          num[
+            this.getMatch(`\\b(${Object.keys(num).join('|')})\\b`, combinationMatches[0].match)[0]
+              .match
+          ]
+        let items = this.getMatch(`(${itemNames.join('|')})`, combinationMatches[0].match).map(
+          (e) => e.match,
+        )
+
+        items.forEach((item) => {
           let tmpIndexes = []
-          matches.forEach((match) => {
-            match = match.split(' ')
-            for (let i = 0; i < num[match[0]]; i++) {
-              let attack = allItems.find((e) => e.name.toLowerCase() === match.slice(1).join(' '))
+          let attack = allItems.find((e) => e.name.toLowerCase() === item)
+          for (let i = 0; i < count; i++) {
+            attack['wildcard'] = true
+            attack['multigroup'] = 'multi-group' + multigroupIndex
+            this.abilities.push(attack)
+            tmpIndexes.push(this.abilities.length - 1)
+          }
+          this.multiattackIndexGroups.push(tmpIndexes)
+          multigroupIndex++
+          while (this.abilities.length % this.rowCount !== 0) {
+            this.abilities.push(null)
+          }
+        })
+      }
+
+      split.forEach((e) => {
+        let combinedMatches = []
+        combinedMatches.push(...this.getMatch(basicAttackPattern, e))
+        combinedMatches.push(...this.getMatch(`\\b(uses|use)\\b (${itemNames.join('|')})`, e))
+
+        combinedMatches.sort((a, b) => a.index - b.index)
+
+        if (combinedMatches.length > 0) {
+          let tmpIndexes = []
+          combinedMatches.forEach((obj) => {
+            let parts = obj.match.split(' ')
+            if (num[parts[0]] !== undefined) {
+              for (let i = 0; i < num[parts[0]]; i++) {
+                let attack = allItems.find((e) => e.name.toLowerCase() === parts.slice(1).join(' '))
+                attack['multigroup'] = 'multi-group' + multigroupIndex
+                this.abilities.push(attack)
+                tmpIndexes.push(this.abilities.length - 1)
+              }
+            } else {
+              let attack = allItems.find((e) => e.name.toLowerCase() === parts.slice(1).join(' '))
+              attack['multigroup'] = 'multi-group' + multigroupIndex
               this.abilities.push(attack)
               tmpIndexes.push(this.abilities.length - 1)
             }
           })
+          multigroupIndex++
           this.multiattackIndexGroups.push(tmpIndexes)
           while (this.abilities.length % this.rowCount !== 0) {
             this.abilities.push(null)
           }
         }
       })
-    }
 
- 
+      let nonMatchedItems = this.getMatch(`(${itemNames.join('|')})`, desc).map((e) => e.match)
+      if (nonMatchedItems.length > 0) {
+        let newItems = nonMatchedItems.filter(
+          (a) => !this.abilities.some((ability) => ability?.name.toLowerCase() === a),
+        )
+        newItems = [...new Set(newItems)].filter(e=> e!= 'spellcasting')
+        newItems.forEach((item) => {
+          let attack = allItems.find((e) => e.name.toLowerCase() === item)
+          if (attack) {
+            this.abilities.push(attack)
+            attack['multigroup'] = 'multi-additional'
+            while (this.abilities.length % this.rowCount !== 0) {
+              this.abilities.push(null)
+            }
+          }
+        })
+      }
+    }
 
     switch (this.category) {
       case 'common':

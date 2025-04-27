@@ -44,6 +44,8 @@ export class Actions {
   static async deleteData(actor) {
     await this.actor.unsetFlag('auto-action-tray', 'data')
     await this.actor.unsetFlag('auto-action-tray', 'config')
+
+
     this.trayOptions = {
       locked: false,
       enableTargetHelper: true,
@@ -60,6 +62,8 @@ export class Actions {
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
     }
+
+    this.generateActorItems(actor)
     this.initialTraySetup(this.actor)
     this.render(true)
   }
@@ -296,7 +300,7 @@ export class Actions {
 
   static async useItem(event, target) {
     game.tooltip.deactivate()
-    let ritualCast = (target.dataset.trayid == 'ritual')
+    let ritualCast = target.dataset.trayid == 'ritual'
 
     let itemId = target.dataset.itemId
     let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
@@ -305,7 +309,7 @@ export class Actions {
     if (ritualCast) {
       let activity = item.defaultActivity.activity
       let options = await Actions.selectActivity.bind(this)(item)
-      if (options) { 
+      if (options) {
         activity = options.activity.activity
       }
       await activity.use(
@@ -348,7 +352,6 @@ export class Actions {
     if (targets?.canceled == true || targets === undefined) return
     //Item Use
     this.combatHandler.consumeAction(activity.tooltip.actionType)
-
 
     if (
       targets &&

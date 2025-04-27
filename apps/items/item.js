@@ -46,8 +46,10 @@ export class AATItem {
     }
     if (this.preparationMode == 'pact') {
       this.pactLevel = this.actor.system?.spells?.pact?.level
-      this.defaultActivity = this.activities.find((a) => a.tooltips.find(e=> e.spellLevel == this.pactLevel))
-      this.tooltip = this.defaultActivity.tooltips.find(e=> e.spellLevel == this.pactLevel)
+      this.defaultActivity = this.activities.find((a) =>
+        a.tooltips.find((e) => e.spellLevel == this.pactLevel),
+      )
+      this.tooltip = this.defaultActivity.tooltips.find((e) => e.spellLevel == this.pactLevel)
     }
 
     this.checkActivities()
@@ -96,17 +98,21 @@ export class AATItem {
     this.defaultActivity = this.activities[0]
   }
   async checkActivities() {
-    this.activities.forEach(async (activity) => {
-      if (activity.activity.type == 'cast') {
-        let spell = await fromUuid(activity?.activity?.spell?.uuid)
-        spell = { ...spell, actor: this.actor }
-        if (spell) {
-          activity = new AATActivity(spell, activity.activity)
-          activity.setAllDescriptions()
-        } else {
-          console.warn('AAT | Activity not found')
+    for (const activity of this.activities) {
+      if (activity.activity.type === 'cast') {
+        try {
+          const spell = await fromUuid(activity?.activity?.spell?.uuid)
+          if (spell) {
+            const enhancedSpell = { ...spell, actor: this.actor }
+            const newActivity = new AATActivity(enhancedSpell, activity.activity)
+            newActivity.setAllDescriptions()
+          } else {
+            console.warn('AAT | Activity not found')
+          }
+        } catch (error) {
+          console.error('Error fetching spell:', error)
         }
       }
-    })
+    }
   }
 }
