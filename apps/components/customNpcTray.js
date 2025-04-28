@@ -154,6 +154,10 @@ export class CustomNpcTray extends AbilityTray {
           }
         })
       }
+      this.abilities.push(multiattack)
+       while (this.abilities.length % this.rowCount !== 0) {
+              this.abilities.push(null)
+            }
     }
 
     switch (this.category) {
