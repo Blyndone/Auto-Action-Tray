@@ -1,54 +1,69 @@
-<li  class= {{item.multigroup}} >
+<li class="{{item.multigroup}}">
   {{#if item}}
-    <div 
-      data-drag='true' 
-      data-item-id='{{item.id}}'
-      data-index='{{@index}}' 
-      data-trayid='{{tray.id}}' 
+    <div
+      data-drag="true"
+      data-item-id="{{item.id}}"
+      data-index="{{@index}}"
+      data-trayid="{{tray.id}}"
       data-tooltip="{{> 'AAT.item-tooltip' (selectItemTooltip item tray)}}"
-      data-tooltip-direction='UP' 
-      {{#if (eq isActive false)}} 
-        data-action='viewItem' 
-        class='ability-button ability-button-passive' 
-      {{else}} 
-        data-action='useItem' 
-        class='ability-button' 
-      {{/if}}>
+      data-tooltip-direction="UP"
       {{#if (eq isActive false)}}
-        <div class='transparent-box-passive' data-index='{{@index}}'>
-          <img src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item.id}}' data-trayid='{{tray.id}}'
-            data-index='{{@index}}' />
+        data-action="viewItem"
+        class="ability-button ability-button-passive"
+      {{else}}
+        data-action="useItem"
+        class="ability-button"
+      {{/if}}
+    >
+      {{#if (eq isActive false)}}
+        <div class="transparent-box-passive" data-index="{{@index}}">
+          <img
+            src="{{item.img}}"
+            alt="{{item.name}}"
+            data-item-id="{{item.id}}"
+            data-trayid="{{tray.id}}"
+            data-index="{{@index}}"
+          />
         </div>
       {{else}}
         {{#if (eq item.type 'spell')}}
           {{> AAT.item-spell item=item index=@index tray=tray}}
         {{else}}
-          <img 
-          {{#if item.equipped}}
-            class='{{item.rarity}}-item item-equipped' 
-          {{/if}}
-            class='{{item.rarity}}-item' 
-            src='{{item.img}}' 
-            alt='{{item.name}}' 
-            data-item-id='{{item._id}}'
-            data-trayid='{{tray.id}}' 
-            data-index='{{@index}}' />
+          <img
+            {{#if item.equipped}}
+              class="{{item.rarity}}-item item-equipped"
+            {{/if}}
+            class="{{item.rarity}}-item"
+            src="{{item.img}}"
+            alt="{{item.name}}"
+            data-item-id="{{item._id}}"
+            data-trayid="{{tray.id}}"
+            data-index="{{@index}}"
+          />
         {{/if}}
       {{/if}}
-      {{#if item.wildcard}}
-     <div class='wildcard-icon'><i class="fa-solid fa-asterisk"></i></div>
-      {{/if}}
-      {{#if (eq item.multigroup 'multi-additional')}}
-     <div class='wildcard-icon'><i class="fa-solid fa-sparkles"></i></i></div>
-      {{/if}}
-        <div class='consumable-count'>
-           {{item.uses}}
+
+      <div style="position: relative">
+        {{#if item.wildcard}}
+          <div class="wildcard-icon">
+            <i class="fa-solid fa-asterisk"></i>
+          </div>
+        {{/if}}
+        {{#if (eq item.multigroup 'multi-additional')}}
+          <div class="wildcard-icon">
+            <i class="fa-solid fa-sparkles"></i>
+          </div>
+        {{/if}}
+        <div class="consumable-count">
+          {{item.uses}}
         </div>
-
-
+      </div>
     </div>
   {{else}}
-    <div class='transparent-box' data-index='{{@index}}' data-trayid='{{tray.id}}'></div>
+    <div
+      class="transparent-box"
+      data-index="{{@index}}"
+      data-trayid="{{tray.id}}"
+    ></div>
   {{/if}}
-
 </li>
