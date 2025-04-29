@@ -1,4 +1,4 @@
-import { AATItem } from "../items/item.js"
+import { AATItem } from '../items/item.js'
 
 export class AbilityTray {
   constructor(options = {}) {
@@ -51,7 +51,7 @@ export class AbilityTray {
       let commonTray = this.customTrays.find((e) => e.id == 'common')
       switch (true) {
         case item.type == 'container':
-          return;
+          return
         case item.system.activities?.size == 0:
           tray = this.customTrays.find((e) => e.id == 'passive')
           if (tray) {
@@ -141,7 +141,7 @@ export class AbilityTray {
     trays.forEach((tray) => {
       tray.deleteItem(item.id)
     })
-    this.checkTrayDiff() 
+    this.checkTrayDiff()
     this.render({ parts: ['centerTray'] })
   }
 
@@ -252,11 +252,9 @@ export class AbilityTray {
   }
 
   checkDiff() {
-    let allItems = this.application.getActorAbilities(this.actorUuid)
-    this.abilities = this.abilities.map((e) => {
-      const match = allItems.find((item) => item?.id === e?.id)
-      return match || e
-    })
+    const allItems = this.application.getActorAbilities(this.actorUuid)
+    const itemMap = new Map(allItems.map((item) => [item.id, item]))
+    this.abilities = this.abilities.map((e) => itemMap.get(e?.id) || e)
   }
 
   async enrichTrayDescriptions(tray) {

@@ -45,7 +45,6 @@ export class Actions {
     await this.actor.unsetFlag('auto-action-tray', 'data')
     await this.actor.unsetFlag('auto-action-tray', 'config')
 
-
     this.trayOptions = {
       locked: false,
       enableTargetHelper: true,
@@ -63,6 +62,12 @@ export class Actions {
       concentrationColor: '#9600d1',
     }
 
+    this.generateActorItems(actor)
+    this.initialTraySetup(this.actor)
+    this.render(true)
+  }
+  static async deleteTrayData(actor) {
+    await this.actor.unsetFlag('auto-action-tray', 'data')
     this.generateActorItems(actor)
     this.initialTraySetup(this.actor)
     this.render(true)
@@ -405,12 +410,16 @@ export class Actions {
   }
 
   static useSkillSave(event, target) {
+    let advantage = event.altKey
+    let disadvantage = event.ctrlKey
+
     let type = target.dataset.type
     let skillsave = target.dataset.skill
 
     let skipDialog = this.trayOptions['fastForward'] ? { fastForward: true } : null
 
     const params = {
+
       dialog: {
         configure: !skipDialog,
       },
@@ -420,7 +429,7 @@ export class Actions {
     }
 
     if (type == 'skill') {
-      params.roll = { skill: skillsave }
+      params.roll = { skill: skillsave, advantage: advantage, disadvantage: disadvantage }
       this.actor.rollSkill(params.roll, params.dialog, params.message)
     } else {
       params.roll = { ability: skillsave }

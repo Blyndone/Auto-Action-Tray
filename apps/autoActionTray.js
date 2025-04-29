@@ -274,8 +274,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   
   getActorAbilities(actorUuid) {
+
     const actor = fromUuidSync(actorUuid)
     const token = actor?.token ? actor.token : actor.getTokenDocument()
+    if (!actor || !token) {
+      return []
+    }
     let savedActor = this.getSavedActor(actor, token)
     if (!savedActor) {
       return []
@@ -587,6 +591,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           this.deleteData(this.actor)
         },
       },
+      
+
+      {
+        name: 'Reset Tray Data',
+        icon: '<i class="fa-solid fa-delete-right"></i>',
+        callback: () => {
+          this.deleteTrayData(this.actor)
+        },
+      },
     ]
     new ContextMenu(this.element, '.character-image', characterContextMenu, {
       onOpen: this._onOpenContextMenu(),
@@ -648,6 +661,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   async deleteData(actor) {
     Actions.deleteData.bind(this)(actor)
+  }
+
+    async deleteTrayData(actor) {
+    Actions.deleteTrayData.bind(this)(actor)
   }
 
   getTrayConfig() {
