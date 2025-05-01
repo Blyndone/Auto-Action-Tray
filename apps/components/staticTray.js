@@ -1,7 +1,6 @@
 import { AbilityTray } from './abilityTray.js'
 import { CustomStaticTray } from './customStaticTray.js'
 import { ActivityTray } from './activityTray.js'
-import { pre } from '../../foundry/common/prosemirror/schema/core.mjs'
 
 export class StaticTray extends AbilityTray {
   constructor(options = {}) {
