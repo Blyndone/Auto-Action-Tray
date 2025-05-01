@@ -233,7 +233,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         return
       case controlled == true && this.actor != event.actor:
         this.actor = event.actor ? event.actor : event
-        this.generateActorItems(this.actor, event)
+        // this.generateActorItems(this.actor, event)
         this.initialTraySetup(this.actor, event)
     }
   }
@@ -247,6 +247,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.checkTrayDiff()
       return
     }
+
     if (this.savedActors.length > 10) {
       this.savedActors.shift()
     }
@@ -272,9 +273,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return this.savedActors.find((a) => a.id == actor.id && a.tokenId == token.id)
     }
   }
-  
-  getActorAbilities(actorUuid) {
 
+  getActorAbilities(actorUuid) {
     const actor = fromUuidSync(actorUuid)
     const token = actor?.token ? actor.token : actor.getTokenDocument()
     if (!actor || !token) {
@@ -284,6 +284,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (!savedActor) {
       return []
     }
+
     return savedActor.abilities
   }
 
@@ -294,7 +295,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  async initialTraySetup(actor, token = null) {
+  async initialTraySetup(actor, token = null, currentTrayId = null) {
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
@@ -303,7 +304,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
     this.setActor(actor)
-    this.setDefaultTray()
+    if (currentTrayId) {
+      this.currentTray.setInactive()
+      let tray = this.getTray(currentTrayId)
+      tray.setActive()
+      this.currentTray = tray
+      this.trayInformation = tray.label
+    } else {
+      this.setDefaultTray()
+    }
 
     document.documentElement.style.setProperty('--stacked-spacer-width', 17 + 'px')
 
@@ -326,7 +335,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
     }
 
-    this.trayInformation = ''
+    this.trayInformation = this.currentTray.label
     this.trayOptions = {
       locked: false,
       skillTrayPage: 0,
@@ -479,8 +488,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return event.stopPropagation()
     } else {
       if (event.target.actor == hotbar.actor) {
-        hotbar.generateActorItems(hotbar.actor, event.target)
-        hotbar.initialTraySetup(hotbar.actor, event.target)
+        let currentTrayId = hotbar.currentTray.id
+        // hotbar.generateActorItems(hotbar.actor, event.target)
+        hotbar.initialTraySetup(hotbar.actor, event.target, currentTrayId)
       }
       return wrapped(...args)
     }
@@ -591,7 +601,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           this.deleteData(this.actor)
         },
       },
-      
 
       {
         name: 'Reset Tray Data',
@@ -663,7 +672,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.deleteData.bind(this)(actor)
   }
 
-    async deleteTrayData(actor) {
+  async deleteTrayData(actor) {
     Actions.deleteTrayData.bind(this)(actor)
   }
 

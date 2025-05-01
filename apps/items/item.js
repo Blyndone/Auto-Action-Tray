@@ -107,10 +107,10 @@ export class AATItem {
             const newActivity = new AATActivity(enhancedSpell, activity.activity)
             newActivity.setAllDescriptions()
           } else {
-            console.warn('AAT | Activity not found')
+            // console.warn('AAT | Activity not found')
           }
         } catch (error) {
-          console.error('Error fetching spell:', error)
+          // console.error('Error fetching spell:', error)
         }
       }
     }

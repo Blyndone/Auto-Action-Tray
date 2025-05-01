@@ -26,8 +26,11 @@ export class CustomTray extends AbilityTray {
           .filter(
             (e) =>
               e.isActive &&
-              (e.type !== 'spell' || e.isScaledSpell == false) &&
-              e.type !== 'consumable' && e.type != 'tool',
+              ((e.type === 'weapon' && e.equipped) ||
+                (e.type !== 'weapon' &&
+                  (e.type !== 'spell' || e.isScaledSpell === false) &&
+                  e.type !== 'consumable' &&
+                  e.type !== 'tool')),
           )
           .sort((a, b) => {
             const priority = {
@@ -169,9 +172,7 @@ export class CustomTray extends AbilityTray {
       const nonSpells = filtered.filter((e) => e !== null && e.type !== 'spell')
       const spells = filtered.filter((e) => e !== null && e.type === 'spell')
 
-      while (nonSpells.length % commonTray.rowCount !== 0) {
-        nonSpells.push(null)
-      }
+      commonTray.padNewRow()
       commonTray.abilities = AbilityTray.padArray([...nonSpells, ...spells])
     }
 

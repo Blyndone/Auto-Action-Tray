@@ -11,7 +11,7 @@ export class AATItemTooltip {
     this.actionType = ''
     this.ritualActivationTimeLabel = ''
     this.rangeLabel = ''
-    this.spellLevel = options.spellLevel ?? null
+    this.spellLevel = options.spellLevel ?? item.item.system.level ?? null
     this.targetCount = options.targetCount ?? null
 
     this.saveLabel = ''

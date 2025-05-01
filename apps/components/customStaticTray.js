@@ -59,9 +59,7 @@ export class CustomStaticTray extends AbilityTray {
       ),
     )
 
-    while (this.abilities.length % this.rowCount !== 0) {
-      this.abilities.push(null)
-    }
+    this.padNewRow()
     this.abilities.push(allItems.find((e) => e.id == this.keyItem.id))
 
     this.id = 'customStaticTray' + '-' + this.keyItemId
@@ -91,9 +89,9 @@ export class CustomStaticTray extends AbilityTray {
           ),
         ),
       )
-      
+
       this.id = 'customStaticTray' + '-' + this.keyItemId
-      
+
       this.icon = this.getIcon(this.keyItem, actor)
       this.onCompleteGeneration()
     }

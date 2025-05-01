@@ -37,6 +37,13 @@ export class AbilityTray {
     return [...arr, ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)]
   }
 
+  padNewRow() { 
+       while (this.abilities.length % this.rowCount !== 0) {
+        this.abilities.push(null)
+    }
+    
+  }
+
   static _onCreateItem(item) {
     if (this.trayOptions['autoAddItems'] == false) {
       return

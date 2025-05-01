@@ -32,6 +32,7 @@ export class AnimationHandler {
     }
   }
 
+
   async clearStack() {
     this.animationStack = [this.defaultTray]
   }

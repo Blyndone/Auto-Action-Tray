@@ -98,9 +98,7 @@ export class CustomNpcTray extends AbilityTray {
           }
           this.multiattackIndexGroups.push(tmpIndexes)
           multigroupIndex++
-          while (this.abilities.length % this.rowCount !== 0) {
-            this.abilities.push(null)
-          }
+          this.padNewRow()
         })
       }
 
@@ -131,9 +129,7 @@ export class CustomNpcTray extends AbilityTray {
           })
           multigroupIndex++
           this.multiattackIndexGroups.push(tmpIndexes)
-          while (this.abilities.length % this.rowCount !== 0) {
-            this.abilities.push(null)
-          }
+          this.padNewRow()
         }
       })
 
@@ -142,22 +138,18 @@ export class CustomNpcTray extends AbilityTray {
         let newItems = nonMatchedItems.filter(
           (a) => !this.abilities.some((ability) => ability?.name.toLowerCase() === a),
         )
-        newItems = [...new Set(newItems)].filter(e=> e!= 'spellcasting')
+        newItems = [...new Set(newItems)].filter((e) => e != 'spellcasting')
         newItems.forEach((item) => {
           let attack = allItems.find((e) => e.name.toLowerCase() === item)
           if (attack) {
             this.abilities.push(attack)
             attack['multigroup'] = 'multi-additional'
-            while (this.abilities.length % this.rowCount !== 0) {
-              this.abilities.push(null)
-            }
+            this.padNewRow()
           }
         })
       }
       this.abilities.push(multiattack)
-       while (this.abilities.length % this.rowCount !== 0) {
-              this.abilities.push(null)
-            }
+      this.padNewRow()
     }
 
     switch (this.category) {
@@ -270,9 +262,7 @@ export class CustomNpcTray extends AbilityTray {
           trays[0].abilities.push(ability)
         }
 
-        while (trays[0].abilities.length % rowCount != 0) {
-          trays[0].abilities.push(null)
-        }
+        tray.padNewRow()
       })
     })
 

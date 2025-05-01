@@ -1,6 +1,7 @@
 import { AbilityTray } from './abilityTray.js'
 import { CustomStaticTray } from './customStaticTray.js'
 import { ActivityTray } from './activityTray.js'
+import { pre } from '../../foundry/common/prosemirror/schema/core.mjs'
 
 export class StaticTray extends AbilityTray {
   constructor(options = {}) {
@@ -14,29 +15,93 @@ export class StaticTray extends AbilityTray {
     this.generateTray()
   }
 
+  padAbilityBoundaries() {
+    const tmp = []
+    let previousType = null
+
+    for (const ability of this.abilities) {
+      if (previousType !== null && ability.type !== previousType) {
+        while (tmp.length % this.rowCount !== 0) {
+          tmp.push(null)
+        }
+      }
+
+      tmp.push(ability)
+      previousType = ability.type
+    }
+
+    this.abilities = tmp
+  }
+
   generateTray() {
     let actor = fromUuidSync(this.actorUuid)
 
     let allItems = this.application.getActorAbilities(this.actorUuid)
     switch (this.category) {
       case 'action':
-        this.abilities = allItems.filter(
-          (e) =>
-            e.isActive &&
-            e.activities.some((activity) => activity.activity?.activation?.type === 'action') &&
-            e.type != 'spell',
-        )
+        this.abilities = allItems
+          .filter(
+            (e) =>
+              e.isActive &&
+              e.activities.some((activity) => activity.activity?.activation?.type === 'action') &&
+              (e.type !== 'spell' || e.isScaledSpell === false),
+          )
+          .sort((a, b) => {
+            const priority = {
+        weapon: 0,
+              default: 1,
+              feat: 2,
+              spell: 3,
+              consumable: 4,
+              tool: 5,
+            }
+
+            const aPriority = priority[a.type] ?? priority.default
+            const bPriority = priority[b.type] ?? priority.default
+
+            if (aPriority === bPriority) {
+              if (a.equipped && !b.equipped) return -1
+              if (!a.equipped && b.equipped) return 1
+              return 0
+            }
+
+            return aPriority - bPriority
+          })
         this.id = 'action'
+        this.padAbilityBoundaries()
         break
 
       case 'bonus':
-        this.abilities = allItems.filter(
-          (e) =>
-            e.isActive &&
-            e.activities.some((activity) => activity.activity?.activation?.type === 'bonus') &&
-            e.type != 'spell',
-        )
+        this.abilities = allItems
+          .filter(
+            (e) =>
+              e.isActive &&
+              e.activities.some((activity) => activity.activity?.activation?.type === 'bonus') &&
+              (e.type !== 'spell' || e.isScaledSpell === false),
+          )
+          .sort((a, b) => {
+            const priority = {
+              weapon: 0,
+              default: 1,
+              feat: 2,
+              spell: 3,
+              consumable: 4,
+              tool: 5,
+            }
+
+            const aPriority = priority[a.type] ?? priority.default
+            const bPriority = priority[b.type] ?? priority.default
+
+            if (aPriority === bPriority) {
+              if (a.equipped && !b.equipped) return -1
+              if (!a.equipped && b.equipped) return 1
+              return 0
+            }
+
+            return aPriority - bPriority
+          })
         this.id = 'bonus'
+        this.padAbilityBoundaries()
         break
 
       case 'customStaticTray':
@@ -58,7 +123,7 @@ export class StaticTray extends AbilityTray {
           .filter((e) => e.type === 'spell' && !e.isScaledSpell)
           .sort((a, b) => b.spellLevel - a.spellLevel)
 
-        this.id = 'bonusSpell' 
+        this.id = 'bonusSpell'
         break
 
       case 'spell':
