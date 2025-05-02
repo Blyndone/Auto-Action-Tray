@@ -3,16 +3,8 @@
     {{> AAT.item-spell-pact item=item index=@index tray=tray}}
   {{else}}
   
-    {{#if (eq tray.id 'ritual')}}
-      <img 
-        src='{{item.img}}' 
-        alt='{{item.name}}' 
-        data-item-id='{{item.id}}' 
-        data-index='{{@index}}' 
-        data-trayid='{{tray.id}}' 
-      />
-    {{else}}
-      {{#if (eq tray.type 'static')}}
+
+      {{#if (eq tray.category 'leveledSpell')}}
 
         {{#if (eq item.spellLevel tray.spellLevel)}}
           <img 
@@ -42,7 +34,7 @@
           data-trayid='{{tray.id}}' 
         />
       {{/if}}
-    {{/if}}
+   
   
     {{#if (eq item.uses '')}}
       <div class='spell-item-container-text'>

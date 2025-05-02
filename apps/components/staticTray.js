@@ -150,6 +150,7 @@ export class StaticTray extends AbilityTray {
           .sort((a, b) => b.spellLevel - a.spellLevel)
 
         this.id = 'spell-' + this.spellLevel
+        this.category = 'leveledSpell'
         break
 
       case 'pact':

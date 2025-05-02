@@ -219,8 +219,6 @@ export class Actions {
     }
   }
 
-  static useSlot(event, target) {}
-
   static async selectActivity(item) {
     let activity = null
     let selectedSpellLevel = null
@@ -238,6 +236,7 @@ export class Actions {
     } else {
       if (this.activityTray?.abilities?.length > 1) {
         activity = await this.activityTray.selectAbility(item, this.actor, this)
+        activity = {...item.activities.find((e) => e.id == activity?.itemId), ...activity}
         if (activity == null) return
         selectedSpellLevel = !selectedSpellLevel ? activity['selectedSpellLevel'] : ''
       } else {
@@ -317,6 +316,7 @@ export class Actions {
       if (options) {
         activity = options.activity.activity
       }
+      if(!activity) return
       await activity.use(
         {
           consume: { spellSlot: false },
@@ -356,7 +356,9 @@ export class Actions {
     )
     if (targets?.canceled == true || targets === undefined) return
     //Item Use
-    this.combatHandler.consumeAction(activity.tooltip.actionType)
+    if (activity?.tooltip?.actionType) { 
+      this.combatHandler.consumeAction(activity.tooltip.actionType)
+    }
 
     if (
       targets &&
@@ -395,7 +397,7 @@ export class Actions {
       // }
 
       item.item.system.activities
-        .get(activity?.itemId || activity?._id || item.item.system.activities.contents[0].id)
+        .get(activity?.itemId || activity?._id ||  activity?.id || item.item.system.activities.contents[0].id)
         .use(
           {
             spell: selectedSpellLevel,
