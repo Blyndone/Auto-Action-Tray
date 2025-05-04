@@ -322,12 +322,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  async initialTraySetup(actor, token = null, currentTrayId = null) {
-    if (this.selectingActivity == true) {
-      this.activityTray.rejectActivity(new Error('User canceled activity selection'))
-      this.activityTray.rejectActivity = null
-    }
-    if (game.settings.get('auto-action-tray', 'autoTheme')) {
+  setTheme(actor) {
+    if (actor.type == 'character') {
       const highestLevelClass = Object.keys(actor.classes).reduce(
         (highest, e) => {
           const currentClass = actor.classes[e]
@@ -345,8 +341,78 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           'theme-' + highestLevelClass.name.toLowerCase(),
         )
       } else {
-        game.settings.set('auto-action-tray', 'tempTheme', game.settings.get('auto-action-tray', 'theme'))
+        game.settings.set(
+          'auto-action-tray',
+          'tempTheme',
+          game.settings.get('auto-action-tray', 'theme'),
+        )
       }
+    } else {
+      let creatureType = actor.system.details.type.value
+      let theme = ''
+      switch (creatureType) {
+        case 'aberration':
+          theme = 'theme-warlock'
+          break
+        case 'beast':
+          theme = 'theme-ranger'
+          break
+        case 'celestial':
+          theme = 'theme-cleric'
+          break
+        case 'construct':
+          theme = 'theme-fighter'
+          break
+        case 'dragon':
+          theme = 'theme-barbarian'
+          break
+        case 'elemental':
+          theme = 'theme-bard'
+          break
+        case 'fey':
+          theme = 'theme-sorcerer'
+          break
+        case 'fiend':
+          theme = 'theme-ember'
+          break
+        case 'giant':
+          theme = 'theme-titan'
+          break
+        case 'humanoid':
+          if (actor.system.details.type.subtype == 'Goblinoid') {
+            theme = 'theme-ranger'
+          } else {
+            theme = 'theme-slate'
+          }
+          break
+        case 'monstrosity':
+          theme = 'theme-rogue'
+          break
+        case 'ooze':
+          theme = 'theme-monk'
+          break
+        case 'plant':
+          theme = 'theme-druid'
+          break
+        case 'undead':
+          theme = 'theme-subterfuge'
+          break
+        default:
+          theme = 'theme-slate'
+          break
+      }
+
+      game.settings.set('auto-action-tray', 'tempTheme', theme)
+    }
+  }
+
+  async initialTraySetup(actor, token = null, currentTrayId = null) {
+    if (this.selectingActivity == true) {
+      this.activityTray.rejectActivity(new Error('User canceled activity selection'))
+      this.activityTray.rejectActivity = null
+    }
+    if (game.settings.get('auto-action-tray', 'autoTheme')) {
+      this.setTheme(actor)
     }
 
     await this.generateActorItems(actor, token)

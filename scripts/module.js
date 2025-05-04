@@ -145,6 +145,7 @@ Hooks.once('ready', async function () {
         'theme-ember': 'Ember',
         'theme-frost': 'Frost',
         'theme-subterfuge': 'Subterfuge',
+        'theme-titan': 'Titan',
         'theme-slate': 'Slate',
         'theme-artificer': 'Artificer',
         'theme-barbarian': 'Barbarian',
