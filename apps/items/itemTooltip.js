@@ -426,7 +426,7 @@ export class AATItemTooltip {
         targetCount = 0
         break
       default:
-        targetCount = activity?.target?.affects?.count || 1
+        targetCount = activity?.target?.affects?.count || 0
         break
     }
     this.targetCount = targetCount

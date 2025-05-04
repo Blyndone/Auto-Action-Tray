@@ -120,6 +120,56 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  game.settings.register('auto-action-tray', 'autoTheme', {
+    name: 'Auto Theme',
+    hint: 'Will automatically set the theme based on the selected actors class',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'theme', {
+    name: 'Color Theme',
+    hint: 'Default Theme if Auto Theme is disabled or not available',
+    config: true,
+    scope: 'client',
+    type: new foundry.data.fields.StringField({
+      choices: {
+        'theme-classic': 'Mind Flayer',
+        'theme-arcane': 'Arcane',
+        'theme-ocean': 'Ocean',
+        'theme-ember': 'Ember',
+        'theme-frost': 'Frost',
+        'theme-subterfuge': 'Subterfuge',
+        'theme-slate': 'Slate',
+        'theme-artificer': 'Artificer',
+        'theme-barbarian': 'Barbarian',
+        'theme-bard': 'Bard',
+        'theme-cleric': 'Cleric',
+        'theme-druid': 'Druid',
+        'theme-fighter': 'Fighter',
+        'theme-monk': 'Monk',
+        'theme-paladin': 'Paladin',
+        'theme-ranger': 'Ranger',
+        'theme-rogue': 'Rogue',
+        'theme-sorcerer': 'Sorcerer',
+        'theme-warlock': 'Warlock',
+        'theme-wizard': 'Wizard',
+      },
+    }),
+    default: 'theme-classic',
+  })
+
+    game.settings.register('auto-action-tray', 'tempTheme', {
+    name: 'tempTheme',
+    scope: 'client',
+    default: 'theme-classic',
+  })
+
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',
     hint: 'Select Number of Rows',
@@ -132,7 +182,6 @@ Hooks.once('ready', async function () {
       // 2: '2 Rows',
       3: '3 Rows',
       4: '4 Rows',
-
     },
 
     requiresReload: true,
@@ -257,7 +306,7 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-    game.settings.register('auto-action-tray', 'promptConcentrationOverwrite', {
+  game.settings.register('auto-action-tray', 'promptConcentrationOverwrite', {
     name: 'Prompt Concentration Overwrite',
     hint: 'Prompt to overwrite Concentration when using a new spell',
     scope: 'client',

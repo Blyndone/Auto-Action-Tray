@@ -236,7 +236,7 @@ export class Actions {
     } else {
       if (this.activityTray?.abilities?.length > 1) {
         activity = await this.activityTray.selectAbility(item, this.actor, this)
-        activity = {...item.activities.find((e) => e.id == activity?.itemId), ...activity}
+        activity = { ...item.activities.find((e) => e.id == activity?.itemId), ...activity }
         if (activity == null) return
         selectedSpellLevel = !selectedSpellLevel ? activity['selectedSpellLevel'] : ''
       } else {
@@ -303,6 +303,9 @@ export class Actions {
   }
 
   static async useItem(event, target) {
+    let altDown = this.altDown
+    let ctrlDown = this.ctrlDown
+
     game.tooltip.deactivate()
     let ritualCast = target.dataset.trayid == 'ritual'
 
@@ -316,7 +319,7 @@ export class Actions {
       if (options) {
         activity = options.activity.activity
       }
-      if(!activity) return
+      if (!activity) return
       await activity.use(
         {
           consume: { spellSlot: false },
@@ -356,7 +359,7 @@ export class Actions {
     )
     if (targets?.canceled == true || targets === undefined) return
     //Item Use
-    if (activity?.tooltip?.actionType) { 
+    if (activity?.tooltip?.actionType) {
       this.combatHandler.consumeAction(activity.tooltip.actionType)
     }
 
@@ -382,6 +385,12 @@ export class Actions {
           .get(activity?.itemId || activity?._id || item.item.system.activities.contents[0].id)
           .use(
             {
+              advantage: altDown,
+              disadvantage: ctrlDown,
+              midiOptions: {
+                advantage: altDown,
+                disadvantage: ctrlDown,
+              },
               spell: selectedSpellLevel,
               consume: { spellSlot: slotUse == 1 ? true : false },
             },
@@ -397,9 +406,20 @@ export class Actions {
       // }
 
       item.item.system.activities
-        .get(activity?.itemId || activity?._id ||  activity?.id || item.item.system.activities.contents[0].id)
+        .get(
+          activity?.itemId ||
+            activity?._id ||
+            activity?.id ||
+            item.item.system.activities.contents[0].id,
+        )
         .use(
           {
+            advantage: altDown,
+            disadvantage: ctrlDown,
+            midiOptions: {
+              advantage: altDown,
+              disadvantage: ctrlDown,
+            },
             spell: selectedSpellLevel,
             consume: { spellSlot: activity?.useSlot },
           },
@@ -421,7 +441,6 @@ export class Actions {
     let skipDialog = this.trayOptions['fastForward'] ? { fastForward: true } : null
 
     const params = {
-
       dialog: {
         configure: !skipDialog,
       },
@@ -434,7 +453,7 @@ export class Actions {
       params.roll = { skill: skillsave, advantage: advantage, disadvantage: disadvantage }
       this.actor.rollSkill(params.roll, params.dialog, params.message)
     } else {
-      params.roll = { ability: skillsave }
+      params.roll = { ability: skillsave, advantage: advantage, disadvantage: disadvantage }
       this.actor.rollSavingThrow(params.roll, params.dialog, params.message)
     }
   }

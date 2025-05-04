@@ -1,3 +1,1347 @@
+.theme-classic {
+  --tooltip-bg: #2c1f12;
+  --tooltip-border: #704214;
+  --tooltip-text: #ffcc66;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #86d632;
+  --tooltip-header: #ffcc66;
+  --tooltip-subtitle: #bda069;
+  --tooltip-damage: #ffcc66;
+  --tooltip-damage-type: #86d632;
+  --tooltip-description: #c8b08e;
+  --tooltip-link: #2b2b2b;
+  --tooltip-roll-link: #c8b08e;
+  --tooltip-broken: #8d7d66;
+  --tooltip-effect: #c9593f;
+  --tooltip-info: #ffcc66;
+  --tooltip-footer-bg: #1d140c;
+  --tooltip-footer: #ffcc66;
+  --action-tag-bg: #612626;
+  --action-tag-text: #f1f1f1;
+  --portrait-border-color: #4a6fa5;
+  --dice-button-color: radial-gradient(#355c7d, #1e3a5f);
+  --dice-button-color-active: radial-gradient(#355c7d, #1e3a5f);
+  --dice-button-active-glow: inset 0 0 0.625rem #65a4f5;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #65a4f5;
+  --button-color: linear-gradient(180deg, #1e3a5f, #355c7d);
+  --button-border: 0.125rem inset #4a6fa5;
+  --light-button-color: linear-gradient(180deg, #0f5753, #5b9fa4);
+  --light-button-border: 0.125rem solid #6c9fbd;
+  --light-button-proficient-border: 0.125rem inset #92cdff;
+  --light-button-proficient-decoration: #0f5753;
+  --light-button-expertise-border: 0.125rem inset #bca4eb;
+  --light-button-expertise-decoration: #5b9fa4;
+  --drag-handle-color: linear-gradient(180deg, #920000, #c93232);
+  --drag-handle-hover: linear-gradient(180deg, #ca0202, #f53d3d);
+  --button-hover-border: #c9593f;
+  --button-hover-glow: 0 0 0.25rem #7c4539, 0 0 0.25rem #7c4539 inset;
+  --button-active-border: 0.125rem solid #c9593f;
+  --button-active-glow: 0 0 0.3125rem #c9593f;
+  --hover-color: #c9593f;
+  --tray-button-background-color: rgb(97, 97, 95);
+  --static-tray-border-color: rgba(91, 91, 91, 0.5803921569);
+  --static-tray-button-hover-glow-color: #c9593f;
+  --static-tray-button-hover-border: #7c4539;
+  --static-tray-button-active-inset-color: #e46f55;
+  --static-tray-button-active-background: #7c4539;
+  --static-tray-button-active-glow: #e46f55;
+  --static-tray-button-active-border-color: #c9593f;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #7c4539 0%,
+    #7c4539 100%
+  );
+  --custom-tray-inner-glow: rgba(41, 41, 41, 0.8078431373);
+  --custom-tray-border-color: rgba(91, 91, 91, 0.5803921569);
+  --custom-tray-hover-glow: #c9593f;
+  --custom-tray-hover-border: #7c4539;
+  --custom-tray-active-glow: #e46f55;
+  --custom-tray-active-background: #7c4539;
+  --custom-tray-active-border: #c9593f;
+}
+
+.theme-arcane {
+  --tooltip-bg: #2a203b;
+  --tooltip-border: #915cf2;
+  --tooltip-text: #dfccff;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #b97aff;
+  --tooltip-header: #cfa9ff;
+  --tooltip-subtitle: #a78edb;
+  --tooltip-damage: #dfccff;
+  --tooltip-damage-type: #86aaf2;
+  --tooltip-description: #e3d4ff;
+  --tooltip-link: #593e94;
+  --tooltip-roll-link: #cfa9ff;
+  --tooltip-broken: #a88bbc;
+  --tooltip-effect: #df77ff;
+  --tooltip-info: #ccb9f9;
+  --tooltip-footer-bg: #1c132b;
+  --tooltip-footer: #e3d4ff;
+  --action-tag-bg: #602080;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #7d37d6;
+  --dice-button-color: radial-gradient(#a26cff, #3e247a);
+  --dice-button-color-active: radial-gradient(#a26cff, #3e247a);
+  --dice-button-active-glow: inset 0 0 0.625rem #cc99ff;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #cc99ff;
+  --button-color: linear-gradient(180deg, #3e247a, #a26cff);
+  --button-border: 0.125rem inset #7d37d6;
+  --light-button-color: linear-gradient(180deg, #300566, #8a43e4);
+  --light-button-border: 0.125rem solid #9276d4;
+  --light-button-proficient-border: 0.125rem inset #c19aff;
+  --light-button-proficient-decoration: #300566;
+  --light-button-expertise-border: 0.125rem inset #e1caf8;
+  --light-button-expertise-decoration: #8a43e4;
+  --drag-handle-color: linear-gradient(180deg, #6a2ea3, #a050e0);
+  --drag-handle-hover: linear-gradient(180deg, #813fd1, #c47fff);
+  --button-hover-border: #df77ff;
+  --button-hover-glow: 0 0 0.25rem #6a2e7c, 0 0 0.25rem #6a2e7c inset;
+  --button-active-border: 0.125rem solid #df77ff;
+  --button-active-glow: 0 0 0.3125rem #df77ff;
+  --hover-color: #df77ff;
+  --tray-button-background-color: rgb(55, 45, 70);
+  --static-tray-border-color: rgba(145, 105, 197, 0.9254901961);
+  --static-tray-button-hover-glow-color: #df77ff;
+  --static-tray-button-hover-border: #6a2e7c;
+  --static-tray-button-active-inset-color: rgba(191, 128, 255, 0.9);
+  --static-tray-button-active-background: #6a2e7c;
+  --static-tray-button-active-glow: rgba(191, 128, 255, 0.9);
+  --static-tray-button-active-border-color: #df77ff;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #6a2e7c 0%,
+    #6a2e7c 100%
+  );
+  --custom-tray-inner-glow: rgba(36, 36, 54, 0.6);
+  --custom-tray-border-color: rgba(145, 105, 197, 0.9254901961);
+  --custom-tray-hover-glow: #df77ff;
+  --custom-tray-hover-border: #6a2e7c;
+  --custom-tray-active-glow: rgba(191, 128, 255, 0.9);
+  --custom-tray-active-background: #6a2e7c;
+  --custom-tray-active-border: #df77ff;
+}
+
+.theme-ocean {
+  --tooltip-bg: #1e1e2e;
+  --tooltip-border: #3a9ad9;
+  --tooltip-text: #e0f0ff;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #42d9f5;
+  --tooltip-header: #5fb4ff;
+  --tooltip-subtitle: #88b7dd;
+  --tooltip-damage: #5fb4ff;
+  --tooltip-damage-type: #76e0ff;
+  --tooltip-description: #d0e7f9;
+  --tooltip-link: #406ba3;
+  --tooltip-roll-link: #9dc4ff;
+  --tooltip-broken: #708099;
+  --tooltip-effect: #4ee2a0;
+  --tooltip-info: #aad9f5;
+  --tooltip-footer-bg: #141922;
+  --tooltip-footer: #cce7ff;
+  --action-tag-bg: #3a4c63;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #3a9ad9;
+  --dice-button-color: radial-gradient(#2e86ab, #1b4965);
+  --dice-button-color-active: radial-gradient(#2e86ab, #1b4965);
+  --dice-button-active-glow: inset 0 0 0.625rem #65d9ff;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #65d9ff;
+  --button-color: linear-gradient(180deg, #1b4965, #2e86ab);
+  --button-border: 0.125rem inset #3a9ad9;
+  --light-button-color: linear-gradient(180deg, #2c7da0, #78c0e0);
+  --light-button-border: 0.125rem solid #217ca3;
+  --light-button-proficient-border: 0.125rem inset #a9e7ff;
+  --light-button-proficient-decoration: #2c7da0;
+  --light-button-expertise-border: 0.125rem inset #c2ecff;
+  --light-button-expertise-decoration: #78c0e0;
+  --drag-handle-color: linear-gradient(180deg, #005a87, #4db3ce);
+  --drag-handle-hover: linear-gradient(180deg, #007fba, #65d9ff);
+  --button-hover-border: #4ee2a0;
+  --button-hover-glow: 0 0 0.25rem #1e2e3f, 0 0 0.25rem #1e2e3f inset;
+  --button-active-border: 0.125rem solid #4ee2a0;
+  --button-active-glow: 0 0 0.3125rem #4ee2a0;
+  --hover-color: #4ee2a0;
+  --tray-button-background-color: rgb(30, 60, 75);
+  --static-tray-border-color: rgba(80, 140, 164, 0.5803921569);
+  --static-tray-button-hover-glow-color: #4ee2a0;
+  --static-tray-button-hover-border: #1e2e3f;
+  --static-tray-button-active-inset-color: rgba(78, 226, 160, 0.8);
+  --static-tray-button-active-background: #1e2e3f;
+  --static-tray-button-active-glow: rgba(78, 226, 160, 0.8);
+  --static-tray-button-active-border-color: #4ee2a0;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #1e2e3f 0%,
+    #1e2e3f 100%
+  );
+  --custom-tray-inner-glow: rgba(22, 33, 44, 0.6);
+  --custom-tray-border-color: rgba(80, 140, 164, 0.5803921569);
+  --custom-tray-hover-glow: #4ee2a0;
+  --custom-tray-hover-border: #1e2e3f;
+  --custom-tray-active-glow: rgba(78, 226, 160, 0.8);
+  --custom-tray-active-background: #1e2e3f;
+  --custom-tray-active-border: #4ee2a0;
+}
+
+.theme-ember {
+  --tooltip-bg: #1a0f0f;
+  --tooltip-border: #aa2e2e;
+  --tooltip-text: #ffb6a0;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #ff645d;
+  --tooltip-header: #ff9782;
+  --tooltip-subtitle: #c26e5a;
+  --tooltip-damage: #ffc7b4;
+  --tooltip-damage-type: #ff4d4d;
+  --tooltip-description: #eaa897;
+  --tooltip-link: #b9463f;
+  --tooltip-roll-link: #ffc7b4;
+  --tooltip-broken: #9c5e4f;
+  --tooltip-effect: #ff6666;
+  --tooltip-info: #f6b9a8;
+  --tooltip-footer-bg: #120707;
+  --tooltip-footer: #ffc7b4;
+  --action-tag-bg: #7a1f1f;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #aa2e2e;
+  --dice-button-color: radial-gradient(#b43a3a, #792c2c);
+  --dice-button-color-active: radial-gradient(#b43a3a, #792c2c);
+  --dice-button-active-glow: inset 0 0 0.625rem #ff9980;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ff9980;
+  --button-color: linear-gradient(180deg, #792c2c, #b43a3a);
+  --button-border: 0.125rem inset #aa2e2e;
+  --light-button-color: linear-gradient(180deg, #a13030, #ffa285);
+  --light-button-border: 0.125rem solid #ff645d;
+  --light-button-proficient-border: 0.125rem inset #fd9d7c;
+  --light-button-proficient-decoration: #a13030;
+  --light-button-expertise-border: 0.125rem inset #ffd8cc;
+  --light-button-expertise-decoration: #ffa285;
+  --drag-handle-color: linear-gradient(180deg, #8c1f1f, #d94d4d);
+  --drag-handle-hover: linear-gradient(180deg, #aa2e2e, #ff6666);
+  --button-hover-border: #ff6666;
+  --button-hover-glow: 0 0 0.25rem rgba(156, 61, 58, 0.863), 0 0 0.25rem rgba(156, 61, 58, 0.863) inset;
+  --button-active-border: 0.125rem solid #ff6666;
+  --button-active-glow: 0 0 0.3125rem #ff6666;
+  --hover-color: #ff6666;
+  --tray-button-background-color: rgb(85, 50, 40);
+  --static-tray-border-color: rgba(156, 94, 79, 0.5803921569);
+  --static-tray-button-hover-glow-color: #ff6666;
+  --static-tray-button-hover-border: rgba(156, 61, 58, 0.863);
+  --static-tray-button-active-inset-color: rgba(255, 102, 102, 0.8);
+  --static-tray-button-active-background: rgba(156, 61, 58, 0.863);
+  --static-tray-button-active-glow: rgba(255, 102, 102, 0.8);
+  --static-tray-button-active-border-color: #ff6666;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    rgba(156, 61, 58, 0.863) 0%,
+    rgba(156, 61, 58, 0.863) 100%
+  );
+  --custom-tray-inner-glow: rgba(36, 24, 24, 0.6);
+  --custom-tray-border-color: rgba(156, 94, 79, 0.5803921569);
+  --custom-tray-hover-glow: #ff6666;
+  --custom-tray-hover-border: rgba(156, 61, 58, 0.863);
+  --custom-tray-active-glow: rgba(255, 102, 102, 0.8);
+  --custom-tray-active-background: rgba(156, 61, 58, 0.863);
+  --custom-tray-active-border: #ff6666;
+}
+
+.theme-frost {
+  --tooltip-bg: #111b20;
+  --tooltip-border: #5ebad4;
+  --tooltip-text: #e0faff;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #7fdff5;
+  --tooltip-header: #a0e1f0;
+  --tooltip-subtitle: #70d6e4;
+  --tooltip-damage: #e0faff;
+  --tooltip-damage-type: #7fdff5;
+  --tooltip-description: #c3edf2;
+  --tooltip-link: #4ca1af;
+  --tooltip-roll-link: #c3edf2;
+  --tooltip-broken: #95aab2;
+  --tooltip-effect: #6fd7db;
+  --tooltip-info: #b5f0f6;
+  --tooltip-footer-bg: #0d1418;
+  --tooltip-footer: #c3edf2;
+  --action-tag-bg: #2a4952;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #5cd4e0;
+  --dice-button-color: radial-gradient(#4ba8bc, #111b20);
+  --dice-button-color-active: radial-gradient(#4ba8bc, #111b20);
+  --dice-button-active-glow: inset 0 0 0.625rem #a7f6ff;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #a7f6ff;
+  --button-color: linear-gradient(180deg, #111b20, #4ba8bc);
+  --button-border: 0.125rem inset #5cd4e0;
+  --light-button-color: linear-gradient(180deg, #2c5f6c, #5fbcd3);
+  --light-button-border: 0.125rem solid #7fdff5;
+  --light-button-proficient-border: 0.125rem inset #b3f4ea;
+  --light-button-proficient-decoration: #2c5f6c;
+  --light-button-expertise-border: 0.125rem inset #92ffe9;
+  --light-button-expertise-decoration: #5fbcd3;
+  --drag-handle-color: linear-gradient(180deg, #469caa, #5fbcd3);
+  --drag-handle-hover: linear-gradient(180deg, #6cd0df, #82deea);
+  --button-hover-border: #7fdff5;
+  --button-hover-glow: 0 0 0.25rem rgb(32, 72, 82), 0 0 0.25rem rgb(32, 72, 82) inset;
+  --button-active-border: 0.125rem solid #7fdff5;
+  --button-active-glow: 0 0 0.3125rem #7fdff5;
+  --hover-color: #7fdff5;
+  --tray-button-background-color: rgb(40, 60, 65);
+  --static-tray-border-color: rgba(112, 214, 228, 0.5803921569);
+  --static-tray-button-hover-glow-color: #7fdff5;
+  --static-tray-button-hover-border: rgb(32, 72, 82);
+  --static-tray-button-active-inset-color: rgba(160, 235, 255, 0.9);
+  --static-tray-button-active-background: rgb(32, 72, 82);
+  --static-tray-button-active-glow: rgba(160, 235, 255, 0.9);
+  --static-tray-button-active-border-color: #7fdff5;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    rgb(32, 72, 82) 0%,
+    rgb(32, 72, 82) 100%
+  );
+  --custom-tray-inner-glow: rgba(20, 30, 30, 0.6);
+  --custom-tray-border-color: rgba(112, 214, 228, 0.5803921569);
+  --custom-tray-hover-glow: #7fdff5;
+  --custom-tray-hover-border: rgb(32, 72, 82);
+  --custom-tray-active-glow: rgba(160, 235, 255, 0.9);
+  --custom-tray-active-background: rgb(32, 72, 82);
+  --custom-tray-active-border: #7fdff5;
+}
+
+.theme-subterfuge {
+  --tooltip-bg: #1a1a1a;
+  --tooltip-border: #c23232;
+  --tooltip-text: #f5dcdc;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #f27c7c;
+  --tooltip-header: #ffa8a8;
+  --tooltip-subtitle: #d47c7c;
+  --tooltip-damage: #f5dcdc;
+  --tooltip-damage-type: #e06a6a;
+  --tooltip-description: #ffecec;
+  --tooltip-link: #912121;
+  --tooltip-roll-link: #ffa8a8;
+  --tooltip-broken: #b36a6a;
+  --tooltip-effect: #ff4d4d;
+  --tooltip-info: #e8a8a8;
+  --tooltip-footer-bg: #1c1313;
+  --tooltip-footer: #ffecec;
+  --action-tag-bg: #550000;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #3a3a3a;
+  --dice-button-color: radial-gradient(#5a5a5a, #1c1c1c);
+  --dice-button-color-active: radial-gradient(#5a5a5a, #1c1c1c);
+  --dice-button-active-glow: inset 0 0 0.625rem #e05252;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #e05252;
+  --button-color: linear-gradient(180deg, #1c1c1c, #5a5a5a);
+  --button-border: 0.125rem inset #3a3a3a;
+  --light-button-color: linear-gradient(180deg, #750000, #c23232);
+  --light-button-border: 0.125rem solid #933333;
+  --light-button-proficient-border: 0.125rem inset #ff9494;
+  --light-button-proficient-decoration: #750000;
+  --light-button-expertise-border: 0.125rem inset #ffcccc;
+  --light-button-expertise-decoration: #c23232;
+  --drag-handle-color: linear-gradient(180deg, #3a2c2c, #6a4b4b);
+  --drag-handle-hover: linear-gradient(180deg, #7d3a3a, #aa5c5c);
+  --button-hover-border: #ff4d4d;
+  --button-hover-glow: 0 0 0.25rem #661a1a, 0 0 0.25rem #661a1a inset;
+  --button-active-border: 0.125rem solid #ff4d4d;
+  --button-active-glow: 0 0 0.3125rem #ff4d4d;
+  --hover-color: #ff4d4d;
+  --tray-button-background-color: rgb(30, 25, 25);
+  --static-tray-border-color: rgba(179, 58, 58, 0.9254901961);
+  --static-tray-button-hover-glow-color: #ff4d4d;
+  --static-tray-button-hover-border: #661a1a;
+  --static-tray-button-active-inset-color: rgba(255, 77, 77, 0.8);
+  --static-tray-button-active-background: #661a1a;
+  --static-tray-button-active-glow: rgba(255, 77, 77, 0.8);
+  --static-tray-button-active-border-color: #ff4d4d;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #661a1a 0%,
+    #661a1a 100%
+  );
+  --custom-tray-inner-glow: rgba(28, 28, 28, 0.6);
+  --custom-tray-border-color: rgba(179, 58, 58, 0.9254901961);
+  --custom-tray-hover-glow: #ff4d4d;
+  --custom-tray-hover-border: #661a1a;
+  --custom-tray-active-glow: rgba(255, 77, 77, 0.8);
+  --custom-tray-active-background: #661a1a;
+  --custom-tray-active-border: #ff4d4d;
+}
+
+.theme-slate {
+  --tooltip-bg: #2e2e2e;
+  --tooltip-border: #666666;
+  --tooltip-text: #ffffff;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #cccccc;
+  --tooltip-header: #ffffff;
+  --tooltip-subtitle: #bbbbbb;
+  --tooltip-damage: #ffffff;
+  --tooltip-damage-type: #dddddd;
+  --tooltip-description: #eeeeee;
+  --tooltip-link: #3f7596;
+  --tooltip-roll-link: #add8e6;
+  --tooltip-broken: #888888;
+  --tooltip-effect: #99ccff;
+  --tooltip-info: #cccccc;
+  --tooltip-footer-bg: #1e1e1e;
+  --tooltip-footer: #ffffff;
+  --action-tag-bg: #444444;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #888888;
+  --dice-button-color: radial-gradient(#5a7383, #3f515d);
+  --dice-button-color-active: radial-gradient(#5a7383, #3f515d);
+  --dice-button-active-glow: inset 0 0 0.625rem #add8e6;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #add8e6;
+  --button-color: linear-gradient(180deg, #3f515d, #5a7383);
+  --button-border: 0.125rem inset #888888;
+  --light-button-color: linear-gradient(180deg, #5f7a8a, #a8bfc9);
+  --light-button-border: 0.125rem solid #666666;
+  --light-button-proficient-border: 0.125rem inset #add8e6;
+  --light-button-proficient-decoration: #5f7a8a;
+  --light-button-expertise-border: 0.125rem inset #d4ecf8;
+  --light-button-expertise-decoration: #a8bfc9;
+  --drag-handle-color: linear-gradient(180deg, #444444, #666666);
+  --drag-handle-hover: linear-gradient(180deg, #666666, #888888);
+  --button-hover-border: #99ccff;
+  --button-hover-glow: 0 0 0.25rem rgb(73, 73, 88), 0 0 0.25rem rgb(73, 73, 88) inset;
+  --button-active-border: 0.125rem solid #99ccff;
+  --button-active-glow: 0 0 0.3125rem #99ccff;
+  --hover-color: #99ccff;
+  --tray-button-background-color: rgb(60, 60, 65);
+  --static-tray-border-color: rgba(122, 122, 122, 0.5803921569);
+  --static-tray-button-hover-glow-color: #99ccff;
+  --static-tray-button-hover-border: rgb(73, 73, 88);
+  --static-tray-button-active-inset-color: rgba(153, 204, 255, 0.8);
+  --static-tray-button-active-background: rgb(73, 73, 88);
+  --static-tray-button-active-glow: rgba(153, 204, 255, 0.8);
+  --static-tray-button-active-border-color: #99ccff;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    rgb(73, 73, 88) 0%,
+    rgb(73, 73, 88) 100%
+  );
+  --custom-tray-inner-glow: rgba(20, 30, 30, 0.6);
+  --custom-tray-border-color: rgba(122, 122, 122, 0.5803921569);
+  --custom-tray-hover-glow: #99ccff;
+  --custom-tray-hover-border: rgb(73, 73, 88);
+  --custom-tray-active-glow: rgba(153, 204, 255, 0.8);
+  --custom-tray-active-background: rgb(73, 73, 88);
+  --custom-tray-active-border: #99ccff;
+}
+
+.theme-artificer {
+  --tooltip-bg: #2a3b1a;
+  --tooltip-border: #9fbf75;
+  --tooltip-text: #f4f7e1;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #a3cf8a;
+  --tooltip-header: #d2f2a6;
+  --tooltip-subtitle: #b2e59e;
+  --tooltip-damage: #f4f7e1;
+  --tooltip-damage-type: #8aa974;
+  --tooltip-description: #e0f7d3;
+  --tooltip-link: #415f38;
+  --tooltip-roll-link: #d2f2a6;
+  --tooltip-broken: #8a8a8a;
+  --tooltip-effect: #c1e7a7;
+  --tooltip-info: #d1f5b7;
+  --tooltip-footer-bg: #1e2c1d;
+  --tooltip-footer: #e0f7d3;
+  --action-tag-bg: #597b3a;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #4f6e29;
+  --dice-button-color: radial-gradient(#9fbf75, #6d8a3f);
+  --dice-button-color-active: radial-gradient(#9fbf75, #6d8a3f);
+  --dice-button-active-glow: inset 0 0 0.625rem #d1f5b7;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #d1f5b7;
+  --button-color: linear-gradient(180deg, #6d8a3f, #9fbf75);
+  --button-border: 0.125rem inset #4f6e29;
+  --light-button-color: linear-gradient(180deg, #2e4f24, #a8c68c);
+  --light-button-border: 0.125rem solid #a1d295;
+  --light-button-proficient-border: 0.125rem inset #b3e27b;
+  --light-button-proficient-decoration: #2e4f24;
+  --light-button-expertise-border: 0.125rem inset #c9f299;
+  --light-button-expertise-decoration: #a8c68c;
+  --drag-handle-color: linear-gradient(180deg, #597b3a, #a2d087);
+  --drag-handle-hover: linear-gradient(180deg, #739c55, #d1f5b7);
+  --button-hover-border: #c1e7a7;
+  --button-hover-glow: 0 0 0.25rem #3e5f2c, 0 0 0.25rem #3e5f2c inset;
+  --button-active-border: 0.125rem solid #c1e7a7;
+  --button-active-glow: 0 0 0.3125rem #c1e7a7;
+  --hover-color: #c1e7a7;
+  --tray-button-background-color: rgb(36, 53, 30);
+  --static-tray-border-color: rgba(159, 191, 117, 0.9254901961);
+  --static-tray-button-hover-glow-color: #c1e7a7;
+  --static-tray-button-hover-border: #3e5f2c;
+  --static-tray-button-active-inset-color: rgba(193, 231, 167, 0.85);
+  --static-tray-button-active-background: #3e5f2c;
+  --static-tray-button-active-glow: rgba(193, 231, 167, 0.85);
+  --static-tray-button-active-border-color: #c1e7a7;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3e5f2c 0%,
+    #3e5f2c 100%
+  );
+  --custom-tray-inner-glow: rgba(24, 34, 18, 0.6);
+  --custom-tray-border-color: rgba(159, 191, 117, 0.9254901961);
+  --custom-tray-hover-glow: #c1e7a7;
+  --custom-tray-hover-border: #3e5f2c;
+  --custom-tray-active-glow: rgba(193, 231, 167, 0.85);
+  --custom-tray-active-background: #3e5f2c;
+  --custom-tray-active-border: #c1e7a7;
+}
+
+.theme-barbarian {
+  --tooltip-bg: #4e1a12;
+  --tooltip-border: #f08a74;
+  --tooltip-text: #f9d8c4;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #f8b09d;
+  --tooltip-header: #f9d8c4;
+  --tooltip-subtitle: #f5a08f;
+  --tooltip-damage: #f9d8c4;
+  --tooltip-damage-type: #e16f46;
+  --tooltip-description: #f6e1d4;
+  --tooltip-link: #7f3e2f;
+  --tooltip-roll-link: #f9d8c4;
+  --tooltip-broken: #9e8a7d;
+  --tooltip-effect: #f8c4a7;
+  --tooltip-info: #e5a37d;
+  --tooltip-footer-bg: #3e1c12;
+  --tooltip-footer: #f6e1d4;
+  --action-tag-bg: #b93d2a;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #c23b2f;
+  --dice-button-color: radial-gradient(#f08a74, #e24d3e);
+  --dice-button-color-active: radial-gradient(#f08a74, #e24d3e);
+  --dice-button-active-glow: inset 0 0 0.625rem #f8c4a7;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #f8c4a7;
+  --button-color: linear-gradient(180deg, #e24d3e, #f08a74);
+  --button-border: 0.125rem inset #c23b2f;
+  --light-button-color: linear-gradient(180deg, #9e2a24, #f5a08f);
+  --light-button-border: 0.125rem solid #f1a593;
+  --light-button-proficient-border: 0.125rem inset #f5a08f;
+  --light-button-proficient-decoration: #9e2a24;
+  --light-button-expertise-border: 0.125rem inset #f8b09d;
+  --light-button-expertise-decoration: #f5a08f;
+  --drag-handle-color: linear-gradient(180deg, #b93d2a, #e3a593);
+  --drag-handle-hover: linear-gradient(180deg, #d53e28, #f8c4a7);
+  --button-hover-border: #f8c4a7;
+  --button-hover-glow: 0 0 0.25rem #9e1f1a, 0 0 0.25rem #9e1f1a inset;
+  --button-active-border: 0.125rem solid #f8c4a7;
+  --button-active-glow: 0 0 0.3125rem #f8c4a7;
+  --hover-color: #f8c4a7;
+  --tray-button-background-color: rgb(73, 29, 19);
+  --static-tray-border-color: rgba(240, 138, 116, 0.9254901961);
+  --static-tray-button-hover-glow-color: #f8c4a7;
+  --static-tray-button-hover-border: #9e1f1a;
+  --static-tray-button-active-inset-color: rgba(248, 196, 167, 0.85);
+  --static-tray-button-active-background: #9e1f1a;
+  --static-tray-button-active-glow: rgba(248, 196, 167, 0.85);
+  --static-tray-button-active-border-color: #f8c4a7;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #9e1f1a 0%,
+    #9e1f1a 100%
+  );
+  --custom-tray-inner-glow: rgba(42, 12, 6, 0.6);
+  --custom-tray-border-color: rgba(240, 138, 116, 0.9254901961);
+  --custom-tray-hover-glow: #f8c4a7;
+  --custom-tray-hover-border: #9e1f1a;
+  --custom-tray-active-glow: rgba(248, 196, 167, 0.85);
+  --custom-tray-active-background: #9e1f1a;
+  --custom-tray-active-border: #f8c4a7;
+}
+
+.theme-bard {
+  --tooltip-bg: #4c1c4f;
+  --tooltip-border: #ba80d4;
+  --tooltip-text: #f0c2f5;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #c187d8;
+  --tooltip-header: #f0c2f5;
+  --tooltip-subtitle: #ba80d4;
+  --tooltip-damage: #f0c2f5;
+  --tooltip-damage-type: #9c66b7;
+  --tooltip-description: #f5c1f0;
+  --tooltip-link: #6e1e7b;
+  --tooltip-roll-link: #f0c2f5;
+  --tooltip-broken: #9e7a9d;
+  --tooltip-effect: #c187d8;
+  --tooltip-info: #c7a7e6;
+  --tooltip-footer-bg: #3e0f36;
+  --tooltip-footer: #f5c1f0;
+  --action-tag-bg: #7e3a9d;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #7e3a9d;
+  --dice-button-color: radial-gradient(#ba80d4, #9c47c6);
+  --dice-button-color-active: radial-gradient(#ba80d4, #9c47c6);
+  --dice-button-active-glow: inset 0 0 0.625rem #c7a7e6;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #c7a7e6;
+  --button-color: linear-gradient(180deg, #9c47c6, #ba80d4);
+  --button-border: 0.125rem inset #7e3a9d;
+  --light-button-color: linear-gradient(180deg, #6e1e7b, #9f57b5);
+  --light-button-border: 0.125rem solid #a674c1;
+  --light-button-proficient-border: 0.125rem inset #ba80d4;
+  --light-button-proficient-decoration: #6e1e7b;
+  --light-button-expertise-border: 0.125rem inset #c7a7e6;
+  --light-button-expertise-decoration: #9f57b5;
+  --drag-handle-color: linear-gradient(180deg, #7e3a9d, #a57bc1);
+  --drag-handle-hover: linear-gradient(180deg, #8d49ad, #c7a7e6);
+  --button-hover-border: #c187d8;
+  --button-hover-glow: 0 0 0.25rem #6d0c6c, 0 0 0.25rem #6d0c6c inset;
+  --button-active-border: 0.125rem solid #c187d8;
+  --button-active-glow: 0 0 0.3125rem #c187d8;
+  --hover-color: #c187d8;
+  --tray-button-background-color: rgb(49, 22, 45);
+  --static-tray-border-color: rgba(186, 128, 212, 0.9254901961);
+  --static-tray-button-hover-glow-color: #c187d8;
+  --static-tray-button-hover-border: #6d0c6c;
+  --static-tray-button-active-inset-color: rgba(193, 135, 216, 0.85);
+  --static-tray-button-active-background: #6d0c6c;
+  --static-tray-button-active-glow: rgba(193, 135, 216, 0.85);
+  --static-tray-button-active-border-color: #c187d8;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #6d0c6c 0%,
+    #6d0c6c 100%
+  );
+  --custom-tray-inner-glow: rgba(27, 17, 32, 0.6);
+  --custom-tray-border-color: rgba(186, 128, 212, 0.9254901961);
+  --custom-tray-hover-glow: #c187d8;
+  --custom-tray-hover-border: #6d0c6c;
+  --custom-tray-active-glow: rgba(193, 135, 216, 0.85);
+  --custom-tray-active-background: #6d0c6c;
+  --custom-tray-active-border: #c187d8;
+}
+
+.theme-cleric {
+  --tooltip-bg: #5c4816;
+  --tooltip-border: #f1d1a8;
+  --tooltip-text: #fff7db;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #f1dc7b;
+  --tooltip-header: #f8e4ab;
+  --tooltip-subtitle: #f6cc7f;
+  --tooltip-damage: #fff7db;
+  --tooltip-damage-type: #cfc07f;
+  --tooltip-description: #f7e0b0;
+  --tooltip-link: #704c1b;
+  --tooltip-roll-link: #f8e4ab;
+  --tooltip-broken: #9b8c59;
+  --tooltip-effect: #ffd98f;
+  --tooltip-info: #f8db7f;
+  --tooltip-footer-bg: #4b3d18;
+  --tooltip-footer: #f7e0b0;
+  --action-tag-bg: #c8a34b;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #dca35d;
+  --dice-button-color: radial-gradient(#eaa64e, #facd37);
+  --dice-button-color-active: radial-gradient(#eaa64e, #facd37);
+  --dice-button-active-glow: inset 0 0 0.625rem #ffcc66;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ffcc66;
+  --button-color: linear-gradient(180deg, #facd37, #eaa64e);
+  --button-border: 0.125rem inset #dca35d;
+  --light-button-color: linear-gradient(180deg, #b2874c, #f6e1af);
+  --light-button-border: 0.125rem solid #f1d68a;
+  --light-button-proficient-border: 0.125rem inset #ffdc7d;
+  --light-button-proficient-decoration: #b2874c;
+  --light-button-expertise-border: 0.125rem inset #fff1b8;
+  --light-button-expertise-decoration: #f6e1af;
+  --drag-handle-color: linear-gradient(180deg, #c8a34b, #f0cc8b);
+  --drag-handle-hover: linear-gradient(180deg, #d7b45b, #ffcc66);
+  --button-hover-border: #ffd98f;
+  --button-hover-glow: 0 0 0.25rem #c7a73e, 0 0 0.25rem #c7a73e inset;
+  --button-active-border: 0.125rem solid #ffd98f;
+  --button-active-glow: 0 0 0.3125rem #ffd98f;
+  --hover-color: #ffd98f;
+  --tray-button-background-color: rgb(85, 68, 40);
+  --static-tray-border-color: rgba(241, 209, 168, 0.9254901961);
+  --static-tray-button-hover-glow-color: #ffd98f;
+  --static-tray-button-hover-border: #c7a73e;
+  --static-tray-button-active-inset-color: rgba(255, 217, 143, 0.85);
+  --static-tray-button-active-background: #c7a73e;
+  --static-tray-button-active-glow: rgba(255, 217, 143, 0.85);
+  --static-tray-button-active-border-color: #ffd98f;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #c7a73e 0%,
+    #c7a73e 100%
+  );
+  --custom-tray-inner-glow: rgba(49, 37, 23, 0.6);
+  --custom-tray-border-color: rgba(241, 209, 168, 0.9254901961);
+  --custom-tray-hover-glow: #ffd98f;
+  --custom-tray-hover-border: #c7a73e;
+  --custom-tray-active-glow: rgba(255, 217, 143, 0.85);
+  --custom-tray-active-background: #c7a73e;
+  --custom-tray-active-border: #ffd98f;
+}
+
+.theme-druid {
+  --tooltip-bg: #263c26;
+  --tooltip-border: #6ddf76;
+  --tooltip-text: #dcf5db;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #9be6a3;
+  --tooltip-header: #b9f0b4;
+  --tooltip-subtitle: #a0dba3;
+  --tooltip-damage: #dcf5db;
+  --tooltip-damage-type: #76c2af;
+  --tooltip-description: #e0f9e3;
+  --tooltip-link: #457a4f;
+  --tooltip-roll-link: #b9f0b4;
+  --tooltip-broken: #a2cca3;
+  --tooltip-effect: #a4e3a1;
+  --tooltip-info: #bcf7c6;
+  --tooltip-footer-bg: #1c2b1c;
+  --tooltip-footer: #e0f9e3;
+  --action-tag-bg: #4a7a47;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #4a8a3f;
+  --dice-button-color: radial-gradient(#80c670, #3e6b3c);
+  --dice-button-color-active: radial-gradient(#80c670, #3e6b3c);
+  --dice-button-active-glow: inset 0 0 0.625rem #b3f3b1;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #b3f3b1;
+  --button-color: linear-gradient(180deg, #3e6b3c, #80c670);
+  --button-border: 0.125rem inset #4a8a3f;
+  --light-button-color: linear-gradient(180deg, #35592d, #7ec77a);
+  --light-button-border: 0.125rem solid #89d487;
+  --light-button-proficient-border: 0.125rem inset #94e5a2;
+  --light-button-proficient-decoration: #35592d;
+  --light-button-expertise-border: 0.125rem inset #ccf1d1;
+  --light-button-expertise-decoration: #7ec77a;
+  --drag-handle-color: linear-gradient(180deg, #577d53, #88cc81);
+  --drag-handle-hover: linear-gradient(180deg, #6cbf66, #b6ffb3);
+  --button-hover-border: #a4e3a1;
+  --button-hover-glow: 0 0 0.25rem #4a7a47, 0 0 0.25rem #4a7a47 inset;
+  --button-active-border: 0.125rem solid #a4e3a1;
+  --button-active-glow: 0 0 0.3125rem #a4e3a1;
+  --hover-color: #a4e3a1;
+  --tray-button-background-color: rgb(38, 54, 38);
+  --static-tray-border-color: rgba(118, 197, 122, 0.9254901961);
+  --static-tray-button-hover-glow-color: #a4e3a1;
+  --static-tray-button-hover-border: #4a7a47;
+  --static-tray-button-active-inset-color: rgba(150, 225, 150, 0.9);
+  --static-tray-button-active-background: #4a7a47;
+  --static-tray-button-active-glow: rgba(150, 225, 150, 0.9);
+  --static-tray-button-active-border-color: #a4e3a1;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #4a7a47 0%,
+    #4a7a47 100%
+  );
+  --custom-tray-inner-glow: rgba(42, 54, 42, 0.6);
+  --custom-tray-border-color: rgba(118, 197, 122, 0.9254901961);
+  --custom-tray-hover-glow: #a4e3a1;
+  --custom-tray-hover-border: #4a7a47;
+  --custom-tray-active-glow: rgba(150, 225, 150, 0.9);
+  --custom-tray-active-background: #4a7a47;
+  --custom-tray-active-border: #a4e3a1;
+}
+
+.theme-fighter {
+  --tooltip-bg: #202020;
+  --tooltip-border: #8f8f8f;
+  --tooltip-text: #f0f0f0;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #d2d2d2;
+  --tooltip-header: #ffffff;
+  --tooltip-subtitle: #bbbbbb;
+  --tooltip-damage: #f0f0f0;
+  --tooltip-damage-type: #a0a0a0;
+  --tooltip-description: #eaeaea;
+  --tooltip-link: #505050;
+  --tooltip-roll-link: #ffffff;
+  --tooltip-broken: #888888;
+  --tooltip-effect: #bbbbbb;
+  --tooltip-info: #cfcfcf;
+  --tooltip-footer-bg: #151515;
+  --tooltip-footer: #eaeaea;
+  --action-tag-bg: #4a4a4a;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #6a6a6a;
+  --dice-button-color: radial-gradient(#8d8d8d, #3d3d3d);
+  --dice-button-color-active: radial-gradient(#8d8d8d, #3d3d3d);
+  --dice-button-active-glow: inset 0 0 0.625rem #d1d1d1;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #d1d1d1;
+  --button-color: linear-gradient(180deg, #3d3d3d, #8d8d8d);
+  --button-border: 0.125rem inset #6a6a6a;
+  --light-button-color: linear-gradient(180deg, #1c1c1c, #9e9e9e);
+  --light-button-border: 0.125rem solid #b4b4b4;
+  --light-button-proficient-border: 0.125rem inset #cccccc;
+  --light-button-proficient-decoration: #1c1c1c;
+  --light-button-expertise-border: 0.125rem inset #e6e6e6;
+  --light-button-expertise-decoration: #9e9e9e;
+  --drag-handle-color: linear-gradient(180deg, #5e5e5e, #9d9d9d);
+  --drag-handle-hover: linear-gradient(180deg, #7a7a7a, #d0d0d0);
+  --button-hover-border: #bbbbbb;
+  --button-hover-glow: 0 0 0.25rem #4d4d4d, 0 0 0.25rem #4d4d4d inset;
+  --button-active-border: 0.125rem solid #bbbbbb;
+  --button-active-glow: 0 0 0.3125rem #bbbbbb;
+  --hover-color: #bbbbbb;
+  --tray-button-background-color: rgb(45, 45, 45);
+  --static-tray-border-color: rgba(165, 165, 165, 0.9254901961);
+  --static-tray-button-hover-glow-color: #bbbbbb;
+  --static-tray-button-hover-border: #4d4d4d;
+  --static-tray-button-active-inset-color: rgba(200, 200, 200, 0.85);
+  --static-tray-button-active-background: #4d4d4d;
+  --static-tray-button-active-glow: rgba(200, 200, 200, 0.85);
+  --static-tray-button-active-border-color: #bbbbbb;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #4d4d4d 0%,
+    #4d4d4d 100%
+  );
+  --custom-tray-inner-glow: rgba(36, 36, 36, 0.6);
+  --custom-tray-border-color: rgba(165, 165, 165, 0.9254901961);
+  --custom-tray-hover-glow: #bbbbbb;
+  --custom-tray-hover-border: #4d4d4d;
+  --custom-tray-active-glow: rgba(200, 200, 200, 0.85);
+  --custom-tray-active-background: #4d4d4d;
+  --custom-tray-active-border: #bbbbbb;
+}
+
+.theme-monk {
+  --tooltip-bg: #3e3e2e;
+  --tooltip-border: #a1c58d;
+  --tooltip-text: #f0f7e3;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #9e9c58;
+  --tooltip-header: #f0f7e3;
+  --tooltip-subtitle: #a1c58d;
+  --tooltip-damage: #f0f7e3;
+  --tooltip-damage-type: #91a363;
+  --tooltip-description: #e1f0d6;
+  --tooltip-link: #5b6c36;
+  --tooltip-roll-link: #f0f7e3;
+  --tooltip-broken: #8a9b74;
+  --tooltip-effect: #b0db93;
+  --tooltip-info: #a2d07a;
+  --tooltip-footer-bg: #2d2d1d;
+  --tooltip-footer: #e1f0d6;
+  --action-tag-bg: #5c7d43;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #6b8c49;
+  --dice-button-color: radial-gradient(#a1c58d, #7f9a5e);
+  --dice-button-color-active: radial-gradient(#a1c58d, #7f9a5e);
+  --dice-button-active-glow: inset 0 0 0.625rem #a2d07a;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #a2d07a;
+  --button-color: linear-gradient(180deg, #7f9a5e, #a1c58d);
+  --button-border: 0.125rem inset #6b8c49;
+  --light-button-color: linear-gradient(180deg, #4a5c32, #81a16c);
+  --light-button-border: 0.125rem solid #9cbe75;
+  --light-button-proficient-border: 0.125rem inset #b1d78f;
+  --light-button-proficient-decoration: #4a5c32;
+  --light-button-expertise-border: 0.125rem inset #c5e1a3;
+  --light-button-expertise-decoration: #81a16c;
+  --drag-handle-color: linear-gradient(180deg, #5c7d43, #a1b77a);
+  --drag-handle-hover: linear-gradient(180deg, #718e4d, #a2d07a);
+  --button-hover-border: #b0db93;
+  --button-hover-glow: 0 0 0.25rem #3f5426, 0 0 0.25rem #3f5426 inset;
+  --button-active-border: 0.125rem solid #b0db93;
+  --button-active-glow: 0 0 0.3125rem #b0db93;
+  --hover-color: #b0db93;
+  --tray-button-background-color: rgb(33, 29, 27);
+  --static-tray-border-color: rgba(161, 197, 141, 0.9254901961);
+  --static-tray-button-hover-glow-color: #b0db93;
+  --static-tray-button-hover-border: #3f5426;
+  --static-tray-button-active-inset-color: rgba(176, 219, 147, 0.85);
+  --static-tray-button-active-background: #3f5426;
+  --static-tray-button-active-glow: rgba(176, 219, 147, 0.85);
+  --static-tray-button-active-border-color: #b0db93;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3f5426 0%,
+    #3f5426 100%
+  );
+  --custom-tray-inner-glow: rgba(18, 15, 13, 0.6);
+  --custom-tray-border-color: rgba(161, 197, 141, 0.9254901961);
+  --custom-tray-hover-glow: #b0db93;
+  --custom-tray-hover-border: #3f5426;
+  --custom-tray-active-glow: rgba(176, 219, 147, 0.85);
+  --custom-tray-active-background: #3f5426;
+  --custom-tray-active-border: #b0db93;
+}
+
+.theme-paladin {
+  --tooltip-bg: #1f2d3e;
+  --tooltip-border: #a4c6eb;
+  --tooltip-text: #e6f3ff;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #b7d5f2;
+  --tooltip-header: #d0e5ff;
+  --tooltip-subtitle: #aac6e4;
+  --tooltip-damage: #e6f3ff;
+  --tooltip-damage-type: #86aaf2;
+  --tooltip-description: #e3f1ff;
+  --tooltip-link: #3e5a7e;
+  --tooltip-roll-link: #d0e5ff;
+  --tooltip-broken: #9fb5c6;
+  --tooltip-effect: #c9e3ff;
+  --tooltip-info: #cbe3f7;
+  --tooltip-footer-bg: #16212f;
+  --tooltip-footer: #e3f1ff;
+  --action-tag-bg: #2d4f72;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #5c85b0;
+  --dice-button-color: radial-gradient(#a4c6eb, #2d4f72);
+  --dice-button-color-active: radial-gradient(#a4c6eb, #2d4f72);
+  --dice-button-active-glow: inset 0 0 0.625rem #d9eeff;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #d9eeff;
+  --button-color: linear-gradient(180deg, #2d4f72, #a4c6eb);
+  --button-border: 0.125rem inset #5c85b0;
+  --light-button-color: linear-gradient(180deg, #244060, #a9c7f2);
+  --light-button-border: 0.125rem solid #8fb3de;
+  --light-button-proficient-border: 0.125rem inset #b0d4f8;
+  --light-button-proficient-decoration: #244060;
+  --light-button-expertise-border: 0.125rem inset #d6eaff;
+  --light-button-expertise-decoration: #a9c7f2;
+  --drag-handle-color: linear-gradient(180deg, #3e6288, #7aa8d6);
+  --drag-handle-hover: linear-gradient(180deg, #5b8eb5, #b8dbff);
+  --button-hover-border: #c9e3ff;
+  --button-hover-glow: 0 0 0.25rem #446b8d, 0 0 0.25rem #446b8d inset;
+  --button-active-border: 0.125rem solid #c9e3ff;
+  --button-active-glow: 0 0 0.3125rem #c9e3ff;
+  --hover-color: #c9e3ff;
+  --tray-button-background-color: rgb(30, 40, 60);
+  --static-tray-border-color: rgba(125, 177, 221, 0.9254901961);
+  --static-tray-button-hover-glow-color: #c9e3ff;
+  --static-tray-button-hover-border: #446b8d;
+  --static-tray-button-active-inset-color: rgba(200, 220, 255, 0.8);
+  --static-tray-button-active-background: #446b8d;
+  --static-tray-button-active-glow: rgba(200, 220, 255, 0.8);
+  --static-tray-button-active-border-color: #c9e3ff;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #446b8d 0%,
+    #446b8d 100%
+  );
+  --custom-tray-inner-glow: rgba(38, 54, 78, 0.6);
+  --custom-tray-border-color: rgba(125, 177, 221, 0.9254901961);
+  --custom-tray-hover-glow: #c9e3ff;
+  --custom-tray-hover-border: #446b8d;
+  --custom-tray-active-glow: rgba(200, 220, 255, 0.8);
+  --custom-tray-active-background: #446b8d;
+  --custom-tray-active-border: #c9e3ff;
+}
+
+.theme-ranger {
+  --tooltip-bg: #2a3e2a;
+  --tooltip-border: #7f9b72;
+  --tooltip-text: #d6f2c4;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #91bf7b;
+  --tooltip-header: #b5e7b0;
+  --tooltip-subtitle: #a1d18f;
+  --tooltip-damage: #d6f2c4;
+  --tooltip-damage-type: #5a8d46;
+  --tooltip-description: #e1f7d0;
+  --tooltip-link: #3c6b3c;
+  --tooltip-roll-link: #b5e7b0;
+  --tooltip-broken: #b0c9a2;
+  --tooltip-effect: #a8d59f;
+  --tooltip-info: #accba3;
+  --tooltip-footer-bg: #1f2c1f;
+  --tooltip-footer: #e1f7d0;
+  --action-tag-bg: #40672d;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #3d6035;
+  --dice-button-color: radial-gradient(#7fbb7e, #4b7c46);
+  --dice-button-color-active: radial-gradient(#7fbb7e, #4b7c46);
+  --dice-button-active-glow: inset 0 0 0.625rem #b0d69f;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #b0d69f;
+  --button-color: linear-gradient(180deg, #4b7c46, #7fbb7e);
+  --button-border: 0.125rem inset #3d6035;
+  --light-button-color: linear-gradient(180deg, #2a4824, #a3d2a1);
+  --light-button-border: 0.125rem solid #8cae7d;
+  --light-button-proficient-border: 0.125rem inset #87d68b;
+  --light-button-proficient-decoration: #2a4824;
+  --light-button-expertise-border: 0.125rem inset #c5f2c1;
+  --light-button-expertise-decoration: #a3d2a1;
+  --drag-handle-color: linear-gradient(180deg, #4a6839, #8cbe80);
+  --drag-handle-hover: linear-gradient(180deg, #5a7b4b, #b0cc96);
+  --button-hover-border: #a8d59f;
+  --button-hover-glow: 0 0 0.25rem #3c5a38, 0 0 0.25rem #3c5a38 inset;
+  --button-active-border: 0.125rem solid #a8d59f;
+  --button-active-glow: 0 0 0.3125rem #a8d59f;
+  --hover-color: #a8d59f;
+  --tray-button-background-color: rgb(40, 60, 30);
+  --static-tray-border-color: rgba(127, 155, 114, 0.9254901961);
+  --static-tray-button-hover-glow-color: #a8d59f;
+  --static-tray-button-hover-border: #3c5a38;
+  --static-tray-button-active-inset-color: rgba(168, 213, 159, 0.85);
+  --static-tray-button-active-background: #3c5a38;
+  --static-tray-button-active-glow: rgba(168, 213, 159, 0.85);
+  --static-tray-button-active-border-color: #a8d59f;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3c5a38 0%,
+    #3c5a38 100%
+  );
+  --custom-tray-inner-glow: rgba(29, 39, 19, 0.6);
+  --custom-tray-border-color: rgba(127, 155, 114, 0.9254901961);
+  --custom-tray-hover-glow: #a8d59f;
+  --custom-tray-hover-border: #3c5a38;
+  --custom-tray-active-glow: rgba(168, 213, 159, 0.85);
+  --custom-tray-active-background: #3c5a38;
+  --custom-tray-active-border: #a8d59f;
+}
+
+.theme-rogue {
+  --tooltip-bg: #1d1216;
+  --tooltip-border: #7d6a6d;
+  --tooltip-text: #f1d4d2;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #d3a1a1;
+  --tooltip-header: #f1d4d2;
+  --tooltip-subtitle: #e6b2b2;
+  --tooltip-damage: #f1d4d2;
+  --tooltip-damage-type: #a77f7f;
+  --tooltip-description: #f9e3e3;
+  --tooltip-link: #4c2e2f;
+  --tooltip-roll-link: #f1d4d2;
+  --tooltip-broken: #a6a6a6;
+  --tooltip-effect: #d2a1a1;
+  --tooltip-info: #e6b2b2;
+  --tooltip-footer-bg: #140e13;
+  --tooltip-footer: #f9e3e3;
+  --action-tag-bg: #5f3d41;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #5a4a4c;
+  --dice-button-color: radial-gradient(#7d6a6d, #4c3c3f);
+  --dice-button-color-active: radial-gradient(#7d6a6d, #4c3c3f);
+  --dice-button-active-glow: inset 0 0 0.625rem #e6b2b2;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #e6b2b2;
+  --button-color: linear-gradient(180deg, #4c3c3f, #7d6a6d);
+  --button-border: 0.125rem inset #5a4a4c;
+  --light-button-color: linear-gradient(180deg, #2d1f23, #a17a7d);
+  --light-button-border: 0.125rem solid #9e7f81;
+  --light-button-proficient-border: 0.125rem inset #d2a1a1;
+  --light-button-proficient-decoration: #2d1f23;
+  --light-button-expertise-border: 0.125rem inset #e6b2b2;
+  --light-button-expertise-decoration: #a17a7d;
+  --drag-handle-color: linear-gradient(180deg, #5f3d41, #9f7175);
+  --drag-handle-hover: linear-gradient(180deg, #7d4b51, #d2a1a1);
+  --button-hover-border: #d2a1a1;
+  --button-hover-glow: 0 0 0.25rem #3f292f, 0 0 0.25rem #3f292f inset;
+  --button-active-border: 0.125rem solid #d2a1a1;
+  --button-active-glow: 0 0 0.3125rem #d2a1a1;
+  --hover-color: #d2a1a1;
+  --tray-button-background-color: rgb(34, 25, 28);
+  --static-tray-border-color: rgba(156, 110, 109, 0.9254901961);
+  --static-tray-button-hover-glow-color: #d2a1a1;
+  --static-tray-button-hover-border: #3f292f;
+  --static-tray-button-active-inset-color: rgba(210, 161, 161, 0.85);
+  --static-tray-button-active-background: #3f292f;
+  --static-tray-button-active-glow: rgba(210, 161, 161, 0.85);
+  --static-tray-button-active-border-color: #d2a1a1;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3f292f 0%,
+    #3f292f 100%
+  );
+  --custom-tray-inner-glow: rgba(38, 28, 32, 0.6);
+  --custom-tray-border-color: rgba(156, 110, 109, 0.9254901961);
+  --custom-tray-hover-glow: #d2a1a1;
+  --custom-tray-hover-border: #3f292f;
+  --custom-tray-active-glow: rgba(210, 161, 161, 0.85);
+  --custom-tray-active-background: #3f292f;
+  --custom-tray-active-border: #d2a1a1;
+}
+
+.theme-sorcerer {
+  --tooltip-bg: #2d0f1a;
+  --tooltip-border: #f25478;
+  --tooltip-text: #ffe6ee;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #ff94a8;
+  --tooltip-header: #ffc0cb;
+  --tooltip-subtitle: #f9a1b4;
+  --tooltip-damage: #ffe6ee;
+  --tooltip-damage-type: #ff7f9f;
+  --tooltip-description: #fff0f5;
+  --tooltip-link: #b0415a;
+  --tooltip-roll-link: #ffc0cb;
+  --tooltip-broken: #d4788f;
+  --tooltip-effect: #ffb6c1;
+  --tooltip-info: #f3c1cf;
+  --tooltip-footer-bg: #1f0a10;
+  --tooltip-footer: #fff0f5;
+  --action-tag-bg: #a0263a;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #a4334d;
+  --dice-button-color: radial-gradient(#f25478, #8b1e3f);
+  --dice-button-color-active: radial-gradient(#f25478, #8b1e3f);
+  --dice-button-active-glow: inset 0 0 0.625rem #ffd1dd;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ffd1dd;
+  --button-color: linear-gradient(180deg, #8b1e3f, #f25478);
+  --button-border: 0.125rem inset #a4334d;
+  --light-button-color: linear-gradient(180deg, #5e1025, #f78b9d);
+  --light-button-border: 0.125rem solid #fda6b1;
+  --light-button-proficient-border: 0.125rem inset #ffacc4;
+  --light-button-proficient-decoration: #5e1025;
+  --light-button-expertise-border: 0.125rem inset #ffe4ed;
+  --light-button-expertise-decoration: #f78b9d;
+  --drag-handle-color: linear-gradient(180deg, #a0263a, #f0728f);
+  --drag-handle-hover: linear-gradient(180deg, #d83c5e, #ffb1c7);
+  --button-hover-border: #ffb6c1;
+  --button-hover-glow: 0 0 0.25rem #842642, 0 0 0.25rem #842642 inset;
+  --button-active-border: 0.125rem solid #ffb6c1;
+  --button-active-glow: 0 0 0.3125rem #ffb6c1;
+  --hover-color: #ffb6c1;
+  --tray-button-background-color: rgb(50, 25, 35);
+  --static-tray-border-color: rgba(233, 93, 123, 0.9254901961);
+  --static-tray-button-hover-glow-color: #ffb6c1;
+  --static-tray-button-hover-border: #842642;
+  --static-tray-button-active-inset-color: rgba(255, 182, 193, 0.85);
+  --static-tray-button-active-background: #842642;
+  --static-tray-button-active-glow: rgba(255, 182, 193, 0.85);
+  --static-tray-button-active-border-color: #ffb6c1;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #842642 0%,
+    #842642 100%
+  );
+  --custom-tray-inner-glow: rgba(42, 20, 28, 0.6);
+  --custom-tray-border-color: rgba(233, 93, 123, 0.9254901961);
+  --custom-tray-hover-glow: #ffb6c1;
+  --custom-tray-hover-border: #842642;
+  --custom-tray-active-glow: rgba(255, 182, 193, 0.85);
+  --custom-tray-active-background: #842642;
+  --custom-tray-active-border: #ffb6c1;
+}
+
+.theme-sorcerer {
+  --tooltip-bg: #2d0f1a;
+  --tooltip-border: #f25478;
+  --tooltip-text: #ffe6ee;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #ff94a8;
+  --tooltip-header: #ffc0cb;
+  --tooltip-subtitle: #f9a1b4;
+  --tooltip-damage: #ffe6ee;
+  --tooltip-damage-type: #ff7f9f;
+  --tooltip-description: #fff0f5;
+  --tooltip-link: #b0415a;
+  --tooltip-roll-link: #ffc0cb;
+  --tooltip-broken: #d4788f;
+  --tooltip-effect: #ffb6c1;
+  --tooltip-info: #f3c1cf;
+  --tooltip-footer-bg: #1f0a10;
+  --tooltip-footer: #fff0f5;
+  --action-tag-bg: #a0263a;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #a4334d;
+  --dice-button-color: radial-gradient(#f25478, #8b1e3f);
+  --dice-button-color-active: radial-gradient(#f25478, #8b1e3f);
+  --dice-button-active-glow: inset 0 0 0.625rem #ffd1dd;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ffd1dd;
+  --button-color: linear-gradient(180deg, #8b1e3f, #f25478);
+  --button-border: 0.125rem inset #a4334d;
+  --light-button-color: linear-gradient(180deg, #5e1025, #f78b9d);
+  --light-button-border: 0.125rem solid #fda6b1;
+  --light-button-proficient-border: 0.125rem inset #ffacc4;
+  --light-button-proficient-decoration: #5e1025;
+  --light-button-expertise-border: 0.125rem inset #ffe4ed;
+  --light-button-expertise-decoration: #f78b9d;
+  --drag-handle-color: linear-gradient(180deg, #a0263a, #f0728f);
+  --drag-handle-hover: linear-gradient(180deg, #d83c5e, #ffb1c7);
+  --button-hover-border: #ffb6c1;
+  --button-hover-glow: 0 0 0.25rem #842642, 0 0 0.25rem #842642 inset;
+  --button-active-border: 0.125rem solid #ffb6c1;
+  --button-active-glow: 0 0 0.3125rem #ffb6c1;
+  --hover-color: #ffb6c1;
+  --tray-button-background-color: rgb(50, 25, 35);
+  --static-tray-border-color: rgba(233, 93, 123, 0.9254901961);
+  --static-tray-button-hover-glow-color: #ffb6c1;
+  --static-tray-button-hover-border: #842642;
+  --static-tray-button-active-inset-color: rgba(255, 182, 193, 0.85);
+  --static-tray-button-active-background: #842642;
+  --static-tray-button-active-glow: rgba(255, 182, 193, 0.85);
+  --static-tray-button-active-border-color: #ffb6c1;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #842642 0%,
+    #842642 100%
+  );
+  --custom-tray-inner-glow: rgba(42, 20, 28, 0.6);
+  --custom-tray-border-color: rgba(233, 93, 123, 0.9254901961);
+  --custom-tray-hover-glow: #ffb6c1;
+  --custom-tray-hover-border: #842642;
+  --custom-tray-active-glow: rgba(255, 182, 193, 0.85);
+  --custom-tray-active-background: #842642;
+  --custom-tray-active-border: #ffb6c1;
+}
+
+.theme-warlock {
+  --tooltip-bg: #2a1932;
+  --tooltip-border: #5e4b89;
+  --tooltip-text: #e0c1ff;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #c38ee4;
+  --tooltip-header: #c8a8e3;
+  --tooltip-subtitle: #a489d1;
+  --tooltip-damage: #e0c1ff;
+  --tooltip-damage-type: #9b6ab8;
+  --tooltip-description: #f0e7ff;
+  --tooltip-link: #5c3a7b;
+  --tooltip-roll-link: #c8a8e3;
+  --tooltip-broken: #9c8da1;
+  --tooltip-effect: #9e6bbf;
+  --tooltip-info: #c0a0e1;
+  --tooltip-footer-bg: #1d1227;
+  --tooltip-footer: #f0e7ff;
+  --action-tag-bg: #3c1e50;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #4d336e;
+  --dice-button-color: radial-gradient(#5e4b89, #2f1c56);
+  --dice-button-color-active: radial-gradient(#5e4b89, #2f1c56);
+  --dice-button-active-glow: inset 0 0 0.625rem #c0a0e1;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #c0a0e1;
+  --button-color: linear-gradient(180deg, #2f1c56, #5e4b89);
+  --button-border: 0.125rem inset #4d336e;
+  --light-button-color: linear-gradient(180deg, #2b1139, #6f4a82);
+  --light-button-border: 0.125rem solid #7e5a9d;
+  --light-button-proficient-border: 0.125rem inset #a489d1;
+  --light-button-proficient-decoration: #2b1139;
+  --light-button-expertise-border: 0.125rem inset #c8a8e3;
+  --light-button-expertise-decoration: #6f4a82;
+  --drag-handle-color: linear-gradient(180deg, #3c1e50, #7a5c87);
+  --drag-handle-hover: linear-gradient(180deg, #5e367a, #c0a0e1);
+  --button-hover-border: #9e6bbf;
+  --button-hover-glow: 0 0 0.25rem #3d1e53, 0 0 0.25rem #3d1e53 inset;
+  --button-active-border: 0.125rem solid #9e6bbf;
+  --button-active-glow: 0 0 0.3125rem #9e6bbf;
+  --hover-color: #9e6bbf;
+  --tray-button-background-color: rgb(32, 22, 38);
+  --static-tray-border-color: rgba(94, 75, 137, 0.9254901961);
+  --static-tray-button-hover-glow-color: #9e6bbf;
+  --static-tray-button-hover-border: #3d1e53;
+  --static-tray-button-active-inset-color: rgba(158, 107, 191, 0.85);
+  --static-tray-button-active-background: #3d1e53;
+  --static-tray-button-active-glow: rgba(158, 107, 191, 0.85);
+  --static-tray-button-active-border-color: #9e6bbf;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3d1e53 0%,
+    #3d1e53 100%
+  );
+  --custom-tray-inner-glow: rgba(19, 14, 25, 0.6);
+  --custom-tray-border-color: rgba(94, 75, 137, 0.9254901961);
+  --custom-tray-hover-glow: #9e6bbf;
+  --custom-tray-hover-border: #3d1e53;
+  --custom-tray-active-glow: rgba(158, 107, 191, 0.85);
+  --custom-tray-active-background: #3d1e53;
+  --custom-tray-active-border: #9e6bbf;
+}
+
+.theme-wizard {
+  --tooltip-bg: #1a2340;
+  --tooltip-border: #6e90ff;
+  --tooltip-text: #e4ebff;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #aac4ff;
+  --tooltip-header: #ccddff;
+  --tooltip-subtitle: #a4bbf2;
+  --tooltip-damage: #e4ebff;
+  --tooltip-damage-type: #86aaf2;
+  --tooltip-description: #f0f4ff;
+  --tooltip-link: #2d4a80;
+  --tooltip-roll-link: #ccddff;
+  --tooltip-broken: #9db5df;
+  --tooltip-effect: #a0bfff;
+  --tooltip-info: #bfd4f6;
+  --tooltip-footer-bg: #10182b;
+  --tooltip-footer: #f0f4ff;
+  --action-tag-bg: #2c4c8f;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #3453a1;
+  --dice-button-color: radial-gradient(#6584c9, #1f3c88);
+  --dice-button-color-active: radial-gradient(#6584c9, #1f3c88);
+  --dice-button-active-glow: inset 0 0 0.625rem #ccdfff;
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ccdfff;
+  --button-color: linear-gradient(180deg, #1f3c88, #6584c9);
+  --button-border: 0.125rem inset #3453a1;
+  --light-button-color: linear-gradient(180deg, #101e40, #6c92ff);
+  --light-button-border: 0.125rem solid #839deb;
+  --light-button-proficient-border: 0.125rem inset #b0c4ff;
+  --light-button-proficient-decoration: #101e40;
+  --light-button-expertise-border: 0.125rem inset #d6e1ff;
+  --light-button-expertise-decoration: #6c92ff;
+  --drag-handle-color: linear-gradient(180deg, #3b4f99, #7da8ff);
+  --drag-handle-hover: linear-gradient(180deg, #5478d8, #b3ceff);
+  --button-hover-border: #a0bfff;
+  --button-hover-glow: 0 0 0.25rem #2a4172, 0 0 0.25rem #2a4172 inset;
+  --button-active-border: 0.125rem solid #a0bfff;
+  --button-active-glow: 0 0 0.3125rem #a0bfff;
+  --hover-color: #a0bfff;
+  --tray-button-background-color: rgb(28, 34, 60);
+  --static-tray-border-color: rgba(110, 140, 236, 0.9254901961);
+  --static-tray-button-hover-glow-color: #a0bfff;
+  --static-tray-button-hover-border: #2a4172;
+  --static-tray-button-active-inset-color: rgba(180, 200, 255, 0.9);
+  --static-tray-button-active-background: #2a4172;
+  --static-tray-button-active-glow: rgba(180, 200, 255, 0.9);
+  --static-tray-button-active-border-color: #a0bfff;
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #2a4172 0%,
+    #2a4172 100%
+  );
+  --custom-tray-inner-glow: rgba(20, 28, 46, 0.6);
+  --custom-tray-border-color: rgba(110, 140, 236, 0.9254901961);
+  --custom-tray-hover-glow: #a0bfff;
+  --custom-tray-hover-border: #2a4172;
+  --custom-tray-active-glow: rgba(180, 200, 255, 0.9);
+  --custom-tray-active-background: #2a4172;
+  --custom-tray-active-border: #a0bfff;
+}
+
 :root {
   --item-size: 4.6875rem;
   --text-scale-ratio: 1;
@@ -6,6 +1350,7 @@
   --character-health-percent: 100;
   --stacked-spacer-width: 0rem;
   --concentration-color: #9600d1;
+  --modifier-highlight-color: "";
 }
 
 #auto-action-tray {
@@ -42,7 +1387,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgb(97, 97, 95);
+  background: var(--tray-button-background-color);
   width: 3.125rem;
   height: 3.125rem;
   display: flex;
@@ -57,15 +1402,15 @@
   border-radius: 0.3125rem;
   box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
   transition: all 0.3s ease;
-  border: 0.25rem inset rgba(91, 91, 91, 0.5803921569);
+  border: 0.25rem inset var(--static-tray-border-color);
 }
 .static-tray-button:hover {
-  box-shadow: inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
+  box-shadow: inset 0 0 0.75rem var(--static-hover-color);
   cursor: pointer;
 }
 .static-tray-button:hover {
-  box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
-  border: 0.25rem inset rgba(201, 89, 63, 0.77);
+  box-shadow: 0 0 0.75rem var(--static-tray-button-hover-glow-color), inset 0 0 0.75rem var(--static-tray-button-hover-glow-color);
+  border: 0.25rem inset var(--static-tray-button-active-border-color);
 }
 
 .static-tray-button-container {
@@ -78,15 +1423,15 @@
 }
 
 .static-tray-active {
-  box-shadow: inset 0 0 0.9375rem rgba(255, 140, 0, 0.9);
-  background: rgb(120, 60, 40);
+  box-shadow: inset 0 0 0.9375rem var(--static-tray-button-active-inset-color);
+  background: var(--static-tray-button-active-background);
   color: #f1f1f1;
-  box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
-  border: 0.25rem inset rgba(201, 89, 63, 0.77);
+  box-shadow: 0 0 0.75rem var(--static-tray-button-active-glow), inset 0 0 0.75rem var(--static-tray-button-active-glow);
+  border: 0.25rem inset var(--static-tray-button-active-border-color);
 }
 
 .static-tray-no-slots {
-  background: radial-gradient(circle, #854646 0%, #5f5252 100%);
+  background: var(--static-tray-button-no-slots-background);
 }
 
 .icon-action {
@@ -245,7 +1590,7 @@
   margin-right: 0.625rem;
   align-items: center;
   vertical-align: middle;
-  outline: 0.3125rem solid rgb(39, 39, 39);
+  outline: 0.3125rem solid var(--portrait-border-color);
   position: relative;
 }
 .character-image-container .image-container .image-border {
@@ -293,7 +1638,7 @@
   align-items: center;
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
@@ -313,14 +1658,14 @@
   margin: 0.0625rem;
 }
 .equipment-tray-container img:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 
 .misc-tray-container {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -336,7 +1681,7 @@
 .ability-selection-input {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   position: absolute;
@@ -356,8 +1701,8 @@
   align-items: center;
   text-align: center;
   color: #f1f1f1;
-  background: linear-gradient(180deg, #1e3a5f, #355c7d);
-  border: 0.125rem inset #4a6fa5;
+  background: var(--button-color);
+  border: var(--button-border);
   border-radius: 0.5rem;
   box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
@@ -373,8 +1718,8 @@
   padding-right: 0.3rem;
 }
 .small-button:hover {
-  border-color: #c9593f;
-  box-shadow: 0 0 0.5rem rgba(201, 89, 63, 0.8), 0 0 0.25rem rgba(201, 89, 63, 0.6) inset;
+  border-color: var(--button-hover-border);
+  box-shadow: var(--button-hover-glow);
 }
 
 .small-button-skill-save {
@@ -382,8 +1727,8 @@
 }
 
 .small-button-active {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: var(--button-active-border);
+  box-shadow: var(--button-active-glow);
 }
 
 .small-button-skill {
@@ -391,21 +1736,21 @@
 }
 
 .small-button-save {
-  background: linear-gradient(180deg, #5b9fa4, #0f5753);
-  border: 0.125rem solid #004a74;
+  background: var(--light-button-color);
+  border: var(--light-button-border);
   height: 16.6666666667%;
 }
 
 .proficient {
-  border: 0.125rem inset #92cdff;
+  border: var(--light-button-proficient-border);
   text-decoration: underline;
-  text-decoration-color: #1e70b9;
+  text-decoration-color: var(--light-button-proficient-decoration);
 }
 
 .expertise {
-  border: 0.125rem inset #bca4eb;
+  border: var(--light-button-expertise-border);
   text-decoration: underline double;
-  text-decoration-color: #005b8d;
+  text-decoration-color: var(--light-button-expertise-decoration);
 }
 
 .center-tray-container {
@@ -419,7 +1764,7 @@
   height: calc(var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem);
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
@@ -458,7 +1803,7 @@
 .ability-tray-container .use-slot-checkbox {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   border: 0.125rem solid #f1f1f1;
@@ -496,8 +1841,8 @@
   margin: 0.0625rem;
 }
 .ability-tray-container img:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 .ability-tray-container .ability-button-passive img {
   display: flex;
@@ -508,8 +1853,8 @@
   box-shadow: 0 0 0.125rem #0d0d12;
 }
 .ability-tray-container .ability-button-passive img:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 .ability-tray-container .ability-ol {
   width: calc(var(--item-size) * var(--item-tray-item-width-count));
@@ -582,48 +1927,48 @@ img.common-item {
   border: 0.125rem solid #333;
 }
 img.common-item:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 
 img.uncommon-item {
   border: 0.125rem solid #11cf00;
 }
 img.uncommon-item:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 
 img.rare-item {
   border: 0.125rem solid #164cfc;
 }
 img.rare-item:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 
 img.veryRare-item {
   border: 0.125rem solid #a665e4;
 }
 img.veryRare-item:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 
 img.legendary-item {
   border: 0.125rem solid #e29404;
 }
 img.legendary-item:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 
 img.artifact-item {
   border: 0.125rem solid #c00505;
 }
 img.artifact-item:hover {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: 0.125rem solid var(--hover-color);
+  box-shadow: 0 0 0.3125rem var(--hover-color);
 }
 
 img.item-equipped {
@@ -693,6 +2038,7 @@ img.item-equipped {
 
 .consumable-count {
   position: absolute;
+  pointer-events: none;
   bottom: calc(var(--text-scale-ratio) * 1.375rem);
   right: 0px;
   /* top: 0px; */
@@ -773,8 +2119,8 @@ img.item-equipped {
   align-items: center;
   text-align: center;
   color: #f1f1f1;
-  background: linear-gradient(180deg, #1e3a5f, #355c7d);
-  border: 0.125rem inset #4a6fa5;
+  background: var(--button-color);
+  border: var(--button-border);
   border-radius: 0.5rem;
   box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
@@ -792,14 +2138,14 @@ img.item-equipped {
   flex-wrap: nowrap;
 }
 .main-tray-controls-container div:hover {
-  border-color: #c9593f;
-  box-shadow: 0 0 0.5rem rgba(201, 89, 63, 0.8), 0 0 0.25rem rgba(201, 89, 63, 0.6) inset;
+  border-color: var(--button-hover-border);
+  box-shadow: var(--button-hover-glow);
 }
 
 .skill-tray-container {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   display: flex;
@@ -836,27 +2182,27 @@ img.item-equipped {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgb(97, 97, 95);
+  background: var(--tray-button-background-color);
   display: flex;
   border: none;
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
+  box-shadow: inset 0 0 0.4375rem var(--custom-tray-inner-glow);
   transition: all 0.3s ease;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
   color: #f1f1f1;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
-  border-right: 0.375rem inset rgba(91, 91, 91, 0.5803921569);
-  border-left: 0.375rem inset rgba(91, 91, 91, 0.5803921569);
-  border-bottom: 0.375rem inset rgba(91, 91, 91, 0.5803921569);
+  border-right: 0.375rem inset var(--custom-tray-border-color);
+  border-left: 0.375rem inset var(--custom-tray-border-color);
+  border-bottom: 0.375rem inset var(--custom-tray-border-color);
 }
 .custom-tray-button:hover {
-  box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
-  border-right: 0.375rem inset rgba(201, 89, 63, 0.77);
-  border-left: 0.375rem inset rgba(201, 89, 63, 0.77);
-  border-bottom: 0.375rem inset rgba(201, 89, 63, 0.77);
+  box-shadow: 0 0 0.75rem var(--custom-tray-hover-glow), inset 0 0 0.75rem var(--custom-tray-hover-glow);
+  border-right: 0.375rem inset var(--custom-tray-hover-border);
+  border-left: 0.375rem inset var(--custom-tray-hover-border);
+  border-bottom: 0.375rem inset var(--custom-tray-hover-border);
 }
 
 .custom-tray-active {
@@ -867,16 +2213,15 @@ img.item-equipped {
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.9375rem rgba(255, 140, 0, 0.9);
-  background: rgb(120, 60, 40);
+  box-shadow: inset 0 0 0.9375rem var(--custom-tray-active-glow);
+  background: var(--custom-tray-active-background);
   color: #f1f1f1;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #f1f1f1;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
-  border-right: 0.375rem inset rgba(201, 89, 63, 0.77);
-  border-left: 0.375rem inset rgba(201, 89, 63, 0.77);
-  border-bottom: 0.375rem inset rgba(201, 89, 63, 0.77);
+  border-right: 0.375rem inset var(--custom-tray-active-border);
+  border-left: 0.375rem inset var(--custom-tray-active-border);
+  border-bottom: 0.375rem inset var(--custom-tray-active-border);
 }
 
 .selected-tray-indicator {
@@ -888,7 +2233,7 @@ img.item-equipped {
 .tray-information {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   background: #5b5b5b;
@@ -943,13 +2288,13 @@ img.item-equipped {
 }
 
 .tooltip-container {
-  background: #2c1f12;
-  border: 0.125rem solid #704214;
+  background: var(--tooltip-bg);
+  border: 0.125rem solid var(--tooltip-border);
   border-radius: 0.5rem;
   padding: 0.625rem;
-  color: #ffcc66;
+  color: var(--tooltip-text);
   width: 18.75rem;
-  font-family: serif;
+  font-family: var(--tooltip-font);
   position: relative;
   text-align: left;
 }
@@ -960,54 +2305,65 @@ img.item-equipped {
 
 .tooltip-upper-icon {
   position: absolute;
-  right: 0px;
-  top: 0px;
+  right: 0;
+  top: 0;
   margin: 0.5rem;
-  color: #86d632;
+  color: var(--tooltip-upper-icon);
 }
 
 .tooltip-header h2 {
   padding: 0.125rem;
   font-size: calc(var(--text-scale-ratio) * 1.4375rem);
-  color: #ffcc66;
+  color: var(--tooltip-header);
 }
 
 .tooltip-subtitle {
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #bda069;
+  color: var(--tooltip-subtitle);
 }
 
 .tooltip-damage h3 {
-  padding: 0.125rem;
+  padding: 0.3125rem;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.3125rem 0;
-  padding: 0.3125rem;
-  color: #ffcc66;
+  color: var(--tooltip-damage);
 }
 
 .damage-type {
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
-  color: #86d632;
+  color: var(--tooltip-damage-type);
   padding: 0.3125rem;
 }
 
 .tooltip-description {
   margin: 0.3125rem 0;
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #c8b08e;
+  color: var(--tooltip-description);
   word-wrap: break-word;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 15;
   overflow: hidden;
 }
+
 .tooltip-description a {
-  color: #2b2b2b;
+  color: var(--tooltip-link);
+}
+
+.tooltip-description .roll-link,
+.tooltip-description .roll-link-group {
+  color: var(--tooltip-roll-link);
+  text-decoration: underline;
+  text-decoration-color: var(--tooltip-roll-link);
+}
+
+.tooltip-description .broken {
+  color: var(--tooltip-broken);
 }
 
 .tooltip-effect {
   font-size: calc(var(--text-scale-ratio) * 0.8rem);
-  color: #c9593f;
+  color: var(--tooltip-effect);
 }
 
 .tooltip-duration,
@@ -1017,6 +2373,7 @@ img.item-equipped {
   display: flex;
   align-items: center;
   gap: 0.3125rem;
+  color: var(--tooltip-info);
 }
 
 .tooltip-footer {
@@ -1024,15 +2381,16 @@ img.item-equipped {
   display: flex;
   margin-top: 0.625rem;
   text-align: left;
-  background-color: #1d140c;
+  background-color: var(--tooltip-footer-bg);
   padding: 0.375rem;
+  color: var(--tooltip-footer);
 }
 
 .action-tag {
-  background: #612626;
+  background: var(--action-tag-bg);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  color: #f1f1f1;
+  color: var(--action-tag-text);
 }
 
 .hp-container {
@@ -1053,7 +2411,7 @@ img.item-equipped {
 .hp-form {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   background: #333;
@@ -1100,8 +2458,8 @@ img.item-equipped {
   align-items: center;
   text-align: center;
   color: #f1f1f1;
-  background: linear-gradient(180deg, #1e3a5f, #355c7d);
-  border: 0.125rem inset #4a6fa5;
+  background: var(--button-color);
+  border: var(--button-border);
   border-radius: 0.5rem;
   box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
@@ -1115,8 +2473,8 @@ img.item-equipped {
   border-radius: 50%;
 }
 .swap-skill-tray-button:hover {
-  border-color: #c9593f;
-  box-shadow: 0 0 0.5rem rgba(201, 89, 63, 0.8), 0 0 0.25rem rgba(201, 89, 63, 0.6) inset;
+  border-color: var(--button-hover-border);
+  box-shadow: var(--button-hover-glow);
 }
 
 .toggle-condition-tray-button {
@@ -1125,8 +2483,8 @@ img.item-equipped {
   align-items: center;
   text-align: center;
   color: #f1f1f1;
-  background: linear-gradient(180deg, #1e3a5f, #355c7d);
-  border: 0.125rem inset #4a6fa5;
+  background: var(--button-color);
+  border: var(--button-border);
   border-radius: 0.5rem;
   box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
@@ -1140,14 +2498,14 @@ img.item-equipped {
   border-radius: 50%;
 }
 .toggle-condition-tray-button:hover {
-  border-color: #c9593f;
-  box-shadow: 0 0 0.5rem rgba(201, 89, 63, 0.8), 0 0 0.25rem rgba(201, 89, 63, 0.6) inset;
+  border-color: var(--button-hover-border);
+  box-shadow: var(--button-hover-glow);
 }
 
 .end-turn-btn {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
@@ -1177,7 +2535,7 @@ img.item-equipped {
 .end-turn-btn-dice {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
@@ -1196,14 +2554,14 @@ img.item-equipped {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(#5990d6, #062f51);
+  background: var(--dice-button-color);
 }
 .end-turn-btn-dice:active {
-  box-shadow: inset 0 0 0.625rem #0096c0;
-  background: radial-gradient(#5494e7, #013969);
+  box-shadow: var(--dice-button-active-glow);
+  background: var(--dice-button-color-active);
 }
 .end-turn-btn-dice:hover {
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #65a4f5;
+  box-shadow: var(--dice-button-hover-glow);
 }
 .end-turn-btn-dice .end-turn-btn-dice-icon {
   font-size: 5rem;
@@ -1217,7 +2575,7 @@ img.item-equipped {
 .end-turn-btn-nohover {
   background: #5b5b5b;
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
-  border: 0.125rem solid #2f2f2f;
+  border: 0.125rem solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
@@ -1321,7 +2679,7 @@ img.item-equipped {
 .drag-handle {
   height: calc(var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem - 1.125rem);
   width: calc(var(--item-size) / 3 + 0.125rem);
-  background: linear-gradient(180deg, #920000, #c93232);
+  background: var(--drag-handle-color);
   outline: 0.25rem solid #5b5b5b;
   outline-offset: -0.1875rem;
   display: flex;
@@ -1331,7 +2689,7 @@ img.item-equipped {
   box-shadow: inset 0rem 0rem 0.625rem 0.1875rem #000000;
 }
 .drag-handle:hover {
-  background: linear-gradient(180deg, #ca0202, #f53d3d);
+  background: var(--drag-handle-hover);
 }
 
 .drag-spacer {
@@ -1372,6 +2730,10 @@ img.item-equipped {
 
 .items {
   z-index: 3;
+}
+
+.modifier-highlight.modifier-active {
+  border: var(--modifier-highlight-color) solid 0.125rem;
 }
 
 /*# sourceMappingURL=styles.css.map */

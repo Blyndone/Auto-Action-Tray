@@ -141,6 +141,33 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('renderHotbar', () => {})
 
+    this.altDown = false
+    this.ctrlDown = false
+    window.addEventListener('keydown', (e) => {
+      if (e.altKey) this.altDown = true
+      if (e.ctrlKey) this.ctrlDown = true
+      if ((this.altDown && this.ctrlDown) || (!this.altDown && !this.ctrlDown)) {
+        return
+      }
+      let color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
+      document.documentElement.style.setProperty('--modifier-highlight-color', color)
+      const elements = document.querySelectorAll('.modifier-highlight')
+      elements.forEach((el) => {
+        el.classList.add('modifier-active')
+      })
+    })
+
+    window.addEventListener('keyup', (e) => {
+      if (!e.altKey) this.altDown = false
+      if (!e.ctrlKey) this.ctrlDown = false
+
+      const elements = document.querySelectorAll('.modifier-highlight')
+      document.documentElement.style.setProperty('--modifier-highlight-color', '')
+      elements.forEach((el) => {
+        el.classList.remove('modifier-active')
+      })
+    })
+
     ui.hotbar.collapse()
 
     registerHandlebarsHelpers()
@@ -300,6 +327,27 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
     }
+    if (game.settings.get('auto-action-tray', 'autoTheme')) {
+      const highestLevelClass = Object.keys(actor.classes).reduce(
+        (highest, e) => {
+          const currentClass = actor.classes[e]
+          if (currentClass.system.levels > highest.level) {
+            return { name: currentClass.name, level: currentClass.system.levels }
+          }
+          return highest
+        },
+        { level: -Infinity },
+      )
+      if (highestLevelClass.name) {
+        game.settings.set(
+          'auto-action-tray',
+          'tempTheme',
+          'theme-' + highestLevelClass.name.toLowerCase(),
+        )
+      } else {
+        game.settings.set('auto-action-tray', 'tempTheme', game.settings.get('auto-action-tray', 'theme'))
+      }
+    }
 
     await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
@@ -314,7 +362,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.setDefaultTray()
     }
 
-    document.documentElement.style.setProperty('--stacked-spacer-width', 17 + 'px')
+    if (this.currentTray.id == 'stacked') {
+      document.documentElement.style.setProperty('--stacked-spacer-width', 17 + 'px')
+    }
 
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {

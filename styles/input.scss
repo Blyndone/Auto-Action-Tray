@@ -1,3 +1,5 @@
+@use 'themes/themes';
+
 :root {
   --item-size: 4.6875rem;
   --text-scale-ratio: 1;
@@ -6,6 +8,7 @@
   --character-health-percent: 100;
   --stacked-spacer-width: 0rem;
   --concentration-color: #9600d1;
+  --modifier-highlight-color: '';
 }
 
 $item-tray-item-width-count: var(--item-tray-item-width-count);
@@ -27,6 +30,7 @@ $small-button-height: calc($total-item-height / 3);
 $static-tray-size: 3.125rem;
 $app-background: rgba(117, 117, 117, 0.7);
 $tray-button-background: rgb(97, 97, 95);
+
 @mixin center {
   display: flex;
   justify-content: center;
@@ -37,14 +41,14 @@ $tray-button-background: rgb(97, 97, 95);
 }
 @mixin hover {
   &:hover {
-    border: 0.125rem solid #c9593f;
-    box-shadow: 0 0 0.3125rem #c9593f;
+    border: 0.125rem solid var(--hover-color);
+    box-shadow: 0 0 0.3125rem var(--hover-color);
   }
 }
 
 @mixin static-hover {
   &:hover {
-    box-shadow: inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
+    box-shadow: inset 0 0 0.75rem var(--static-hover-color);
     cursor: pointer;
   }
 }
@@ -68,7 +72,7 @@ $tray-button-background: rgb(97, 97, 95);
   box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
     inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
 
-  border: $inset-border solid #2f2f2f;
+  border: $inset-border solid var(--portrait-border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
 }
@@ -104,7 +108,7 @@ $tray-button-background: rgb(97, 97, 95);
 .static-tray-button {
   @include center;
   @include static-hover;
-  background: $tray-button-background;
+  background: var(--tray-button-background-color);
   width: $static-tray-size;
   height: $static-tray-size;
   display: flex;
@@ -119,10 +123,11 @@ $tray-button-background: rgb(97, 97, 95);
   border-radius: 0.3125rem;
   box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
   transition: all 0.3s ease;
-  border: 0.25rem inset #5b5b5b94;
+  border: 0.25rem inset var(--static-tray-border-color);
   &:hover {
-    box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
-    border: 0.25rem inset rgb(201 89 63 / 77%);
+    box-shadow: 0 0 0.75rem var(--static-tray-button-hover-glow-color),
+      inset 0 0 0.75rem var(--static-tray-button-hover-glow-color);
+    border: 0.25rem inset var(--static-tray-button-active-border-color);
   }
 }
 .static-tray-button-container {
@@ -135,15 +140,16 @@ $tray-button-background: rgb(97, 97, 95);
 }
 
 .static-tray-active {
-  box-shadow: inset 0 0 0.9375rem rgba(255, 140, 0, 0.9);
-  background: rgb(120, 60, 40);
+  box-shadow: inset 0 0 0.9375rem var(--static-tray-button-active-inset-color);
+  background: var(--static-tray-button-active-background);
   color: #f1f1f1;
 
-  box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
-  border: 0.25rem inset rgb(201 89 63 / 77%);
+  box-shadow: 0 0 0.75rem var(--static-tray-button-active-glow),
+    inset 0 0 0.75rem var(--static-tray-button-active-glow);
+  border: 0.25rem inset var(--static-tray-button-active-border-color);
 }
 .static-tray-no-slots {
-  background: radial-gradient(circle, #854646 0%, #5f5252 100%);
+  background: var(--static-tray-button-no-slots-background);
 }
 
 .icon-action {
@@ -301,7 +307,7 @@ $tray-button-background: rgb(97, 97, 95);
     margin-right: 0.625rem;
     align-items: center;
     vertical-align: middle;
-    outline: 0.3125rem solid rgba(39, 39, 39, 1);
+    outline: 0.3125rem solid var(--portrait-border-color);
     position: relative;
     .image-border {
       position: absolute;
@@ -391,15 +397,15 @@ $tray-button-background: rgb(97, 97, 95);
 @mixin button-style {
   text-align: center;
   color: #f1f1f1;
-  background: linear-gradient(180deg, #1e3a5f, #355c7d);
-  border: 0.125rem inset #4a6fa5;
+  background: var(--button-color);
+  border: var(--button-border);
   border-radius: 0.5rem;
   box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
   font-family: serif;
   &:hover {
-    border-color: #c9593f;
-    box-shadow: 0 0 0.5rem rgba(201, 89, 63, 0.8), 0 0 0.25rem rgba(201, 89, 63, 0.6) inset;
+    border-color: var(--button-hover-border);
+    box-shadow: var(--button-hover-glow);
   }
 }
 
@@ -421,29 +427,29 @@ $tray-button-background: rgb(97, 97, 95);
 }
 
 .small-button-active {
-  border: 0.125rem solid #c9593f;
-  box-shadow: 0 0 0.3125rem #c9593f;
+  border: var(--button-active-border);
+  box-shadow: var(--button-active-glow);
 }
 
 .small-button-skill {
   height: calc(100% / 6);
 }
 .small-button-save {
-  background: linear-gradient(180deg, #5b9fa4, #0f5753);
-  border: 0.125rem solid #004a74;
+  background: var(--light-button-color);
+  border: var(--light-button-border);
   height: calc(100% / 6);
 }
 
 .proficient {
-  border: 0.125rem inset #92cdff;
+  border: var(--light-button-proficient-border);
   text-decoration: underline;
-  text-decoration-color: #1e70b9;
+  text-decoration-color: var(--light-button-proficient-decoration);
 }
 
 .expertise {
-  border: 0.125rem inset #bca4eb;
+  border: var(--light-button-expertise-border);
   text-decoration: underline double;
-  text-decoration-color: #005b8d;
+  text-decoration-color: var(--light-button-expertise-decoration);
 }
 .center-tray-container {
   @include center;
@@ -689,6 +695,7 @@ img.item-equipped {
 
 .consumable-count {
   position: absolute;
+  pointer-events: none;
   bottom: calc(var(--text-scale-ratio) * 1.375rem);
   right: 0px;
   /* top: 0px; */
@@ -805,48 +812,50 @@ img.item-equipped {
   padding-right: 0.3125rem;
   padding-bottom: 0.3125rem;
 }
-
 .custom-tray-button {
   @include center;
 
-  background: $tray-button-background;
+  background: var(--tray-button-background-color);
   display: flex;
   border: none;
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
+  box-shadow: inset 0 0 0.4375rem var(--custom-tray-inner-glow);
   transition: all 0.3s ease;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
   color: #f1f1f1;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
-  border-right: 0.375rem inset #5b5b5b94;
-  border-left: 0.375rem inset #5b5b5b94;
-  border-bottom: 0.375rem inset #5b5b5b94;
+  border-right: 0.375rem inset var(--custom-tray-border-color);
+  border-left: 0.375rem inset var(--custom-tray-border-color);
+  border-bottom: 0.375rem inset var(--custom-tray-border-color);
+
   &:hover {
-    box-shadow: 0 0 0.75rem rgba(201, 89, 63, 0.8), inset 0 0 0.75rem rgba(201, 89, 63, 0.8);
-    border-right: 0.375rem inset rgb(201 89 63 / 77%);
-    border-left: 0.375rem inset rgb(201 89 63 / 77%);
-    border-bottom: 0.375rem inset rgb(201 89 63 / 77%);
+    box-shadow: 0 0 0.75rem var(--custom-tray-hover-glow),
+      inset 0 0 0.75rem var(--custom-tray-hover-glow);
+    border-right: 0.375rem inset var(--custom-tray-hover-border);
+    border-left: 0.375rem inset var(--custom-tray-hover-border);
+    border-bottom: 0.375rem inset var(--custom-tray-hover-border);
   }
 }
+
 .custom-tray-active {
   @include center;
+
   position: relative;
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.9375rem rgba(255, 140, 0, 0.9);
-  background: rgb(120, 60, 40);
+  box-shadow: inset 0 0 0.9375rem var(--custom-tray-active-glow);
+  background: var(--custom-tray-active-background);
   color: #f1f1f1;
   font-family: serif;
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #f1f1f1;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
-  border-right: 0.375rem inset rgb(201 89 63 / 77%);
-  border-left: 0.375rem inset rgb(201 89 63 / 77%);
-  border-bottom: 0.375rem inset rgb(201 89 63 / 77%);
+  border-right: 0.375rem inset var(--custom-tray-active-border);
+  border-left: 0.375rem inset var(--custom-tray-active-border);
+  border-bottom: 0.375rem inset var(--custom-tray-active-border);
 }
 
 .selected-tray-indicator {
@@ -884,70 +893,82 @@ img.item-equipped {
   border: 0rem;
 }
 .tooltip-container {
-  background: #2c1f12;
-  border: 0.125rem solid #704214;
+  background: var(--tooltip-bg);
+  border: 0.125rem solid var(--tooltip-border);
   border-radius: 0.5rem;
   padding: 0.625rem;
-  color: #ffcc66;
+  color: var(--tooltip-text);
   width: 18.75rem;
-  font-family: serif;
+  font-family: var(--tooltip-font);
   position: relative;
   text-align: left;
 }
+
 .tooltip-header {
   position: relative;
 }
 
 .tooltip-upper-icon {
   position: absolute;
-  right: 0px;
-  top: 0px;
+  right: 0;
+  top: 0;
   margin: 0.5rem;
-  color: #86d632;
+  color: var(--tooltip-upper-icon);
 }
 
 .tooltip-header h2 {
   padding: 0.125rem;
   font-size: calc(var(--text-scale-ratio) * 1.4375rem);
-  color: #ffcc66;
+  color: var(--tooltip-header);
 }
 
 .tooltip-subtitle {
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #bda069;
+  color: var(--tooltip-subtitle);
 }
 
 .tooltip-damage h3 {
-  padding: 0.125rem;
+  padding: 0.3125rem;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.3125rem 0;
-  padding: 0.3125rem;
-  color: #ffcc66;
+  color: var(--tooltip-damage);
 }
 
 .damage-type {
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
-  color: #86d632;
+  color: var(--tooltip-damage-type);
   padding: 0.3125rem;
 }
 
 .tooltip-description {
   margin: 0.3125rem 0;
   font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #c8b08e;
+  color: var(--tooltip-description);
   word-wrap: break-word;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 15;
   overflow: hidden;
-  a {
-    color: #2b2b2b;
-  }
+}
+
+.tooltip-description a {
+  color: var(--tooltip-link);
+}
+
+.tooltip-description .roll-link,
+.tooltip-description .roll-link-group {
+  color: var(--tooltip-roll-link);
+  text-decoration: underline;
+  text-decoration-color: var(--tooltip-roll-link);
+}
+
+.tooltip-description .broken {
+  color: var(--tooltip-broken);
 }
 
 .tooltip-effect {
   font-size: calc(var(--text-scale-ratio) * 0.8rem);
-  color: #c9593f;
+  color: var(--tooltip-effect);
 }
 
 .tooltip-duration,
@@ -957,6 +978,7 @@ img.item-equipped {
   display: flex;
   align-items: center;
   gap: 0.3125rem;
+  color: var(--tooltip-info);
 }
 
 .tooltip-footer {
@@ -964,15 +986,16 @@ img.item-equipped {
   display: flex;
   margin-top: 0.625rem;
   text-align: left;
-  background-color: #1d140c;
+  background-color: var(--tooltip-footer-bg);
   padding: 0.375rem;
+  color: var(--tooltip-footer);
 }
 
 .action-tag {
-  background: #612626;
+  background: var(--action-tag-bg);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  color: #f1f1f1;
+  color: var(--action-tag-text);
 }
 
 .hp-container {
@@ -1104,15 +1127,14 @@ img.item-equipped {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(#5990d6, #062f51);
+  background: var(--dice-button-color);
   &:active {
-    box-shadow: inset 0 0 0.625rem #0096c0;
-    background: radial-gradient(#5494e7, #013969);
+    box-shadow: var(--dice-button-active-glow);
+    background: var(--dice-button-color-active);
   }
 
   &:hover {
-    box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-      inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #65a4f5;
+    box-shadow: var(--dice-button-hover-glow);
   }
   .end-turn-btn-dice-icon {
     font-size: 5rem;
@@ -1223,7 +1245,7 @@ img.item-equipped {
 .drag-handle {
   height: calc($main-tray-height - 1.125rem);
   width: calc(($total-item-width / 3) + 0.125rem);
-  background: linear-gradient(180deg, #920000, #c93232);
+  background: var(--drag-handle-color);
   outline: 0.25rem solid #5b5b5b;
   outline-offset: -0.1875rem;
   display: flex;
@@ -1232,7 +1254,7 @@ img.item-equipped {
   font-size: 1.625rem;
   box-shadow: inset 0rem 0rem 0.625rem 0.1875rem #000000;
   &:hover {
-    background: linear-gradient(180deg, #ca0202, #f53d3d);
+    background: var(--drag-handle-hover);
   }
 }
 .drag-spacer {
@@ -1273,4 +1295,11 @@ img.item-equipped {
 }
 .items {
   z-index: 3;
+}
+
+.modifier-highlight {
+}
+
+.modifier-highlight.modifier-active {
+  border: var(--modifier-highlight-color) solid 0.125rem;
 }

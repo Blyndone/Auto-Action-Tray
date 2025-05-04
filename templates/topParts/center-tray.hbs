@@ -1,4 +1,4 @@
-<div class="center-tray-container">
+<div class="center-tray-container {{getTooltipTheme}}">
 
   {{#if staticTrays}}
     <div class='static-tray-container'>
@@ -6,8 +6,8 @@
     </div>
   {{/if}}
 
-  <div class='ability-tray-container'>
-    <div class="stacked-tray-spacer-container">
+  <div class='ability-tray-container modifier-highlight'>
+    <div class="stacked-tray-spacer-container ">
       {{#if conditionTray.active}}
         <div class="abilities-tray activity-tray condition">
           {{> "AAT.condition-tray" conditions=conditionTray.conditions }}

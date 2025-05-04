@@ -50,6 +50,13 @@ export function registerHandlebarsHelpers() {
     return dnd5e.utils.formatNumber(spellLvl, { numerals: true })
   })
 
+  Handlebars.registerHelper('getTooltipTheme', function () {
+    if (game.settings.get('auto-action-tray', 'autoTheme')) {
+      return game.settings.get('auto-action-tray', 'tempTheme')
+    }
+    return game.settings.get('auto-action-tray', 'theme')
+  })
+
   Handlebars.registerHelper('multiGroup', function (tray, index) {
     if (!tray.multiattackIndexGroups) return false
 
