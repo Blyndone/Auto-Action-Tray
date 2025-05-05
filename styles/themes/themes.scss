@@ -663,6 +663,195 @@
   --custom-tray-active-border: #{$hover-color};
 }
 
+.theme-vesper {
+  $main-color: #4c3c3f;
+  $main-color-light: #7d6a6d;
+  $border-color: #5a4a4c;
+
+  $accent-color: #2d1f23;
+  $accent-color-light: #a17a7d;
+  $border-color-light: #9e7f81;
+
+  $hover-color: #d2a1a1;
+  $hover-color-light: rgba(210, 161, 161, 0.85);
+  $hover-color-dim: #3f292f;
+  $hover-accent-color: #e6b2b2;
+
+  $drag-handle-color: #5f3d41;
+  $drag-handle-light: #9f7175;
+  $drag-handle-hover: #7d4b51;
+  $drag-handle-hover-light: #d2a1a1;
+
+  $prof-color: #d2a1a1;
+  $expertise-color: #e6b2b2;
+
+  $tray-button-background-color: rgb(34, 25, 28);
+  $tray-button-border-color: #9c6e6dec;
+  $tray-button-accent: rgba(38, 28, 32, 0.6);
+
+  --tooltip-bg: #1d1216;
+  --tooltip-border: #7d6a6d;
+  --tooltip-text: #f1d4d2;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #d3a1a1;
+  --tooltip-header: #f1d4d2;
+  --tooltip-subtitle: #e6b2b2;
+  --tooltip-damage: #f1d4d2;
+  --tooltip-damage-type: #a77f7f;
+  --tooltip-description: #f9e3e3;
+  --tooltip-link: #4c2e2f;
+  --tooltip-roll-link: #f1d4d2;
+  --tooltip-broken: #a6a6a6;
+  --tooltip-effect: #d2a1a1;
+  --tooltip-info: #e6b2b2;
+  --tooltip-footer-bg: #140e13;
+  --tooltip-footer: #f9e3e3;
+  --action-tag-bg: #5f3d41;
+  --action-tag-text: #ffffff;
+  --portrait-border-color: #{$border-color};
+
+  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
+  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
+  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
+  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
+  --button-border: 0.125rem inset #{$border-color};
+  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
+  --light-button-border: 0.125rem solid #{$border-color-light};
+  --light-button-proficient-border: 0.125rem inset #{$prof-color};
+  --light-button-proficient-decoration: #{$accent-color};
+  --light-button-expertise-border: 0.125rem inset #{$expertise-color};
+  --light-button-expertise-decoration: #{$accent-color-light};
+  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
+  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
+  --button-hover-border: #{$hover-color};
+  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
+  --button-active-border: 0.125rem solid #{$hover-color};
+  --button-active-glow: 0 0 0.3125rem #{$hover-color};
+
+  --hover-color: #{$hover-color};
+
+  --tray-button-background-color: #{$tray-button-background-color};
+
+  --static-tray-border-color: #{$tray-button-border-color};
+  --static-tray-button-hover-glow-color: #{$hover-color};
+  --static-tray-button-hover-border: #{$hover-color-dim};
+  --static-tray-button-active-inset-color: #{$hover-color-light};
+  --static-tray-button-active-background: #{$hover-color-dim};
+  --static-tray-button-active-glow: #{$hover-color-light};
+  --static-tray-button-active-border-color: #{$hover-color};
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #{$hover-color-dim} 0%,
+    #{$hover-color-dim} 100%
+  );
+
+  --custom-tray-inner-glow: #{$tray-button-accent};
+  --custom-tray-border-color: #{$tray-button-border-color};
+  --custom-tray-hover-glow: #{$hover-color};
+  --custom-tray-hover-border: #{$hover-color-dim};
+  --custom-tray-active-glow: #{$hover-color-light};
+  --custom-tray-active-background: #{$hover-color-dim};
+  --custom-tray-active-border: #{$hover-color};
+}
+
+.theme-earth {
+  $main-color: #2e2b28;
+  $main-color-light: #5a524e;
+  $border-color: #46413d;
+
+  $accent-color: #1c1a18;
+  $accent-color-light: #746b65;
+  $border-color-light: #867d77;
+
+  $hover-color: #9f938c;
+  $hover-color-light: rgba(159, 147, 140, 0.85);
+  $hover-color-dim: #332f2b;
+  $hover-accent-color: #b8ada6;
+
+  $drag-handle-color: #4b4541;
+  $drag-handle-light: #887f79;
+  $drag-handle-hover: #655e58;
+  $drag-handle-hover-light: #c2b8b1;
+
+  $prof-color: #9f938c;
+  $expertise-color: #b8ada6;
+
+  $tray-button-background-color: rgb(29, 27, 25);
+  $tray-button-border-color: #746b65ec;
+  $tray-button-accent: rgba(36, 33, 31, 0.6);
+
+  --tooltip-bg: #1c1410;
+  --tooltip-border: #5a4a44;
+  --tooltip-text: #e1c8b8;
+  --tooltip-font: serif;
+  --tooltip-upper-icon: #b08c7d;
+  --tooltip-header: #e1c8b8;
+  --tooltip-subtitle: #d1b2a0;
+  --tooltip-damage: #e1c8b8;
+  --tooltip-damage-type: #8a7265;
+  --tooltip-description: #e6d0b1;
+  --tooltip-link: #3b2c26;
+  --tooltip-roll-link: #e1c8b8;
+  --tooltip-broken: #a6a6a6;
+  --tooltip-effect: #b08c7d;
+  --tooltip-info: #e1c8b8;
+  --tooltip-footer-bg: #1c1410;
+  --tooltip-footer: #e6d0b1;
+  --action-tag-bg: #7f6b5c;
+  --action-tag-text: #ffffff;
+
+  --portrait-border-color: #{$border-color};
+
+  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
+  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
+  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
+  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
+  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
+  --button-border: 0.125rem inset #{$border-color};
+  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
+  --light-button-border: 0.125rem solid #{$border-color-light};
+  --light-button-proficient-border: 0.125rem inset #{$prof-color};
+  --light-button-proficient-decoration: #{$accent-color};
+  --light-button-expertise-border: 0.125rem inset #{$expertise-color};
+  --light-button-expertise-decoration: #{$accent-color-light};
+  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
+  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
+  --button-hover-border: #{$hover-color};
+  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
+  --button-active-border: 0.125rem solid #{$hover-color};
+  --button-active-glow: 0 0 0.3125rem #{$hover-color};
+
+  --hover-color: #{$hover-color};
+
+  --tray-button-background-color: #{$tray-button-background-color};
+
+  --static-tray-border-color: #{$tray-button-border-color};
+  --static-tray-button-hover-glow-color: #{$hover-color};
+  --static-tray-button-hover-border: #{$hover-color-dim};
+  --static-tray-button-active-inset-color: #{$hover-color-light};
+  --static-tray-button-active-background: #{$hover-color-dim};
+  --static-tray-button-active-glow: #{$hover-color-light};
+  --static-tray-button-active-border-color: #{$hover-color};
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #{$hover-color-dim} 0%,
+    #{$hover-color-dim} 100%
+  );
+
+  --custom-tray-inner-glow: #{$tray-button-accent};
+  --custom-tray-border-color: #{$tray-button-border-color};
+  --custom-tray-hover-glow: #{$hover-color};
+  --custom-tray-hover-border: #{$hover-color-dim};
+  --custom-tray-active-glow: #{$hover-color-light};
+  --custom-tray-active-background: #{$hover-color-dim};
+  --custom-tray-active-border: #{$hover-color};
+}
+
 .theme-slate {
   $main-color: #3f515d;
   $main-color-light: #5a7383;
@@ -1038,52 +1227,53 @@
   --custom-tray-active-background: #{$hover-color-dim};
   --custom-tray-active-border: #{$hover-color};
 }
+
 .theme-cleric {
-  $main-color: #facd37;
-  $main-color-light: #eaa64e;
-  $border-color: #dca35d;
+  $main-color: #98752c;
+  $main-color-light: #c49f53;
+  $border-color: #b18536;
 
-  $accent-color: #b2874c;
-  $accent-color-light: #f6e1af;
-  $border-color-light: #f1d68a;
+  $accent-color: #b7923c;
+  $accent-color-light: #dfc071;
+  $border-color-light: #d0b36e;
 
-  $hover-color: #ffd98f;
-  $hover-color-light: rgba(255, 217, 143, 0.85);
-  $hover-color-dim: #c7a73e;
-  $hover-accent-color: #ffcc66;
+  $hover-color: #d5b14b;
+  $hover-color-light: rgba(213, 177, 75, 0.85);
+  $hover-color-dim: #a78f3d;
+  $hover-accent-color: #e1bb65;
 
-  $drag-handle-color: #c8a34b;
-  $drag-handle-light: #f0cc8b;
-  $drag-handle-hover: #d7b45b;
-  $drag-handle-hover-light: #ffcc66;
+  $drag-handle-color: #b68c42;
+  $drag-handle-light: #d9b66a;
+  $drag-handle-hover: #c6a147;
+  $drag-handle-hover-light: #e1bb65;
 
-  $prof-color: #ffdc7d;
-  $expertise-color: #fff1b8;
+  $prof-color: #f5c938;
+  $expertise-color: #e4d28f;
 
   $tray-button-background-color: rgb(85, 68, 40);
-  $tray-button-border-color: #f1d1a8ec;
+  $tray-button-border-color: #d0b36e;
   $tray-button-accent: rgba(49, 37, 23, 0.6);
 
-  --tooltip-bg: #5c4816;
-  --tooltip-border: #f1d1a8;
-  --tooltip-text: #fff7db;
+  --tooltip-bg: #2f1e0d; /* Darken the background for better contrast */
+  --tooltip-border: #d0b36e;
+  --tooltip-text: #f4e1a0; /* Soft yellow for better readability */
   --tooltip-font: serif;
-  --tooltip-upper-icon: #f1dc7b;
-  --tooltip-header: #f8e4ab;
-  --tooltip-subtitle: #f6cc7f;
-  --tooltip-damage: #fff7db;
-  --tooltip-damage-type: #cfc07f;
-  --tooltip-description: #f7e0b0;
-  --tooltip-link: #704c1b;
-  --tooltip-roll-link: #f8e4ab;
+  --tooltip-upper-icon: #d4b14b;
+  --tooltip-header: #f5d57d;
+  --tooltip-subtitle: #e1c67b;
+  --tooltip-damage: #f4e1a0;
+  --tooltip-damage-type: #a38e55;
+  --tooltip-description: #e1c37b;
+  --tooltip-link: #6b4f2a;
+  --tooltip-roll-link: #f5d57d;
   --tooltip-broken: #9b8c59;
-  --tooltip-effect: #ffd98f;
-  --tooltip-info: #f8db7f;
-  --tooltip-footer-bg: #4b3d18;
-  --tooltip-footer: #f7e0b0;
-  --action-tag-bg: #c8a34b;
-  --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --tooltip-effect: #ffd14e;
+  --tooltip-info: #f5db6e;
+  --tooltip-footer-bg: #2f1e0d; /* Dark background to balance brightness */
+  --tooltip-footer: #e1c37b;
+  --action-tag-bg: #b68c42;
+  --action-tag-text: #ffffff; /* White text for contrast */
+  --portrait-border-color: #b18536;
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1606,50 +1796,51 @@
 }
 
 .theme-rogue {
-  $main-color: #4c3c3f;
-  $main-color-light: #7d6a6d;
-  $border-color: #5a4a4c;
+  $main-color: #3e0b0b;
+  $main-color-light: #8f1f1f;
+  $border-color: #a02323;
 
-  $accent-color: #2d1f23;
-  $accent-color-light: #a17a7d;
-  $border-color-light: #9e7f81;
+  $accent-color: #2a0505;
+  $accent-color-light: #b74d4d;
+  $border-color-light: #7a2c2c;
 
-  $hover-color: #d2a1a1;
-  $hover-color-light: rgba(210, 161, 161, 0.85);
-  $hover-color-dim: #3f292f;
-  $hover-accent-color: #e6b2b2;
+  $hover-color: #e14c4c;
+  $hover-color-light: rgba(225, 76, 76, 0.85);
+  $hover-color-dim: #4b1010;
+  $hover-accent-color: #ff8c8c;
 
-  $drag-handle-color: #5f3d41;
-  $drag-handle-light: #9f7175;
-  $drag-handle-hover: #7d4b51;
-  $drag-handle-hover-light: #d2a1a1;
+  $drag-handle-color: #6a1f1f;
+  $drag-handle-light: #a54b4b;
+  $drag-handle-hover: #c16b6b;
+  $drag-handle-hover-light: #ff8a8a;
 
-  $prof-color: #d2a1a1;
-  $expertise-color: #e6b2b2;
+  $prof-color: #e14c4c;
+  $expertise-color: #ff8c8c;
 
-  $tray-button-background-color: rgb(34, 25, 28);
-  $tray-button-border-color: #9c6e6dec;
-  $tray-button-accent: rgba(38, 28, 32, 0.6);
+  $tray-button-background-color: rgb(41, 15, 15);
+  $tray-button-border-color: #7a2c2cec;
+  $tray-button-accent: rgba(42, 18, 18, 0.6);
 
-  --tooltip-bg: #1d1216;
-  --tooltip-border: #7d6a6d;
+  --tooltip-bg: #2a0c0c;
+  --tooltip-border: #5a1414;
   --tooltip-text: #f1d4d2;
   --tooltip-font: serif;
-  --tooltip-upper-icon: #d3a1a1;
-  --tooltip-header: #f1d4d2;
-  --tooltip-subtitle: #e6b2b2;
+  --tooltip-upper-icon: #b75c5c;
+  --tooltip-header: #d24b4b;
+  --tooltip-subtitle: #b74d4d;
   --tooltip-damage: #f1d4d2;
-  --tooltip-damage-type: #a77f7f;
-  --tooltip-description: #f9e3e3;
-  --tooltip-link: #4c2e2f;
-  --tooltip-roll-link: #f1d4d2;
+  --tooltip-damage-type: #ae2f2f;
+  --tooltip-description: #e65959;
+  --tooltip-link: #3c0e0e;
+  --tooltip-roll-link: #d24b4b;
   --tooltip-broken: #a6a6a6;
-  --tooltip-effect: #d2a1a1;
-  --tooltip-info: #e6b2b2;
-  --tooltip-footer-bg: #140e13;
+  --tooltip-effect: #ff6e6e;
+  --tooltip-info: #f1d4d2;
+  --tooltip-footer-bg: #531717;
   --tooltip-footer: #f9e3e3;
-  --action-tag-bg: #5f3d41;
+  --action-tag-bg: #9f3535;
   --action-tag-text: #ffffff;
+
   --portrait-border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});

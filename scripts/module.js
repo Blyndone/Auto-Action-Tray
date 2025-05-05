@@ -146,6 +146,8 @@ Hooks.once('ready', async function () {
         'theme-frost': 'Frost',
         'theme-subterfuge': 'Subterfuge',
         'theme-titan': 'Titan',
+        'theme-vesper': 'Vesper',
+        'theme-earth': 'Earth',
         'theme-slate': 'Slate',
         'theme-artificer': 'Artificer',
         'theme-barbarian': 'Barbarian',
@@ -170,6 +172,8 @@ Hooks.once('ready', async function () {
     scope: 'client',
     default: 'theme-classic',
   })
+
+  game.settings.set("auto-action-tray", "tempTheme", game.settings.get("auto-action-tray", "theme"))
 
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',

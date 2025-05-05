@@ -2,6 +2,43 @@ export class TrayConfig {
   static async trayConfig() {
     const fields = foundry.applications.fields
 
+    const themeInput = fields.createSelectInput({
+      options: [
+        { label: 'Default', value: '' },
+        { label: 'Mind Flayer', value: 'theme-classic' },
+        { label: 'Arcane', value: 'theme-arcane' },
+        { label: 'Ocean', value: 'theme-ocean' },
+        { label: 'Ember', value: 'theme-ember' },
+        { label: 'Frost', value: 'theme-frost' },
+        { label: 'Subterfuge', value: 'theme-subterfuge' },
+        { label: 'Titan', value: 'theme-titan' },
+        { label: 'Vesper', value: 'theme-vesper' },
+        { label: 'Earth', value: 'theme-earth' },
+        { label: 'Slate', value: 'theme-slate' },
+        { label: 'Artificer', value: 'theme-artificer' },
+        { label: 'Barbarian', value: 'theme-barbarian' },
+        { label: 'Bard', value: 'theme-bard' },
+        { label: 'Cleric', value: 'theme-cleric' },
+        { label: 'Druid', value: 'theme-druid' },
+        { label: 'Fighter', value: 'theme-fighter' },
+        { label: 'Monk', value: 'theme-monk' },
+        { label: 'Paladin', value: 'theme-paladin' },
+        { label: 'Ranger', value: 'theme-ranger' },
+        { label: 'Rogue', value: 'theme-rogue' },
+        { label: 'Sorcerer', value: 'theme-sorcerer' },
+        { label: 'Warlock', value: 'theme-warlock' },
+        { label: 'Wizard', value: 'theme-wizard' },
+      ],
+      value: this.trayOptions?.theme || 'Default',
+      name: 'theme',
+    })
+
+    const themeGroup = fields.createFormGroup({
+      input: themeInput,
+      label: 'Tray Theme',
+      hint: 'Select Character Specific Tray Theme',
+    })
+
     const customStaticTray = fields.createTextInput({
       name: 'customStaticTrays',
       value: '',
@@ -105,7 +142,7 @@ export class TrayConfig {
       label: 'Auto Add Items ',
       hint: 'Automatically add items to the tray when they are created.',
     })
-    const content = `${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
+    const content = `${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
 
     const method = await foundry.applications.api.DialogV2.wait({
       position: { width: 600 },
@@ -127,9 +164,12 @@ export class TrayConfig {
         },
       ],
     }).then((result) => {
-      if(result == null)  return
+      if (result == null) return
       if (result['imageType'] == '') {
         result['imageType'] = this.trayOptions['imageType']
+      }
+      if (result['theme']) { 
+        game.settings.set('auto-action-tray', 'tempTheme', result.theme)
       }
       if (result['clearCustomStaticTrays']) {
         this.trayOptions['customStaticTrays'] = []

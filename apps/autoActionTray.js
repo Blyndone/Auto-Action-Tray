@@ -380,7 +380,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           break
         case 'humanoid':
           if (actor.system.details.type.subtype == 'Goblinoid') {
-            theme = 'theme-ranger'
+            theme = 'theme-monk'
           } else {
             theme = 'theme-slate'
           }
@@ -389,7 +389,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           theme = 'theme-rogue'
           break
         case 'ooze':
-          theme = 'theme-monk'
+          theme = 'theme-artificer'
           break
         case 'plant':
           theme = 'theme-druid'
@@ -410,9 +410,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
-    }
-    if (game.settings.get('auto-action-tray', 'autoTheme')) {
-      this.setTheme(actor)
     }
 
     await this.generateActorItems(actor, token)
@@ -467,7 +464,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
     }
+
     let config = this.getTrayConfig()
+
+    if (config?.theme && config?.theme != '') {
+      game.settings.set('auto-action-tray', 'tempTheme', config.theme)
+    } else {
+      if (game.settings.get('auto-action-tray', 'autoTheme')) {
+        this.setTheme(actor)
+      }
+    }
+
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
