@@ -1654,7 +1654,7 @@
   color: #00aaff;
   text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
-  font-size: calc(var(--text-scale-ratio) * 1rem);
+  font-size: calc(var(--text-scale-ratio) * 1.45rem);
   margin: 0.1875rem;
 }
 
@@ -1687,7 +1687,7 @@
   text-shadow: 0 0 0.5rem rgba(255, 170, 0, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   margin: 0.1875rem;
-  font-size: calc(var(--text-scale-ratio) * 1rem);
+  font-size: calc(var(--text-scale-ratio) * 1.35rem);
 }
 
 .icon-custom {
@@ -1763,7 +1763,7 @@
   left: 50%;
   transform: translateX(-50%) translateY(-20%);
   padding: 0.3125rem 0.625rem;
-  font-size: 1rem;
+  font-size: calc(var(--text-scale-ratio) * 1.5rem);
   color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
@@ -2402,6 +2402,7 @@ img.item-equipped {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: calc(var(--item-size) * 0.9 * 0.8);
   background: var(--tray-button-background-color);
   display: flex;
   border: none;
@@ -2425,6 +2426,7 @@ img.item-equipped {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: calc(var(--item-size) * 0.9 * 0.8);
   position: relative;
   padding: 0.625rem;
   margin: 0.0625rem;
