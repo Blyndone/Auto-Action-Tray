@@ -222,6 +222,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static PARTS = {
+    frame: {
+      template: 'modules/auto-action-tray/templates/topParts/frame.hbs',
+      id: 'frame',
+    },
     characterImage: {
       template: 'modules/auto-action-tray/templates/topParts/character-image.hbs',
       id: 'character-image',
