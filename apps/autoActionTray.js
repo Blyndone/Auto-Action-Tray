@@ -577,16 +577,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.effectsTray.setEffects()
     if (this.currentTray.id == 'condition') {
       this.conditionTray.setConditions()
-      this.render({ parts: ['centerTray'] })
     }
+    this.render({ parts: ['centerTray', 'characterImage'] })
   }
   _onDeleteActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
     if (this.currentTray.id == 'condition') {
       this.conditionTray.setConditions()
-      this.render({ parts: ['centerTray'] })
     }
+    this.render({ parts: ['centerTray', 'characterImage'] })
   }
   _onUpdateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return

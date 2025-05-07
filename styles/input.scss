@@ -1146,8 +1146,8 @@ img.item-equipped {
   @include inset-tray;
   padding: $main-tray-padding;
   transition: 0.3s ease-in-out;
-  height: calc($item-width * $item-tray-item-height-count);
-  width: calc($item-width * $item-tray-item-height-count);
+  height: calc($item-width * $item-tray-item-height-count * 0.9);
+  width: calc($item-width * $item-tray-item-height-count * 0.9);
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
@@ -1170,7 +1170,7 @@ img.item-equipped {
     box-shadow: var(--dice-button-hover-glow);
   }
   .end-turn-btn-dice-icon {
-    font-size: calc($item-width * $item-tray-item-height-count * 0.65);
+    font-size: calc($item-width * $item-tray-item-height-count * 0.6);
     color: #f1f1f1;
     display: flex;
     i {
@@ -1184,8 +1184,8 @@ img.item-equipped {
   padding: $main-tray-padding;
   background: radial-gradient(#ff8725, #552502);
   transition: 0.3s ease-in-out;
-  height: calc($item-width * $item-tray-item-height-count);
-  width: calc($item-width * $item-tray-item-height-count);
+  height: calc($item-width * $item-tray-item-height-count * 0.9);
+  width: calc($item-width * $item-tray-item-height-count * 0.9);
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
@@ -1210,8 +1210,8 @@ img.item-equipped {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: calc($item-width * $item-tray-item-height-count * 0.9);
-  height: calc($item-width * $item-tray-item-height-count * 0.9);
+  width: calc($item-width * $item-tray-item-height-count);
+  height: calc($item-width * $item-tray-item-height-count);
   transform: translate(-50%, -50%) rotate(90deg);
   pointer-events: none;
 }
