@@ -1,6 +1,7 @@
 {{#if itemSelectorEnabled}}
   {{#if itemConfigItem}}
     <div class='transparent-box ability-selection-input' style='position: absolute;'>
+
       <img
         class='{{itemConfigItem.rarity}}-item'
         data-drag='true'
@@ -15,10 +16,11 @@
   {{else}}
     <div
       class='transparent-box ability-selection-input'
-      style='position: absolute;'
+      style='position: absolute; text-align: center;'
       data-drag='true'
       data-index='itemConfig'
-    ></div>
+    >
+   <div style="pointer-events: none"> Item Config</div></div>
   {{/if}}
 {{/if}}
 

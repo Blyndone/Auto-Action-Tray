@@ -44,7 +44,7 @@
   --action-tag-bg: #612626;
   --action-tag-text: #f1f1f1;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -139,7 +139,7 @@
   --action-tag-bg: #602080;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -189,8 +189,11 @@
   --custom-tray-active-background: #{$hover-color-dim};
   --custom-tray-active-border: #{$hover-color};
 }
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> 25f7836d1ab8d49962b6d3f47f315013a76a7f84
 
 .theme-sanguine {
   $main-color: #880101; // deep red
@@ -247,12 +250,21 @@
     inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
     0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
   --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
+<<<<<<< HEAD
   --button-border: 0.125rem solid#{$border-color};
   --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
   --light-button-border: 0.125rem solid #{$border-color-light};
   --light-button-proficient-border: 0.125rem solid #{$prof-color};
   --light-button-proficient-decoration: #{$accent-color};
   --light-button-expertise-border: 0.125rem solid #{$expertise-color};
+=======
+  --button-border: 0.125rem inset #{$border-color};
+  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
+  --light-button-border: 0.125rem solid #{$border-color-light};
+  --light-button-proficient-border: 0.125rem inset #{$prof-color};
+  --light-button-proficient-decoration: #{$accent-color};
+  --light-button-expertise-border: 0.125rem inset #{$expertise-color};
+>>>>>>> 25f7836d1ab8d49962b6d3f47f315013a76a7f84
   --light-button-expertise-decoration: #{$accent-color-light};
 
   --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
@@ -289,7 +301,10 @@
   --custom-tray-active-border: #{$hover-color};
 }
 
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> 25f7836d1ab8d49962b6d3f47f315013a76a7f84
 .theme-ocean {
   $main-color: #1b4965;
   $main-color-light: #2e86ab;
@@ -336,7 +351,7 @@
   --action-tag-bg: #3a4c63;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -430,7 +445,7 @@
   --action-tag-bg: #7a1f1f;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -525,7 +540,7 @@
   --action-tag-bg: #2a4952;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -620,7 +635,7 @@
   --action-tag-bg: #550000;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -715,7 +730,7 @@
   --action-tag-bg: #a83232;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -809,7 +824,7 @@
   --tooltip-footer: #f9e3e3;
   --action-tag-bg: #5f3d41;
   --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -904,7 +919,7 @@
   --action-tag-bg: #7f6b5c;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -999,7 +1014,7 @@
   --action-tag-bg: #444444;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1093,7 +1108,7 @@
   --tooltip-footer: #e0f7d3;
   --action-tag-bg: #597b3a;
   --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1187,7 +1202,7 @@
   --tooltip-footer: #f6e1d4;
   --action-tag-bg: #b93d2a;
   --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1280,7 +1295,7 @@
   --tooltip-footer: #f5c1f0;
   --action-tag-bg: #7e3a9d;
   --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1374,7 +1389,7 @@
   --tooltip-footer: #e1c37b;
   --action-tag-bg: #b68c42;
   --action-tag-text: #ffffff; /* White text for contrast */
-  --portrait-border-color: #b18536;
+  --border-color: #b18536;
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1468,7 +1483,7 @@
   --action-tag-bg: #4a7a47;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1563,7 +1578,7 @@
   --action-tag-bg: #4a4a4a;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1657,7 +1672,7 @@
   --tooltip-footer: #e1f0d6;
   --action-tag-bg: #5c7d43;
   --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1752,7 +1767,7 @@
   --action-tag-bg: #2d4f72;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1847,7 +1862,7 @@
   --action-tag-bg: #40672d;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -1942,7 +1957,7 @@
   --action-tag-bg: #9f3535;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -2037,7 +2052,7 @@
   --action-tag-bg: #a0263a;
   --action-tag-text: #ffffff;
 
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -2130,7 +2145,7 @@
   --tooltip-footer: #f0e7ff;
   --action-tag-bg: #3c1e50;
   --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
@@ -2224,7 +2239,7 @@
   --tooltip-footer: #f0f4ff;
   --action-tag-bg: #2c4c8f;
   --action-tag-text: #ffffff;
-  --portrait-border-color: #{$border-color};
+  --border-color: #{$border-color};
 
   --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
   --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});

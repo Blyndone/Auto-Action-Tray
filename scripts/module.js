@@ -24,6 +24,7 @@ export async function preloadHandlebarsTemplates() {
     'modules/auto-action-tray/templates/parts/activity-tray.hbs',
     'modules/auto-action-tray/templates/parts/target-tray.hbs',
     'modules/auto-action-tray/templates/parts/condition-tray.hbs',
+    
   ]
   const paths = {}
   for (const path of partials) {
@@ -127,7 +128,7 @@ Hooks.once('ready', async function () {
     config: true,
 
     type: Boolean,
-    default: false,
+    default: true,
 
     requiresReload: true,
   })
@@ -141,6 +142,7 @@ Hooks.once('ready', async function () {
       choices: {
         'theme-classic': 'Mind Flayer',
         'theme-arcane': 'Arcane',
+        'theme-sanguine': 'Sanguine',
         'theme-ocean': 'Ocean',
         'theme-ember': 'Ember',
         'theme-frost': 'Frost',
@@ -198,7 +200,7 @@ Hooks.once('ready', async function () {
     scope: 'client',
     config: true,
     type: Number,
-    default: 10,
+    default: 15,
 
     choices: {
       10: '10 Columns',

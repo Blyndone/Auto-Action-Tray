@@ -8,6 +8,7 @@ export class TrayConfig {
         { label: 'Default', value: '' },
         { label: 'Mind Flayer', value: 'theme-classic' },
         { label: 'Arcane', value: 'theme-arcane' },
+        { label: 'Sanguine', value: 'theme-sanguine' },
         { label: 'Ocean', value: 'theme-ocean' },
         { label: 'Ember', value: 'theme-ember' },
         { label: 'Frost', value: 'theme-frost' },

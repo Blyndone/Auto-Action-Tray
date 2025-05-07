@@ -367,7 +367,7 @@ export class Actions {
       targets &&
       targets.individual == true &&
       (itemConfig?.rollIndividual ?? true) &&
-      !item?.system?.properties.has('concentration')
+      !item?.concentration
     ) {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
