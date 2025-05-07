@@ -23,14 +23,15 @@
   --dice-button-color-active: radial-gradient(#355c7d, #1e3a5f);
   --dice-button-active-glow: inset 0 0 0.625rem #65a4f5;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #65a4f5;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #65a4f5;
   --button-color: linear-gradient(180deg, #1e3a5f, #355c7d);
-  --button-border: 0.125rem inset #4a6fa5;
+  --button-border: 0.125rem solid#4a6fa5;
   --light-button-color: linear-gradient(180deg, #0f5753, #5b9fa4);
   --light-button-border: 0.125rem solid #6c9fbd;
-  --light-button-proficient-border: 0.125rem inset #92cdff;
+  --light-button-proficient-border: 0.125rem solid #92cdff;
   --light-button-proficient-decoration: #0f5753;
-  --light-button-expertise-border: 0.125rem inset #bca4eb;
+  --light-button-expertise-border: 0.125rem solid #bca4eb;
   --light-button-expertise-decoration: #5b9fa4;
   --drag-handle-color: linear-gradient(180deg, #920000, #c93232);
   --drag-handle-hover: linear-gradient(180deg, #ca0202, #f53d3d);
@@ -47,7 +48,11 @@
   --static-tray-button-active-background: #7c4539;
   --static-tray-button-active-glow: #e46f55;
   --static-tray-button-active-border-color: #c9593f;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #7c4539 0%, #7c4539 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #7c4539 0%,
+    #7c4539 100%
+  );
   --custom-tray-inner-glow: rgba(41, 41, 41, 0.8078431373);
   --custom-tray-border-color: rgba(91, 91, 91, 0.5803921569);
   --custom-tray-hover-glow: #c9593f;
@@ -82,14 +87,15 @@
   --dice-button-color-active: radial-gradient(#a26cff, #3e247a);
   --dice-button-active-glow: inset 0 0 0.625rem #cc99ff;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #cc99ff;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #cc99ff;
   --button-color: linear-gradient(180deg, #3e247a, #a26cff);
-  --button-border: 0.125rem inset #7d37d6;
+  --button-border: 0.125rem solid#7d37d6;
   --light-button-color: linear-gradient(180deg, #300566, #8a43e4);
   --light-button-border: 0.125rem solid #9276d4;
-  --light-button-proficient-border: 0.125rem inset #c19aff;
+  --light-button-proficient-border: 0.125rem solid #c19aff;
   --light-button-proficient-decoration: #300566;
-  --light-button-expertise-border: 0.125rem inset #e1caf8;
+  --light-button-expertise-border: 0.125rem solid #e1caf8;
   --light-button-expertise-decoration: #8a43e4;
   --drag-handle-color: linear-gradient(180deg, #6a2ea3, #a050e0);
   --drag-handle-hover: linear-gradient(180deg, #813fd1, #c47fff);
@@ -106,7 +112,11 @@
   --static-tray-button-active-background: #6a2e7c;
   --static-tray-button-active-glow: rgba(191, 128, 255, 0.9);
   --static-tray-button-active-border-color: #df77ff;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #6a2e7c 0%, #6a2e7c 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #6a2e7c 0%,
+    #6a2e7c 100%
+  );
   --custom-tray-inner-glow: rgba(36, 36, 54, 0.6);
   --custom-tray-border-color: rgba(145, 105, 197, 0.9254901961);
   --custom-tray-hover-glow: #df77ff;
@@ -141,7 +151,8 @@
   --dice-button-color-active: radial-gradient(#ff9f9f, #880101);
   --dice-button-active-glow: inset 0 0 0.625rem #ff2b2b;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #ff2b2b;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ff2b2b;
   --button-color: linear-gradient(180deg, #880101, #ff9f9f);
   --button-border: 0.125rem inset #850000;
   --light-button-color: linear-gradient(180deg, #2b0000, #a30000);
@@ -165,7 +176,11 @@
   --static-tray-button-active-background: #590000;
   --static-tray-button-active-glow: rgba(230, 50, 50, 0.9);
   --static-tray-button-active-border-color: #cc1f1f;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #590000 0%, #590000 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #590000 0%,
+    #590000 100%
+  );
   --custom-tray-inner-glow: rgba(40, 0, 0, 0.5);
   --custom-tray-border-color: #a60000;
   --custom-tray-hover-glow: #cc1f1f;
@@ -200,14 +215,15 @@
   --dice-button-color-active: radial-gradient(#2e86ab, #1b4965);
   --dice-button-active-glow: inset 0 0 0.625rem #65d9ff;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #65d9ff;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #65d9ff;
   --button-color: linear-gradient(180deg, #1b4965, #2e86ab);
-  --button-border: 0.125rem inset #3a9ad9;
+  --button-border: 0.125rem solid#3a9ad9;
   --light-button-color: linear-gradient(180deg, #2c7da0, #78c0e0);
   --light-button-border: 0.125rem solid #217ca3;
-  --light-button-proficient-border: 0.125rem inset #a9e7ff;
+  --light-button-proficient-border: 0.125rem solid #a9e7ff;
   --light-button-proficient-decoration: #2c7da0;
-  --light-button-expertise-border: 0.125rem inset #c2ecff;
+  --light-button-expertise-border: 0.125rem solid #c2ecff;
   --light-button-expertise-decoration: #78c0e0;
   --drag-handle-color: linear-gradient(180deg, #005a87, #4db3ce);
   --drag-handle-hover: linear-gradient(180deg, #007fba, #65d9ff);
@@ -224,7 +240,11 @@
   --static-tray-button-active-background: #1e2e3f;
   --static-tray-button-active-glow: rgba(78, 226, 160, 0.8);
   --static-tray-button-active-border-color: #4ee2a0;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #1e2e3f 0%, #1e2e3f 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #1e2e3f 0%,
+    #1e2e3f 100%
+  );
   --custom-tray-inner-glow: rgba(22, 33, 44, 0.6);
   --custom-tray-border-color: rgba(80, 140, 164, 0.5803921569);
   --custom-tray-hover-glow: #4ee2a0;
@@ -259,20 +279,20 @@
   --dice-button-color-active: radial-gradient(#b43a3a, #792c2c);
   --dice-button-active-glow: inset 0 0 0.625rem #ff9980;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #ff9980;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ff9980;
   --button-color: linear-gradient(180deg, #792c2c, #b43a3a);
-  --button-border: 0.125rem inset #aa2e2e;
+  --button-border: 0.125rem solid#aa2e2e;
   --light-button-color: linear-gradient(180deg, #a13030, #ffa285);
   --light-button-border: 0.125rem solid #ff645d;
-  --light-button-proficient-border: 0.125rem inset #fd9d7c;
+  --light-button-proficient-border: 0.125rem solid #fd9d7c;
   --light-button-proficient-decoration: #a13030;
-  --light-button-expertise-border: 0.125rem inset #ffd8cc;
+  --light-button-expertise-border: 0.125rem solid #ffd8cc;
   --light-button-expertise-decoration: #ffa285;
   --drag-handle-color: linear-gradient(180deg, #8c1f1f, #d94d4d);
   --drag-handle-hover: linear-gradient(180deg, #aa2e2e, #ff6666);
   --button-hover-border: #ff6666;
-  --button-hover-glow: 0 0 0.25rem rgba(156, 61, 58, 0.863),
-    0 0 0.25rem rgba(156, 61, 58, 0.863) inset;
+  --button-hover-glow: 0 0 0.25rem rgba(156, 61, 58, 0.863), 0 0 0.25rem rgba(156, 61, 58, 0.863) inset;
   --button-active-border: 0.125rem solid #ff6666;
   --button-active-glow: 0 0 0.3125rem #ff6666;
   --hover-color: #ff6666;
@@ -323,14 +343,15 @@
   --dice-button-color-active: radial-gradient(#4ba8bc, #111b20);
   --dice-button-active-glow: inset 0 0 0.625rem #a7f6ff;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #a7f6ff;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #a7f6ff;
   --button-color: linear-gradient(180deg, #111b20, #4ba8bc);
-  --button-border: 0.125rem inset #5cd4e0;
+  --button-border: 0.125rem solid#5cd4e0;
   --light-button-color: linear-gradient(180deg, #2c5f6c, #5fbcd3);
   --light-button-border: 0.125rem solid #7fdff5;
-  --light-button-proficient-border: 0.125rem inset #b3f4ea;
+  --light-button-proficient-border: 0.125rem solid #b3f4ea;
   --light-button-proficient-decoration: #2c5f6c;
-  --light-button-expertise-border: 0.125rem inset #92ffe9;
+  --light-button-expertise-border: 0.125rem solid #92ffe9;
   --light-button-expertise-decoration: #5fbcd3;
   --drag-handle-color: linear-gradient(180deg, #469caa, #5fbcd3);
   --drag-handle-hover: linear-gradient(180deg, #6cd0df, #82deea);
@@ -386,14 +407,15 @@
   --dice-button-color-active: radial-gradient(#5a5a5a, #1c1c1c);
   --dice-button-active-glow: inset 0 0 0.625rem #e05252;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #e05252;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #e05252;
   --button-color: linear-gradient(180deg, #1c1c1c, #5a5a5a);
-  --button-border: 0.125rem inset #3a3a3a;
+  --button-border: 0.125rem solid#3a3a3a;
   --light-button-color: linear-gradient(180deg, #750000, #c23232);
   --light-button-border: 0.125rem solid #933333;
-  --light-button-proficient-border: 0.125rem inset #ff9494;
+  --light-button-proficient-border: 0.125rem solid #ff9494;
   --light-button-proficient-decoration: #750000;
-  --light-button-expertise-border: 0.125rem inset #ffcccc;
+  --light-button-expertise-border: 0.125rem solid #ffcccc;
   --light-button-expertise-decoration: #c23232;
   --drag-handle-color: linear-gradient(180deg, #3a2c2c, #6a4b4b);
   --drag-handle-hover: linear-gradient(180deg, #7d3a3a, #aa5c5c);
@@ -410,7 +432,11 @@
   --static-tray-button-active-background: #661a1a;
   --static-tray-button-active-glow: rgba(255, 77, 77, 0.8);
   --static-tray-button-active-border-color: #ff4d4d;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #661a1a 0%, #661a1a 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #661a1a 0%,
+    #661a1a 100%
+  );
   --custom-tray-inner-glow: rgba(28, 28, 28, 0.6);
   --custom-tray-border-color: rgba(179, 58, 58, 0.9254901961);
   --custom-tray-hover-glow: #ff4d4d;
@@ -445,14 +471,15 @@
   --dice-button-color-active: radial-gradient(#e56b2f, #a83232);
   --dice-button-active-glow: inset 0 0 0.625rem #ffd2aa;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #ffd2aa;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ffd2aa;
   --button-color: linear-gradient(180deg, #a83232, #e56b2f);
-  --button-border: 0.125rem inset #842020;
+  --button-border: 0.125rem solid#842020;
   --light-button-color: linear-gradient(180deg, #521717, #bb3f1d);
   --light-button-border: 0.125rem solid #e57c49;
-  --light-button-proficient-border: 0.125rem inset #ffc7a3;
+  --light-button-proficient-border: 0.125rem solid #ffc7a3;
   --light-button-proficient-decoration: #521717;
-  --light-button-expertise-border: 0.125rem inset #ffe1c8;
+  --light-button-expertise-border: 0.125rem solid #ffe1c8;
   --light-button-expertise-decoration: #bb3f1d;
   --drag-handle-color: linear-gradient(180deg, #b5421f, #e6753e);
   --drag-handle-hover: linear-gradient(180deg, #cc512a, #ff9c63);
@@ -469,7 +496,11 @@
   --static-tray-button-active-background: #9c3e1d;
   --static-tray-button-active-glow: rgba(255, 156, 99, 0.85);
   --static-tray-button-active-border-color: #ff9c63;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #9c3e1d 0%, #9c3e1d 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #9c3e1d 0%,
+    #9c3e1d 100%
+  );
   --custom-tray-inner-glow: rgba(32, 16, 10, 0.6);
   --custom-tray-border-color: rgba(229, 107, 47, 0.9254901961);
   --custom-tray-hover-glow: #ff9c63;
@@ -504,14 +535,15 @@
   --dice-button-color-active: radial-gradient(#7d6a6d, #4c3c3f);
   --dice-button-active-glow: inset 0 0 0.625rem #e6b2b2;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #e6b2b2;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #e6b2b2;
   --button-color: linear-gradient(180deg, #4c3c3f, #7d6a6d);
-  --button-border: 0.125rem inset #5a4a4c;
+  --button-border: 0.125rem solid#5a4a4c;
   --light-button-color: linear-gradient(180deg, #2d1f23, #a17a7d);
   --light-button-border: 0.125rem solid #9e7f81;
-  --light-button-proficient-border: 0.125rem inset #d2a1a1;
+  --light-button-proficient-border: 0.125rem solid #d2a1a1;
   --light-button-proficient-decoration: #2d1f23;
-  --light-button-expertise-border: 0.125rem inset #e6b2b2;
+  --light-button-expertise-border: 0.125rem solid #e6b2b2;
   --light-button-expertise-decoration: #a17a7d;
   --drag-handle-color: linear-gradient(180deg, #5f3d41, #9f7175);
   --drag-handle-hover: linear-gradient(180deg, #7d4b51, #d2a1a1);
@@ -528,7 +560,11 @@
   --static-tray-button-active-background: #3f292f;
   --static-tray-button-active-glow: rgba(210, 161, 161, 0.85);
   --static-tray-button-active-border-color: #d2a1a1;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #3f292f 0%, #3f292f 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3f292f 0%,
+    #3f292f 100%
+  );
   --custom-tray-inner-glow: rgba(38, 28, 32, 0.6);
   --custom-tray-border-color: rgba(156, 110, 109, 0.9254901961);
   --custom-tray-hover-glow: #d2a1a1;
@@ -563,14 +599,15 @@
   --dice-button-color-active: radial-gradient(#5a524e, #2e2b28);
   --dice-button-active-glow: inset 0 0 0.625rem #b8ada6;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #b8ada6;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #b8ada6;
   --button-color: linear-gradient(180deg, #2e2b28, #5a524e);
-  --button-border: 0.125rem inset #46413d;
+  --button-border: 0.125rem solid#46413d;
   --light-button-color: linear-gradient(180deg, #1c1a18, #746b65);
   --light-button-border: 0.125rem solid #867d77;
-  --light-button-proficient-border: 0.125rem inset #9f938c;
+  --light-button-proficient-border: 0.125rem solid #9f938c;
   --light-button-proficient-decoration: #1c1a18;
-  --light-button-expertise-border: 0.125rem inset #b8ada6;
+  --light-button-expertise-border: 0.125rem solid #b8ada6;
   --light-button-expertise-decoration: #746b65;
   --drag-handle-color: linear-gradient(180deg, #4b4541, #887f79);
   --drag-handle-hover: linear-gradient(180deg, #655e58, #c2b8b1);
@@ -587,7 +624,11 @@
   --static-tray-button-active-background: #332f2b;
   --static-tray-button-active-glow: rgba(159, 147, 140, 0.85);
   --static-tray-button-active-border-color: #9f938c;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #332f2b 0%, #332f2b 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #332f2b 0%,
+    #332f2b 100%
+  );
   --custom-tray-inner-glow: rgba(36, 33, 31, 0.6);
   --custom-tray-border-color: rgba(116, 107, 101, 0.9254901961);
   --custom-tray-hover-glow: #9f938c;
@@ -622,14 +663,15 @@
   --dice-button-color-active: radial-gradient(#5a7383, #3f515d);
   --dice-button-active-glow: inset 0 0 0.625rem #add8e6;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #add8e6;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #add8e6;
   --button-color: linear-gradient(180deg, #3f515d, #5a7383);
-  --button-border: 0.125rem inset #888888;
+  --button-border: 0.125rem solid#888888;
   --light-button-color: linear-gradient(180deg, #5f7a8a, #a8bfc9);
   --light-button-border: 0.125rem solid #666666;
-  --light-button-proficient-border: 0.125rem inset #add8e6;
+  --light-button-proficient-border: 0.125rem solid #add8e6;
   --light-button-proficient-decoration: #5f7a8a;
-  --light-button-expertise-border: 0.125rem inset #d4ecf8;
+  --light-button-expertise-border: 0.125rem solid #d4ecf8;
   --light-button-expertise-decoration: #a8bfc9;
   --drag-handle-color: linear-gradient(180deg, #444444, #666666);
   --drag-handle-hover: linear-gradient(180deg, #666666, #888888);
@@ -685,14 +727,15 @@
   --dice-button-color-active: radial-gradient(#9fbf75, #6d8a3f);
   --dice-button-active-glow: inset 0 0 0.625rem #d1f5b7;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #d1f5b7;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #d1f5b7;
   --button-color: linear-gradient(180deg, #6d8a3f, #9fbf75);
-  --button-border: 0.125rem inset #4f6e29;
+  --button-border: 0.125rem solid#4f6e29;
   --light-button-color: linear-gradient(180deg, #2e4f24, #a8c68c);
   --light-button-border: 0.125rem solid #a1d295;
-  --light-button-proficient-border: 0.125rem inset #b3e27b;
+  --light-button-proficient-border: 0.125rem solid #b3e27b;
   --light-button-proficient-decoration: #2e4f24;
-  --light-button-expertise-border: 0.125rem inset #c9f299;
+  --light-button-expertise-border: 0.125rem solid #c9f299;
   --light-button-expertise-decoration: #a8c68c;
   --drag-handle-color: linear-gradient(180deg, #597b3a, #a2d087);
   --drag-handle-hover: linear-gradient(180deg, #739c55, #d1f5b7);
@@ -709,7 +752,11 @@
   --static-tray-button-active-background: #3e5f2c;
   --static-tray-button-active-glow: rgba(193, 231, 167, 0.85);
   --static-tray-button-active-border-color: #c1e7a7;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #3e5f2c 0%, #3e5f2c 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3e5f2c 0%,
+    #3e5f2c 100%
+  );
   --custom-tray-inner-glow: rgba(24, 34, 18, 0.6);
   --custom-tray-border-color: rgba(159, 191, 117, 0.9254901961);
   --custom-tray-hover-glow: #c1e7a7;
@@ -744,14 +791,15 @@
   --dice-button-color-active: radial-gradient(#f08a74, #e24d3e);
   --dice-button-active-glow: inset 0 0 0.625rem #f8c4a7;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #f8c4a7;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #f8c4a7;
   --button-color: linear-gradient(180deg, #e24d3e, #f08a74);
-  --button-border: 0.125rem inset #c23b2f;
+  --button-border: 0.125rem solid#c23b2f;
   --light-button-color: linear-gradient(180deg, #9e2a24, #f5a08f);
   --light-button-border: 0.125rem solid #f1a593;
-  --light-button-proficient-border: 0.125rem inset #f5a08f;
+  --light-button-proficient-border: 0.125rem solid #f5a08f;
   --light-button-proficient-decoration: #9e2a24;
-  --light-button-expertise-border: 0.125rem inset #f8b09d;
+  --light-button-expertise-border: 0.125rem solid #f8b09d;
   --light-button-expertise-decoration: #f5a08f;
   --drag-handle-color: linear-gradient(180deg, #b93d2a, #e3a593);
   --drag-handle-hover: linear-gradient(180deg, #d53e28, #f8c4a7);
@@ -768,7 +816,11 @@
   --static-tray-button-active-background: #9e1f1a;
   --static-tray-button-active-glow: rgba(248, 196, 167, 0.85);
   --static-tray-button-active-border-color: #f8c4a7;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #9e1f1a 0%, #9e1f1a 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #9e1f1a 0%,
+    #9e1f1a 100%
+  );
   --custom-tray-inner-glow: rgba(42, 12, 6, 0.6);
   --custom-tray-border-color: rgba(240, 138, 116, 0.9254901961);
   --custom-tray-hover-glow: #f8c4a7;
@@ -803,14 +855,15 @@
   --dice-button-color-active: radial-gradient(#ba80d4, #9c47c6);
   --dice-button-active-glow: inset 0 0 0.625rem #c7a7e6;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #c7a7e6;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #c7a7e6;
   --button-color: linear-gradient(180deg, #9c47c6, #ba80d4);
-  --button-border: 0.125rem inset #7e3a9d;
+  --button-border: 0.125rem solid#7e3a9d;
   --light-button-color: linear-gradient(180deg, #6e1e7b, #9f57b5);
   --light-button-border: 0.125rem solid #a674c1;
-  --light-button-proficient-border: 0.125rem inset #ba80d4;
+  --light-button-proficient-border: 0.125rem solid #ba80d4;
   --light-button-proficient-decoration: #6e1e7b;
-  --light-button-expertise-border: 0.125rem inset #c7a7e6;
+  --light-button-expertise-border: 0.125rem solid #c7a7e6;
   --light-button-expertise-decoration: #9f57b5;
   --drag-handle-color: linear-gradient(180deg, #7e3a9d, #a57bc1);
   --drag-handle-hover: linear-gradient(180deg, #8d49ad, #c7a7e6);
@@ -827,7 +880,11 @@
   --static-tray-button-active-background: #6d0c6c;
   --static-tray-button-active-glow: rgba(193, 135, 216, 0.85);
   --static-tray-button-active-border-color: #c187d8;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #6d0c6c 0%, #6d0c6c 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #6d0c6c 0%,
+    #6d0c6c 100%
+  );
   --custom-tray-inner-glow: rgba(27, 17, 32, 0.6);
   --custom-tray-border-color: rgba(186, 128, 212, 0.9254901961);
   --custom-tray-hover-glow: #c187d8;
@@ -862,14 +919,15 @@
   --dice-button-color-active: radial-gradient(#c49f53, #98752c);
   --dice-button-active-glow: inset 0 0 0.625rem #e1bb65;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #e1bb65;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #e1bb65;
   --button-color: linear-gradient(180deg, #98752c, #c49f53);
-  --button-border: 0.125rem inset #b18536;
+  --button-border: 0.125rem solid#b18536;
   --light-button-color: linear-gradient(180deg, #b7923c, #dfc071);
   --light-button-border: 0.125rem solid #d0b36e;
-  --light-button-proficient-border: 0.125rem inset #f5c938;
+  --light-button-proficient-border: 0.125rem solid #f5c938;
   --light-button-proficient-decoration: #b7923c;
-  --light-button-expertise-border: 0.125rem inset #e4d28f;
+  --light-button-expertise-border: 0.125rem solid #e4d28f;
   --light-button-expertise-decoration: #dfc071;
   --drag-handle-color: linear-gradient(180deg, #b68c42, #d9b66a);
   --drag-handle-hover: linear-gradient(180deg, #c6a147, #e1bb65);
@@ -886,7 +944,11 @@
   --static-tray-button-active-background: #a78f3d;
   --static-tray-button-active-glow: rgba(213, 177, 75, 0.85);
   --static-tray-button-active-border-color: #d5b14b;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #a78f3d 0%, #a78f3d 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #a78f3d 0%,
+    #a78f3d 100%
+  );
   --custom-tray-inner-glow: rgba(49, 37, 23, 0.6);
   --custom-tray-border-color: #d0b36e;
   --custom-tray-hover-glow: #d5b14b;
@@ -921,14 +983,15 @@
   --dice-button-color-active: radial-gradient(#80c670, #3e6b3c);
   --dice-button-active-glow: inset 0 0 0.625rem #b3f3b1;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #b3f3b1;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #b3f3b1;
   --button-color: linear-gradient(180deg, #3e6b3c, #80c670);
-  --button-border: 0.125rem inset #4a8a3f;
+  --button-border: 0.125rem solid#4a8a3f;
   --light-button-color: linear-gradient(180deg, #35592d, #7ec77a);
   --light-button-border: 0.125rem solid #89d487;
-  --light-button-proficient-border: 0.125rem inset #94e5a2;
+  --light-button-proficient-border: 0.125rem solid #94e5a2;
   --light-button-proficient-decoration: #35592d;
-  --light-button-expertise-border: 0.125rem inset #ccf1d1;
+  --light-button-expertise-border: 0.125rem solid #ccf1d1;
   --light-button-expertise-decoration: #7ec77a;
   --drag-handle-color: linear-gradient(180deg, #577d53, #88cc81);
   --drag-handle-hover: linear-gradient(180deg, #6cbf66, #b6ffb3);
@@ -945,7 +1008,11 @@
   --static-tray-button-active-background: #4a7a47;
   --static-tray-button-active-glow: rgba(150, 225, 150, 0.9);
   --static-tray-button-active-border-color: #a4e3a1;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #4a7a47 0%, #4a7a47 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #4a7a47 0%,
+    #4a7a47 100%
+  );
   --custom-tray-inner-glow: rgba(42, 54, 42, 0.6);
   --custom-tray-border-color: rgba(118, 197, 122, 0.9254901961);
   --custom-tray-hover-glow: #a4e3a1;
@@ -980,14 +1047,15 @@
   --dice-button-color-active: radial-gradient(#8d8d8d, #3d3d3d);
   --dice-button-active-glow: inset 0 0 0.625rem #d1d1d1;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #d1d1d1;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #d1d1d1;
   --button-color: linear-gradient(180deg, #3d3d3d, #8d8d8d);
-  --button-border: 0.125rem inset #6a6a6a;
+  --button-border: 0.125rem solid#6a6a6a;
   --light-button-color: linear-gradient(180deg, #1c1c1c, #9e9e9e);
   --light-button-border: 0.125rem solid #b4b4b4;
-  --light-button-proficient-border: 0.125rem inset #cccccc;
+  --light-button-proficient-border: 0.125rem solid #cccccc;
   --light-button-proficient-decoration: #1c1c1c;
-  --light-button-expertise-border: 0.125rem inset #e6e6e6;
+  --light-button-expertise-border: 0.125rem solid #e6e6e6;
   --light-button-expertise-decoration: #9e9e9e;
   --drag-handle-color: linear-gradient(180deg, #5e5e5e, #9d9d9d);
   --drag-handle-hover: linear-gradient(180deg, #7a7a7a, #d0d0d0);
@@ -1004,7 +1072,11 @@
   --static-tray-button-active-background: #4d4d4d;
   --static-tray-button-active-glow: rgba(200, 200, 200, 0.85);
   --static-tray-button-active-border-color: #bbbbbb;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #4d4d4d 0%, #4d4d4d 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #4d4d4d 0%,
+    #4d4d4d 100%
+  );
   --custom-tray-inner-glow: rgba(36, 36, 36, 0.6);
   --custom-tray-border-color: rgba(165, 165, 165, 0.9254901961);
   --custom-tray-hover-glow: #bbbbbb;
@@ -1039,14 +1111,15 @@
   --dice-button-color-active: radial-gradient(#a1c58d, #7f9a5e);
   --dice-button-active-glow: inset 0 0 0.625rem #a2d07a;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #a2d07a;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #a2d07a;
   --button-color: linear-gradient(180deg, #7f9a5e, #a1c58d);
-  --button-border: 0.125rem inset #6b8c49;
+  --button-border: 0.125rem solid#6b8c49;
   --light-button-color: linear-gradient(180deg, #4a5c32, #81a16c);
   --light-button-border: 0.125rem solid #9cbe75;
-  --light-button-proficient-border: 0.125rem inset #b1d78f;
+  --light-button-proficient-border: 0.125rem solid #b1d78f;
   --light-button-proficient-decoration: #4a5c32;
-  --light-button-expertise-border: 0.125rem inset #c5e1a3;
+  --light-button-expertise-border: 0.125rem solid #c5e1a3;
   --light-button-expertise-decoration: #81a16c;
   --drag-handle-color: linear-gradient(180deg, #5c7d43, #a1b77a);
   --drag-handle-hover: linear-gradient(180deg, #718e4d, #a2d07a);
@@ -1063,7 +1136,11 @@
   --static-tray-button-active-background: #3f5426;
   --static-tray-button-active-glow: rgba(176, 219, 147, 0.85);
   --static-tray-button-active-border-color: #b0db93;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #3f5426 0%, #3f5426 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3f5426 0%,
+    #3f5426 100%
+  );
   --custom-tray-inner-glow: rgba(18, 15, 13, 0.6);
   --custom-tray-border-color: rgba(161, 197, 141, 0.9254901961);
   --custom-tray-hover-glow: #b0db93;
@@ -1098,14 +1175,15 @@
   --dice-button-color-active: radial-gradient(#a4c6eb, #2d4f72);
   --dice-button-active-glow: inset 0 0 0.625rem #d9eeff;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #d9eeff;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #d9eeff;
   --button-color: linear-gradient(180deg, #2d4f72, #a4c6eb);
-  --button-border: 0.125rem inset #5c85b0;
+  --button-border: 0.125rem solid#5c85b0;
   --light-button-color: linear-gradient(180deg, #244060, #a9c7f2);
   --light-button-border: 0.125rem solid #8fb3de;
-  --light-button-proficient-border: 0.125rem inset #b0d4f8;
+  --light-button-proficient-border: 0.125rem solid #b0d4f8;
   --light-button-proficient-decoration: #244060;
-  --light-button-expertise-border: 0.125rem inset #d6eaff;
+  --light-button-expertise-border: 0.125rem solid #d6eaff;
   --light-button-expertise-decoration: #a9c7f2;
   --drag-handle-color: linear-gradient(180deg, #3e6288, #7aa8d6);
   --drag-handle-hover: linear-gradient(180deg, #5b8eb5, #b8dbff);
@@ -1122,7 +1200,11 @@
   --static-tray-button-active-background: #446b8d;
   --static-tray-button-active-glow: rgba(200, 220, 255, 0.8);
   --static-tray-button-active-border-color: #c9e3ff;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #446b8d 0%, #446b8d 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #446b8d 0%,
+    #446b8d 100%
+  );
   --custom-tray-inner-glow: rgba(38, 54, 78, 0.6);
   --custom-tray-border-color: rgba(125, 177, 221, 0.9254901961);
   --custom-tray-hover-glow: #c9e3ff;
@@ -1157,14 +1239,15 @@
   --dice-button-color-active: radial-gradient(#7fbb7e, #4b7c46);
   --dice-button-active-glow: inset 0 0 0.625rem #b0d69f;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #b0d69f;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #b0d69f;
   --button-color: linear-gradient(180deg, #4b7c46, #7fbb7e);
-  --button-border: 0.125rem inset #3d6035;
+  --button-border: 0.125rem solid#3d6035;
   --light-button-color: linear-gradient(180deg, #2a4824, #a3d2a1);
   --light-button-border: 0.125rem solid #8cae7d;
-  --light-button-proficient-border: 0.125rem inset #87d68b;
+  --light-button-proficient-border: 0.125rem solid #87d68b;
   --light-button-proficient-decoration: #2a4824;
-  --light-button-expertise-border: 0.125rem inset #c5f2c1;
+  --light-button-expertise-border: 0.125rem solid #c5f2c1;
   --light-button-expertise-decoration: #a3d2a1;
   --drag-handle-color: linear-gradient(180deg, #4a6839, #8cbe80);
   --drag-handle-hover: linear-gradient(180deg, #5a7b4b, #b0cc96);
@@ -1181,7 +1264,11 @@
   --static-tray-button-active-background: #3c5a38;
   --static-tray-button-active-glow: rgba(168, 213, 159, 0.85);
   --static-tray-button-active-border-color: #a8d59f;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #3c5a38 0%, #3c5a38 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3c5a38 0%,
+    #3c5a38 100%
+  );
   --custom-tray-inner-glow: rgba(29, 39, 19, 0.6);
   --custom-tray-border-color: rgba(127, 155, 114, 0.9254901961);
   --custom-tray-hover-glow: #a8d59f;
@@ -1216,14 +1303,15 @@
   --dice-button-color-active: radial-gradient(#8f1f1f, #3e0b0b);
   --dice-button-active-glow: inset 0 0 0.625rem #ff8c8c;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #ff8c8c;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ff8c8c;
   --button-color: linear-gradient(180deg, #3e0b0b, #8f1f1f);
-  --button-border: 0.125rem inset #a02323;
+  --button-border: 0.125rem solid#a02323;
   --light-button-color: linear-gradient(180deg, #2a0505, #b74d4d);
   --light-button-border: 0.125rem solid #7a2c2c;
-  --light-button-proficient-border: 0.125rem inset #e14c4c;
+  --light-button-proficient-border: 0.125rem solid #e14c4c;
   --light-button-proficient-decoration: #2a0505;
-  --light-button-expertise-border: 0.125rem inset #ff8c8c;
+  --light-button-expertise-border: 0.125rem solid #ff8c8c;
   --light-button-expertise-decoration: #b74d4d;
   --drag-handle-color: linear-gradient(180deg, #6a1f1f, #a54b4b);
   --drag-handle-hover: linear-gradient(180deg, #c16b6b, #ff8a8a);
@@ -1240,7 +1328,11 @@
   --static-tray-button-active-background: #4b1010;
   --static-tray-button-active-glow: rgba(225, 76, 76, 0.85);
   --static-tray-button-active-border-color: #e14c4c;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #4b1010 0%, #4b1010 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #4b1010 0%,
+    #4b1010 100%
+  );
   --custom-tray-inner-glow: rgba(42, 18, 18, 0.6);
   --custom-tray-border-color: rgba(122, 44, 44, 0.9254901961);
   --custom-tray-hover-glow: #e14c4c;
@@ -1275,14 +1367,15 @@
   --dice-button-color-active: radial-gradient(#f25478, #8b1e3f);
   --dice-button-active-glow: inset 0 0 0.625rem #ffd1dd;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #ffd1dd;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ffd1dd;
   --button-color: linear-gradient(180deg, #8b1e3f, #f25478);
-  --button-border: 0.125rem inset #a4334d;
+  --button-border: 0.125rem solid#a4334d;
   --light-button-color: linear-gradient(180deg, #5e1025, #f78b9d);
   --light-button-border: 0.125rem solid #fda6b1;
-  --light-button-proficient-border: 0.125rem inset #ffacc4;
+  --light-button-proficient-border: 0.125rem solid #ffacc4;
   --light-button-proficient-decoration: #5e1025;
-  --light-button-expertise-border: 0.125rem inset #ffe4ed;
+  --light-button-expertise-border: 0.125rem solid #ffe4ed;
   --light-button-expertise-decoration: #f78b9d;
   --drag-handle-color: linear-gradient(180deg, #a0263a, #f0728f);
   --drag-handle-hover: linear-gradient(180deg, #d83c5e, #ffb1c7);
@@ -1299,7 +1392,11 @@
   --static-tray-button-active-background: #842642;
   --static-tray-button-active-glow: rgba(255, 182, 193, 0.85);
   --static-tray-button-active-border-color: #ffb6c1;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #842642 0%, #842642 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #842642 0%,
+    #842642 100%
+  );
   --custom-tray-inner-glow: rgba(42, 20, 28, 0.6);
   --custom-tray-border-color: rgba(233, 93, 123, 0.9254901961);
   --custom-tray-hover-glow: #ffb6c1;
@@ -1334,14 +1431,15 @@
   --dice-button-color-active: radial-gradient(#5e4b89, #2f1c56);
   --dice-button-active-glow: inset 0 0 0.625rem #c0a0e1;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #c0a0e1;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #c0a0e1;
   --button-color: linear-gradient(180deg, #2f1c56, #5e4b89);
-  --button-border: 0.125rem inset #4d336e;
+  --button-border: 0.125rem solid#4d336e;
   --light-button-color: linear-gradient(180deg, #2b1139, #6f4a82);
   --light-button-border: 0.125rem solid #7e5a9d;
-  --light-button-proficient-border: 0.125rem inset #a489d1;
+  --light-button-proficient-border: 0.125rem solid #a489d1;
   --light-button-proficient-decoration: #2b1139;
-  --light-button-expertise-border: 0.125rem inset #c8a8e3;
+  --light-button-expertise-border: 0.125rem solid #c8a8e3;
   --light-button-expertise-decoration: #6f4a82;
   --drag-handle-color: linear-gradient(180deg, #3c1e50, #7a5c87);
   --drag-handle-hover: linear-gradient(180deg, #5e367a, #c0a0e1);
@@ -1358,7 +1456,11 @@
   --static-tray-button-active-background: #3d1e53;
   --static-tray-button-active-glow: rgba(158, 107, 191, 0.85);
   --static-tray-button-active-border-color: #9e6bbf;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #3d1e53 0%, #3d1e53 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #3d1e53 0%,
+    #3d1e53 100%
+  );
   --custom-tray-inner-glow: rgba(19, 14, 25, 0.6);
   --custom-tray-border-color: rgba(94, 75, 137, 0.9254901961);
   --custom-tray-hover-glow: #9e6bbf;
@@ -1393,14 +1495,15 @@
   --dice-button-color-active: radial-gradient(#6584c9, #1f3c88);
   --dice-button-active-glow: inset 0 0 0.625rem #ccdfff;
   --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5), 0rem 0rem 0.5625rem 0.375rem #ccdfff;
+    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
+    0rem 0rem 0.5625rem 0.375rem #ccdfff;
   --button-color: linear-gradient(180deg, #1f3c88, #6584c9);
-  --button-border: 0.125rem inset #3453a1;
+  --button-border: 0.125rem solid#3453a1;
   --light-button-color: linear-gradient(180deg, #101e40, #6c92ff);
   --light-button-border: 0.125rem solid #839deb;
-  --light-button-proficient-border: 0.125rem inset #b0c4ff;
+  --light-button-proficient-border: 0.125rem solid #b0c4ff;
   --light-button-proficient-decoration: #101e40;
-  --light-button-expertise-border: 0.125rem inset #d6e1ff;
+  --light-button-expertise-border: 0.125rem solid #d6e1ff;
   --light-button-expertise-decoration: #6c92ff;
   --drag-handle-color: linear-gradient(180deg, #3b4f99, #7da8ff);
   --drag-handle-hover: linear-gradient(180deg, #5478d8, #b3ceff);
@@ -1417,7 +1520,11 @@
   --static-tray-button-active-background: #2a4172;
   --static-tray-button-active-glow: rgba(180, 200, 255, 0.9);
   --static-tray-button-active-border-color: #a0bfff;
-  --static-tray-button-no-slots-background: radial-gradient(circle, #2a4172 0%, #2a4172 100%);
+  --static-tray-button-no-slots-background: radial-gradient(
+    circle,
+    #2a4172 0%,
+    #2a4172 100%
+  );
   --custom-tray-inner-glow: rgba(20, 28, 46, 0.6);
   --custom-tray-border-color: rgba(110, 140, 236, 0.9254901961);
   --custom-tray-hover-glow: #a0bfff;
@@ -1434,8 +1541,7 @@
   --item-tray-item-height-count: 2;
   --character-health-percent: 100;
   --stacked-spacer-width: 0rem;
-  --concentration-color: #9600d1;
-  --modifier-highlight-color: '';
+  --modifier-highlight-color: "";
 }
 
 #auto-action-tray {
@@ -1457,9 +1563,9 @@
 
 .static-tray-container {
   position: absolute;
-  top: -3.5625rem;
+  top: calc(-1 * var(--item-size) * 0.9 - 5px);
   border-radius: 0.625rem 0.625rem 0 0;
-  background: rgba(117, 117, 117, 0.7);
+  background: rgba(255, 255, 255, 0);
   padding-left: 0.3125rem;
   padding-right: 0.3125rem;
   padding-top: 0.3125rem;
@@ -1473,8 +1579,8 @@
   justify-content: center;
   align-items: center;
   background: var(--tray-button-background-color);
-  width: 3.125rem;
-  height: 3.125rem;
+  width: calc(var(--item-size) * 0.9);
+  height: calc(var(--item-size) * 0.9);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1483,7 +1589,6 @@
   align-items: center;
   align-content: center;
   padding: 0.3125rem;
-  margin: 0.0625rem;
   border-radius: 0.3125rem;
   box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
   transition: all 0.3s ease;
@@ -1494,8 +1599,7 @@
   cursor: pointer;
 }
 .static-tray-button:hover {
-  box-shadow: 0 0 0.75rem var(--static-tray-button-hover-glow-color),
-    inset 0 0 0.75rem var(--static-tray-button-hover-glow-color);
+  box-shadow: 0 0 0.75rem var(--static-tray-button-hover-glow-color), inset 0 0 0.75rem var(--static-tray-button-hover-glow-color);
   border: 0.25rem inset var(--static-tray-button-active-border-color);
 }
 
@@ -1512,8 +1616,7 @@
   box-shadow: inset 0 0 0.9375rem var(--static-tray-button-active-inset-color);
   background: var(--static-tray-button-active-background);
   color: #f1f1f1;
-  box-shadow: 0 0 0.75rem var(--static-tray-button-active-glow),
-    inset 0 0 0.75rem var(--static-tray-button-active-glow);
+  box-shadow: 0 0 0.75rem var(--static-tray-button-active-glow), inset 0 0 0.75rem var(--static-tray-button-active-glow);
   border: 0.25rem inset var(--static-tray-button-active-border-color);
 }
 
@@ -1544,13 +1647,14 @@
   text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-slot-cantrip {
   color: #00aaff;
   text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
-  font-size: calc(var(--text-scale-ratio) * 1.3rem);
+  font-size: calc(var(--text-scale-ratio) * 1rem);
   margin: 0.1875rem;
 }
 
@@ -1559,6 +1663,7 @@
   opacity: 0.6;
   filter: drop-shadow(0 0 0.1875rem rgba(0, 0, 0, 0.6));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-pact {
@@ -1566,6 +1671,7 @@
   text-shadow: 0 0 0.5rem rgba(170, 0, 255, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1ream);
 }
 
 .icon-pact-spent {
@@ -1573,6 +1679,7 @@
   opacity: 0.6;
   filter: drop-shadow(0 0 0.1875rem rgba(0, 0, 0, 0.6));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-ritual {
@@ -1580,6 +1687,7 @@
   text-shadow: 0 0 0.5rem rgba(255, 170, 0, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-custom {
@@ -1630,23 +1738,26 @@
 
 .static-spell-level-container {
   position: relative;
+  border-radius: 5px;
+  box-shadow: 0px 0px 7px 3px rgba(0, 0, 0, 0.5098039216);
+  margin: 0.0625rem;
 }
 
 .static-spell-level {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%) translateY(-20%);
   padding: 0.3125rem 0.625rem;
-  font-size: 1rem;
+  font-size: calc(var(--text-scale-ratio) * 1.3rem);
   color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
 
 .static-item-uses {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   position: absolute;
   bottom: -0.5625rem;
   left: 50%;
@@ -1670,8 +1781,8 @@
 }
 .character-image-container .image-container {
   padding: 0;
-  width: 10.625rem;
-  height: 10.625rem;
+  width: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
+  height: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
   overflow: hidden;
   border-radius: 50%;
   margin-right: 0.625rem;
@@ -1688,29 +1799,22 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   outline: 0.25rem solid rgb(39, 39, 39);
 }
 .character-image-container #health-percent {
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset 0 0 calc(6.25rem - var(--character-health-percent) * 0.0625rem)
-      rgba(225, 0, 0, calc(1 - var(--character-health-percent) / 100));
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset 0 0 calc(6.25rem - var(--character-health-percent) * 0.0625rem) rgba(225, 0, 0, calc(1 - var(--character-health-percent) / 100));
   z-index: 1;
 }
 .character-image-container .concentrating {
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    0 0 0.9375rem var(--concentration-color);
-  border: 0.125rem solid #2f2f2f;
-  outline: 0.1875rem solid var(--concentration-color);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), 0 0 2rem var(--static-tray-button-active-glow);
+  outline: 0.3125rem solid var(--hover-color);
 }
 .character-image-container img {
   align-items: center;
   vertical-align: middle;
   border: none;
-  width: 10.625rem;
+  width: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
   background: #5b5b5b;
 }
 
@@ -1730,8 +1834,7 @@
   justify-content: center;
   align-items: center;
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
@@ -1758,8 +1861,7 @@
 
 .misc-tray-container {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
@@ -1767,10 +1869,7 @@
   flex-wrap: wrap;
   grid-template-columns: repeat(2, 1fr);
   width: calc(var(--item-size) * 0.9 * 2 + 0.875rem);
-  height: calc(
-    var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem - var(--item-size) -
-      0.4375rem
-  );
+  height: calc(var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem - var(--item-size) - 0.4375rem);
   justify-content: center;
   align-items: flex-start;
   padding: 0.4375rem;
@@ -1778,8 +1877,7 @@
 
 .ability-selection-input {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
@@ -1792,6 +1890,26 @@
   border: 0.1875rem solid #c9593f;
   outline: 0.1875rem solid #c9593f;
   box-shadow: 0 0 0.5rem #c9593f, 0 0 0.5rem #c9593f, 0 0 0.5rem #c9593f;
+}
+
+.button-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: serif;
+  color: #f1f1f1;
+  font-size: clamp(0.3rem, var(--text-scale-ratio) * 2rem, var(--text-scale-ratio) * 1.3rem);
+  line-height: 1.2;
+  padding: 0 0.2rem;
+  white-space: nowrap;
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+  text-align: center;
+  text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
 }
 
 .small-button {
@@ -1810,7 +1928,6 @@
   height: 100%;
   flex-grow: 1;
   box-sizing: border-box;
-  font-size: 100%;
   height: 33.3333333333%;
   width: 50%;
   padding-left: 0.3rem;
@@ -1861,8 +1978,7 @@
 .ability-tray-container {
   height: calc(var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem);
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
@@ -1901,8 +2017,7 @@
 }
 .ability-tray-container .use-slot-checkbox {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
@@ -2091,8 +2206,7 @@ img.item-equipped {
   overflow: hidden;
 }
 .activity-button:hover {
-  box-shadow: 0 0 1.875rem 0.625rem var(--hover-color),
-    0 0 1.25rem 0.3125rem var(--hover-color) inset;
+  box-shadow: 0 0 1.875rem 0.625rem var(--hover-color), 0 0 1.25rem 0.3125rem var(--hover-color) inset;
   transform: scale(1.05);
 }
 .activity-button img {
@@ -2154,8 +2268,7 @@ img.item-equipped {
   min-width: var(--item-size);
   text-align: right;
   height: 0rem;
-  text-shadow: -0.0625rem -0.0625rem 0rem black, 0.0625rem -0.0625rem 0rem black,
-    -0.0625rem 0.0625rem 0rem black, 0.0625rem 0.0625rem 0rem black;
+  text-shadow: -0.0625rem -0.0625rem 0rem black, 0.0625rem -0.0625rem 0rem black, -0.0625rem 0.0625rem 0rem black, 0.0625rem 0.0625rem 0rem black;
   margin: 0.45rem;
 }
 
@@ -2169,8 +2282,7 @@ img.item-equipped {
   min-width: 1.25rem;
   text-align: right;
   height: 0rem;
-  text-shadow: -0.0625rem -0.0625rem 0rem black, 0.0625rem -0.0625rem 0rem black,
-    -0.0625rem 0.0625rem 0rem black, 0.0625rem 0.0625rem 0rem black;
+  text-shadow: -0.0625rem -0.0625rem 0rem black, 0.0625rem -0.0625rem 0rem black, -0.0625rem 0.0625rem 0rem black, 0.0625rem 0.0625rem 0rem black;
   margin: 0.4rem;
 }
 
@@ -2186,20 +2298,19 @@ img.item-equipped {
 }
 
 .spell-item-container-text {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   position: absolute;
   bottom: 0;
   right: 0;
   padding: 0.3125rem 0.625rem;
   font-size: calc(var(--text-scale-ratio) * 1.375rem);
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
-    rgb(0, 0, 0) 0rem 0rem 0.375rem;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
 
 .spell-item-container-text-upcast {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: bold;
   position: absolute;
   transform: translateY(-5%);
@@ -2208,8 +2319,7 @@ img.item-equipped {
   padding: 0rem 0.3125rem;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
-    rgb(0, 0, 0) 0rem 0rem 0.375rem;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
 }
 
@@ -2254,8 +2364,7 @@ img.item-equipped {
 
 .skill-tray-container {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
@@ -2283,7 +2392,7 @@ img.item-equipped {
   position: absolute;
   top: calc(var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem + 0.5rem);
   border-radius: 0 0 1.125rem 1.125rem;
-  background: rgba(117, 117, 117, 0.7);
+  background: rgba(255, 255, 255, 0);
   padding-left: 0.3125rem;
   padding-right: 0.3125rem;
   padding-bottom: 0.3125rem;
@@ -2299,19 +2408,14 @@ img.item-equipped {
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.4375rem var(--custom-tray-inner-glow);
+  box-shadow: inset 0 0 0.4375rem var(--custom-tray-inner-glow), 0px 0px 7px 3px rgba(0, 0, 0, 0.5098039216);
   transition: all 0.3s ease;
-  font-family: serif;
-  font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #f1f1f1;
-  text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
   border-right: 0.375rem inset var(--custom-tray-border-color);
   border-left: 0.375rem inset var(--custom-tray-border-color);
   border-bottom: 0.375rem inset var(--custom-tray-border-color);
 }
 .custom-tray-button:hover {
-  box-shadow: 0 0 0.75rem var(--custom-tray-hover-glow),
-    inset 0 0 0.75rem var(--custom-tray-hover-glow);
+  box-shadow: 0 0 0.75rem var(--custom-tray-hover-glow), inset 0 0 0.75rem var(--custom-tray-hover-glow);
   border-right: 0.375rem inset var(--custom-tray-hover-border);
   border-left: 0.375rem inset var(--custom-tray-hover-border);
   border-bottom: 0.375rem inset var(--custom-tray-hover-border);
@@ -2325,7 +2429,7 @@ img.item-equipped {
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.9375rem var(--custom-tray-active-glow);
+  box-shadow: inset 0 0 0.9375rem var(--custom-tray-active-glow), 0px 0px 7px 3px rgba(0, 0, 0, 0.5098039216);
   background: var(--custom-tray-active-background);
   color: #f1f1f1;
   font-family: serif;
@@ -2344,15 +2448,12 @@ img.item-equipped {
 
 .tray-information {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset 0rem -0.3rem 0.4125rem var(--static-tray-button-active-glow);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset 0rem -0.3rem 0.4125rem var(--static-tray-button-active-glow);
   border: 0rem solid #2f2f2f;
   border-radius: 0rem 0rem 1.1875rem 1.1875rem;
   outline: 0.1225rem solid var(--border-color);
@@ -2518,15 +2619,14 @@ img.item-equipped {
   justify-content: center;
   text-align: center;
   bottom: 0px;
-  width: 10.625rem;
+  width: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
   z-index: 2;
   margin-bottom: 0.5rem;
 }
 
 .hp-form {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
@@ -2536,8 +2636,7 @@ img.item-equipped {
   font-weight: bold;
   font-size: 1.25rem;
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
-    rgb(0, 0, 0) 0rem 0rem 0.375rem;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: all;
 }
 
@@ -2545,8 +2644,7 @@ img.item-equipped {
   font-weight: bold;
   font-size: 1.25rem;
   color: #f1f1f1;
-  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
-    rgb(0, 0, 0) 0rem 0rem 0.375rem;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
 }
 
 .hidden-disabled {
@@ -2559,8 +2657,7 @@ img.item-equipped {
   color: #5bc0de;
   font-weight: bold;
   font-size: calc(var(--text-scale-ratio) * 1.125rem);
-  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem,
-    rgb(0, 0, 0) 0rem 0rem 0.375rem;
+  text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
 }
 
 .end-turn-swap-button-container {
@@ -2623,15 +2720,14 @@ img.item-equipped {
 
 .end-turn-btn {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
   transition: 0.3s ease-in-out;
-  height: 8.125rem;
-  width: 8.125rem;
+  height: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count) * 0.9);
+  width: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count) * 0.9);
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
@@ -2654,22 +2750,21 @@ img.item-equipped {
 
 .end-turn-btn-dice {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
   transition: 0.3s ease-in-out;
-  height: 8.125rem;
-  width: 8.125rem;
+  height: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
+  width: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
   text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0, 0, 0, 0.7);
   color: #fff;
   pointer-events: all;
-  border: 0.125rem solid #1f0801;
+  border: 0.225rem solid var(--border-color);
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
@@ -2685,7 +2780,7 @@ img.item-equipped {
   box-shadow: var(--dice-button-hover-glow);
 }
 .end-turn-btn-dice .end-turn-btn-dice-icon {
-  font-size: 5rem;
+  font-size: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count) * 0.65);
   color: #f1f1f1;
   display: flex;
 }
@@ -2695,16 +2790,15 @@ img.item-equipped {
 
 .end-turn-btn-nohover {
   background: #5b5b5b;
-  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8), inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8);
   border: 0.125rem solid var(--border-color);
   border-radius: 0.375rem;
   outline: 0.0625rem solid rgba(255, 255, 255, 0.1);
   padding: 0.4375rem;
   background: radial-gradient(#ff8725, #552502);
   transition: 0.3s ease-in-out;
-  height: 8.125rem;
-  width: 8.125rem;
+  height: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
+  width: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count));
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
@@ -2730,8 +2824,8 @@ img.item-equipped {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 9.375rem;
-  height: 9.375rem;
+  width: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count) * 0.9);
+  height: calc((var(--item-size) - 0.125rem) * var(--item-tray-item-height-count) * 0.9);
   transform: translate(-50%, -50%) rotate(90deg);
   pointer-events: none;
 }
@@ -2799,9 +2893,7 @@ img.item-equipped {
 }
 
 .drag-handle {
-  height: calc(
-    var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem - 1.125rem
-  );
+  height: calc(var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem - 1.125rem);
   width: calc(var(--item-size) / 3 + 0.125rem);
   background: var(--drag-handle-color);
   outline: 0.25rem solid #5b5b5b;
@@ -2817,9 +2909,7 @@ img.item-equipped {
 }
 
 .drag-spacer {
-  height: calc(
-    var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem - 0.875rem
-  );
+  height: calc(var(--item-tray-item-height-count) * var(--item-size) + 0.875rem + 0.125rem - 0.875rem);
   width: calc(var(--item-size) / 3 + 0.125rem);
   position: absolute;
   background: #5b5b5b;
@@ -2860,124 +2950,6 @@ img.item-equipped {
 
 .modifier-highlight.modifier-active {
   border: var(--modifier-highlight-color) solid 0.125rem;
-}
-
-.action-bar-frame {
-  position: absolute;
-  display: grid;
-  grid-template-columns: 50px 1fr 50px;
-  grid-template-rows: 50px 1fr 50px;
-  width: 1200px;
-  height: calc(var(--item-tray-item-height-count) * var(--item-size) + 1.75rem);
-  pointer-events: auto;
-  position: absolute;
-  bottom: 2.8125rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 0;
-}
-
-/* Corners */
-.corner {
-  width: 50px;
-  height: 50px;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-.top-left {
-  background-image: url('../border/TL.png');
-  grid-area: 1/1;
-}
-
-.top-right {
-  background-image: url('../border/TR.png');
-  grid-area: 1/3;
-}
-
-.bottom-left {
-  background-image: url('../border/BL.png');
-  grid-area: 3/1;
-}
-
-.bottom-right {
-  background-image: url('../border/BR.png');
-  grid-area: 3/3;
-}
-
-/* Edges */
-.edge {
-  background-repeat: repeat;
-}
-
-.edge.top {
-  background-image: url('../border/T.png');
-  grid-area: 1/2;
-  height: 50px;
-  background-size: auto 100%;
-  background-repeat: repeat-x;
-}
-
-.edge.bottom {
-  background-image: url('../border/B.png');
-  grid-area: 3/2;
-  height: 50px;
-  background-size: auto 100%;
-  background-repeat: repeat-x;
-}
-
-.edge.left {
-  background-image: url('../border/L.png');
-  grid-area: 2/1;
-  width: 50px;
-  background-size: 100% auto;
-  background-repeat: repeat-y;
-}
-
-.edge.right {
-  background-image: url('../border/R.png');
-  grid-area: 2/3;
-  width: 50px;
-  background-size: 100% auto;
-  background-repeat: repeat-y;
-}
-
-/* Center content */
-.center {
-  grid-area: 2/2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-image: url('../border/Back.png');
-  background-repeat: repeat;
-  background-size: 50px 50px;
-  padding: 8px;
-  overflow: hidden;
-}
-
-/* Button container */
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-
-/* Buttons (optional styling) */
-.action-btn {
-  width: 40px;
-  height: 40px;
-  margin: 0;
-  background: #222;
-  color: white;
-  border: 2px solid #555;
-  border-radius: 6px;
-  font-weight: bold;
-}
-
-.action-btn:hover {
-  border-color: gold;
-  background-color: #333;
 }
 
 /*# sourceMappingURL=styles.css.map */
