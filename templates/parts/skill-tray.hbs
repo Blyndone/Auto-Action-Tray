@@ -11,7 +11,9 @@
       data-tooltip='{{capitalize skill.name}}'
       data-tooltip-direction='UP'
     >
+    <div class="button-label">
       {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
+    </div>  
     </div>
   {{/each}}
 {{else}}
@@ -25,7 +27,9 @@
       data-type='{{skill.type}}'
       data-action='useSkillSave'
     >
+    <div class="button-label">
       {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
+      </div>
     </div>
   {{/each}}
 {{/if}}

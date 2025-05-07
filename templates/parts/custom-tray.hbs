@@ -12,7 +12,10 @@
       data-action='setTray'
       data-type='custom'
     >
+    <div class="button-label">
+
       {{{tray.trayLabel}}}
+    </div>
 
       {{#if (eq @root.currentTray.id tray.id)}}
         <div class="selected-tray-indicator">

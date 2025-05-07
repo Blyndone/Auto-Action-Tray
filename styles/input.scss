@@ -7,7 +7,7 @@
   --item-tray-item-height-count: 2;
   --character-health-percent: 100;
   --stacked-spacer-width: 0rem;
-  --concentration-color: #9600d1;
+
   --modifier-highlight-color: '';
 }
 
@@ -27,7 +27,7 @@ $item-width: calc($total-item-width - ($item-margin * 2));
 $item-height: calc($total-item-height - ($item-margin * 2));
 $small-button-width: calc($total-item-width * 0.9);
 $small-button-height: calc($total-item-height / 3);
-$static-tray-size: 3.125rem;
+$static-tray-size: calc(var(--item-size) * 0.9);
 $app-background: rgba(117, 117, 117, 0.7);
 $tray-button-background: rgb(97, 97, 95);
 
@@ -95,9 +95,10 @@ $tray-button-background: rgb(97, 97, 95);
 
 .static-tray-container {
   position: absolute;
-  top: -3.5625rem;
+  top: calc(-1 * $static-tray-size - 5px);
   border-radius: 0.625rem 0.625rem 0 0;
-  background: $app-background;
+  // background: $app-background;
+  background: rgba(255, 255, 255, 0);
   padding-left: 0.3125rem;
   padding-right: 0.3125rem;
   padding-top: 0.3125rem;
@@ -119,7 +120,7 @@ $tray-button-background: rgb(97, 97, 95);
   align-items: center;
   align-content: center;
   padding: 0.3125rem;
-  margin: 0.0625rem;
+  // margin: 0.0625rem;
   border-radius: 0.3125rem;
   box-shadow: inset 0 0 0.4375rem rgba(36, 36, 36, 0.6);
   transition: all 0.3s ease;
@@ -175,13 +176,14 @@ $tray-button-background: rgb(97, 97, 95);
   text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-slot-cantrip {
   color: #00aaff;
   text-shadow: 0 0 0.5rem rgba(0, 170, 255, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
-  font-size: calc(var(--text-scale-ratio) * 1.3rem);
+  font-size: calc(var(--text-scale-ratio) * 1rem);
   margin: 0.1875rem;
 }
 
@@ -190,6 +192,7 @@ $tray-button-background: rgb(97, 97, 95);
   opacity: 0.6;
   filter: drop-shadow(0 0 0.1875rem rgba(0, 0, 0, 0.6));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-pact {
@@ -197,6 +200,7 @@ $tray-button-background: rgb(97, 97, 95);
   text-shadow: 0 0 0.5rem rgba(170, 0, 255, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1ream);
 }
 
 .icon-pact-spent {
@@ -204,6 +208,7 @@ $tray-button-background: rgb(97, 97, 95);
   opacity: 0.6;
   filter: drop-shadow(0 0 0.1875rem rgba(0, 0, 0, 0.6));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-ritual {
@@ -211,6 +216,7 @@ $tray-button-background: rgb(97, 97, 95);
   text-shadow: 0 0 0.5rem rgba(255, 170, 0, 0.8);
   filter: drop-shadow(0 0 0.3125rem rgba(0, 0, 0, 0.8));
   margin: 0.1875rem;
+  font-size: calc(var(--text-scale-ratio) * 1rem);
 }
 
 .icon-custom {
@@ -263,6 +269,9 @@ $tray-button-background: rgb(97, 97, 95);
 
 .static-spell-level-container {
   position: relative;
+  border-radius: 5px;
+  box-shadow: 0px 0px 7px 3px #00000082;
+  margin: 0.0625rem;
 }
 .static-spell-level {
   font-family: Georgia, 'Times New Roman', Times, serif;
@@ -272,7 +281,7 @@ $tray-button-background: rgb(97, 97, 95);
   transform: translateX(-50%) translateY(-20%);
   padding: 0.3125rem 0.625rem;
 
-  font-size: 1rem;
+  font-size: calc(var(--text-scale-ratio) * 1.3rem);
   color: #f1f1f1;
   text-shadow: rgb(0, 0, 0) 0rem 0rem 0.375rem, rgb(0, 0, 0) 0rem 0rem 0.375rem;
   pointer-events: none;
@@ -300,8 +309,8 @@ $tray-button-background: rgb(97, 97, 95);
   @include main-tray-height;
   .image-container {
     padding: 0;
-    width: 10.625rem;
-    height: 10.625rem;
+    width: calc($item-width * $item-tray-item-height-count);
+    height: calc($item-width * $item-tray-item-height-count);
     overflow: hidden;
     border-radius: 50%;
     margin-right: 0.625rem;
@@ -334,15 +343,15 @@ $tray-button-background: rgb(97, 97, 95);
   .concentrating {
     box-shadow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
       inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.8),
-      0 0 0.9375rem var(--concentration-color);
-    border: $inset-border solid #2f2f2f;
-    outline: 0.1875rem solid var(--concentration-color);
+      0 0 2rem var(--static-tray-button-active-glow);
+    // border: $inset-border solid #2f2f2f;
+    outline: 0.3125rem solid var(--hover-color);
   }
   img {
     align-items: center;
     vertical-align: middle;
     border: none;
-    width: 10.625rem;
+    width: calc($item-width * $item-tray-item-height-count);
 
     background: #5b5b5b;
   }
@@ -409,6 +418,26 @@ $tray-button-background: rgb(97, 97, 95);
   }
 }
 
+.button-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: serif;
+  color: #f1f1f1;
+  font-size: clamp(0.3rem, var(--text-scale-ratio) * 2rem, var(--text-scale-ratio) * 1.3rem);
+  line-height: 1.2;
+  padding: 0 0.2rem;
+  white-space: nowrap;
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+  text-align: center;
+  text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+}
+
 .small-button {
   @include center;
   @include button-style;
@@ -416,7 +445,6 @@ $tray-button-background: rgb(97, 97, 95);
   height: 100%;
   flex-grow: 1;
   box-sizing: border-box;
-  font-size: 100%;
   height: calc(100% / 3);
   width: calc(100% / 2);
   padding-left: 0.3rem;
@@ -807,11 +835,13 @@ img.item-equipped {
   position: absolute;
   top: calc($main-tray-height + 0.5rem);
   border-radius: 0 0 1.125rem 1.125rem;
-  background: $app-background;
+  // background: $app-background;
+  background: rgba(255, 255, 255, 0);
   padding-left: 0.3125rem;
   padding-right: 0.3125rem;
   padding-bottom: 0.3125rem;
 }
+
 .custom-tray-button {
   @include center;
 
@@ -821,12 +851,8 @@ img.item-equipped {
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.4375rem var(--custom-tray-inner-glow);
+  box-shadow: inset 0 0 0.4375rem var(--custom-tray-inner-glow), 0px 0px 7px 3px #00000082;
   transition: all 0.3s ease;
-  font-family: serif;
-  font-size: calc(var(--text-scale-ratio) * 1rem);
-  color: #f1f1f1;
-  text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
   border-right: 0.375rem inset var(--custom-tray-border-color);
   border-left: 0.375rem inset var(--custom-tray-border-color);
   border-bottom: 0.375rem inset var(--custom-tray-border-color);
@@ -847,7 +873,7 @@ img.item-equipped {
   padding: 0.625rem;
   margin: 0.0625rem;
   border-radius: 0.3125rem;
-  box-shadow: inset 0 0 0.9375rem var(--custom-tray-active-glow);
+  box-shadow: inset 0 0 0.9375rem var(--custom-tray-active-glow), 0px 0px 7px 3px #00000082;
   background: var(--custom-tray-active-background);
   color: #f1f1f1;
   font-family: serif;
@@ -1008,7 +1034,7 @@ img.item-equipped {
   justify-content: center;
   text-align: center;
   bottom: 0px;
-  width: 10.625rem;
+  width: calc($item-width * $item-tray-item-height-count);
   z-index: 2;
   margin-bottom: 0.5rem;
 }
@@ -1083,8 +1109,8 @@ img.item-equipped {
   @include inset-tray;
   padding: $main-tray-padding;
   transition: 0.3s ease-in-out;
-  height: 8.125rem;
-  width: 8.125rem;
+  height: calc($item-width * $item-tray-item-height-count * 0.9);
+  width: calc($item-width * $item-tray-item-height-count * 0.9);
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
@@ -1113,15 +1139,15 @@ img.item-equipped {
   @include inset-tray;
   padding: $main-tray-padding;
   transition: 0.3s ease-in-out;
-  height: 8.125rem;
-  width: 8.125rem;
+  height: calc($item-width * $item-tray-item-height-count);
+  width: calc($item-width * $item-tray-item-height-count);
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
   text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0, 0, 0, 0.7);
   color: #fff;
   pointer-events: all;
-  border: 0.125rem solid #1f0801;
+  border: 0.225rem solid var(--border-color);
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
@@ -1137,7 +1163,7 @@ img.item-equipped {
     box-shadow: var(--dice-button-hover-glow);
   }
   .end-turn-btn-dice-icon {
-    font-size: 5rem;
+    font-size: calc($item-width * $item-tray-item-height-count * 0.65);
     color: #f1f1f1;
     display: flex;
     i {
@@ -1151,8 +1177,8 @@ img.item-equipped {
   padding: $main-tray-padding;
   background: radial-gradient(#ff8725, #552502);
   transition: 0.3s ease-in-out;
-  height: 8.125rem;
-  width: 8.125rem;
+  height: calc($item-width * $item-tray-item-height-count);
+  width: calc($item-width * $item-tray-item-height-count);
   border-radius: 100%;
   font-size: calc(var(--text-scale-ratio) * 1.25rem);
   margin: 0.9375rem;
@@ -1177,8 +1203,8 @@ img.item-equipped {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 9.375rem;
-  height: 9.375rem;
+  width: calc($item-width * $item-tray-item-height-count * 0.9);
+  height: calc($item-width * $item-tray-item-height-count * 0.9);
   transform: translate(-50%, -50%) rotate(90deg);
   pointer-events: none;
 }

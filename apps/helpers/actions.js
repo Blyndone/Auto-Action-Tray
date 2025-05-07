@@ -259,7 +259,7 @@ export class Actions {
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
     let itemConfig = item.itemConfig
-    let singleRoll = (itemConfig && !itemConfig?.rollIndividual) ?? false
+    let singleRoll = ((itemConfig && !itemConfig?.rollIndividual) || item?.concentration) ?? false
     targetCount =
       itemConfig && itemConfig['numTargets'] != undefined && !itemConfig['useDefaultTargetCount']
         ? itemConfig['numTargets']

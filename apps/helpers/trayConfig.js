@@ -1,5 +1,6 @@
 export class TrayConfig {
   static async trayConfig() {
+    let actor = this.actor
     const fields = foundry.applications.fields
 
     const themeInput = fields.createSelectInput({
@@ -59,17 +60,17 @@ export class TrayConfig {
       hint: 'Clear previous custom Static Trays',
     })
 
-    const concentrationColor = fields.createTextInput({
-      name: 'concentrationColor',
-      value: this.trayOptions['concentrationColor'],
-    })
+    // const concentrationColor = fields.createTextInput({
+    //   name: 'concentrationColor',
+    //   value: this.trayOptions['concentrationColor'],
+    // })
 
-    const concentrationColorGroup = fields.createFormGroup({
-      input: concentrationColor,
+    // const concentrationColorGroup = fields.createFormGroup({
+    //   input: concentrationColor,
 
-      label: 'Concentration Color',
-      hint: 'Input a color for concentration highlight.  Colors should be in Hex; Ex. #c9593f',
-    })
+    //   label: 'Concentration Color',
+    //   hint: 'Input a color for concentration highlight.  Colors should be in Hex; Ex. #c9593f',
+    // })
 
     const selectInput = fields.createSelectInput({
       options: [
@@ -142,7 +143,7 @@ export class TrayConfig {
       label: 'Auto Add Items ',
       hint: 'Automatically add items to the tray when they are created.',
     })
-    const content = `${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${concentrationColorGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
+    const content = `${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
 
     const method = await foundry.applications.api.DialogV2.wait({
       position: { width: 600 },
@@ -164,6 +165,7 @@ export class TrayConfig {
         },
       ],
     }).then((result) => {
+      if(actor != this.actor) return
       if (result == null) return
       if (result['imageType'] == '') {
         result['imageType'] = this.trayOptions['imageType']
