@@ -18,6 +18,7 @@ import { TargetHelper } from './helpers/targetHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
 import { AATItem } from './items/item.js'
 
+
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
@@ -271,6 +272,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     let savedActor = this.getSavedActor(actor, token)
 
     if (savedActor) {
+      if (actor.items.size != savedActor.abilities.length) {
+        savedActor.abilities = actor.items.map((i) => new AATItem(i))
+        return
+      }
       this.checkTrayDiff()
       return
     }
@@ -298,6 +303,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return this.savedActors.find((a) => a.id == actor.id)
     } else {
       return this.savedActors.find((a) => a.id == actor.id && a.tokenId == token.id)
+    }
+  }
+
+  deleteSavedActor(actor, token) {
+    if (token.actorLink) {
+      this.savedActors = this.savedActors.filter((a) => a.id !== actor.id)
+    } else {
+      this.savedActors = this.savedActors.filter(
+        (a) => !(a.id === actor.id && a.tokenId === token.id),
+      )
     }
   }
 
@@ -534,12 +549,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   checkTrayDiff() {
-    this.stackedTray.checkDiff()
+    const allItems = this.getActorAbilities(this.actor.uuid)
+    const itemMap = new Map(allItems.map((item) => [item.id, item]))
+    this.stackedTray.checkDiff(itemMap)
     this.customTrays.forEach((tray) => {
-      tray.checkDiff()
+      tray.checkDiff(itemMap)
     })
     this.staticTrays.forEach((tray) => {
-      tray.checkDiff()
+      tray.checkDiff(itemMap)
     })
   }
 

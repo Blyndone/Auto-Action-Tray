@@ -44,9 +44,9 @@ export class StackedTray {
     });
   }
 
-  checkDiff() {
+  checkDiff(itemMap) {
     this.trays.forEach(tray => {
-      tray.checkDiff();
+      tray.checkDiff(itemMap);
     });
   }
 

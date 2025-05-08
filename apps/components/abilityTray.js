@@ -258,9 +258,7 @@ export class AbilityTray {
     return game.settings.get('auto-action-tray', 'saveNpcData')
   }
 
-  checkDiff() {
-    const allItems = this.application.getActorAbilities(this.actorUuid)
-    const itemMap = new Map(allItems.map((item) => [item.id, item]))
+  checkDiff(itemMap) {
     this.abilities = this.abilities.map((e) => itemMap.get(e?.id) || e)
   }
 

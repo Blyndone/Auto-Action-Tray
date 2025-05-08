@@ -68,6 +68,8 @@ export class Actions {
   }
   static async deleteTrayData(actor) {
     await this.actor.unsetFlag('auto-action-tray', 'data')
+    let token = await actor.getTokenDocument()
+    this.deleteSavedActor(actor, token)
     this.generateActorItems(actor)
     this.initialTraySetup(this.actor)
     this.render(true)

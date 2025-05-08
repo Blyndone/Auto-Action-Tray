@@ -246,12 +246,12 @@
     0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
   --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
 
-  --button-border: 0.125rem inset #{$border-color};
+  --button-border: 0.125rem solid #{$border-color};
   --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
   --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem inset #{$prof-color};
+  --light-button-proficient-border: 0.125rem solid #{$prof-color};
   --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem inset #{$expertise-color};
+  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
 
   --light-button-expertise-decoration: #{$accent-color-light};
 
