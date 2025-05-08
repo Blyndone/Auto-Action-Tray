@@ -1,0 +1,94 @@
+@mixin icon {
+  filter: drop-shadow(0 0 7px rgba(0, 0, 0, 0.8));
+  margin: 3px;
+}
+
+.icon-action {
+  @include icon;
+  color: rgb(214, 118, 0);
+  font-size: 30px;
+}
+
+.icon-bonus {
+  @include icon;
+  color: rgb(0, 143, 0);
+  font-size: 30px;
+}
+
+.icon-depleted {
+  filter: brightness(0.5) contrast(1.2);
+}
+
+.icon-slot {
+  @include icon;
+  color: #00aaff;
+  text-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
+  font-size: 24px;
+}
+
+.icon-slot-cantrip {
+  @include icon;
+  color: #00aaff;
+  text-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
+  font-size: 30px;
+}
+
+.icon-slot-spent {
+  @include icon;
+  color: #5582a3;
+  opacity: 0.6;
+  font-size: 24px;
+}
+
+.icon-pact {
+  @include icon;
+  color: #aa00ff;
+  text-shadow: 0 0 12px rgba(170, 0, 255, 0.8);
+  font-size: 16px;
+}
+
+.icon-pact-spent {
+  @include icon;
+  color: #71528a;
+  opacity: 0.6;
+  font-size: 24px;
+}
+
+.icon-ritual {
+  @include icon;
+  color: #ffcc66;
+  text-shadow: 0 0 12px rgba(255, 170, 0, 0.8);
+  font-size: 24px;
+}
+
+.icon-custom {
+  @include icon;
+  color: #eb0a0a;
+  text-shadow: 0 0 8px rgba(230, 80, 80, 0.8);
+  font-size: 30px;
+}
+
+.icon-default {
+  @include icon;
+  color: #7495f1;
+  text-shadow: 0 0 12px rgba(11, 76, 255, 0.8);
+  font-size: 30px;
+}
+
+.icon-cancel {
+  font-size: 36px;
+  color: #eb7676;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: color 0.3s, transform 0.2s;
+
+  &:hover {
+    color: #e60000;
+    transform: scale(1.1);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 77, 77, 0.6);
+  }
+}

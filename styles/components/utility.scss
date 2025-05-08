@@ -1,0 +1,16 @@
+@use 'mixins' as *;
+
+.misc-tray-container {
+  @include inset-tray;
+  display: flex;
+  flex-wrap: wrap;
+  grid-template-columns: repeat(2, 1fr);
+  width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
+  height: calc(
+    var(--aat-main-tray-total-height) - var(--aat-item-size) + var(--aat-main-tray-padding)
+  );
+
+  justify-content: center;
+  align-items: flex-start;
+  padding: calc(var(--aat-main-tray-padding));
+}

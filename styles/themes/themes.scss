@@ -1,2273 +1,1123 @@
 .theme-classic {
-  $main-color: #1e3a5f;
-  $main-color-light: #355c7d;
-  $border-color: #4a6fa5;
+  --aat-main-color: #1e3a5f;
+  --aat-main-color-light: #355c7d;
+  --aat-border-color: #4a6fa5;
 
-  $accent-color: #0f5753;
-  $accent-color-light: #5b9fa4;
-  $border-color-light: #6c9fbd;
+  --aat-accent-color: #0f5753;
+  --aat-accent-color-light: #5b9fa4;
+  --aat-border-color-light: #6c9fbd;
 
-  $hover-color: #c9593f;
-  $hover-color-light: #e46f55;
-  $hover-color-dim: #7c4539;
-  $hover-accent-color: #65a4f5;
+  --aat-hover-color: #c9593f;
+  --aat-hover-color-light: #e46f55;
+  --aat-hover-color-dim: #7c4539;
+  --aat-hover-accent-color: #65a4f5;
 
-  $drag-handle-color: #920000;
-  $drag-handle-light: #c93232;
-  $drag-handle-hover: #ca0202;
-  $drag-handle-hover-light: #f53d3d;
+  --aat-drag-handle-color: #920000;
+  --aat-drag-handle-light: #c93232;
+  --aat-drag-handle-hover: #ca0202;
+  --aat-drag-handle-hover-light: #f53d3d;
 
-  $prof-color: #92cdff;
-  $expertise-color: #bca4eb;
+  --aat-prof-color: #92cdff;
+  --aat-expertise-color: #bca4eb;
 
-  $tray-button-background-color: rgb(97, 97, 95);
-  $tray-button-border-color: #5b5b5b94;
-  $tray-button-accent: #292929ce;
+  --aat-tray-button-background-color: rgb(97, 97, 95);
+  --aat-tray-button-border-color: #5b5b5b94;
+  --aat-tray-button-accent: #292929ce;
 
-  --tooltip-bg: #2c1f12;
-  --tooltip-border: #704214;
-  --tooltip-text: #ffcc66;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #86d632;
-  --tooltip-header: #ffcc66;
-  --tooltip-subtitle: #bda069;
-  --tooltip-damage: #ffcc66;
-  --tooltip-damage-type: #86d632;
-  --tooltip-description: #c8b08e;
-  --tooltip-link: #2b2b2b;
-  --tooltip-roll-link: #c8b08e;
-  --tooltip-broken: #8d7d66;
-  --tooltip-effect: #{$hover-color};
-  --tooltip-info: #ffcc66;
-  --tooltip-footer-bg: #1d140c;
-  --tooltip-footer: #ffcc66;
-  --action-tag-bg: #612626;
-  --action-tag-text: #f1f1f1;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2c1f12;
+  --aat-tooltip-border: #704214;
+  --aat-tooltip-text: #ffcc66;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #86d632;
+  --aat-tooltip-header: #ffcc66;
+  --aat-tooltip-subtitle: #bda069;
+  --aat-tooltip-damage: #ffcc66;
+  --aat-tooltip-damage-type: #86d632;
+  --aat-tooltip-description: #c8b08e;
+  --aat-tooltip-link: #2b2b2b;
+  --aat-tooltip-roll-link: #c8b08e;
+  --aat-tooltip-broken: #8d7d66;
+  --aat-tooltip-effect: #c9593f;
+  --aat-tooltip-info: #ffcc66;
+  --aat-tooltip-footer-bg: #1d140c;
+  --aat-tooltip-footer: #ffcc66;
+  --aat-action-tag-bg: #612626;
+  --aat-action-tag-text: #f1f1f1;
 }
 
 .theme-arcane {
-  $main-color: #3e247a;
-  $main-color-light: #a26cff;
-  $border-color: #7d37d6;
+  --aat-main-color: #3e247a;
+  --aat-main-color-light: #a26cff;
+  --aat-border-color: #7d37d6;
 
-  $accent-color: #300566;
-  $accent-color-light: #8a43e4;
-  $border-color-light: #9276d4;
+  --aat-accent-color: #300566;
+  --aat-accent-color-light: #8a43e4;
+  --aat-border-color-light: #9276d4;
 
-  $hover-color: #df77ff;
-  $hover-color-light: rgba(191, 128, 255, 0.9);
-  $hover-color-dim: #6a2e7c;
-  $hover-accent-color: #cc99ff;
+  --aat-hover-color: #df77ff;
+  --aat-hover-color-light: rgba(191, 128, 255, 0.9);
+  --aat-hover-color-dim: #6a2e7c;
+  --aat-hover-accent-color: #cc99ff;
 
-  $drag-handle-color: #6a2ea3;
-  $drag-handle-light: #a050e0;
-  $drag-handle-hover: #813fd1;
-  $drag-handle-hover-light: #c47fff;
+  --aat-drag-handle-color: #6a2ea3;
+  --aat-drag-handle-light: #a050e0;
+  --aat-drag-handle-hover: #813fd1;
+  --aat-drag-handle-hover-light: #c47fff;
 
-  $prof-color: #c19aff;
-  $expertise-color: #e1caf8;
+  --aat-prof-color: #c19aff;
+  --aat-expertise-color: #e1caf8;
 
-  $tray-button-background-color: rgb(55, 45, 70);
-  $tray-button-border-color: #9169c5ec;
-  $tray-button-accent: rgba(36, 36, 54, 0.6);
+  --aat-tray-button-background-color: rgb(55, 45, 70);
+  --aat-tray-button-border-color: #9169c5ec;
+  --aat-tray-button-accent: rgba(36, 36, 54, 0.6);
 
-  --tooltip-bg: #2a203b;
-  --tooltip-border: #915cf2;
-  --tooltip-text: #dfccff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #b97aff;
-  --tooltip-header: #cfa9ff;
-  --tooltip-subtitle: #a78edb;
-  --tooltip-damage: #dfccff;
-  --tooltip-damage-type: #86aaf2;
-  --tooltip-description: #e3d4ff;
-  --tooltip-link: #593e94;
-  --tooltip-roll-link: #cfa9ff;
-  --tooltip-broken: #a88bbc;
-  --tooltip-effect: #df77ff;
-  --tooltip-info: #ccb9f9;
-  --tooltip-footer-bg: #1c132b;
-  --tooltip-footer: #e3d4ff;
-  --action-tag-bg: #602080;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2a203b;
+  --aat-tooltip-border: #915cf2;
+  --aat-tooltip-text: #dfccff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #b97aff;
+  --aat-tooltip-header: #cfa9ff;
+  --aat-tooltip-subtitle: #a78edb;
+  --aat-tooltip-damage: #dfccff;
+  --aat-tooltip-damage-type: #86aaf2;
+  --aat-tooltip-description: #e3d4ff;
+  --aat-tooltip-link: #593e94;
+  --aat-tooltip-roll-link: #cfa9ff;
+  --aat-tooltip-broken: #a88bbc;
+  --aat-tooltip-effect: #df77ff;
+  --aat-tooltip-info: #ccb9f9;
+  --aat-tooltip-footer-bg: #1c132b;
+  --aat-tooltip-footer: #e3d4ff;
+  --aat-action-tag-bg: #602080;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-sanguine {
-  $main-color: #880101; // deep red
-  $main-color-light: #ff9f9f; // bright crimson
-  $border-color: #850000;
+  --aat-main-color: #880101; // deep red
+  --aat-main-color-light: #ff9f9f; // bright crimson
+  --aat-border-color: #850000;
 
-  $accent-color: #2b0000; // dark ritual red
-  $accent-color-light: #a30000; // bright blood
-  $border-color-light: #990000;
+  --aat-accent-color: #2b0000; // dark ritual red
+  --aat-accent-color-light: #a30000; // bright blood
+  --aat-border-color-light: #990000;
 
-  $hover-color: #cc1f1f; // vibrant red
-  $hover-color-light: rgba(230, 50, 50, 0.9);
-  $hover-color-dim: #590000;
-  $hover-accent-color: #ff2b2b;
+  --aat-hover-color: #c77070; // vibrant red
+  --aat-hover-color-light: rgba(230, 50, 50, 0.9);
+  --aat-hover-color-dim: #590000;
+  --aat-hover-accent-color: #ff2b2b;
 
-  $drag-handle-color: #830303;
-  $drag-handle-light: #ffd4d4;
-  $drag-handle-hover: #be0000;
-  $drag-handle-hover-light: #ffffff;
+  --aat-drag-handle-color: #830303;
+  --aat-drag-handle-light: #ffd4d4;
+  --aat-drag-handle-hover: #be0000;
+  --aat-drag-handle-hover-light: #ffffff;
 
-  $prof-color: #f5f5f5; // near white
-  $expertise-color: #e0e0e0;
+  --aat-prof-color: #f5f5f5; // near white
+  --aat-expertise-color: #e0e0e0;
 
-  $tray-button-background-color: rgb(68, 0, 0);
-  $tray-button-border-color: #a60000;
-  $tray-button-accent: rgba(40, 0, 0, 0.5);
+  --aat-tray-button-background-color: rgb(68, 0, 0);
+  --aat-tray-button-border-color: #a60000;
+  --aat-tray-button-accent: rgba(40, 0, 0, 0.5);
 
-  --tooltip-bg: #150000;
-  --tooltip-border: #b30000;
-  --tooltip-text: #ffffff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #ff1f1f;
-  --tooltip-header: #ffffff;
-  --tooltip-subtitle: #e5e5e5;
-  --tooltip-damage: #ffffff;
-  --tooltip-damage-type: #ff3c3c;
-  --tooltip-description: #f2f2f2;
-  --tooltip-link: #7f0000;
-  --tooltip-roll-link: #ffffff;
-  --tooltip-broken: #b0b0b0;
-  --tooltip-effect: #e60000;
-  --tooltip-info: #d8d8d8;
-  --tooltip-footer-bg: #0d0000;
-  --tooltip-footer: #f0f0f0;
-  --action-tag-bg: #7a0000;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-
-  --button-border: 0.125rem solid #{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-
-  --light-button-expertise-decoration: #{$accent-color-light};
-
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #150000;
+  --aat-tooltip-border: #b30000;
+  --aat-tooltip-text: #ffffff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #ff1f1f;
+  --aat-tooltip-header: #ffffff;
+  --aat-tooltip-subtitle: #e5e5e5;
+  --aat-tooltip-damage: #ffffff;
+  --aat-tooltip-damage-type: #ff3c3c;
+  --aat-tooltip-description: #f2f2f2;
+  --aat-tooltip-link: #7f0000;
+  --aat-tooltip-roll-link: #ffffff;
+  --aat-tooltip-broken: #b0b0b0;
+  --aat-tooltip-effect: #e60000;
+  --aat-tooltip-info: #d8d8d8;
+  --aat-tooltip-footer-bg: #0d0000;
+  --aat-tooltip-footer: #f0f0f0;
+  --aat-action-tag-bg: #7a0000;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-ocean {
-  $main-color: #1b4965;
-  $main-color-light: #2e86ab;
-  $border-color: #3a9ad9;
+  --aat-main-color: #1b4965;
+  --aat-main-color-light: #2e86ab;
+  --aat-border-color: #3a9ad9;
 
-  $accent-color: #2c7da0;
-  $accent-color-light: #78c0e0;
-  $border-color-light: #217ca3;
+  --aat-accent-color: #2c7da0;
+  --aat-accent-color-light: #78c0e0;
+  --aat-border-color-light: #217ca3;
 
-  $hover-color: #4ee2a0;
-  $hover-color-light: rgba(78, 226, 160, 0.8);
-  $hover-color-dim: #1e2e3f;
-  $hover-accent-color: #65d9ff;
+  --aat-hover-color: #4ee2a0;
+  --aat-hover-color-light: rgba(78, 226, 160, 0.8);
+  --aat-hover-color-dim: #1e2e3f;
+  --aat-hover-accent-color: #65d9ff;
 
-  $drag-handle-color: #005a87;
-  $drag-handle-light: #4db3ce;
-  $drag-handle-hover: #007fba;
-  $drag-handle-hover-light: #65d9ff;
+  --aat-drag-handle-color: #005a87;
+  --aat-drag-handle-light: #4db3ce;
+  --aat-drag-handle-hover: #007fba;
+  --aat-drag-handle-hover-light: #65d9ff;
 
-  $prof-color: #a9e7ff;
-  $expertise-color: #c2ecff;
+  --aat-prof-color: #a9e7ff;
+  --aat-expertise-color: #c2ecff;
 
-  $tray-button-background-color: rgb(30, 60, 75);
-  $tray-button-border-color: #508ca494;
-  $tray-button-accent: rgba(22, 33, 44, 0.6);
+  --aat-tray-button-background-color: rgb(30, 60, 75);
+  --aat-tray-button-border-color: #508ca494;
+  --aat-tray-button-accent: rgba(22, 33, 44, 0.6);
 
-  --tooltip-bg: #1e1e2e;
-  --tooltip-border: #3a9ad9;
-  --tooltip-text: #e0f0ff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #42d9f5;
-  --tooltip-header: #5fb4ff;
-  --tooltip-subtitle: #88b7dd;
-  --tooltip-damage: #5fb4ff;
-  --tooltip-damage-type: #76e0ff;
-  --tooltip-description: #d0e7f9;
-  --tooltip-link: #406ba3;
-  --tooltip-roll-link: #9dc4ff;
-  --tooltip-broken: #708099;
-  --tooltip-effect: #4ee2a0;
-  --tooltip-info: #aad9f5;
-  --tooltip-footer-bg: #141922;
-  --tooltip-footer: #cce7ff;
-  --action-tag-bg: #3a4c63;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #1e1e2e;
+  --aat-tooltip-border: #3a9ad9;
+  --aat-tooltip-text: #e0f0ff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #42d9f5;
+  --aat-tooltip-header: #5fb4ff;
+  --aat-tooltip-subtitle: #88b7dd;
+  --aat-tooltip-damage: #5fb4ff;
+  --aat-tooltip-damage-type: #76e0ff;
+  --aat-tooltip-description: #d0e7f9;
+  --aat-tooltip-link: #406ba3;
+  --aat-tooltip-roll-link: #9dc4ff;
+  --aat-tooltip-broken: #708099;
+  --aat-tooltip-effect: #4ee2a0;
+  --aat-tooltip-info: #aad9f5;
+  --aat-tooltip-footer-bg: #141922;
+  --aat-tooltip-footer: #cce7ff;
+  --aat-action-tag-bg: #3a4c63;
+  --aat-action-tag-text: #ffffff;
 }
 .theme-ember {
-  $main-color: #792c2c;
-  $main-color-light: #b43a3a;
-  $border-color: #aa2e2e;
+  --aat-main-color: #792c2c;
+  --aat-main-color-light: #b43a3a;
+  --aat-border-color: #aa2e2e;
 
-  $accent-color: #a13030;
-  $accent-color-light: #ffa285;
-  $border-color-light: #ff645d;
+  --aat-accent-color: #a13030;
+  --aat-accent-color-light: #ffa285;
+  --aat-border-color-light: #ff645d;
 
-  $hover-color: #ff6666;
-  $hover-color-light: rgba(255, 102, 102, 0.8);
-  $hover-color-dim: rgba(156, 61, 58, 0.863);
-  $hover-accent-color: #ff9980;
+  --aat-hover-color: #ff6666;
+  --aat-hover-color-light: rgba(255, 102, 102, 0.8);
+  --aat-hover-color-dim: rgba(156, 61, 58, 0.863);
+  --aat-hover-accent-color: #ff9980;
 
-  $drag-handle-color: #8c1f1f;
-  $drag-handle-light: #d94d4d;
-  $drag-handle-hover: #aa2e2e;
-  $drag-handle-hover-light: #ff6666;
+  --aat-drag-handle-color: #8c1f1f;
+  --aat-drag-handle-light: #d94d4d;
+  --aat-drag-handle-hover: #aa2e2e;
+  --aat-drag-handle-hover-light: #ff6666;
 
-  $prof-color: #fd9d7c;
-  $expertise-color: #ffd8cc;
+  --aat-prof-color: #fd9d7c;
+  --aat-expertise-color: #ffd8cc;
 
-  $tray-button-background-color: rgb(85, 50, 40);
-  $tray-button-border-color: #9c5e4f94;
-  $tray-button-accent: rgba(36, 24, 24, 0.6);
+  --aat-tray-button-background-color: rgb(85, 50, 40);
+  --aat-tray-button-border-color: #9c5e4f94;
+  --aat-tray-button-accent: rgba(36, 24, 24, 0.6);
 
-  --tooltip-bg: #1a0f0f;
-  --tooltip-border: #aa2e2e;
-  --tooltip-text: #ffb6a0;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #ff645d;
-  --tooltip-header: #ff9782;
-  --tooltip-subtitle: #c26e5a;
-  --tooltip-damage: #ffc7b4;
-  --tooltip-damage-type: #ff4d4d;
-  --tooltip-description: #eaa897;
-  --tooltip-link: #b9463f;
-  --tooltip-roll-link: #ffc7b4;
-  --tooltip-broken: #9c5e4f;
-  --tooltip-effect: #ff6666;
-  --tooltip-info: #f6b9a8;
-  --tooltip-footer-bg: #120707;
-  --tooltip-footer: #ffc7b4;
-  --action-tag-bg: #7a1f1f;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #1a0f0f;
+  --aat-tooltip-border: #aa2e2e;
+  --aat-tooltip-text: #ffb6a0;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #ff645d;
+  --aat-tooltip-header: #ff9782;
+  --aat-tooltip-subtitle: #c26e5a;
+  --aat-tooltip-damage: #ffc7b4;
+  --aat-tooltip-damage-type: #ff4d4d;
+  --aat-tooltip-description: #eaa897;
+  --aat-tooltip-link: #b9463f;
+  --aat-tooltip-roll-link: #ffc7b4;
+  --aat-tooltip-broken: #9c5e4f;
+  --aat-tooltip-effect: #ff6666;
+  --aat-tooltip-info: #f6b9a8;
+  --aat-tooltip-footer-bg: #120707;
+  --aat-tooltip-footer: #ffc7b4;
+  --aat-action-tag-bg: #7a1f1f;
+  --aat-action-tag-text: #ffffff;
 }
 .theme-frost {
-  $main-color: #111b20;
-  $main-color-light: #4ba8bc;
-  $border-color: #5cd4e0;
+  --aat-main-color: #111b20;
+  --aat-main-color-light: #4ba8bc;
+  --aat-border-color: #5cd4e0;
 
-  $accent-color: #2c5f6c;
-  $accent-color-light: #5fbcd3;
-  $border-color-light: #7fdff5;
+  --aat-accent-color: #2c5f6c;
+  --aat-accent-color-light: #5fbcd3;
+  --aat-border-color-light: #7fdff5;
 
-  $hover-color: #7fdff5;
-  $hover-color-light: rgba(160, 235, 255, 0.9);
-  $hover-color-dim: rgb(32, 72, 82);
-  $hover-accent-color: #a7f6ff;
+  --aat-hover-color: #7fdff5;
+  --aat-hover-color-light: rgba(160, 235, 255, 0.9);
+  --aat-hover-color-dim: rgb(32, 72, 82);
+  --aat-hover-accent-color: #a7f6ff;
 
-  $drag-handle-color: #469caa;
-  $drag-handle-light: #5fbcd3;
-  $drag-handle-hover: #6cd0df;
-  $drag-handle-hover-light: #82deea;
+  --aat-drag-handle-color: #469caa;
+  --aat-drag-handle-light: #5fbcd3;
+  --aat-drag-handle-hover: #6cd0df;
+  --aat-drag-handle-hover-light: #82deea;
 
-  $prof-color: #b3f4ea;
-  $expertise-color: #92ffe9;
+  --aat-prof-color: #b3f4ea;
+  --aat-expertise-color: #92ffe9;
 
-  $tray-button-background-color: rgb(40, 60, 65);
-  $tray-button-border-color: #70d6e494;
-  $tray-button-accent: rgba(20, 30, 30, 0.6);
+  --aat-tray-button-background-color: rgb(40, 60, 65);
+  --aat-tray-button-border-color: #70d6e494;
+  --aat-tray-button-accent: rgba(20, 30, 30, 0.6);
 
-  --tooltip-bg: #111b20;
-  --tooltip-border: #5ebad4;
-  --tooltip-text: #e0faff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #7fdff5;
-  --tooltip-header: #a0e1f0;
-  --tooltip-subtitle: #70d6e4;
-  --tooltip-damage: #e0faff;
-  --tooltip-damage-type: #7fdff5;
-  --tooltip-description: #c3edf2;
-  --tooltip-link: #4ca1af;
-  --tooltip-roll-link: #c3edf2;
-  --tooltip-broken: #95aab2;
-  --tooltip-effect: #6fd7db;
-  --tooltip-info: #b5f0f6;
-  --tooltip-footer-bg: #0d1418;
-  --tooltip-footer: #c3edf2;
+  --aat-tooltip-bg: #111b20;
+  --aat-tooltip-border: #5ebad4;
+  --aat-tooltip-text: #e0faff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #7fdff5;
+  --aat-tooltip-header: #a0e1f0;
+  --aat-tooltip-subtitle: #70d6e4;
+  --aat-tooltip-damage: #e0faff;
+  --aat-tooltip-damage-type: #7fdff5;
+  --aat-tooltip-description: #c3edf2;
+  --aat-tooltip-link: #4ca1af;
+  --aat-tooltip-roll-link: #c3edf2;
+  --aat-tooltip-broken: #95aab2;
+  --aat-tooltip-effect: #6fd7db;
+  --aat-tooltip-info: #b5f0f6;
+  --aat-tooltip-footer-bg: #0d1418;
+  --aat-tooltip-footer: #c3edf2;
 
-  --action-tag-bg: #2a4952;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-action-tag-bg: #2a4952;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-subterfuge {
-  $main-color: #1c1c1c;
-  $main-color-light: #5a5a5a;
-  $border-color: #3a3a3a;
+  --aat-main-color: #1c1c1c;
+  --aat-main-color-light: #5a5a5a;
+  --aat-border-color: #3a3a3a;
 
-  $accent-color: #750000;
-  $accent-color-light: #c23232;
-  $border-color-light: #933333;
+  --aat-accent-color: #750000;
+  --aat-accent-color-light: #c23232;
+  --aat-border-color-light: #933333;
 
-  $hover-color: #ff4d4d;
-  $hover-color-light: rgba(255, 77, 77, 0.8);
-  $hover-color-dim: #661a1a;
-  $hover-accent-color: #e05252;
+  --aat-hover-color: #ff4d4d;
+  --aat-hover-color-light: rgba(255, 77, 77, 0.8);
+  --aat-hover-color-dim: #661a1a;
+  --aat-hover-accent-color: #e05252;
 
-  $drag-handle-color: #3a2c2c;
-  $drag-handle-light: #6a4b4b;
-  $drag-handle-hover: #7d3a3a;
-  $drag-handle-hover-light: #aa5c5c;
+  --aat-drag-handle-color: #3a2c2c;
+  --aat-drag-handle-light: #6a4b4b;
+  --aat-drag-handle-hover: #7d3a3a;
+  --aat-drag-handle-hover-light: #aa5c5c;
 
-  $prof-color: #ff9494;
-  $expertise-color: #ffcccc;
+  --aat-prof-color: #ff9494;
+  --aat-expertise-color: #ffcccc;
 
-  $tray-button-background-color: rgb(30, 25, 25);
-  $tray-button-border-color: #b33a3aec;
-  $tray-button-accent: rgba(28, 28, 28, 0.6);
+  --aat-tray-button-background-color: rgb(30, 25, 25);
+  --aat-tray-button-border-color: #b33a3aec;
+  --aat-tray-button-accent: rgba(28, 28, 28, 0.6);
 
-  --tooltip-bg: #1a1a1a;
-  --tooltip-border: #c23232;
-  --tooltip-text: #f5dcdc;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #f27c7c;
-  --tooltip-header: #ffa8a8;
-  --tooltip-subtitle: #d47c7c;
-  --tooltip-damage: #f5dcdc;
-  --tooltip-damage-type: #e06a6a;
-  --tooltip-description: #ffecec;
-  --tooltip-link: #912121;
-  --tooltip-roll-link: #ffa8a8;
-  --tooltip-broken: #b36a6a;
-  --tooltip-effect: #ff4d4d;
-  --tooltip-info: #f07373;
-  --tooltip-footer-bg: #422424;
-  --tooltip-footer: #ffecec;
-  --action-tag-bg: #550000;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #1a1a1a;
+  --aat-tooltip-border: #c23232;
+  --aat-tooltip-text: #f5dcdc;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #f27c7c;
+  --aat-tooltip-header: #ffa8a8;
+  --aat-tooltip-subtitle: #d47c7c;
+  --aat-tooltip-damage: #f5dcdc;
+  --aat-tooltip-damage-type: #e06a6a;
+  --aat-tooltip-description: #ffecec;
+  --aat-tooltip-link: #912121;
+  --aat-tooltip-roll-link: #ffa8a8;
+  --aat-tooltip-broken: #b36a6a;
+  --aat-tooltip-effect: #ff4d4d;
+  --aat-tooltip-info: #f07373;
+  --aat-tooltip-footer-bg: #422424;
+  --aat-tooltip-footer: #ffecec;
+  --aat-action-tag-bg: #550000;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-titan {
-  $main-color: #a83232;
-  $main-color-light: #e56b2f;
-  $border-color: #842020;
+  --aat-main-color: #a83232;
+  --aat-main-color-light: #e56b2f;
+  --aat-border-color: #842020;
 
-  $accent-color: #521717;
-  $accent-color-light: #bb3f1d;
-  $border-color-light: #e57c49;
+  --aat-accent-color: #521717;
+  --aat-accent-color-light: #bb3f1d;
+  --aat-border-color-light: #e57c49;
 
-  $hover-color: #ff9c63;
-  $hover-color-light: rgba(255, 156, 99, 0.85);
-  $hover-color-dim: #9c3e1d;
-  $hover-accent-color: #ffd2aa;
+  --aat-hover-color: #ff9c63;
+  --aat-hover-color-light: rgba(255, 156, 99, 0.85);
+  --aat-hover-color-dim: #9c3e1d;
+  --aat-hover-accent-color: #ffd2aa;
 
-  $drag-handle-color: #b5421f;
-  $drag-handle-light: #e6753e;
-  $drag-handle-hover: #cc512a;
-  $drag-handle-hover-light: #ff9c63;
+  --aat-drag-handle-color: #b5421f;
+  --aat-drag-handle-light: #e6753e;
+  --aat-drag-handle-hover: #cc512a;
+  --aat-drag-handle-hover-light: #ff9c63;
 
-  $prof-color: #ffc7a3;
-  $expertise-color: #ffe1c8;
+  --aat-prof-color: #ffc7a3;
+  --aat-expertise-color: #ffe1c8;
 
-  $tray-button-background-color: rgb(42, 22, 15);
-  $tray-button-border-color: #e56b2fec;
-  $tray-button-accent: rgba(32, 16, 10, 0.6);
+  --aat-tray-button-background-color: rgb(42, 22, 15);
+  --aat-tray-button-border-color: #e56b2fec;
+  --aat-tray-button-accent: rgba(32, 16, 10, 0.6);
 
-  --tooltip-bg: #2e1a14;
-  --tooltip-border: #e56b2f;
-  --tooltip-text: #ffeadd;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #ffc2a2;
-  --tooltip-header: #ffeadd;
-  --tooltip-subtitle: #ff9c63;
-  --tooltip-damage: #ffeadd;
-  --tooltip-damage-type: #f59a73;
-  --tooltip-description: #ffddc7;
-  --tooltip-link: #9e4326;
-  --tooltip-roll-link: #ffd2aa;
-  --tooltip-broken: #bb6a56;
-  --tooltip-effect: #ff9c63;
-  --tooltip-info: #ffdcb6;
-  --tooltip-footer-bg: #1d110c;
-  --tooltip-footer: #ffddc7;
-  --action-tag-bg: #a83232;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2e1a14;
+  --aat-tooltip-border: #e56b2f;
+  --aat-tooltip-text: #ffeadd;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #ffc2a2;
+  --aat-tooltip-header: #ffeadd;
+  --aat-tooltip-subtitle: #ff9c63;
+  --aat-tooltip-damage: #ffeadd;
+  --aat-tooltip-damage-type: #f59a73;
+  --aat-tooltip-description: #ffddc7;
+  --aat-tooltip-link: #9e4326;
+  --aat-tooltip-roll-link: #ffd2aa;
+  --aat-tooltip-broken: #bb6a56;
+  --aat-tooltip-effect: #ff9c63;
+  --aat-tooltip-info: #ffdcb6;
+  --aat-tooltip-footer-bg: #1d110c;
+  --aat-tooltip-footer: #ffddc7;
+  --aat-action-tag-bg: #a83232;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-vesper {
-  $main-color: #4c3c3f;
-  $main-color-light: #7d6a6d;
-  $border-color: #5a4a4c;
+  --aat-main-color: #4c3c3f;
+  --aat-main-color-light: #7d6a6d;
+  --aat-border-color: #5a4a4c;
 
-  $accent-color: #2d1f23;
-  $accent-color-light: #a17a7d;
-  $border-color-light: #9e7f81;
+  --aat-accent-color: #2d1f23;
+  --aat-accent-color-light: #a17a7d;
+  --aat-border-color-light: #9e7f81;
 
-  $hover-color: #d2a1a1;
-  $hover-color-light: rgba(210, 161, 161, 0.85);
-  $hover-color-dim: #3f292f;
-  $hover-accent-color: #e6b2b2;
+  --aat-hover-color: #d2a1a1;
+  --aat-hover-color-light: rgba(210, 161, 161, 0.85);
+  --aat-hover-color-dim: #3f292f;
+  --aat-hover-accent-color: #e6b2b2;
 
-  $drag-handle-color: #5f3d41;
-  $drag-handle-light: #9f7175;
-  $drag-handle-hover: #7d4b51;
-  $drag-handle-hover-light: #d2a1a1;
+  --aat-drag-handle-color: #5f3d41;
+  --aat-drag-handle-light: #9f7175;
+  --aat-drag-handle-hover: #7d4b51;
+  --aat-drag-handle-hover-light: #d2a1a1;
 
-  $prof-color: #d2a1a1;
-  $expertise-color: #e6b2b2;
+  --aat-prof-color: #d2a1a1;
+  --aat-expertise-color: #e6b2b2;
 
-  $tray-button-background-color: rgb(34, 25, 28);
-  $tray-button-border-color: #9c6e6dec;
-  $tray-button-accent: rgba(38, 28, 32, 0.6);
+  --aat-tray-button-background-color: rgb(34, 25, 28);
+  --aat-tray-button-border-color: #9c6e6dec;
+  --aat-tray-button-accent: rgba(38, 28, 32, 0.6);
 
-  --tooltip-bg: #1d1216;
-  --tooltip-border: #7d6a6d;
-  --tooltip-text: #f1d4d2;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #d3a1a1;
-  --tooltip-header: #f1d4d2;
-  --tooltip-subtitle: #e6b2b2;
-  --tooltip-damage: #f1d4d2;
-  --tooltip-damage-type: #a77f7f;
-  --tooltip-description: #f9e3e3;
-  --tooltip-link: #4c2e2f;
-  --tooltip-roll-link: #f1d4d2;
-  --tooltip-broken: #a6a6a6;
-  --tooltip-effect: #d2a1a1;
-  --tooltip-info: #e6b2b2;
-  --tooltip-footer-bg: #140e13;
-  --tooltip-footer: #f9e3e3;
-  --action-tag-bg: #5f3d41;
-  --action-tag-text: #ffffff;
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #1d1216;
+  --aat-tooltip-border: #7d6a6d;
+  --aat-tooltip-text: #f1d4d2;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #d3a1a1;
+  --aat-tooltip-header: #f1d4d2;
+  --aat-tooltip-subtitle: #e6b2b2;
+  --aat-tooltip-damage: #f1d4d2;
+  --aat-tooltip-damage-type: #a77f7f;
+  --aat-tooltip-description: #f9e3e3;
+  --aat-tooltip-link: #4c2e2f;
+  --aat-tooltip-roll-link: #f1d4d2;
+  --aat-tooltip-broken: #a6a6a6;
+  --aat-tooltip-effect: #d2a1a1;
+  --aat-tooltip-info: #e6b2b2;
+  --aat-tooltip-footer-bg: #140e13;
+  --aat-tooltip-footer: #f9e3e3;
+  --aat-action-tag-bg: #5f3d41;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-earth {
-  $main-color: #2e2b28;
-  $main-color-light: #5a524e;
-  $border-color: #46413d;
+  --aat-main-color: #2e2b28;
+  --aat-main-color-light: #5a524e;
+  --aat-border-color: #46413d;
 
-  $accent-color: #1c1a18;
-  $accent-color-light: #746b65;
-  $border-color-light: #867d77;
+  --aat-accent-color: #1c1a18;
+  --aat-accent-color-light: #746b65;
+  --aat-border-color-light: #867d77;
 
-  $hover-color: #9f938c;
-  $hover-color-light: rgba(159, 147, 140, 0.85);
-  $hover-color-dim: #332f2b;
-  $hover-accent-color: #b8ada6;
+  --aat-hover-color: #9f938c;
+  --aat-hover-color-light: rgba(159, 147, 140, 0.85);
+  --aat-hover-color-dim: #332f2b;
+  --aat-hover-accent-color: #b8ada6;
 
-  $drag-handle-color: #4b4541;
-  $drag-handle-light: #887f79;
-  $drag-handle-hover: #655e58;
-  $drag-handle-hover-light: #c2b8b1;
+  --aat-drag-handle-color: #4b4541;
+  --aat-drag-handle-light: #887f79;
+  --aat-drag-handle-hover: #655e58;
+  --aat-drag-handle-hover-light: #c2b8b1;
 
-  $prof-color: #9f938c;
-  $expertise-color: #b8ada6;
+  --aat-prof-color: #9f938c;
+  --aat-expertise-color: #b8ada6;
 
-  $tray-button-background-color: rgb(29, 27, 25);
-  $tray-button-border-color: #746b65ec;
-  $tray-button-accent: rgba(36, 33, 31, 0.6);
+  --aat-tray-button-background-color: rgb(29, 27, 25);
+  --aat-tray-button-border-color: #746b65ec;
+  --aat-tray-button-accent: rgba(36, 33, 31, 0.6);
 
-  --tooltip-bg: #1c1410;
-  --tooltip-border: #5a4a44;
-  --tooltip-text: #e1c8b8;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #b08c7d;
-  --tooltip-header: #e1c8b8;
-  --tooltip-subtitle: #d1b2a0;
-  --tooltip-damage: #e1c8b8;
-  --tooltip-damage-type: #8a7265;
-  --tooltip-description: #e6d0b1;
-  --tooltip-link: #3b2c26;
-  --tooltip-roll-link: #e1c8b8;
-  --tooltip-broken: #a6a6a6;
-  --tooltip-effect: #b08c7d;
-  --tooltip-info: #e1c8b8;
-  --tooltip-footer-bg: #1c1410;
-  --tooltip-footer: #e6d0b1;
-  --action-tag-bg: #7f6b5c;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #1c1410;
+  --aat-tooltip-border: #5a4a44;
+  --aat-tooltip-text: #e1c8b8;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #b08c7d;
+  --aat-tooltip-header: #e1c8b8;
+  --aat-tooltip-subtitle: #d1b2a0;
+  --aat-tooltip-damage: #e1c8b8;
+  --aat-tooltip-damage-type: #8a7265;
+  --aat-tooltip-description: #e6d0b1;
+  --aat-tooltip-link: #3b2c26;
+  --aat-tooltip-roll-link: #e1c8b8;
+  --aat-tooltip-broken: #a6a6a6;
+  --aat-tooltip-effect: #b08c7d;
+  --aat-tooltip-info: #e1c8b8;
+  --aat-tooltip-footer-bg: #1c1410;
+  --aat-tooltip-footer: #e6d0b1;
+  --aat-action-tag-bg: #7f6b5c;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-slate {
-  $main-color: #3f515d;
-  $main-color-light: #5a7383;
-  $border-color: #888888;
+  --aat-main-color: #3f515d;
+  --aat-main-color-light: #5a7383;
+  --aat-border-color: #888888;
 
-  $accent-color: #5f7a8a;
-  $accent-color-light: #a8bfc9;
-  $border-color-light: #666666;
+  --aat-accent-color: #5f7a8a;
+  --aat-accent-color-light: #a8bfc9;
+  --aat-border-color-light: #666666;
 
-  $hover-color: #99ccff;
-  $hover-color-light: rgba(153, 204, 255, 0.8);
-  $hover-color-dim: rgb(73, 73, 88);
-  $hover-accent-color: #add8e6;
+  --aat-hover-color: #99ccff;
+  --aat-hover-color-light: rgba(153, 204, 255, 0.8);
+  --aat-hover-color-dim: rgb(73, 73, 88);
+  --aat-hover-accent-color: #add8e6;
 
-  $drag-handle-color: #444444;
-  $drag-handle-light: #666666;
-  $drag-handle-hover: #666666;
-  $drag-handle-hover-light: #888888;
+  --aat-drag-handle-color: #444444;
+  --aat-drag-handle-light: #666666;
+  --aat-drag-handle-hover: #666666;
+  --aat-drag-handle-hover-light: #888888;
 
-  $prof-color: #add8e6;
-  $expertise-color: #d4ecf8;
+  --aat-prof-color: #add8e6;
+  --aat-expertise-color: #d4ecf8;
 
-  $tray-button-background-color: rgb(60, 60, 65);
-  $tray-button-border-color: #7a7a7a94;
-  $tray-button-accent: rgba(20, 30, 30, 0.6);
+  --aat-tray-button-background-color: rgb(60, 60, 65);
+  --aat-tray-button-border-color: #7a7a7a94;
+  --aat-tray-button-accent: rgba(20, 30, 30, 0.6);
 
-  --tooltip-bg: #2e2e2e;
-  --tooltip-border: #666666;
-  --tooltip-text: #ffffff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #cccccc;
-  --tooltip-header: #ffffff;
-  --tooltip-subtitle: #bbbbbb;
-  --tooltip-damage: #ffffff;
-  --tooltip-damage-type: #dddddd;
-  --tooltip-description: #eeeeee;
-  --tooltip-link: #3f7596;
-  --tooltip-roll-link: #add8e6;
-  --tooltip-broken: #888888;
-  --tooltip-effect: #99ccff;
-  --tooltip-info: #cccccc;
-  --tooltip-footer-bg: #1e1e1e;
-  --tooltip-footer: #ffffff;
-  --action-tag-bg: #444444;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2e2e2e;
+  --aat-tooltip-border: #666666;
+  --aat-tooltip-text: #ffffff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #cccccc;
+  --aat-tooltip-header: #ffffff;
+  --aat-tooltip-subtitle: #bbbbbb;
+  --aat-tooltip-damage: #ffffff;
+  --aat-tooltip-damage-type: #dddddd;
+  --aat-tooltip-description: #eeeeee;
+  --aat-tooltip-link: #3f7596;
+  --aat-tooltip-roll-link: #add8e6;
+  --aat-tooltip-broken: #888888;
+  --aat-tooltip-effect: #99ccff;
+  --aat-tooltip-info: #cccccc;
+  --aat-tooltip-footer-bg: #1e1e1e;
+  --aat-tooltip-footer: #ffffff;
+  --aat-action-tag-bg: #444444;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-artificer {
-  $main-color: #6d8a3f;
-  $main-color-light: #9fbf75;
-  $border-color: #4f6e29;
+  --aat-main-color: #6d8a3f;
+  --aat-main-color-light: #9fbf75;
+  --aat-border-color: #4f6e29;
 
-  $accent-color: #2e4f24;
-  $accent-color-light: #a8c68c;
-  $border-color-light: #a1d295;
+  --aat-accent-color: #2e4f24;
+  --aat-accent-color-light: #a8c68c;
+  --aat-border-color-light: #a1d295;
 
-  $hover-color: #c1e7a7;
-  $hover-color-light: rgba(193, 231, 167, 0.85);
-  $hover-color-dim: #3e5f2c;
-  $hover-accent-color: #d1f5b7;
+  --aat-hover-color: #c1e7a7;
+  --aat-hover-color-light: rgba(193, 231, 167, 0.85);
+  --aat-hover-color-dim: #3e5f2c;
+  --aat-hover-accent-color: #d1f5b7;
 
-  $drag-handle-color: #597b3a;
-  $drag-handle-light: #a2d087;
-  $drag-handle-hover: #739c55;
-  $drag-handle-hover-light: #d1f5b7;
+  --aat-drag-handle-color: #597b3a;
+  --aat-drag-handle-light: #a2d087;
+  --aat-drag-handle-hover: #739c55;
+  --aat-drag-handle-hover-light: #d1f5b7;
 
-  $prof-color: #b3e27b;
-  $expertise-color: #c9f299;
+  --aat-prof-color: #b3e27b;
+  --aat-expertise-color: #c9f299;
 
-  $tray-button-background-color: rgb(36, 53, 30);
-  $tray-button-border-color: #9fbf75ec;
-  $tray-button-accent: rgba(24, 34, 18, 0.6);
+  --aat-tray-button-background-color: rgb(36, 53, 30);
+  --aat-tray-button-border-color: #9fbf75ec;
+  --aat-tray-button-accent: rgba(24, 34, 18, 0.6);
 
-  --tooltip-bg: #2a3b1a;
-  --tooltip-border: #9fbf75;
-  --tooltip-text: #f4f7e1;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #a3cf8a;
-  --tooltip-header: #d2f2a6;
-  --tooltip-subtitle: #b2e59e;
-  --tooltip-damage: #f4f7e1;
-  --tooltip-damage-type: #8aa974;
-  --tooltip-description: #e0f7d3;
-  --tooltip-link: #415f38;
-  --tooltip-roll-link: #d2f2a6;
-  --tooltip-broken: #8a8a8a;
-  --tooltip-effect: #c1e7a7;
-  --tooltip-info: #d1f5b7;
-  --tooltip-footer-bg: #1e2c1d;
-  --tooltip-footer: #e0f7d3;
-  --action-tag-bg: #597b3a;
-  --action-tag-text: #ffffff;
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2a3b1a;
+  --aat-tooltip-border: #9fbf75;
+  --aat-tooltip-text: #f4f7e1;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #a3cf8a;
+  --aat-tooltip-header: #d2f2a6;
+  --aat-tooltip-subtitle: #b2e59e;
+  --aat-tooltip-damage: #f4f7e1;
+  --aat-tooltip-damage-type: #8aa974;
+  --aat-tooltip-description: #e0f7d3;
+  --aat-tooltip-link: #415f38;
+  --aat-tooltip-roll-link: #d2f2a6;
+  --aat-tooltip-broken: #8a8a8a;
+  --aat-tooltip-effect: #c1e7a7;
+  --aat-tooltip-info: #d1f5b7;
+  --aat-tooltip-footer-bg: #1e2c1d;
+  --aat-tooltip-footer: #e0f7d3;
+  --aat-action-tag-bg: #597b3a;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-barbarian {
-  $main-color: #e24d3e;
-  $main-color-light: #f08a74;
-  $border-color: #c23b2f;
+  --aat-main-color: #e24d3e;
+  --aat-main-color-light: #f08a74;
+  --aat-border-color: #c23b2f;
 
-  $accent-color: #9e2a24;
-  $accent-color-light: #f5a08f;
-  $border-color-light: #f1a593;
+  --aat-accent-color: #9e2a24;
+  --aat-accent-color-light: #f5a08f;
+  --aat-border-color-light: #f1a593;
 
-  $hover-color: #f8c4a7;
-  $hover-color-light: rgba(248, 196, 167, 0.85);
-  $hover-color-dim: #9e1f1a;
-  $hover-accent-color: #f8c4a7;
+  --aat-hover-color: #f8c4a7;
+  --aat-hover-color-light: rgba(248, 196, 167, 0.85);
+  --aat-hover-color-dim: #9e1f1a;
+  --aat-hover-accent-color: #f8c4a7;
 
-  $drag-handle-color: #b93d2a;
-  $drag-handle-light: #e3a593;
-  $drag-handle-hover: #d53e28;
-  $drag-handle-hover-light: #f8c4a7;
+  --aat-drag-handle-color: #b93d2a;
+  --aat-drag-handle-light: #e3a593;
+  --aat-drag-handle-hover: #d53e28;
+  --aat-drag-handle-hover-light: #f8c4a7;
 
-  $prof-color: #f5a08f;
-  $expertise-color: #f8b09d;
+  --aat-prof-color: #f5a08f;
+  --aat-expertise-color: #f8b09d;
 
-  $tray-button-background-color: rgb(73, 29, 19);
-  $tray-button-border-color: #f08a74ec;
-  $tray-button-accent: rgba(42, 12, 6, 0.6);
+  --aat-tray-button-background-color: rgb(73, 29, 19);
+  --aat-tray-button-border-color: #f08a74ec;
+  --aat-tray-button-accent: rgba(42, 12, 6, 0.6);
 
-  --tooltip-bg: #4e1a12;
-  --tooltip-border: #f08a74;
-  --tooltip-text: #f9d8c4;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #f8b09d;
-  --tooltip-header: #f9d8c4;
-  --tooltip-subtitle: #f5a08f;
-  --tooltip-damage: #f9d8c4;
-  --tooltip-damage-type: #e16f46;
-  --tooltip-description: #f6e1d4;
-  --tooltip-link: #7f3e2f;
-  --tooltip-roll-link: #f9d8c4;
-  --tooltip-broken: #9e8a7d;
-  --tooltip-effect: #f8c4a7;
-  --tooltip-info: #e5a37d;
-  --tooltip-footer-bg: #3e1c12;
-  --tooltip-footer: #f6e1d4;
-  --action-tag-bg: #b93d2a;
-  --action-tag-text: #ffffff;
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #4e1a12;
+  --aat-tooltip-border: #f08a74;
+  --aat-tooltip-text: #f9d8c4;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #f8b09d;
+  --aat-tooltip-header: #f9d8c4;
+  --aat-tooltip-subtitle: #f5a08f;
+  --aat-tooltip-damage: #f9d8c4;
+  --aat-tooltip-damage-type: #e16f46;
+  --aat-tooltip-description: #f6e1d4;
+  --aat-tooltip-link: #7f3e2f;
+  --aat-tooltip-roll-link: #f9d8c4;
+  --aat-tooltip-broken: #9e8a7d;
+  --aat-tooltip-effect: #f8c4a7;
+  --aat-tooltip-info: #e5a37d;
+  --aat-tooltip-footer-bg: #3e1c12;
+  --aat-tooltip-footer: #f6e1d4;
+  --aat-action-tag-bg: #b93d2a;
+  --aat-action-tag-text: #ffffff;
 }
 .theme-bard {
-  $main-color: #9c47c6;
-  $main-color-light: #ba80d4;
-  $border-color: #7e3a9d;
+  --aat-main-color: #9c47c6;
+  --aat-main-color-light: #ba80d4;
+  --aat-border-color: #7e3a9d;
 
-  $accent-color: #6e1e7b;
-  $accent-color-light: #9f57b5;
-  $border-color-light: #a674c1;
+  --aat-accent-color: #6e1e7b;
+  --aat-accent-color-light: #9f57b5;
+  --aat-border-color-light: #a674c1;
 
-  $hover-color: #c187d8;
-  $hover-color-light: rgba(193, 135, 216, 0.85);
-  $hover-color-dim: #6d0c6c;
-  $hover-accent-color: #c7a7e6;
+  --aat-hover-color: #c187d8;
+  --aat-hover-color-light: rgba(193, 135, 216, 0.85);
+  --aat-hover-color-dim: #6d0c6c;
+  --aat-hover-accent-color: #c7a7e6;
 
-  $drag-handle-color: #7e3a9d;
-  $drag-handle-light: #a57bc1;
-  $drag-handle-hover: #8d49ad;
-  $drag-handle-hover-light: #c7a7e6;
+  --aat-drag-handle-color: #7e3a9d;
+  --aat-drag-handle-light: #a57bc1;
+  --aat-drag-handle-hover: #8d49ad;
+  --aat-drag-handle-hover-light: #c7a7e6;
 
-  $prof-color: #ba80d4;
-  $expertise-color: #c7a7e6;
+  --aat-prof-color: #ba80d4;
+  --aat-expertise-color: #c7a7e6;
 
-  $tray-button-background-color: rgb(49, 22, 45);
-  $tray-button-border-color: #ba80d4ec;
-  $tray-button-accent: rgba(27, 17, 32, 0.6);
+  --aat-tray-button-background-color: rgb(49, 22, 45);
+  --aat-tray-button-border-color: #ba80d4ec;
+  --aat-tray-button-accent: rgba(27, 17, 32, 0.6);
 
-  --tooltip-bg: #4c1c4f;
-  --tooltip-border: #ba80d4;
-  --tooltip-text: #f0c2f5;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #c187d8;
-  --tooltip-header: #f0c2f5;
-  --tooltip-subtitle: #ba80d4;
-  --tooltip-damage: #f0c2f5;
-  --tooltip-damage-type: #9c66b7;
-  --tooltip-description: #f5c1f0;
-  --tooltip-link: #6e1e7b;
-  --tooltip-roll-link: #f0c2f5;
-  --tooltip-broken: #9e7a9d;
-  --tooltip-effect: #c187d8;
-  --tooltip-info: #c7a7e6;
-  --tooltip-footer-bg: #3e0f36;
-  --tooltip-footer: #f5c1f0;
-  --action-tag-bg: #7e3a9d;
-  --action-tag-text: #ffffff;
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #4c1c4f;
+  --aat-tooltip-border: #ba80d4;
+  --aat-tooltip-text: #f0c2f5;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #c187d8;
+  --aat-tooltip-header: #f0c2f5;
+  --aat-tooltip-subtitle: #ba80d4;
+  --aat-tooltip-damage: #f0c2f5;
+  --aat-tooltip-damage-type: #9c66b7;
+  --aat-tooltip-description: #f5c1f0;
+  --aat-tooltip-link: #6e1e7b;
+  --aat-tooltip-roll-link: #f0c2f5;
+  --aat-tooltip-broken: #9e7a9d;
+  --aat-tooltip-effect: #c187d8;
+  --aat-tooltip-info: #c7a7e6;
+  --aat-tooltip-footer-bg: #3e0f36;
+  --aat-tooltip-footer: #f5c1f0;
+  --aat-action-tag-bg: #7e3a9d;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-cleric {
-  $main-color: #98752c;
-  $main-color-light: #c49f53;
-  $border-color: #b18536;
+  --aat-main-color: #98752c;
+  --aat-main-color-light: #c49f53;
+  --aat-border-color: #b18536;
 
-  $accent-color: #b7923c;
-  $accent-color-light: #dfc071;
-  $border-color-light: #d0b36e;
+  --aat-accent-color: #b7923c;
+  --aat-accent-color-light: #dfc071;
+  --aat-border-color-light: #d0b36e;
 
-  $hover-color: #d5b14b;
-  $hover-color-light: rgba(213, 177, 75, 0.85);
-  $hover-color-dim: #a78f3d;
-  $hover-accent-color: #e1bb65;
+  --aat-hover-color: #d5b14b;
+  --aat-hover-color-light: rgba(213, 177, 75, 0.85);
+  --aat-hover-color-dim: #a78f3d;
+  --aat-hover-accent-color: #e1bb65;
 
-  $drag-handle-color: #b68c42;
-  $drag-handle-light: #d9b66a;
-  $drag-handle-hover: #c6a147;
-  $drag-handle-hover-light: #e1bb65;
+  --aat-drag-handle-color: #b68c42;
+  --aat-drag-handle-light: #d9b66a;
+  --aat-drag-handle-hover: #c6a147;
+  --aat-drag-handle-hover-light: #e1bb65;
 
-  $prof-color: #f5c938;
-  $expertise-color: #e4d28f;
+  --aat-prof-color: #f5c938;
+  --aat-expertise-color: #e4d28f;
 
-  $tray-button-background-color: rgb(85, 68, 40);
-  $tray-button-border-color: #d0b36e;
-  $tray-button-accent: rgba(49, 37, 23, 0.6);
+  --aat-tray-button-background-color: rgb(85, 68, 40);
+  --aat-tray-button-border-color: #d0b36e;
+  --aat-tray-button-accent: rgba(49, 37, 23, 0.6);
 
-  --tooltip-bg: #2f1e0d; /* Darken the background for better contrast */
-  --tooltip-border: #d0b36e;
-  --tooltip-text: #f4e1a0; /* Soft yellow for better readability */
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #d4b14b;
-  --tooltip-header: #f5d57d;
-  --tooltip-subtitle: #e1c67b;
-  --tooltip-damage: #f4e1a0;
-  --tooltip-damage-type: #a38e55;
-  --tooltip-description: #e1c37b;
-  --tooltip-link: #6b4f2a;
-  --tooltip-roll-link: #f5d57d;
-  --tooltip-broken: #9b8c59;
-  --tooltip-effect: #ffd14e;
-  --tooltip-info: #f5db6e;
-  --tooltip-footer-bg: #2f1e0d; /* Dark background to balance brightness */
-  --tooltip-footer: #e1c37b;
-  --action-tag-bg: #b68c42;
-  --action-tag-text: #ffffff; /* White text for contrast */
-  --border-color: #b18536;
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2f1e0d; /* Darken the background for better contrast */
+  --aat-tooltip-border: #d0b36e;
+  --aat-tooltip-text: #f4e1a0; /* Soft yellow for better readability */
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #d4b14b;
+  --aat-tooltip-header: #f5d57d;
+  --aat-tooltip-subtitle: #e1c67b;
+  --aat-tooltip-damage: #f4e1a0;
+  --aat-tooltip-damage-type: #a38e55;
+  --aat-tooltip-description: #e1c37b;
+  --aat-tooltip-link: #6b4f2a;
+  --aat-tooltip-roll-link: #f5d57d;
+  --aat-tooltip-broken: #9b8c59;
+  --aat-tooltip-effect: #ffd14e;
+  --aat-tooltip-info: #f5db6e;
+  --aat-tooltip-footer-bg: #2f1e0d; /* Dark background to balance brightness */
+  --aat-tooltip-footer: #e1c37b;
+  --aat-action-tag-bg: #b68c42;
+  --aat-action-tag-text: #ffffff;
 }
 .theme-druid {
-  $main-color: #3e6b3c;
-  $main-color-light: #80c670;
-  $border-color: #4a8a3f;
+  --aat-main-color: #3e6b3c;
+  --aat-main-color-light: #80c670;
+  --aat-border-color: #4a8a3f;
 
-  $accent-color: #35592d;
-  $accent-color-light: #7ec77a;
-  $border-color-light: #89d487;
+  --aat-accent-color: #35592d;
+  --aat-accent-color-light: #7ec77a;
+  --aat-border-color-light: #89d487;
 
-  $hover-color: #a4e3a1;
-  $hover-color-light: rgba(150, 225, 150, 0.9);
-  $hover-color-dim: #4a7a47;
-  $hover-accent-color: #b3f3b1;
+  --aat-hover-color: #a4e3a1;
+  --aat-hover-color-light: rgba(150, 225, 150, 0.9);
+  --aat-hover-color-dim: #4a7a47;
+  --aat-hover-accent-color: #b3f3b1;
 
-  $drag-handle-color: #577d53;
-  $drag-handle-light: #88cc81;
-  $drag-handle-hover: #6cbf66;
-  $drag-handle-hover-light: #b6ffb3;
+  --aat-drag-handle-color: #577d53;
+  --aat-drag-handle-light: #88cc81;
+  --aat-drag-handle-hover: #6cbf66;
+  --aat-drag-handle-hover-light: #b6ffb3;
 
-  $prof-color: #94e5a2;
-  $expertise-color: #ccf1d1;
+  --aat-prof-color: #94e5a2;
+  --aat-expertise-color: #ccf1d1;
 
-  $tray-button-background-color: rgb(38, 54, 38);
-  $tray-button-border-color: #76c57aec;
-  $tray-button-accent: rgba(42, 54, 42, 0.6);
+  --aat-tray-button-background-color: rgb(38, 54, 38);
+  --aat-tray-button-border-color: #76c57aec;
+  --aat-tray-button-accent: rgba(42, 54, 42, 0.6);
 
-  --tooltip-bg: #263c26;
-  --tooltip-border: #6ddf76;
-  --tooltip-text: #dcf5db;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #9be6a3;
-  --tooltip-header: #b9f0b4;
-  --tooltip-subtitle: #a0dba3;
-  --tooltip-damage: #dcf5db;
-  --tooltip-damage-type: #76c2af;
-  --tooltip-description: #e0f9e3;
-  --tooltip-link: #457a4f;
-  --tooltip-roll-link: #b9f0b4;
-  --tooltip-broken: #a2cca3;
-  --tooltip-effect: #a4e3a1;
-  --tooltip-info: #bcf7c6;
-  --tooltip-footer-bg: #1c2b1c;
-  --tooltip-footer: #e0f9e3;
-  --action-tag-bg: #4a7a47;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #263c26;
+  --aat-tooltip-border: #6ddf76;
+  --aat-tooltip-text: #dcf5db;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #9be6a3;
+  --aat-tooltip-header: #b9f0b4;
+  --aat-tooltip-subtitle: #a0dba3;
+  --aat-tooltip-damage: #dcf5db;
+  --aat-tooltip-damage-type: #76c2af;
+  --aat-tooltip-description: #e0f9e3;
+  --aat-tooltip-link: #457a4f;
+  --aat-tooltip-roll-link: #b9f0b4;
+  --aat-tooltip-broken: #a2cca3;
+  --aat-tooltip-effect: #a4e3a1;
+  --aat-tooltip-info: #bcf7c6;
+  --aat-tooltip-footer-bg: #1c2b1c;
+  --aat-tooltip-footer: #e0f9e3;
+  --aat-action-tag-bg: #4a7a47;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-fighter {
-  $main-color: #3d3d3d;
-  $main-color-light: #8d8d8d;
-  $border-color: #6a6a6a;
+  --aat-main-color: #3d3d3d;
+  --aat-main-color-light: #8d8d8d;
+  --aat-border-color: #6a6a6a;
 
-  $accent-color: #1c1c1c;
-  $accent-color-light: #9e9e9e;
-  $border-color-light: #b4b4b4;
+  --aat-accent-color: #1c1c1c;
+  --aat-accent-color-light: #9e9e9e;
+  --aat-border-color-light: #b4b4b4;
 
-  $hover-color: #bbbbbb;
-  $hover-color-light: rgba(200, 200, 200, 0.85);
-  $hover-color-dim: #4d4d4d;
-  $hover-accent-color: #d1d1d1;
+  --aat-hover-color: #bbbbbb;
+  --aat-hover-color-light: rgba(200, 200, 200, 0.85);
+  --aat-hover-color-dim: #4d4d4d;
+  --aat-hover-accent-color: #d1d1d1;
 
-  $drag-handle-color: #5e5e5e;
-  $drag-handle-light: #9d9d9d;
-  $drag-handle-hover: #7a7a7a;
-  $drag-handle-hover-light: #d0d0d0;
+  --aat-drag-handle-color: #5e5e5e;
+  --aat-drag-handle-light: #9d9d9d;
+  --aat-drag-handle-hover: #7a7a7a;
+  --aat-drag-handle-hover-light: #d0d0d0;
 
-  $prof-color: #cccccc;
-  $expertise-color: #e6e6e6;
+  --aat-prof-color: #cccccc;
+  --aat-expertise-color: #e6e6e6;
 
-  $tray-button-background-color: rgb(45, 45, 45);
-  $tray-button-border-color: #a5a5a5ec;
-  $tray-button-accent: rgba(36, 36, 36, 0.6);
+  --aat-tray-button-background-color: rgb(45, 45, 45);
+  --aat-tray-button-border-color: #a5a5a5ec;
+  --aat-tray-button-accent: rgba(36, 36, 36, 0.6);
 
-  --tooltip-bg: #202020;
-  --tooltip-border: #8f8f8f;
-  --tooltip-text: #f0f0f0;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #d2d2d2;
-  --tooltip-header: #ffffff;
-  --tooltip-subtitle: #bbbbbb;
-  --tooltip-damage: #f0f0f0;
-  --tooltip-damage-type: #a0a0a0;
-  --tooltip-description: #eaeaea;
-  --tooltip-link: #505050;
-  --tooltip-roll-link: #ffffff;
-  --tooltip-broken: #888888;
-  --tooltip-effect: #bbbbbb;
-  --tooltip-info: #cfcfcf;
-  --tooltip-footer-bg: #151515;
-  --tooltip-footer: #eaeaea;
-  --action-tag-bg: #4a4a4a;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #202020;
+  --aat-tooltip-border: #8f8f8f;
+  --aat-tooltip-text: #f0f0f0;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #d2d2d2;
+  --aat-tooltip-header: #ffffff;
+  --aat-tooltip-subtitle: #bbbbbb;
+  --aat-tooltip-damage: #f0f0f0;
+  --aat-tooltip-damage-type: #a0a0a0;
+  --aat-tooltip-description: #eaeaea;
+  --aat-tooltip-link: #505050;
+  --aat-tooltip-roll-link: #ffffff;
+  --aat-tooltip-broken: #888888;
+  --aat-tooltip-effect: #bbbbbb;
+  --aat-tooltip-info: #cfcfcf;
+  --aat-tooltip-footer-bg: #151515;
+  --aat-tooltip-footer: #eaeaea;
+  --aat-action-tag-bg: #4a4a4a;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-monk {
-  $main-color: #7f9a5e;
-  $main-color-light: #a1c58d;
-  $border-color: #6b8c49;
+  --aat-main-color: #7f9a5e;
+  --aat-main-color-light: #a1c58d;
+  --aat-border-color: #6b8c49;
 
-  $accent-color: #4a5c32;
-  $accent-color-light: #81a16c;
-  $border-color-light: #9cbe75;
+  --aat-accent-color: #4a5c32;
+  --aat-accent-color-light: #81a16c;
+  --aat-border-color-light: #9cbe75;
 
-  $hover-color: #b0db93;
-  $hover-color-light: rgba(176, 219, 147, 0.85);
-  $hover-color-dim: #3f5426;
-  $hover-accent-color: #a2d07a;
+  --aat-hover-color: #b0db93;
+  --aat-hover-color-light: rgba(176, 219, 147, 0.85);
+  --aat-hover-color-dim: #3f5426;
+  --aat-hover-accent-color: #a2d07a;
 
-  $drag-handle-color: #5c7d43;
-  $drag-handle-light: #a1b77a;
-  $drag-handle-hover: #718e4d;
-  $drag-handle-hover-light: #a2d07a;
+  --aat-drag-handle-color: #5c7d43;
+  --aat-drag-handle-light: #a1b77a;
+  --aat-drag-handle-hover: #718e4d;
+  --aat-drag-handle-hover-light: #a2d07a;
 
-  $prof-color: #b1d78f;
-  $expertise-color: #c5e1a3;
+  --aat-prof-color: #b1d78f;
+  --aat-expertise-color: #c5e1a3;
 
-  $tray-button-background-color: rgb(33, 29, 27);
-  $tray-button-border-color: #a1c58dec;
-  $tray-button-accent: rgba(18, 15, 13, 0.6);
+  --aat-tray-button-background-color: rgb(61 146 105);
+  --aat-tray-button-border-color: #a1c58dec;
+  --aat-tray-button-accent: rgba(18, 15, 13, 0.6);
 
-  --tooltip-bg: #3e3e2e;
-  --tooltip-border: #a1c58d;
-  --tooltip-text: #f0f7e3;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #9e9c58;
-  --tooltip-header: #f0f7e3;
-  --tooltip-subtitle: #a1c58d;
-  --tooltip-damage: #f0f7e3;
-  --tooltip-damage-type: #91a363;
-  --tooltip-description: #e1f0d6;
-  --tooltip-link: #5b6c36;
-  --tooltip-roll-link: #f0f7e3;
-  --tooltip-broken: #8a9b74;
-  --tooltip-effect: #b0db93;
-  --tooltip-info: #a2d07a;
-  --tooltip-footer-bg: #2d2d1d;
-  --tooltip-footer: #e1f0d6;
-  --action-tag-bg: #5c7d43;
-  --action-tag-text: #ffffff;
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #3e3e2e;
+  --aat-tooltip-border: #a1c58d;
+  --aat-tooltip-text: #f0f7e3;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #9e9c58;
+  --aat-tooltip-header: #f0f7e3;
+  --aat-tooltip-subtitle: #a1c58d;
+  --aat-tooltip-damage: #f0f7e3;
+  --aat-tooltip-damage-type: #91a363;
+  --aat-tooltip-description: #e1f0d6;
+  --aat-tooltip-link: #5b6c36;
+  --aat-tooltip-roll-link: #f0f7e3;
+  --aat-tooltip-broken: #8a9b74;
+  --aat-tooltip-effect: #b0db93;
+  --aat-tooltip-info: #a2d07a;
+  --aat-tooltip-footer-bg: #2d2d1d;
+  --aat-tooltip-footer: #e1f0d6;
+  --aat-action-tag-bg: #5c7d43;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-paladin {
-  $main-color: #2d4f72;
-  $main-color-light: #a4c6eb;
-  $border-color: #5c85b0;
+  --aat-main-color: #2d4f72;
+  --aat-main-color-light: #a4c6eb;
+  --aat-border-color: #5c85b0;
 
-  $accent-color: #244060;
-  $accent-color-light: #a9c7f2;
-  $border-color-light: #8fb3de;
+  --aat-accent-color: #244060;
+  --aat-accent-color-light: #a9c7f2;
+  --aat-border-color-light: #8fb3de;
 
-  $hover-color: #c9e3ff;
-  $hover-color-light: rgba(200, 220, 255, 0.8);
-  $hover-color-dim: #446b8d;
-  $hover-accent-color: #d9eeff;
+  --aat-hover-color: #c9e3ff;
+  --aat-hover-color-light: rgba(200, 220, 255, 0.8);
+  --aat-hover-color-dim: #446b8d;
+  --aat-hover-accent-color: #d9eeff;
 
-  $drag-handle-color: #3e6288;
-  $drag-handle-light: #7aa8d6;
-  $drag-handle-hover: #5b8eb5;
-  $drag-handle-hover-light: #b8dbff;
+  --aat-drag-handle-color: #3e6288;
+  --aat-drag-handle-light: #7aa8d6;
+  --aat-drag-handle-hover: #5b8eb5;
+  --aat-drag-handle-hover-light: #b8dbff;
 
-  $prof-color: #b0d4f8;
-  $expertise-color: #d6eaff;
+  --aat-prof-color: #b0d4f8;
+  --aat-expertise-color: #d6eaff;
 
-  $tray-button-background-color: rgb(30, 40, 60);
-  $tray-button-border-color: #7db1ddec;
-  $tray-button-accent: rgba(38, 54, 78, 0.6);
+  --aat-tray-button-background-color: rgb(30, 40, 60);
+  --aat-tray-button-border-color: #7db1ddec;
+  --aat-tray-button-accent: rgba(38, 54, 78, 0.6);
 
-  --tooltip-bg: #1f2d3e;
-  --tooltip-border: #a4c6eb;
-  --tooltip-text: #e6f3ff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #b7d5f2;
-  --tooltip-header: #d0e5ff;
-  --tooltip-subtitle: #aac6e4;
-  --tooltip-damage: #e6f3ff;
-  --tooltip-damage-type: #86aaf2;
-  --tooltip-description: #e3f1ff;
-  --tooltip-link: #3e5a7e;
-  --tooltip-roll-link: #d0e5ff;
-  --tooltip-broken: #9fb5c6;
-  --tooltip-effect: #c9e3ff;
-  --tooltip-info: #cbe3f7;
-  --tooltip-footer-bg: #16212f;
-  --tooltip-footer: #e3f1ff;
-  --action-tag-bg: #2d4f72;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #1f2d3e;
+  --aat-tooltip-border: #a4c6eb;
+  --aat-tooltip-text: #e6f3ff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #b7d5f2;
+  --aat-tooltip-header: #d0e5ff;
+  --aat-tooltip-subtitle: #aac6e4;
+  --aat-tooltip-damage: #e6f3ff;
+  --aat-tooltip-damage-type: #86aaf2;
+  --aat-tooltip-description: #e3f1ff;
+  --aat-tooltip-link: #3e5a7e;
+  --aat-tooltip-roll-link: #d0e5ff;
+  --aat-tooltip-broken: #9fb5c6;
+  --aat-tooltip-effect: #c9e3ff;
+  --aat-tooltip-info: #cbe3f7;
+  --aat-tooltip-footer-bg: #16212f;
+  --aat-tooltip-footer: #e3f1ff;
+  --aat-action-tag-bg: #2d4f72;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-ranger {
-  $main-color: #4b7c46;
-  $main-color-light: #7fbb7e;
-  $border-color: #3d6035;
+  --aat-main-color: #4b7c46;
+  --aat-main-color-light: #7fbb7e;
+  --aat-border-color: #3d6035;
 
-  $accent-color: #2a4824;
-  $accent-color-light: #a3d2a1;
-  $border-color-light: #8cae7d;
+  --aat-accent-color: #2a4824;
+  --aat-accent-color-light: #a3d2a1;
+  --aat-border-color-light: #8cae7d;
 
-  $hover-color: #a8d59f;
-  $hover-color-light: rgba(168, 213, 159, 0.85);
-  $hover-color-dim: #3c5a38;
-  $hover-accent-color: #b0d69f;
+  --aat-hover-color: #a8d59f;
+  --aat-hover-color-light: rgba(168, 213, 159, 0.85);
+  --aat-hover-color-dim: #3c5a38;
+  --aat-hover-accent-color: #b0d69f;
 
-  $drag-handle-color: #4a6839;
-  $drag-handle-light: #8cbe80;
-  $drag-handle-hover: #5a7b4b;
-  $drag-handle-hover-light: #b0cc96;
+  --aat-drag-handle-color: #4a6839;
+  --aat-drag-handle-light: #8cbe80;
+  --aat-drag-handle-hover: #5a7b4b;
+  --aat-drag-handle-hover-light: #b0cc96;
 
-  $prof-color: #87d68b;
-  $expertise-color: #c5f2c1;
+  --aat-prof-color: #87d68b;
+  --aat-expertise-color: #c5f2c1;
 
-  $tray-button-background-color: rgb(40, 60, 30);
-  $tray-button-border-color: #7f9b72ec;
-  $tray-button-accent: rgba(29, 39, 19, 0.6);
+  --aat-tray-button-background-color: rgb(40, 60, 30);
+  --aat-tray-button-border-color: #7f9b72ec;
+  --aat-tray-button-accent: rgba(29, 39, 19, 0.6);
 
-  --tooltip-bg: #2a3e2a;
-  --tooltip-border: #7f9b72;
-  --tooltip-text: #d6f2c4;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #91bf7b;
-  --tooltip-header: #b5e7b0;
-  --tooltip-subtitle: #a1d18f;
-  --tooltip-damage: #d6f2c4;
-  --tooltip-damage-type: #5a8d46;
-  --tooltip-description: #e1f7d0;
-  --tooltip-link: #3c6b3c;
-  --tooltip-roll-link: #b5e7b0;
-  --tooltip-broken: #b0c9a2;
-  --tooltip-effect: #a8d59f;
-  --tooltip-info: #accba3;
-  --tooltip-footer-bg: #1f2c1f;
-  --tooltip-footer: #e1f7d0;
-  --action-tag-bg: #40672d;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2a3e2a;
+  --aat-tooltip-border: #7f9b72;
+  --aat-tooltip-text: #d6f2c4;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #91bf7b;
+  --aat-tooltip-header: #b5e7b0;
+  --aat-tooltip-subtitle: #a1d18f;
+  --aat-tooltip-damage: #d6f2c4;
+  --aat-tooltip-damage-type: #5a8d46;
+  --aat-tooltip-description: #e1f7d0;
+  --aat-tooltip-link: #3c6b3c;
+  --aat-tooltip-roll-link: #b5e7b0;
+  --aat-tooltip-broken: #b0c9a2;
+  --aat-tooltip-effect: #a8d59f;
+  --aat-tooltip-info: #accba3;
+  --aat-tooltip-footer-bg: #1f2c1f;
+  --aat-tooltip-footer: #e1f7d0;
+  --aat-action-tag-bg: #40672d;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-rogue {
-  $main-color: #3e0b0b;
-  $main-color-light: #8f1f1f;
-  $border-color: #a02323;
+  --aat-main-color: #3e0b0b;
+  --aat-main-color-light: #8f1f1f;
+  --aat-border-color: #a02323;
 
-  $accent-color: #2a0505;
-  $accent-color-light: #b74d4d;
-  $border-color-light: #7a2c2c;
+  --aat-accent-color: #2a0505;
+  --aat-accent-color-light: #b74d4d;
+  --aat-border-color-light: #7a2c2c;
 
-  $hover-color: #e14c4c;
-  $hover-color-light: rgba(225, 76, 76, 0.85);
-  $hover-color-dim: #4b1010;
-  $hover-accent-color: #ff8c8c;
+  --aat-hover-color: #e14c4c;
+  --aat-hover-color-light: rgba(225, 76, 76, 0.85);
+  --aat-hover-color-dim: #4b1010;
+  --aat-hover-accent-color: #ff8c8c;
 
-  $drag-handle-color: #6a1f1f;
-  $drag-handle-light: #a54b4b;
-  $drag-handle-hover: #c16b6b;
-  $drag-handle-hover-light: #ff8a8a;
+  --aat-drag-handle-color: #6a1f1f;
+  --aat-drag-handle-light: #a54b4b;
+  --aat-drag-handle-hover: #c16b6b;
+  --aat-drag-handle-hover-light: #ff8a8a;
 
-  $prof-color: #e14c4c;
-  $expertise-color: #ff8c8c;
+  --aat-prof-color: #e14c4c;
+  --aat-expertise-color: #ff8c8c;
 
-  $tray-button-background-color: rgb(41, 15, 15);
-  $tray-button-border-color: #7a2c2cec;
-  $tray-button-accent: rgba(42, 18, 18, 0.6);
+  --aat-tray-button-background-color: rgb(41, 15, 15);
+  --aat-tray-button-border-color: #7a2c2cec;
+  --aat-tray-button-accent: rgba(42, 18, 18, 0.6);
 
-  --tooltip-bg: #2a0c0c;
-  --tooltip-border: #5a1414;
-  --tooltip-text: #f1d4d2;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #b75c5c;
-  --tooltip-header: #d24b4b;
-  --tooltip-subtitle: #b74d4d;
-  --tooltip-damage: #f1d4d2;
-  --tooltip-damage-type: #ae2f2f;
-  --tooltip-description: #e65959;
-  --tooltip-link: #3c0e0e;
-  --tooltip-roll-link: #d24b4b;
-  --tooltip-broken: #a6a6a6;
-  --tooltip-effect: #ff6e6e;
-  --tooltip-info: #f1d4d2;
-  --tooltip-footer-bg: #531717;
-  --tooltip-footer: #f9e3e3;
-  --action-tag-bg: #9f3535;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2a0c0c;
+  --aat-tooltip-border: #5a1414;
+  --aat-tooltip-text: #f1d4d2;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #b75c5c;
+  --aat-tooltip-header: #d24b4b;
+  --aat-tooltip-subtitle: #b74d4d;
+  --aat-tooltip-damage: #f1d4d2;
+  --aat-tooltip-damage-type: #ae2f2f;
+  --aat-tooltip-description: #e65959;
+  --aat-tooltip-link: #3c0e0e;
+  --aat-tooltip-roll-link: #d24b4b;
+  --aat-tooltip-broken: #a6a6a6;
+  --aat-tooltip-effect: #ff6e6e;
+  --aat-tooltip-info: #f1d4d2;
+  --aat-tooltip-footer-bg: #531717;
+  --aat-tooltip-footer: #f9e3e3;
+  --aat-action-tag-bg: #9f3535;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-sorcerer {
-  $main-color: #8b1e3f;
-  $main-color-light: #f25478;
-  $border-color: #a4334d;
+  --aat-main-color: #8b1e3f;
+  --aat-main-color-light: #f25478;
+  --aat-border-color: #a4334d;
 
-  $accent-color: #5e1025;
-  $accent-color-light: #f78b9d;
-  $border-color-light: #fda6b1;
+  --aat-accent-color: #5e1025;
+  --aat-accent-color-light: #f78b9d;
+  --aat-border-color-light: #fda6b1;
 
-  $hover-color: #ffb6c1;
-  $hover-color-light: rgba(255, 182, 193, 0.85);
-  $hover-color-dim: #842642;
-  $hover-accent-color: #ffd1dd;
+  --aat-hover-color: #ffb6c1;
+  --aat-hover-color-light: rgba(255, 182, 193, 0.85);
+  --aat-hover-color-dim: #842642;
+  --aat-hover-accent-color: #ffd1dd;
 
-  $drag-handle-color: #a0263a;
-  $drag-handle-light: #f0728f;
-  $drag-handle-hover: #d83c5e;
-  $drag-handle-hover-light: #ffb1c7;
+  --aat-drag-handle-color: #a0263a;
+  --aat-drag-handle-light: #f0728f;
+  --aat-drag-handle-hover: #d83c5e;
+  --aat-drag-handle-hover-light: #ffb1c7;
 
-  $prof-color: #ffacc4;
-  $expertise-color: #ffe4ed;
+  --aat-prof-color: #ffacc4;
+  --aat-expertise-color: #ffe4ed;
 
-  $tray-button-background-color: rgb(50, 25, 35);
-  $tray-button-border-color: #e95d7bec;
-  $tray-button-accent: rgba(42, 20, 28, 0.6);
+  --aat-tray-button-background-color: rgb(50, 25, 35);
+  --aat-tray-button-border-color: #e95d7bec;
+  --aat-tray-button-accent: rgba(42, 20, 28, 0.6);
 
-  --tooltip-bg: #2d0f1a;
-  --tooltip-border: #f25478;
-  --tooltip-text: #ffe6ee;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #ff94a8;
-  --tooltip-header: #ffc0cb;
-  --tooltip-subtitle: #f9a1b4;
-  --tooltip-damage: #ffe6ee;
-  --tooltip-damage-type: #ff7f9f;
-  --tooltip-description: #fff0f5;
-  --tooltip-link: #b0415a;
-  --tooltip-roll-link: #ffc0cb;
-  --tooltip-broken: #d4788f;
-  --tooltip-effect: #ffb6c1;
-  --tooltip-info: #f3c1cf;
-  --tooltip-footer-bg: #1f0a10;
-  --tooltip-footer: #fff0f5;
-  --action-tag-bg: #a0263a;
-  --action-tag-text: #ffffff;
-
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2d0f1a;
+  --aat-tooltip-border: #f25478;
+  --aat-tooltip-text: #ffe6ee;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #ff94a8;
+  --aat-tooltip-header: #ffc0cb;
+  --aat-tooltip-subtitle: #f9a1b4;
+  --aat-tooltip-damage: #ffe6ee;
+  --aat-tooltip-damage-type: #ff7f9f;
+  --aat-tooltip-description: #fff0f5;
+  --aat-tooltip-link: #b0415a;
+  --aat-tooltip-roll-link: #ffc0cb;
+  --aat-tooltip-broken: #d4788f;
+  --aat-tooltip-effect: #ffb6c1;
+  --aat-tooltip-info: #f3c1cf;
+  --aat-tooltip-footer-bg: #1f0a10;
+  --aat-tooltip-footer: #fff0f5;
+  --aat-action-tag-bg: #a0263a;
+  --aat-action-tag-text: #ffffff;
 }
 .theme-warlock {
-  $main-color: #2f1c56;
-  $main-color-light: #5e4b89;
-  $border-color: #4d336e;
+  --aat-main-color: #2f1c56;
+  --aat-main-color-light: #5e4b89;
+  --aat-border-color: #4d336e;
 
-  $accent-color: #2b1139;
-  $accent-color-light: #6f4a82;
-  $border-color-light: #7e5a9d;
+  --aat-accent-color: #2b1139;
+  --aat-accent-color-light: #6f4a82;
+  --aat-border-color-light: #7e5a9d;
 
-  $hover-color: #9e6bbf;
-  $hover-color-light: rgba(158, 107, 191, 0.85);
-  $hover-color-dim: #3d1e53;
-  $hover-accent-color: #c0a0e1;
+  --aat-hover-color: #9e6bbf;
+  --aat-hover-color-light: rgba(158, 107, 191, 0.85);
+  --aat-hover-color-dim: #3d1e53;
+  --aat-hover-accent-color: #c0a0e1;
 
-  $drag-handle-color: #3c1e50;
-  $drag-handle-light: #7a5c87;
-  $drag-handle-hover: #5e367a;
-  $drag-handle-hover-light: #c0a0e1;
+  --aat-drag-handle-color: #3c1e50;
+  --aat-drag-handle-light: #7a5c87;
+  --aat-drag-handle-hover: #5e367a;
+  --aat-drag-handle-hover-light: #c0a0e1;
 
-  $prof-color: #a489d1;
-  $expertise-color: #c8a8e3;
+  --aat-prof-color: #a489d1;
+  --aat-expertise-color: #c8a8e3;
 
-  $tray-button-background-color: rgb(32, 22, 38);
-  $tray-button-border-color: #5e4b89ec;
-  $tray-button-accent: rgba(19, 14, 25, 0.6);
+  --aat-tray-button-background-color: rgb(32, 22, 38);
+  --aat-tray-button-border-color: #5e4b89ec;
+  --aat-tray-button-accent: rgba(19, 14, 25, 0.6);
 
-  --tooltip-bg: #2a1932;
-  --tooltip-border: #5e4b89;
-  --tooltip-text: #e0c1ff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #c38ee4;
-  --tooltip-header: #c8a8e3;
-  --tooltip-subtitle: #a489d1;
-  --tooltip-damage: #e0c1ff;
-  --tooltip-damage-type: #9b6ab8;
-  --tooltip-description: #f0e7ff;
-  --tooltip-link: #5c3a7b;
-  --tooltip-roll-link: #c8a8e3;
-  --tooltip-broken: #9c8da1;
-  --tooltip-effect: #9e6bbf;
-  --tooltip-info: #c0a0e1;
-  --tooltip-footer-bg: #1d1227;
-  --tooltip-footer: #f0e7ff;
-  --action-tag-bg: #3c1e50;
-  --action-tag-text: #ffffff;
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #2a1932;
+  --aat-tooltip-border: #5e4b89;
+  --aat-tooltip-text: #e0c1ff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #c38ee4;
+  --aat-tooltip-header: #c8a8e3;
+  --aat-tooltip-subtitle: #a489d1;
+  --aat-tooltip-damage: #e0c1ff;
+  --aat-tooltip-damage-type: #9b6ab8;
+  --aat-tooltip-description: #f0e7ff;
+  --aat-tooltip-link: #5c3a7b;
+  --aat-tooltip-roll-link: #c8a8e3;
+  --aat-tooltip-broken: #9c8da1;
+  --aat-tooltip-effect: #9e6bbf;
+  --aat-tooltip-info: #c0a0e1;
+  --aat-tooltip-footer-bg: #1d1227;
+  --aat-tooltip-footer: #f0e7ff;
+  --aat-action-tag-bg: #3c1e50;
+  --aat-action-tag-text: #ffffff;
 }
 
 .theme-wizard {
-  $main-color: #1f3c88;
-  $main-color-light: #6584c9;
-  $border-color: #3453a1;
+  --aat-main-color: #1f3c88;
+  --aat-main-color-light: #6584c9;
+  --aat-border-color: #3453a1;
 
-  $accent-color: #101e40;
-  $accent-color-light: #6c92ff;
-  $border-color-light: #839deb;
+  --aat-accent-color: #101e40;
+  --aat-accent-color-light: #6c92ff;
+  --aat-border-color-light: #839deb;
 
-  $hover-color: #a0bfff;
-  $hover-color-light: rgba(180, 200, 255, 0.9);
-  $hover-color-dim: #2a4172;
-  $hover-accent-color: #ccdfff;
+  --aat-hover-color: #a0bfff;
+  --aat-hover-color-light: rgba(180, 200, 255, 0.9);
+  --aat-hover-color-dim: #2a4172;
+  --aat-hover-accent-color: #ccdfff;
 
-  $drag-handle-color: #3b4f99;
-  $drag-handle-light: #7da8ff;
-  $drag-handle-hover: #5478d8;
-  $drag-handle-hover-light: #b3ceff;
+  --aat-drag-handle-color: #3b4f99;
+  --aat-drag-handle-light: #7da8ff;
+  --aat-drag-handle-hover: #5478d8;
+  --aat-drag-handle-hover-light: #b3ceff;
 
-  $prof-color: #b0c4ff;
-  $expertise-color: #d6e1ff;
+  --aat-prof-color: #b0c4ff;
+  --aat-expertise-color: #d6e1ff;
 
-  $tray-button-background-color: rgb(28, 34, 60);
-  $tray-button-border-color: #6e8cecec;
-  $tray-button-accent: rgba(20, 28, 46, 0.6);
+  --aat-tray-button-background-color: rgb(28, 34, 60);
+  --aat-tray-button-border-color: #6e8cecec;
+  --aat-tray-button-accent: rgba(20, 28, 46, 0.6);
 
-  --tooltip-bg: #1a2340;
-  --tooltip-border: #6e90ff;
-  --tooltip-text: #e4ebff;
-  --tooltip-font: serif;
-  --tooltip-upper-icon: #aac4ff;
-  --tooltip-header: #ccddff;
-  --tooltip-subtitle: #a4bbf2;
-  --tooltip-damage: #e4ebff;
-  --tooltip-damage-type: #86aaf2;
-  --tooltip-description: #f0f4ff;
-  --tooltip-link: #2d4a80;
-  --tooltip-roll-link: #ccddff;
-  --tooltip-broken: #9db5df;
-  --tooltip-effect: #a0bfff;
-  --tooltip-info: #bfd4f6;
-  --tooltip-footer-bg: #10182b;
-  --tooltip-footer: #f0f4ff;
-  --action-tag-bg: #2c4c8f;
-  --action-tag-text: #ffffff;
-  --border-color: #{$border-color};
-
-  --dice-button-color: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-color-active: radial-gradient(#{$main-color-light}, #{$main-color});
-  --dice-button-active-glow: inset 0 0 0.625rem #{$hover-accent-color};
-  --dice-button-hover-glow: inset 0.1875rem 0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    inset -0.1875rem -0.1875rem 0.3125rem rgba(0, 0, 0, 0.5),
-    0rem 0rem 0.5625rem 0.375rem #{$hover-accent-color};
-  --button-color: linear-gradient(180deg, #{$main-color}, #{$main-color-light});
-  --button-border: 0.125rem solid#{$border-color};
-  --light-button-color: linear-gradient(180deg, #{$accent-color}, #{$accent-color-light});
-  --light-button-border: 0.125rem solid #{$border-color-light};
-  --light-button-proficient-border: 0.125rem solid #{$prof-color};
-  --light-button-proficient-decoration: #{$accent-color};
-  --light-button-expertise-border: 0.125rem solid #{$expertise-color};
-  --light-button-expertise-decoration: #{$accent-color-light};
-  --drag-handle-color: linear-gradient(180deg, #{$drag-handle-color}, #{$drag-handle-light});
-  --drag-handle-hover: linear-gradient(180deg, #{$drag-handle-hover}, #{$drag-handle-hover-light});
-  --button-hover-border: #{$hover-color};
-  --button-hover-glow: 0 0 0.25rem #{$hover-color-dim}, 0 0 0.25rem #{$hover-color-dim} inset;
-  --button-active-border: 0.125rem solid #{$hover-color};
-  --button-active-glow: 0 0 0.3125rem #{$hover-color};
-
-  --hover-color: #{$hover-color};
-
-  --tray-button-background-color: #{$tray-button-background-color};
-
-  --static-tray-border-color: #{$tray-button-border-color};
-  --static-tray-button-hover-glow-color: #{$hover-color};
-  --static-tray-button-hover-border: #{$hover-color-dim};
-  --static-tray-button-active-inset-color: #{$hover-color-light};
-  --static-tray-button-active-background: #{$hover-color-dim};
-  --static-tray-button-active-glow: #{$hover-color-light};
-  --static-tray-button-active-border-color: #{$hover-color};
-  --static-tray-button-no-slots-background: radial-gradient(
-    circle,
-    #{$hover-color-dim} 0%,
-    #{$hover-color-dim} 100%
-  );
-
-  --custom-tray-inner-glow: #{$tray-button-accent};
-  --custom-tray-border-color: #{$tray-button-border-color};
-  --custom-tray-hover-glow: #{$hover-color};
-  --custom-tray-hover-border: #{$hover-color-dim};
-  --custom-tray-active-glow: #{$hover-color-light};
-  --custom-tray-active-background: #{$hover-color-dim};
-  --custom-tray-active-border: #{$hover-color};
+  --aat-tooltip-bg: #1a2340;
+  --aat-tooltip-border: #6e90ff;
+  --aat-tooltip-text: #e4ebff;
+  --aat-tooltip-font: serif;
+  --aat-tooltip-upper-icon: #aac4ff;
+  --aat-tooltip-header: #ccddff;
+  --aat-tooltip-subtitle: #a4bbf2;
+  --aat-tooltip-damage: #e4ebff;
+  --aat-tooltip-damage-type: #86aaf2;
+  --aat-tooltip-description: #f0f4ff;
+  --aat-tooltip-link: #2d4a80;
+  --aat-tooltip-roll-link: #ccddff;
+  --aat-tooltip-broken: #9db5df;
+  --aat-tooltip-effect: #a0bfff;
+  --aat-tooltip-info: #bfd4f6;
+  --aat-tooltip-footer-bg: #10182b;
+  --aat-tooltip-footer: #f0f4ff;
+  --aat-action-tag-bg: #2c4c8f;
+  --aat-action-tag-text: #ffffff;
 }

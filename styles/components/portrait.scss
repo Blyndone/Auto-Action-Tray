@@ -1,0 +1,97 @@
+@use 'mixins' as *;
+.character-image {
+  position: relative;
+}
+
+.character-image-container {
+  .image-container {
+    @include center;
+    position: relative;
+    padding: 0;
+    width: var(--aat-main-tray-total-height);
+    height: var(--aat-main-tray-total-height);
+    margin-right: 10px;
+    overflow: hidden;
+    border-radius: 50%;
+    outline: 8px solid var(--aat-border-color);
+    vertical-align: middle;
+
+    .image-border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      border-radius: 50%;
+      box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
+      outline: 8px solid rgba(39, 39, 39, 1);
+    }
+  }
+
+  #health-percent {
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
+      inset 0 0 calc(100px - var(--aat-character-health-percent) * 1px)
+        rgba(225, 0, 0, calc(1 - (var(--aat-character-health-percent) / 100)));
+    z-index: 1;
+  }
+
+  .concentrating {
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
+      0 0 32px var(--aat-hover-color-light);
+    outline: 8px solid var(--aat-hover-color);
+  }
+
+  img {
+    width: var(--aat-main-tray-total-height);
+    height: var(--aat-main-tray-total-height);
+    background: #5b5b5b;
+    vertical-align: middle;
+    border: none;
+    object-fit: cover;
+  }
+}
+
+.hp-container {
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  bottom: 0px;
+  width: var(--aat-main-tray-total-height);
+  z-index: 2;
+  margin-bottom: 8px;
+}
+
+@mixin hp {
+  font-weight: bold;
+  font-size: 40px;
+  color: #f1f1f1;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+}
+
+.hp-form {
+  @include inset-tray;
+  background: #333;
+}
+
+.hp-form input {
+  @include hp;
+  height: 50px;
+  pointer-events: all;
+}
+
+.hp-text {
+  @include hp;
+}
+
+.temp-hp-text {
+  color: #5bc0de;
+  font-weight: bold;
+  font-size: 40px;
+  text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
+}

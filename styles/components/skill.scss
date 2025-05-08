@@ -1,0 +1,12 @@
+@use 'mixins' as *;
+
+.skill-tray-container {
+  @include inset-tray;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  min-width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 2);
+  height: var(--aat-main-tray-total-height);
+  padding: var(--aat-main-tray-padding);
+}

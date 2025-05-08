@@ -1,0 +1,73 @@
+@use 'mixins' as *;
+
+.custom-tray-container {
+  @include center;
+  position: absolute;
+  top: calc(var(--aat-main-tray-total-height) - 10px);
+  border-radius: 0 0 18px 18px;
+  background: rgba(255, 255, 255, 0);
+  padding: 0 5px 5px;
+}
+
+.custom-tray-button,
+.custom-tray-active {
+  @include center;
+  display: flex;
+  height: var(--aat-custom-tray-size);
+  padding: 25px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  border-left: 6px inset;
+  border-right: 6px inset;
+  border-bottom: 6px inset;
+  transition: all 0.3s ease;
+}
+
+.custom-tray-button {
+  background: var(--aat-tray-button-background-color);
+  box-shadow: inset 0 0 7px var(--aat-tray-button-accent), 0 0 11px 5px rgba(0, 0, 0, 0.5098039216);
+  border-color: var(--aat-tray-button-border-color);
+  z-index: 2;
+  &:hover {
+    box-shadow: 0 0 12px var(--aat-hover-color), inset 0 0 12px var(--aat-hover-color);
+    border-color: var(--aat-hover-color);
+  }
+}
+
+.custom-tray-active {
+  position: relative;
+  background: var(--aat-hover-color-dim);
+  color: #f1f1f1;
+  font-family: serif;
+  font-size: 16px;
+  box-shadow: inset 0 0 15px var(--aat-hover-color-light), 0 0 7px 3px #00000082;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  border-color: var(--aat-hover-color);
+}
+
+.selected-tray-indicator {
+  position: absolute;
+  top: -8px;
+  font-size: large;
+}
+
+.tray-information {
+  background: #5b5b5b;
+  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  border: 5px solid var(--aat-border-color);
+  border-radius: 15px;
+  background: #5b5b5b;
+  border: 0 solid #2f2f2f;
+  border-radius: 0 0 19px 19px;
+  outline: 2px solid var(--aat-border-color);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
+    inset 0 -4.8px 6.6px var(--aat-hover-color-light);
+  margin: 10px;
+  padding: 10px 35px 10px 35px;
+  transition: all 0.3s ease;
+  font-family: serif;
+  font-size: 36px;
+  color: #f1f1f1;
+  text-shadow: 0 0 10px black;
+}

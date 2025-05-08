@@ -1,0 +1,26 @@
+@use 'mixins' as *;
+.equipment-misc-tray-container {
+  @include center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: var(--aat-main-tray-total-height);
+  width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
+  margin: 5px;
+}
+
+.equipment-tray-container {
+  @include inset-tray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: calc(var(--aat-main-tray-padding) * 2);
+  width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
+  gap: var(--aat-main-tray-gap);
+  img {
+    @include hover;
+    @include item;
+  }
+}

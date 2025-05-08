@@ -1,0 +1,110 @@
+.tooltip-container {
+  background: var(--aat-tooltip-bg);
+  border: 2px solid var(--aat-tooltip-border);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--aat-tooltip-text);
+  width: 300px;
+  font-family: var(--aat-tooltip-font);
+  position: relative;
+  text-align: left;
+}
+
+.tooltip-header {
+  position: relative;
+}
+
+.tooltip-upper-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 6px;
+  font-size: 16px;
+  color: var(--aat-tooltip-upper-icon);
+}
+
+.tooltip-header h2 {
+  padding: 2px 0;
+  margin: 0;
+  font-size: 20px;
+  color: var(--aat-tooltip-header);
+}
+
+.tooltip-subtitle {
+  margin-top: 6px;
+  margin-left: 15px;
+  font-size: 14px;
+  color: var(--aat-tooltip-subtitle);
+}
+
+.tooltip-damage h3 {
+  padding: 4px 0;
+  font-size: 16px;
+  margin: 6px 0 4px;
+  color: var(--aat-tooltip-damage);
+}
+
+.damage-type {
+  font-size: 16px;
+  color: var(--aat-tooltip-damage-type);
+  padding: 3px 0;
+}
+
+.tooltip-description {
+  margin: 6px 0;
+  font-size: 13px;
+  color: var(--aat-tooltip-description);
+  word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 15;
+  overflow: hidden;
+}
+
+.tooltip-description a {
+  color: var(--aat-tooltip-link);
+}
+
+.tooltip-description .roll-link,
+.tooltip-description .roll-link-group {
+  color: var(--aat-tooltip-roll-link);
+  text-decoration: underline;
+  text-decoration-color: var(--aat-tooltip-roll-link);
+}
+
+.tooltip-description .broken {
+  color: var(--aat-tooltip-broken);
+}
+
+.tooltip-effect {
+  font-size: 12px;
+  color: var(--aat-tooltip-effect);
+}
+
+.tooltip-duration,
+.tooltip-info {
+  font-size: 16px;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--aat-tooltip-info);
+}
+
+.tooltip-footer {
+  flex-direction: row;
+  display: flex;
+  margin-top: 10px;
+  background-color: var(--aat-tooltip-footer-bg);
+  padding: 6px;
+  font-size: 16px;
+  color: var(--aat-tooltip-footer);
+}
+
+.action-tag {
+  background: var(--aat-action-tag-bg);
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 16px;
+  color: var(--aat-action-tag-text);
+}

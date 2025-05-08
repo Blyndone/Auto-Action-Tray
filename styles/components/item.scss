@@ -1,0 +1,136 @@
+@use 'mixins' as *;
+
+.transparent-box {
+  @include item;
+  @include center;
+  border: 3px solid #2c2d2e;
+}
+.transparent-box-passive {
+  @include item;
+  @include center;
+  border: 3px solid #2c2d2e;
+}
+
+img.common-item {
+  border: 3px solid #333;
+  @include hover;
+}
+
+img.uncommon-item {
+  border: 3px solid #11cf00;
+  @include hover;
+}
+
+img.rare-item {
+  border: 3px solid #164cfc;
+  @include hover;
+}
+
+img.veryRare-item {
+  border: 3px solid #a665e4;
+  @include hover;
+}
+
+img.legendary-item {
+  border: 3px solid #e29404;
+  @include hover;
+}
+
+img.artifact-item {
+  border: 3px solid #c00505;
+  @include hover;
+}
+
+img.item-equipped {
+  box-shadow: 0 0 11.4px #ffffff8d;
+}
+
+.multi-group0 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px var(--aat-multi-0);
+  z-index: 1;
+}
+
+.multi-group1 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px var(--aat-multi-1);
+  z-index: 1;
+}
+
+.multi-group2 {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px var(--aat-multi-2);
+  z-index: 1;
+}
+
+.multi-additional {
+  border-radius: 8px;
+  box-shadow: 0 0 7px 1px var(--aat-multi-aux);
+  z-index: 1;
+}
+
+.consumable-count {
+  position: absolute;
+  pointer-events: none;
+  bottom: 29px;
+  right: 0;
+  color: #f1f1f1;
+  font-size: 29px;
+  font-weight: bold;
+  min-width: var(--aat-item-size);
+  text-align: right;
+  height: 0;
+  text-shadow: -1px -1px 3px black, 1px -1px 6px black, -1px 1px 2px black, 1px 1px 10px black;
+  margin: 8px;
+}
+
+.wildcard-icon {
+  position: absolute;
+  top: calc(var(--aat-item-size) * -1);
+  right: 0;
+  color: #f1f1f1;
+  font-size: 22px;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: right;
+  height: 0;
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+  margin: 6.4px;
+}
+
+.spell-item-container {
+  position: relative;
+}
+
+.spell-item-container-img-upcast {
+  filter: brightness(65%);
+  &:hover {
+    filter: brightness(100%);
+  }
+}
+
+.spell-item-container-text {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 5px 10px;
+  font-size: 30px;
+  color: #f1f1f1;
+  text-shadow: 0 0 6px black, 0 0 6px black, 0 0 6px black;
+  pointer-events: none;
+}
+
+.spell-item-container-text-upcast {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: bold;
+  position: absolute;
+  transform: translateY(-5%);
+  top: 0;
+  right: 0;
+  padding: 0px 8px;
+  font-size: 32px;
+  color: #f1f1f1;
+  text-shadow: 0 0 6px black, 0 0 6px black, 0 0 6px black;
+  pointer-events: none;
+}

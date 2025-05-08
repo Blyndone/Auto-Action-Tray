@@ -186,7 +186,7 @@ Hooks.once('ready', async function () {
     default: 3,
 
     choices: {
-      // 2: '2 Rows',
+      2: '2 Rows',
       3: '3 Rows',
       4: '4 Rows',
     },
@@ -211,19 +211,19 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-  game.settings.register('auto-action-tray', 'iconSize', {
-    name: 'Icon Size',
-    hint: 'Select Icon Size',
+  game.settings.register('auto-action-tray', 'scale', {
+    name: 'Scale',
+    hint: 'Set the Scale of the Hotbar',
     scope: 'client',
     config: true,
 
     type: Number,
-    default: 75,
+    default: .6,
 
     range: {
-      min: 30,
-      step: 5,
-      max: 100,
+      min: .2,
+      step: .05,
+      max: 1.5,
     },
 
     requiresReload: true,

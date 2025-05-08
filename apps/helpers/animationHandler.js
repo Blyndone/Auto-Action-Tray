@@ -152,16 +152,16 @@ export class AnimationHandler {
       let yOffset = 0
       switch (tray.type) {
         case 'static':
-          yOffset = -100
+          yOffset = -200
           break
         case 'activity':
-          yOffset = 200
+          yOffset = 400
           break
         case 'custom':
-          xOffset = 1000
+          xOffset = 1500
           break
         case 'target':
-          yOffset = -200
+          yOffset = -400
           break
       }
 
@@ -172,6 +172,7 @@ export class AnimationHandler {
       })
 
       gsap.to(`.${tray.id}`, {
+        force3D:false,
         opacity: 1,
         y: 0,
         x: 0,
@@ -199,20 +200,21 @@ export class AnimationHandler {
       let yOffset = 0
       switch (tray.type) {
         case 'static':
-          yOffset = -100
+          yOffset = -200
           break
         case 'activity':
-          yOffset = 200
+          yOffset = 400
           break
         case 'custom':
-          xOffset = 1000
+          xOffset = 1500
           break
         case 'target':
-          yOffset = -200
+          yOffset = -400
           break
       }
 
       gsap.to(`.${tray.id}`, {
+        force3D:false,
         opacity: 1,
         y: yOffset,
         x: xOffset,
@@ -231,7 +233,7 @@ export class AnimationHandler {
       clipPath: `inset(-7px ${width}px -5px -5px)`,
       duration: 0.4,
       onComplete: () => {
-        document.documentElement.style.setProperty('--stacked-spacer-width', width + 'px')
+        document.documentElement.style.setProperty('--aat-stacked-spacer-width', width + 'px')
       },
     })
   }
@@ -246,6 +248,7 @@ export class AnimationHandler {
           if (tray.id != 'common') xOffset = -22
           this.setStackedTrayPos(tray)
           gsap.to(`.container-${tray.id}`, {
+            force3D:false,
             opacity: 1,
             x: xOffset,
             duration: AnimationHandler.getAnimationDuration(tray.id),
@@ -256,8 +259,9 @@ export class AnimationHandler {
           })
         } else {
           gsap.to(`.container-${tray.id}`, {
+            force3D:false,
             opacity: 1,
-            x: 1000,
+            x: 1500,
             duration: AnimationHandler.getAnimationDuration(tray.id),
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
@@ -275,6 +279,7 @@ export class AnimationHandler {
       this.animateSpacer(17)
       trayIn.trays.forEach((tray) => {
         gsap.to(`.container-${tray.id}`, {
+          force3D:false,
           opacity: 1,
           x: tray.xPos,
           duration: AnimationHandler.getAnimationDuration(tray.id),
@@ -305,7 +310,7 @@ export class AnimationHandler {
   setPreStackedTrayPos(tray, trayOut) {
     gsap.set(`.container-${tray.id}`, {
       opacity: 1,
-      x: tray == trayOut ? 0 : 1000,
+      x: tray == trayOut ? 0 : 1500,
     })
   }
 

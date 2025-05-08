@@ -1,0 +1,140 @@
+@use 'mixins' as *;
+
+.end-turn-container {
+  @include center;
+  height: 100%;
+}
+
+.end-turn-swap-button-container,
+.toggle-condition-tray-button {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+.swap-skill-tray-button {
+  @include center;
+  @include button-style;
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  margin: 3px;
+  border-radius: 50%;
+  font-size: 26px;
+}
+
+.toggle-condition-tray-button {
+  @include center;
+  @include button-style;
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  margin: 3px;
+  border-radius: 50%;
+  font-size: 26px;
+}
+
+.end-turn-btn,
+.end-turn-btn-dice,
+.end-turn-btn-nohover {
+  @include inset-tray;
+  border: 0px;
+  padding: var(--aat-main-tray-padding);
+  transition: 0.3s ease-in-out;
+  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) * 0.9);
+  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) * 0.9);
+  border-radius: 50%;
+  font-size: 20px;
+  margin: 15px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: all;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  outline: 8px solid var(--aat-border-color);
+  &:active {
+    box-shadow: inset 0 0 10px #ffffff;
+    filter: brightness(1.2);
+  }
+}
+
+.end-turn-btn {
+  background: radial-gradient(#ff4800, #000);
+  &:active {
+    background: radial-gradient(#fc3c1b, #420000);
+    box-shadow: inset 0 0 15px #3a0804;
+  }
+  &:hover {
+    box-shadow: 0 0 10px #ff7b50, inset 0 0 10px #3a0804;
+  }
+}
+
+.end-turn-btn-dice {
+  color: #fff;
+  // border: 3px solid var(--aat-border-color);
+  background: radial-gradient(var(--aat-main-color-light) 35%, var(--aat-main-color) 65%);
+
+  &:hover {
+    background: radial-gradient(var(--aat-main-color-light) 35%, var(--aat-main-color) 65%);
+
+    box-shadow: inset 0px 0px 10px rgb(255 255 255 / 50%),
+      0 0 15px 10px var(--aat-hover-accent-color);
+  }
+
+  .end-turn-btn-dice-icon {
+    font-size: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) * 0.6);
+    color: #f1f1f1;
+    display: flex;
+    i {
+      text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 6px rgba(0, 0, 0, 0.8);
+    }
+  }
+}
+
+.end-turn-btn-nohover {
+  background: radial-gradient(#ff8725, #552502);
+  pointer-events: none;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.end-turn-btn-text {
+  font-size: 18px;
+  line-height: 22px;
+  font-family: serif;
+  color: #f1f1f1;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8), 0 0 5px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.turn-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count));
+  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count));
+  transform: translate(-50%, -50%) rotate(90deg);
+  pointer-events: none;
+}
+
+.minimize-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  pointer-events: all;
+  i {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,253 @@
+@use 'mixins' as *;
+
+@mixin ability-tray-size {
+  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
+  height: calc(
+    var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 +
+      var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1)
+  );
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  list-style-type: none;
+  padding: var(--aat-main-tray-padding);
+  align-items: center;
+}
+.abilities-tray {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+}
+
+.ability-tray-container {
+  @include inset-tray;
+
+  height: var(--aat-main-tray-total-height);
+  padding: var(--aat-main-tray-padding);
+  width: calc(
+    var(--aat-item-size) * var(--aat-item-tray-item-width-count) + var(--aat-main-tray-padding) * 2 +
+      5px
+  );
+  margin: 5px;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  position: relative;
+  background: #5b5b5b;
+
+  .activity-selection-text {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    color: #f1f1f1;
+    font-family: serif;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  }
+
+  .use-slot-text-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 8px;
+    font-size: 30px;
+    color: #f1f1f1;
+    font-family: serif;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .use-slot-checkbox {
+    @include inset-tray;
+
+    border: 2px solid #f1f1f1;
+    border-radius: 4px;
+    background-color: #0d0d12;
+
+    &:not(:checked) {
+      scale: 2;
+      margin: 20px;
+    }
+
+    &:checked {
+      background-color: var(--aat-hover-color);
+      border-color: var(--aat-hover-color-light);
+      scale: 2;
+      margin: 20px;
+
+      &:hover {
+        border: 2px solid var(--aat-hover-color-light);
+        box-shadow: 0 0 5px var(--aat-hover-color-dim);
+      }
+
+      &::before {
+        background-color: #0d0d12;
+      }
+    }
+  }
+
+  img {
+    @include item;
+    @include hover;
+  }
+
+  .ability-button-passive img {
+    @include center;
+    @include hover;
+    border-radius: 50%;
+    border: 2px solid #2c2d2e;
+    box-shadow: 0 0 2px #0d0d12;
+  }
+
+  .ability-ol {
+    @include ability-tray-size;
+    background: #5b5b5b;
+    flex-direction: column;
+    border-radius: 10px;
+
+    .context-item {
+      width: auto;
+      height: auto;
+    }
+
+    li {
+      margin: var(--aat-main-tray-gap);
+      width: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
+      height: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
+      box-sizing: border-box;
+    }
+  }
+
+  .activity-ol {
+    @include ability-tray-size;
+    @include center;
+
+    flex-direction: row;
+
+    li {
+      margin: 5px;
+      width: calc(var(--aat-item-size) * 0.8);
+      height: calc(var(--aat-item-size) * 0.8);
+    }
+  }
+
+  .condition-ol {
+    @include ability-tray-size;
+    @include center;
+
+    flex-direction: column;
+
+    img {
+      border: 0;
+    }
+
+    li {
+      background: #333;
+      margin: 16px;
+      margin-bottom: 32px;
+      width: calc(var(--aat-item-size) * 0.8);
+      height: calc(var(--aat-item-size) * 0.8);
+
+      .condition-label {
+        font-size: 24px;
+        color: #f1f1f1;
+        font-family: serif;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+        margin: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+.activity-button {
+  position: relative;
+  outline: 2px outset var(--aat-border-color);
+  border-radius: 8px;
+  box-shadow: 0 0 15px 5px var(--aat-border-color);
+  // transition: box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
+  width: calc(var(--aat-item-size) * 0.8);
+  height: calc(var(--aat-item-size) * 0.8);
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 0 30px 10px var(--aat-hover-color), 0 0 20px 5px var(--aat-hover-color) inset;
+    transform: scale(1.05);
+  }
+
+  img {
+    width: calc(var(--aat-item-size) * 0.8);
+    height: calc(var(--aat-item-size) * 0.8);
+    pointer-events: none;
+  }
+}
+
+.activity-button-inactive {
+  position: relative;
+  outline: 2px outset var(--aat-border-color);
+  border-radius: 8px;
+  box-shadow: 0 0 10px var(--aat-border-color);
+
+  width: calc(var(--aat-item-size) * 0.8);
+  height: calc(var(--aat-item-size) * 0.8);
+  overflow: hidden;
+  filter: brightness(0.45);
+  &:hover {
+    box-shadow: 0 0 30px 10px var(--aat-hover-color), 0 0 20px 5px var(--aat-hover-color) inset;
+    transform: scale(1.05);
+  }
+  img {
+    width: calc(var(--aat-item-size) * 0.8);
+    height: calc(var(--aat-item-size) * 0.8);
+  }
+}
+
+.activity-slot-icon-container {
+  position: relative;
+  @include center;
+
+  i {
+    position: absolute;
+    top: -9px;
+    left: 46%;
+    transform: translateX(-50%);
+  }
+
+  .icon-slot-spent {
+    opacity: 1;
+  }
+}
+
+.ability-selection-input {
+  @include inset-tray;
+  position: absolute;
+  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
+  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count));
+  left: 50%;
+  bottom: 104%;
+  transform: translateX(-50%);
+  border: 3px solid #c9593f;
+  outline: 3px solid #c9593f;
+  box-shadow: 0 0 8px #c9593f, 0 0 8px #c9593f, 0 0 8px #c9593f;
+}
+.target-tray-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.target-tray-icon {
+  font-size: 25px;
+  color: #00aaff;
+  text-shadow: 0 0 8px rgb(67 67 67 / 80%);
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+  font-size: 48px;
+}

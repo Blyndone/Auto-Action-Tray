@@ -90,7 +90,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     let rowCount = 2
     let columnCount = 10
-    let iconSize = 75
+    let scale = .6
     this.styleSheet
 
     for (let sheet of document.styleSheets) {
@@ -99,24 +99,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         break
       }
 
-      if (game.settings.get('auto-action-tray', 'iconSize')) {
-        iconSize = game.settings.get('auto-action-tray', 'iconSize')
-        document.documentElement.style.setProperty('--item-size', iconSize / 16 + 'rem')
-        document.documentElement.style.setProperty('--text-scale-ratio', iconSize / 75)
+      if (game.settings.get('auto-action-tray', 'scale')) {
+        scale = game.settings.get('auto-action-tray', 'scale')
+        document.documentElement.style.setProperty('--aat-scale', scale)
+
       }
       if (game.settings.get('auto-action-tray', 'rowCount')) {
         rowCount = game.settings.get('auto-action-tray', 'rowCount')
-        document.documentElement.style.setProperty('--item-tray-item-height-count', rowCount)
+        document.documentElement.style.setProperty('--aat-item-tray-item-height-count', rowCount)
       }
       if (game.settings.get('auto-action-tray', 'columnCount')) {
         columnCount = game.settings.get('auto-action-tray', 'columnCount')
-        document.documentElement.style.setProperty('--item-tray-item-width-count', columnCount)
+        document.documentElement.style.setProperty('--aat-item-tray-item-width-count', columnCount)
       }
 
       this.totalabilities = rowCount * columnCount
       this.rowCount = rowCount
       this.columnCount = columnCount
-      this.iconSize = iconSize
+      this.iconSize = 100
     }
 
     Hooks.on('controlToken', this._onControlToken.bind(this))
@@ -151,7 +151,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         return
       }
       let color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
-      document.documentElement.style.setProperty('--modifier-highlight-color', color)
+      document.documentElement.style.setProperty('--aat-modifier-highlight-color', color)
       const elements = document.querySelectorAll('.modifier-highlight')
       elements.forEach((el) => {
         el.classList.add('modifier-active')
@@ -163,7 +163,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       if (!e.ctrlKey) this.ctrlDown = false
 
       const elements = document.querySelectorAll('.modifier-highlight')
-      document.documentElement.style.setProperty('--modifier-highlight-color', '')
+      document.documentElement.style.setProperty('--aat-modifier-highlight-color', '')
       elements.forEach((el) => {
         el.classList.remove('modifier-active')
       })
@@ -441,7 +441,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (this.currentTray.id == 'stacked') {
-      document.documentElement.style.setProperty('--stacked-spacer-width', 17 + 'px')
+      document.documentElement.style.setProperty('--aat-stacked-spacer-width', 17 + 'px')
     }
 
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
@@ -959,6 +959,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         minX: 22,
         maxX: hotbar.stackedTray.trays[2].xPos - handleSize,
       },
+      force3D:false,
       handle: '.handle-classFeatures',
       inertia: true,
       zIndexBoost: false,
@@ -986,6 +987,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         minX: hotbar.stackedTray.trays[1].xPos + handleSize,
         maxX: hotbar.columnCount * hotbar.iconSize - handleSize - spacerSize,
       },
+       force3D:false,
       handle: '.handle-items',
       zIndexBoost: false,
       inertia: true,

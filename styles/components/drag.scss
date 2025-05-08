@@ -1,0 +1,48 @@
+.drag-handle {
+  height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 8);
+  width: calc((var(--aat-item-size) / 3) + 2px);
+  background: linear-gradient(180deg, var(--aat-drag-handle-color), var(--aat-drag-handle-light));
+  outline: 5px solid #5b5b5b;
+  outline-offset: -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: inset 0 0 10px 3px #000000;
+  &:hover {
+    background: linear-gradient(
+      180deg,
+      var(--aat-drag-handle-hover),
+      var(--aat-drag-handle-hover-light)
+    );
+  }
+}
+
+.drag-spacer {
+  height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 2);
+  width: calc((var(--aat-item-size) / 3) + 2px);
+  position: absolute;
+  background: #5b5b5b;
+  right: 0;
+  z-index: 3;
+}
+
+.drag-tray-container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+}
+.stacked-tray-spacer-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  // margin-right: var(--aat-stacked-spacer-width);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: visible;
+  // overflow-y: visible;
+  clip-path: inset(-7px var(--aat-stacked-spacer-width) -5px -5px);
+}
