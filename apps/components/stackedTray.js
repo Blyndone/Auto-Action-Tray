@@ -20,8 +20,8 @@ export class StackedTray {
     } else {
       this.setTrayPositions([
         0,
-        this.hotbar.iconSize * 5,
-        this.hotbar.iconSize * 31 / 3 + 2
+        this.hotbar.iconSize * 5 + 2 + 5,
+        this.hotbar.iconSize * 31 / 3 + 4 + 10
       ]);
     }
   }
@@ -51,7 +51,7 @@ export class StackedTray {
   }
 
   setTrayPositions(trayPositions) {
-    const defaults = [0, 150, 300];
+    const defaults = [0, 105, 1050];
     const maxPos = this.hotbar.iconSize * this.hotbar.columnCount;
 
     for (let i = 0; i < 3; i++) {

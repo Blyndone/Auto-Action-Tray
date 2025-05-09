@@ -3,7 +3,7 @@
   @include center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   position: relative;
   height: var(--aat-main-tray-total-height);

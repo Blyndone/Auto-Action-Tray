@@ -4,6 +4,8 @@ export class AnimationHandler {
     this.animationDuration = 0.5
     this.animationStack = []
     this.defaultTray = options.defaultTray || 'stacked'
+    this.verticalBounds = this.hotbar.iconSize  * (this.hotbar.rowCount +1)
+    this.horizontalBounds = this.hotbar.iconSize  * (this.hotbar.columnCount +1)
   }
 
   async pushTray(trayId) {
@@ -47,9 +49,9 @@ export class AnimationHandler {
   static getAnimationDuration(trayId) {
     switch (trayId) {
       case 'activity':
-        return 0.25
+        return 0.5
       case 'target-helper':
-        return 0.25
+        return 0.3
       default:
         return 0.5
     }
@@ -152,16 +154,16 @@ export class AnimationHandler {
       let yOffset = 0
       switch (tray.type) {
         case 'static':
-          yOffset = -200
+          yOffset = -1 * this.verticalBounds
           break
         case 'activity':
-          yOffset = 400
+          yOffset = this.verticalBounds
           break
         case 'custom':
-          xOffset = 1500
+          xOffset = this.horizontalBounds
           break
         case 'target':
-          yOffset = -400
+          yOffset = -1 * this.verticalBounds
           break
       }
 
@@ -200,16 +202,16 @@ export class AnimationHandler {
       let yOffset = 0
       switch (tray.type) {
         case 'static':
-          yOffset = -200
+          yOffset = -1 * this.verticalBounds
           break
         case 'activity':
-          yOffset = 400
+          yOffset = this.verticalBounds
           break
         case 'custom':
-          xOffset = 1500
+          xOffset = this.horizontalBounds
           break
         case 'target':
-          yOffset = -400
+          yOffset = -1 * this.verticalBounds
           break
       }
 
@@ -261,7 +263,7 @@ export class AnimationHandler {
           gsap.to(`.container-${tray.id}`, {
             force3D:false,
             opacity: 1,
-            x: 1500,
+            x: this.horizontalBounds,
             duration: AnimationHandler.getAnimationDuration(tray.id),
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
@@ -276,7 +278,7 @@ export class AnimationHandler {
   async animateStackedTrayIn(trayIn, trayOut) {
     return new Promise(async (resolve) => {
       let animationComplete = trayIn.trays.length
-      this.animateSpacer(17)
+      this.animateSpacer(this.hotbar.iconSize / 3)
       trayIn.trays.forEach((tray) => {
         gsap.to(`.container-${tray.id}`, {
           force3D:false,

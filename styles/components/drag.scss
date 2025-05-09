@@ -20,7 +20,7 @@
 
 .drag-spacer {
   height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 2);
-  width: calc((var(--aat-item-size) / 3) + 2px);
+  width: calc((var(--aat-item-size) / 3));
   position: absolute;
   background: #5b5b5b;
   right: 0;

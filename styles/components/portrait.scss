@@ -8,8 +8,8 @@
     @include center;
     position: relative;
     padding: 0;
-    width: var(--aat-main-tray-total-height);
-    height: var(--aat-main-tray-total-height);
+    width: calc(var(--aat-main-tray-total-height) * 0.9);
+    height: calc(var(--aat-main-tray-total-height) * 0.9);
     margin-right: 10px;
     overflow: hidden;
     border-radius: 50%;

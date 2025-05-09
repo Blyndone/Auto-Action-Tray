@@ -2,6 +2,32 @@ export class TrayConfig {
   static async trayConfig() {
     let actor = this.actor
     const fields = foundry.applications.fields
+    const createSliderInput = (options) => {
+      const wrapper = document.createElement('div')
+      wrapper.classList.add('form-fields')
+
+      const input = document.createElement('input')
+      input.type = 'range'
+      input.name = options.name
+      input.style.flex = 'auto'
+
+      if (typeof options.min === 'number') input.setAttribute('min', String(options.min))
+      if (typeof options.max === 'number') input.setAttribute('max', String(options.max))
+      if (typeof options.step === 'number') input.setAttribute('step', String(options.step))
+      if (typeof options.value === 'number') input.setAttribute('value', String(options.value))
+
+
+
+      const display = document.createElement('div')
+      display.id = options.name + '-label'
+      display.classList.add('value-display')
+      display.textContent = options.value
+
+      wrapper.appendChild(input)
+      wrapper.appendChild(display)
+
+      return wrapper
+    }
 
     const themeInput = fields.createSelectInput({
       options: [
@@ -97,17 +123,32 @@ export class TrayConfig {
       hint: 'Choose between portrait or token display',
     })
 
-    const imageScale = fields.createNumberInput({
+    // const imageScale = fields.createNumberInput({
+    //   name: 'imageScale',
+    //   min: 0.1,
+    //   max: 10,
+    //   step: 0.1,
+    //   value: this.trayOptions['imageScale'],
+    // })
+
+    const imageScale = createSliderInput({
       name: 'imageScale',
+      min: 0.1,
+      max: 5,
+      step: 0.1,
       value: this.trayOptions['imageScale'],
     })
+
     const imageScaleOptions = fields.createFormGroup({
       input: imageScale,
       label: 'Image Scale',
       hint: 'Change Character Image Scale.',
     })
-    const imageX = fields.createNumberInput({
+    const imageX = createSliderInput({
       name: 'imageX',
+      min: -500,
+      max: 500,
+      step: 5,
       value: this.trayOptions['imageX'],
     })
     const imageXOptions = fields.createFormGroup({
@@ -115,8 +156,11 @@ export class TrayConfig {
       label: 'Image X Offset',
       hint: 'Change Character Image X Location.',
     })
-    const imageY = fields.createNumberInput({
+    const imageY = createSliderInput({
       name: 'imageY',
+      min: -1000,
+      max: 1000,
+      step: 5,
       value: this.trayOptions['imageY'],
     })
     const imageYOptions = fields.createFormGroup({
@@ -144,14 +188,60 @@ export class TrayConfig {
       label: 'Auto Add Items ',
       hint: 'Automatically add items to the tray when they are created.',
     })
-    const content = `${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
 
+    const content = ` ${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
+    let dialogElement // store the dialog DOM here
+    let handlers = {}
+    let initialValues = {
+      imageScale: this.trayOptions['imageScale'],
+      imageType: this.trayOptions['imageType'],
+      imageX: this.trayOptions['imageX'],
+      imageY: this.trayOptions['imageY'],
+    }
     const method = await foundry.applications.api.DialogV2.wait({
       position: { width: 600 },
       window: { title: 'Tray Quick Config' },
       content: content,
       modal: false,
       rejectClose: false,
+
+      render: (event, dialogEl) => {
+        dialogElement = dialogEl // save for later
+
+        const form = dialogEl.querySelector('form')
+        const elements = form.elements
+
+        handlers.imageScale = (e) => {
+          this.trayOptions['imageScale'] = e.target.value
+          e.target.nextElementSibling.textContent = e.target.value
+          this.render({ parts: ['characterImage'] })
+        }
+
+        handlers.imageType = (e) => {
+          this.trayOptions['imageType'] = e.target.value
+          this.trayOptions['imageScale'] = 1
+          this.trayOptions['imageX'] = 0
+          this.trayOptions['imageY'] = 0
+          this.render({ parts: ['characterImage'] })
+        }
+
+        handlers.imageX = (e) => {
+          this.trayOptions['imageX'] = e.target.value
+          e.target.nextElementSibling.textContent = e.target.value
+          this.render({ parts: ['characterImage'] })
+        }
+
+        handlers.imageY = (e) => {
+          this.trayOptions['imageY'] = e.target.value
+          e.target.nextElementSibling.textContent = e.target.value
+          this.render({ parts: ['characterImage'] })
+        }
+
+        elements.imageScale.addEventListener('input', handlers.imageScale)
+        elements.imageType.addEventListener('change', handlers.imageType)
+        elements.imageX.addEventListener('input', handlers.imageX)
+        elements.imageY.addEventListener('input', handlers.imageY)
+      },
 
       buttons: [
         {
@@ -166,21 +256,39 @@ export class TrayConfig {
         },
       ],
     }).then((result) => {
-      if(actor != this.actor) return
-      if (result == null) return
-      if (result['imageType'] == '') {
+      // Use saved dialogElement to remove listeners
+      const form = dialogElement?.querySelector('form')
+      if (form) {
+        const elements = form.elements
+        elements.imageScale?.removeEventListener('input', handlers.imageScale)
+        elements.imageType?.removeEventListener('change', handlers.imageType)
+        elements.imageX?.removeEventListener('input', handlers.imageX)
+        elements.imageY?.removeEventListener('input', handlers.imageY)
+      }
+
+      // Your existing result processing
+      if (event.target.dataset.action === 'cancel' || !result) {
+        this.trayOptions = { ...this.trayOptions, ...initialValues }
+        this.render({ parts: ['characterImage'] })
+        return
+      }
+      if (actor !== this.actor) return
+      if (result['imageType'] === '') {
         result['imageType'] = this.trayOptions['imageType']
       }
-      if (result['theme']) { 
+
+      if (result['theme']) {
         game.settings.set('auto-action-tray', 'tempTheme', result.theme)
       }
+
       if (result['clearCustomStaticTrays']) {
         this.trayOptions['customStaticTrays'] = []
         result['customStaticTrays'] = []
       }
-      if (result['customStaticTrays'] != '') {
+
+      if (result['customStaticTrays'] !== '') {
         let itemId = this.actor.items.find(
-          (e) => e.name.toLowerCase() == result['customStaticTrays'].toLowerCase(),
+          (e) => e.name.toLowerCase() === result['customStaticTrays'].toLowerCase(),
         )?.id
         if (itemId) {
           result['customStaticTrays'] = [...this.trayOptions['customStaticTrays'], itemId]
@@ -188,6 +296,7 @@ export class TrayConfig {
           result['customStaticTrays'] = this.trayOptions['customStaticTrays']
         }
       }
+
       this.trayOptions = { ...this.trayOptions, ...result }
       this.setTrayConfig(this.trayOptions)
       this.render(true)
