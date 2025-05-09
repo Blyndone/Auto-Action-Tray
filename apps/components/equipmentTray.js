@@ -21,6 +21,7 @@ export class EquipmentTray extends CustomTray {
     let actor = fromUuidSync(this.actorUuid)
     tmpActor = actor
     let allItems = this.application.getActorAbilities(this.actorUuid)
+    allItems.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
     let meleeWeapons
     meleeWeapons = allItems.filter(
       (e) =>

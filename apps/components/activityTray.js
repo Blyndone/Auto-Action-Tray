@@ -70,8 +70,12 @@ export class ActivityTray extends AbilityTray {
 
   async selectAbility(item, actor, hotbar) {
     this.label = item.name
+    if (item.preparationMode == 'pact') { 
+      return item.defaultActivity
+    }
     hotbar.selectingActivity = true
     hotbar.animationHandler.pushTray('activity')
+   
 
     let act
     try {

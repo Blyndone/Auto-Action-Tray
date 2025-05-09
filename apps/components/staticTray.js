@@ -47,7 +47,7 @@ export class StaticTray extends AbilityTray {
           )
           .sort((a, b) => {
             const priority = {
-        weapon: 0,
+              weapon: 0,
               default: 1,
               feat: 2,
               spell: 3,
@@ -138,6 +138,7 @@ export class StaticTray extends AbilityTray {
               e.spellLevel <= this.spellLevel &&
               e.spellLevel != 0 &&
               e.isScaledSpell &&
+              e.preparationMode != 'pact' &&
               (e.item.system.uses?.max == '' ||
                 (ActivityTray.checkSpellConfigurable(e.item) &&
                   e.item.system.level == this.spellLevel)) &&
@@ -166,6 +167,7 @@ export class StaticTray extends AbilityTray {
         this.id = 'ritual'
         break
     }
+    this.abilities.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
   }
 
   static generateStaticTrays(actor, options = {}) {
@@ -208,7 +210,7 @@ export class StaticTray extends AbilityTray {
       .map((key) => slots[key].level)
 
     let allItems = options.application.getActorAbilities(actor.uuid)
-    let spells = allItems.filter((e) => e.type === 'spell' && e.isPrepared)
+    let spells = allItems.filter((e) => e.type === 'spell' && e.isPrepared && e.isScaledSpell)
 
     if (spells.length > 0) {
       levels = [...new Set([...levels, ...spells.map((x) => x.spellLevel)])].sort((a, b) => a - b)

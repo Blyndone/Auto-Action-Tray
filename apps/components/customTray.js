@@ -20,6 +20,7 @@ export class CustomTray extends AbilityTray {
 
   generateTray() {
     let allItems = this.application.getActorAbilities(this.actorUuid)
+    allItems.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
     switch (this.category) {
       case 'common':
         this.abilities = allItems
