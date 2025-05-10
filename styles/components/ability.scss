@@ -30,13 +30,13 @@
     (var(--aat-item-size) + var(--aat-main-tray-gap)) * var(--aat-item-tray-item-width-count) +
       var(--aat-main-tray-padding) * 2
   );
-  margin: 5px;
+  // margin: 5px;
   display: flex;
   overflow: hidden;
   align-items: center;
   position: relative;
   background: #5b5b5b;
-
+  border-radius: 15px 15px 0px 0px;
   .activity-selection-text {
     position: absolute;
     top: 15px;
@@ -110,7 +110,7 @@
     background: #5b5b5b;
     flex-direction: column;
     border-radius: 10px;
-
+    justify-content: center;
     .context-item {
       width: auto;
       height: auto;

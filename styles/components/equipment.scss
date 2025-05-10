@@ -8,7 +8,7 @@
   position: relative;
   height: 100%;
   width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
-  margin: 5px;
+  // margin: 5px;
 }
 .equipment-misc-tray {
 }
@@ -21,6 +21,7 @@
   padding: calc(var(--aat-main-tray-padding) * 2);
   width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
   gap: var(--aat-main-tray-gap);
+  border-radius: 15px 15px 0px 0px;
   img {
     @include hover;
     @include item;

@@ -1,13 +1,18 @@
+.drag-handle-container {
+  height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 5);
+  width: calc(var(--aat-item-size) / 3 + 2px);
+  padding: 15px 0px 15px 6px;
+  background: #5b5b5b;
+}
 .drag-handle {
-  height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 8);
-  width: calc((var(--aat-item-size) / 3) + 2px);
+  height: 100%;
+  width: 100%;
   background: linear-gradient(180deg, var(--aat-drag-handle-color), var(--aat-drag-handle-light));
-  outline: 5px solid #5b5b5b;
-  outline-offset: -3px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 35px;
   box-shadow: inset 0 0 10px 3px #000000;
   &:hover {
     background: linear-gradient(

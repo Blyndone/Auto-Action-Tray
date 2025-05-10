@@ -1,3 +1,4 @@
+
 export class CombatHandler {
   constructor(options = {}) {
     this.actor;
@@ -20,18 +21,25 @@ export class CombatHandler {
   }
 
   async setActor(actor) {
+    if (this.actor != actor) {
+      this.setDefaultActions(actor);
+    }
     this.actor = actor;
-    this.setDefaultActions(actor);
     await this.setCombat(actor);
   }
   setDefaultActions(actor) {
     this.actions = {
+      combatId: this.combat?.id,
+      round: this.combat?.round,
+      turn: this.combat?.turn,
+      combatantId: this.combat?.combatant.id,
       action: 1,
       bonus: 1,
       movement: actor.system.attributes.movement.walk,
       reaction: 1,
       spellSlot: 1
     };
+    console.log(this.actions);
   }
   consumeAction(type, value = 1) {
     if (!this.isTurn) return;
@@ -42,6 +50,9 @@ export class CombatHandler {
   }
 
   async setCombat(actor) {
+    if (this.actor != actor) {
+      this.setDefaultActions(actor);
+    }
     this.actor = actor;
     this.token = actor.getActiveTokens()[0] || null;
     this.inCombat = actor.inCombat;
@@ -50,7 +61,6 @@ export class CombatHandler {
     this.tillNextTurn = 0;
     this.combat = null;
     let value = 0;
-    this.setDefaultActions(actor);
     if (this.inCombat && this.token && this.token.combatant) {
       this.combat = this.token.combatant.combat;
       this.combatantId = this.token.combatant.id;

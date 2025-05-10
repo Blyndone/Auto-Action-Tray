@@ -5,16 +5,17 @@
 
 .effect-tray {
   position: absolute;
-  bottom: 100%;
-  right: 0px;
+  bottom: 332px;
+  left: 0px;
   display: flex;
   flex-direction: row-reverse;
   align-items: flex-end;
-  justify-content: flex-start;
-  width: 375px;
-  height: 375px;
+  width: 460px;
+  height: 400px;
   align-content: flex-start;
   flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+  margin: 5px;
 }
 
 .effect-tray-icon {

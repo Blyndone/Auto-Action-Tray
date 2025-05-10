@@ -4,7 +4,7 @@
   --aat-item-size: 100px;
   --aat-item-tray-item-width-count: 15;
   --aat-item-tray-item-height-count: 3;
-  --aat-main-tray-padding: 5px;
+  --aat-main-tray-padding: 7px;
   --aat-main-tray-gap: 2px;
   --aat-main-tray-total-height: calc(
     var(--aat-item-tray-item-height-count) * var(--aat-item-size) + var(--aat-main-tray-padding) * 5 +
@@ -82,7 +82,7 @@
   transform-origin: center calc(100% + var(--aat-custom-tray-size) - 10px);
   height: var(--aat-main-tray-total-height);
 
-  background: rgba(117, 117, 117, 0.7);
+  // background: rgba(117, 117, 117, 0.7);
   background-blend-mode: multiply;
   border-radius: 200px 50px 50px 200px;
   box-sizing: border-box;

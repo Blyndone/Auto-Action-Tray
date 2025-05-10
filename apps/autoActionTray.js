@@ -238,6 +238,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       template: 'modules/auto-action-tray/templates/topParts/center-tray.hbs',
       id: 'center-tray',
     },
+    effectsTray: {
+      template: 'modules/auto-action-tray/templates/topParts/effect-tray.hbs',
+      id: 'effect-tray',
+    },
     skillTray: {
       template: 'modules/auto-action-tray/templates/topParts/skill-tray.hbs',
       id: 'skill-tray',
@@ -245,10 +249,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     endTurn: {
       template: 'modules/auto-action-tray/templates/topParts/end-turn.hbs',
       id: 'end-turn',
-    },
-    effectsTray: {
-      template: 'modules/auto-action-tray/templates/topParts/effect-tray.hbs',
-      id: 'effect-tray',
     },
   }
 

@@ -7,7 +7,7 @@
   grid-template-columns: repeat(2, 1fr);
   width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
   height: calc(var(--aat-item-size) * 2);
-
+  border-radius: 0px;
   justify-content: center;
   align-items: flex-start;
   padding: calc(var(--aat-main-tray-padding));

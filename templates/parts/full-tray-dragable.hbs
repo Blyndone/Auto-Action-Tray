@@ -1,9 +1,12 @@
 <div class="abilities-tray custom-tray drag-tray-container container-{{tray.id}} {{tray.id}}">
 
   {{#if (neq tray.id 'common')}}
+  <div class="drag-handle-container">
+
     <div class="drag-handle handle-{{tray.id}}">
       <i class="fa-regular fa-grip-lines-vertical"></i>
     </div>
+  </div>
   {{/if}}
 
   <ol class="ability-ol">

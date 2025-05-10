@@ -1,4 +1,6 @@
-{{#if (eq @root.skillTrayPage 0)}}
+<div class = 'skill-tray'>
+  
+  {{#if (eq @root.skillTrayPage 0)}}
   {{#each skillTray.currentSkills as |skill|}}
     <div
       class="small-button small-button-skill-save modifier-highlight
@@ -35,3 +37,4 @@
     </div>
   {{/each}}
 {{/if}}
+</div>
