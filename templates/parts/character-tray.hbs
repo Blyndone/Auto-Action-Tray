@@ -1,4 +1,18 @@
 <div class="character-image">
+
+  {{#if (eq actor.system.attributes.hp.value 0)}}
+  {{#if (eq actor.type 'character')}}
+<div class="arc-container">
+  <div id="heart-3" class="arc-icon {{getDeathActive 'success' actor.system.attributes.death 3}}" style="--i: 3;"><i class="fa-solid fa-heart-pulse"></i></div>
+  <div id="heart-2" class="arc-icon {{getDeathActive 'success' actor.system.attributes.death 2}}" style="--i: 2;"><i class="fa-solid fa-heart-pulse"></i></div>
+  <div id="heart-1" class="arc-icon {{getDeathActive 'success' actor.system.attributes.death 1}}" style="--i: 1;"><i class="fa-solid fa-heart-pulse"></i></div>
+  <div id="death-dice" class="arc-icon dice" style="--i: 0;" data-action="rollDeathSave"><i class="fa-solid fa-dice-d20"></i></div>
+  <div id="skull-1" class="arc-icon {{getDeathActive 'failure' actor.system.attributes.death 1}}" style="--i: -1;"><i class="fa-solid fa-skull"></i></div>
+  <div id="skull-2" class="arc-icon {{getDeathActive 'failure' actor.system.attributes.death 2}}" style="--i: -2;"><i class="fa-solid fa-skull"></i></div>
+  <div id="skull-3" class="arc-icon {{getDeathActive 'failure' actor.system.attributes.death 3}}" style="--i: -3;"><i class="fa-solid fa-skull"></i></div>
+</div>
+{{/if}}
+{{/if}}
   <div class="image-container 
     {{#if (concentration this.actor)}}
       {{setConcentrationColor trayOptions.concentrationColor}}
@@ -26,6 +40,6 @@
       style="transform: scale({{trayOptions.imageScale}}) translate({{trayOptions.imageX}}px, {{trayOptions.imageY}}px)"
     />
   </div>
-
   {{> "AAT.character-hp" actor=actor}}
+
 </div>

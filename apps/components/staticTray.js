@@ -168,6 +168,7 @@ export class StaticTray extends AbilityTray {
         break
     }
     this.abilities.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
+    this.abilities = this.abilities.filter((e) => e!= null)
   }
 
   static generateStaticTrays(actor, options = {}) {

@@ -22,7 +22,7 @@
   left: 0;
   width: 50px;
   height: 50px;
-  margin: 3px;
+  margin: 5px;
   border-radius: 50%;
   font-size: 26px;
 }
@@ -31,11 +31,11 @@
   @include center;
   @include button-style;
   position: absolute;
-  top: 18px;
+  bottom: calc(min(var(--aat-item-size) * 2.9, var(--aat-main-tray-total-height) * 0.95px) - 17px);
   left: 0;
   width: 50px;
   height: 50px;
-  margin: 3px;
+  margin: 5px;
   border-radius: 50%;
   font-size: 26px;
 }
@@ -47,8 +47,8 @@
   border: 0px;
   padding: var(--aat-main-tray-padding);
   transition: 0.3s ease-in-out;
-  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) * 0.9);
-  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) * 0.9);
+  width: min(calc(var(--aat-item-size) * 2.9), calc(var(--aat-main-tray-total-height) * 0.9));
+  height: min(calc(var(--aat-item-size) * 2.9), calc(var(--aat-main-tray-total-height) * 0.9));
   border-radius: 50%;
   font-size: 20px;
   margin: 15px;
@@ -88,9 +88,10 @@
     box-shadow: inset 0px 0px 10px rgb(255 255 255 / 50%),
       0 0 15px 10px var(--aat-hover-accent-color);
   }
-
+  width: min(calc(var(--aat-item-size) * 2.9), calc(var(--aat-main-tray-total-height) * 0.9));
+  height: min(calc(var(--aat-item-size) * 2.9), calc(var(--aat-main-tray-total-height) * 0.9));
   .end-turn-btn-dice-icon {
-    font-size: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) * 0.6);
+    font-size: min(calc(var(--aat-item-size) * 1.9), calc(var(--aat-main-tray-total-height) * 0.6));
     color: #f1f1f1;
     display: flex;
     i {
@@ -109,8 +110,8 @@
 }
 
 .end-turn-btn-text {
-  font-size: 18px;
-  line-height: 22px;
+  font-size: 35px;
+  line-height: 45px;
   font-family: serif;
   color: #f1f1f1;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8), 0 0 5px rgba(0, 0, 0, 0.8);
@@ -120,10 +121,10 @@
 
 .turn-circle {
   position: absolute;
-  top: 50%;
+  bottom: -420px;
   left: 50%;
-  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count));
-  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count));
+  width: min(var(--aat-item-size) * 5.8, var(--aat-main-tray-total-height) * 1.8);
+  height: min(var(--aat-item-size) * 5.8, var(--aat-main-tray-total-height) * 1.8);
   transform: translate(-50%, -50%) rotate(90deg);
   pointer-events: none;
 }

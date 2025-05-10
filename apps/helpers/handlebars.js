@@ -14,6 +14,14 @@ export function registerHandlebarsHelpers() {
     return a != b
   })
 
+  
+  Handlebars.registerHelper('getDeathActive', function (type, death, index) {
+    if (death[type] == 3) { 
+      return 'active-full'
+    }
+    return death[type] >= index ? 'active' : 'inactive'
+  })
+
   Handlebars.registerHelper('capitalize', function (str) {
     if (!str) return ''
     return str.charAt(0).toUpperCase() + str.slice(1)

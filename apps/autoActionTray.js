@@ -18,7 +18,6 @@ import { TargetHelper } from './helpers/targetHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
 import { AATItem } from './items/item.js'
 
-
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
@@ -62,7 +61,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       name: 'stacked',
     })
     this.effectsTray = new EffectTray()
-   
+
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
@@ -90,7 +89,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     let rowCount = 2
     let columnCount = 10
-    let scale = .6
+    let scale = 0.6
     this.styleSheet
 
     for (let sheet of document.styleSheets) {
@@ -102,7 +101,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       if (game.settings.get('auto-action-tray', 'scale')) {
         scale = game.settings.get('auto-action-tray', 'scale')
         document.documentElement.style.setProperty('--aat-scale', scale)
-
       }
       if (game.settings.get('auto-action-tray', 'rowCount')) {
         rowCount = game.settings.get('auto-action-tray', 'rowCount')
@@ -220,6 +218,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       confirmTargets: AutoActionTray.confirmTargets,
       toggleCondition: AutoActionTray.toggleCondition,
       toggleConditionTray: AutoActionTray.toggleConditionTray,
+      rollDeathSave: AutoActionTray.rollDeathSave,
     },
   }
 
@@ -442,7 +441,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (this.currentTray.id == 'stacked') {
-      document.documentElement.style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
+      document.documentElement.style.setProperty(
+        '--aat-stacked-spacer-width',
+        this.iconSize / 3 + 'px',
+      )
     }
 
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
@@ -887,6 +889,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   static async rollDice() {
     Actions.rollDice.bind(this)()
   }
+  static async rollDeathSave() {
+    Actions.rollDeathSave.bind(this)()
+  }
   static changeDice() {
     Actions.changeDice.bind(this)()
   }
@@ -951,7 +956,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this.animationHandler.setAllStackedTrayPos(this.currentTray)
     const hotbar = this
-    let handleSize = hotbar.iconSize / 3 +2
+    let handleSize = hotbar.iconSize / 3 + 2
     let spacerSize = hotbar.iconSize / 3
     let padding = 5
 
@@ -961,7 +966,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         minX: 0,
         maxX: hotbar.stackedTray.trays[2].xPos - handleSize,
       },
-      force3D:false,
+      force3D: false,
       handle: '.handle-classFeatures',
       inertia: true,
       zIndexBoost: false,
@@ -969,13 +974,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       snap: {
         x: function (value) {
           console.log(value)
-          return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + padding +2
+          return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + padding + 2
         },
       },
       onThrowComplete: function () {
         hotbar.stackedTray.setTrayPosition(
           'classFeatures',
-          Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + padding+2,
+          Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + padding + 2,
         )
         items[0].applyBounds({
           minX: this.endX + handleSize,
@@ -990,7 +995,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         minX: hotbar.stackedTray.trays[1].xPos + handleSize,
         maxX: hotbar.columnCount * (hotbar.iconSize + 2) - handleSize - spacerSize,
       },
-       force3D:false,
+      force3D: false,
       handle: '.handle-items',
       zIndexBoost: false,
       inertia: true,
@@ -998,13 +1003,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       snap: {
         x: function (value) {
           console.log(value)
-          return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + handleSize + padding* 2 +4
+          return (
+            Math.floor(value / hotbar.iconSize) * hotbar.iconSize + handleSize + padding * 2 + 4
+          )
         },
       },
       onThrowComplete: function () {
         hotbar.stackedTray.setTrayPosition(
           'items',
-          Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + handleSize + padding * 2+4,
+          Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + handleSize + padding * 2 + 4,
         )
         classFeatures[0].applyBounds({ minX: 0, maxX: this.endX - handleSize })
       },

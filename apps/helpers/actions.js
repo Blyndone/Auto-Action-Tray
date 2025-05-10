@@ -88,7 +88,7 @@ export class Actions {
     if (percent > 50) {
       percent = 100
     }
-    document.documentElement.style.setProperty('--character-health-percent', percent)
+    document.documentElement.style.setProperty('--aat-character-health-percent', percent)
     return percent
   }
 
@@ -467,6 +467,27 @@ export class Actions {
       speaker: ChatMessage.getSpeaker({ token: this.actor.token }),
       flavor: `Rolling a d${this.dice[this.currentDice]}`,
     })
+  }
+
+  static async rollDeathSave() {
+    let advantage = event.altKey
+    let disadvantage = event.ctrlKey
+
+    let skipDialog = this.trayOptions['fastForward'] ? { fastForward: true } : null
+
+    const params = {
+      dialog: {
+        configure: !skipDialog,
+      },
+      message: {
+        rollMode: 'publicroll',
+      },
+      
+    }
+
+    params.roll = { advantage: advantage, disadvantage: disadvantage,legacy: false }
+    await this.actor.rollDeathSave(params.roll, params.dialog, params.message)
+    this.render({ parts: ['characterImage'] })
   }
 
   static changeDice() {

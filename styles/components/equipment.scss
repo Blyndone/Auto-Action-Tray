@@ -6,9 +6,11 @@
   justify-content: flex-end;
   align-items: center;
   position: relative;
-  height: var(--aat-main-tray-total-height);
+  height: 100%;
   width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
   margin: 5px;
+}
+.equipment-misc-tray {
 }
 
 .equipment-tray-container {
