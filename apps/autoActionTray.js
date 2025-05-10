@@ -436,6 +436,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.totalabilities = this.rowCount * this.columnCount
       const root = document.documentElement
     }
+    if (!config?.rowCount) { 
+      this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
+      this.totalabilities = this.rowCount * this.columnCount
+    }
+    
     await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
     this.setActor(actor)
@@ -505,7 +510,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
-    
+
     document.documentElement.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],

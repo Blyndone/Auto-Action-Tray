@@ -179,7 +179,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',
-    hint: 'Select Number of Rows',
+    hint: 'Default Number of Rows',
     scope: 'client',
     config: true,
     type: Number,
