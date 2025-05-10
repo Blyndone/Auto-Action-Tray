@@ -9,6 +9,7 @@ export class CustomNpcTray extends AbilityTray {
     this.type = 'custom'
     this.multiattackIndexGroups = []
     this.trayLabel = options.trayLabel
+    this.application = options.application
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
       this.generateNpcTray()
@@ -190,7 +191,7 @@ export class CustomNpcTray extends AbilityTray {
         break
     }
 
-    this.abilities = AbilityTray.padArray(this.abilities)
+    this.abilities = this.padArray(this.abilities)
 
     return
   }
@@ -254,7 +255,7 @@ export class CustomNpcTray extends AbilityTray {
     const highestIndex = trays[0].abilities
       .map((ability, index) => (ability !== null ? index : -1))
       .reduce((max, current) => Math.max(max, current), -1)
-    let rowCount = game.settings.get('auto-action-tray', 'rowCount')
+      this.rowCount = trays[0].application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
     trays[0].abilities = trays[0].abilities.slice(0, highestIndex + 1)
     trays.slice(1).forEach((tray) => {
       tray.abilities.forEach((ability) => {
@@ -266,7 +267,7 @@ export class CustomNpcTray extends AbilityTray {
       })
     })
 
-    trays[0].abilities = AbilityTray.padArray(trays[0].abilities)
+    trays[0].abilities = trays[0].padArray(trays[0].abilities)
     trays.forEach((e) => {
       e.onCompleteGeneration()
     })

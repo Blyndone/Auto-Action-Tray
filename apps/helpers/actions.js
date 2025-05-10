@@ -18,8 +18,8 @@ export class Actions {
     // this.render({ parts: ['centerTray'] });
   }
 
-  static setTrayConfig(config) {
-    this.actor.setFlag('auto-action-tray', 'config', config)
+  static async setTrayConfig(config) {
+    await this.actor.setFlag('auto-action-tray', 'config', config)
   }
 
   static getTrayConfig() {
@@ -482,12 +482,46 @@ export class Actions {
       message: {
         rollMode: 'publicroll',
       },
-      
     }
 
-    params.roll = { advantage: advantage, disadvantage: disadvantage,legacy: false }
+    params.roll = { advantage: advantage, disadvantage: disadvantage, legacy: false }
     await this.actor.rollDeathSave(params.roll, params.dialog, params.message)
     this.render({ parts: ['characterImage'] })
+  }
+
+  static async increaseRowCount() {
+    const root = document.documentElement
+    const current = parseInt(
+      getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),
+    )
+    if (current == 6) return
+    const next = Math.min(current + 1, 6)
+
+    this.rowCount = next
+   
+    this.totalabilities = this.rowCount * this.columnCount
+    this.trayOptions['rowCount'] = this.rowCount
+    await Actions.setTrayConfig.bind(this)({ rowCount: this.rowCount })
+    this.initialTraySetup(this.actor)
+    
+  }
+
+  static async decreaseRowCount() {
+    const root = document.documentElement
+    const current = parseInt(
+      getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),
+    )
+
+    if (current == 3) return
+    const next = Math.max(current - 1, 3)
+
+    this.rowCount = next
+    root.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
+    this.totalabilities = this.rowCount * this.columnCount
+    this.trayOptions['rowCount'] = this.rowCount
+    await Actions.setTrayConfig.bind(this)({ rowCount: this.rowCount })
+    this.initialTraySetup(this.actor)
+ 
   }
 
   static changeDice() {

@@ -11,18 +11,18 @@ export class AbilityTray {
     this.type = ''
     this.application = options.application || null
     this.label = options.label || ''
-    this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
+    this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
   async onCompleteGeneration() {
     // this.enrichTrayDescriptions(this)
     // this.generateTooltips(this)
   }
 
-  static padArray(arr, filler = null) {
+  padArray(arr, filler = null) {
     let rowCount = 2
     let columnCount = 10
     if (game.settings.get('auto-action-tray', 'rowCount')) {
-      rowCount = game.settings.get('auto-action-tray', 'rowCount')
+      rowCount =  this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
       document.documentElement.style.setProperty('--item-tray-item-height-count', rowCount)
     }
 
@@ -31,7 +31,7 @@ export class AbilityTray {
       document.documentElement.style.setProperty(' --item-tray-item-width-count', columnCount)
     }
 
-    let totalabilities = rowCount * columnCount
+    let totalabilities = (rowCount + 1) * columnCount
 
     if (arr == null) return new Array(totalabilities).fill(filler)
     return [...arr, ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)]

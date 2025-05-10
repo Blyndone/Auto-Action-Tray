@@ -39,7 +39,7 @@ export class CombatHandler {
       reaction: 1,
       spellSlot: 1
     };
-    console.log(this.actions);
+   
   }
   consumeAction(type, value = 1) {
     if (!this.isTurn) return;

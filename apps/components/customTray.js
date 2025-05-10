@@ -109,7 +109,7 @@ export class CustomTray extends AbilityTray {
         break
     }
 
-    this.abilities = AbilityTray.padArray(this.abilities)
+    this.abilities = this.padArray(this.abilities)
   }
 
   static generateCustomTrays(actor, options = {}) {
@@ -174,7 +174,7 @@ export class CustomTray extends AbilityTray {
       const spells = filtered.filter((e) => e !== null && e.type === 'spell')
 
       commonTray.padNewRow()
-      commonTray.abilities = AbilityTray.padArray([...nonSpells, ...spells])
+      commonTray.abilities = commonTray.padArray([...nonSpells, ...spells])
     }
 
     let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]

@@ -219,6 +219,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       toggleCondition: AutoActionTray.toggleCondition,
       toggleConditionTray: AutoActionTray.toggleConditionTray,
       rollDeathSave: AutoActionTray.rollDeathSave,
+      increaseRowCount: AutoActionTray.increaseRowCount,
+      decreaseRowCount: AutoActionTray.decreaseRowCount,
     },
   }
 
@@ -427,6 +429,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.activityTray.rejectActivity = null
     }
 
+    let config = this.getTrayConfig()
+
+    if (config?.rowCount && this.rowCount != config.rowCount) {
+      this.rowCount = config.rowCount
+      this.totalabilities = this.rowCount * this.columnCount
+      const root = document.documentElement
+    }
     await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
     this.setActor(actor)
@@ -481,9 +490,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       autoAddItems: true,
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
+      rowCount: game.settings.get('auto-action-tray', 'rowCount'),
     }
 
-    let config = this.getTrayConfig()
 
     if (config?.theme && config?.theme != '') {
       game.settings.set('auto-action-tray', 'tempTheme', config.theme)
@@ -496,6 +505,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
+    
+    document.documentElement.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
@@ -891,6 +902,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   static async rollDeathSave() {
     Actions.rollDeathSave.bind(this)()
+  }
+  static async increaseRowCount() {
+    Actions.increaseRowCount.bind(this)()
+  }
+  static async decreaseRowCount() {
+    Actions.decreaseRowCount.bind(this)()
   }
   static changeDice() {
     Actions.changeDice.bind(this)()

@@ -17,11 +17,12 @@ export class ActivityTray extends AbilityTray {
 
   generateTray() {}
 
-  static generateActivityTray(actor) {
+  static generateActivityTray(actor, options = {}) {
     return new ActivityTray({
       category: 'activity',
       id: 'activity',
       actorUuid: actor.uuid,
+      application: options.application,
     })
   }
 
@@ -47,9 +48,11 @@ export class ActivityTray extends AbilityTray {
           actor.system.spells[spell].max > 0
         ) {
           let spellData = { actorSpellData: actor.system.spells[spell] }
-          let tempitem =  {...item}
+          let tempitem = { ...item }
           tempitem.itemId = item.id
-          tempitem.tooltip = tempitem.defaultActivity.tooltips.find(e=> e.spellLevel == spellData.actorSpellData.level)
+          tempitem.tooltip = tempitem.defaultActivity.tooltips.find(
+            (e) => e.spellLevel == spellData.actorSpellData.level,
+          )
           foundry.utils.mergeObject(tempitem, spellData)
           this.abilities.push(tempitem)
         }
@@ -70,12 +73,11 @@ export class ActivityTray extends AbilityTray {
 
   async selectAbility(item, actor, hotbar) {
     this.label = item.name
-    if (item.preparationMode == 'pact') { 
+    if (item.preparationMode == 'pact') {
       return item.defaultActivity
     }
     hotbar.selectingActivity = true
     hotbar.animationHandler.pushTray('activity')
-   
 
     let act
     try {
