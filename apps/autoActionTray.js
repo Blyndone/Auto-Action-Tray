@@ -22,7 +22,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
     gsap.config({
-      force3D: true,
+      force3D: false,
     });
  
     super(options)
