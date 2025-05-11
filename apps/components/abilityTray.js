@@ -195,7 +195,7 @@ export class AbilityTray {
         this.abilities = JSON.parse(data[this.id].abilities).map((e) =>
           e ? allItems.find((item) => item.id === e) : null,
         )
-        this.abilities = AbilityTray.padArray(this.abilities)
+        this.abilities = this.padArray(this.abilities)
         if (this.abilities.length == 0 || this.abilities.every((item) => item === null)) {
           actor.unsetFlag('auto-action-tray', 'data.' + this.id)
         }

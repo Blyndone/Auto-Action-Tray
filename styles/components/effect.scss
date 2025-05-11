@@ -16,6 +16,7 @@
   flex-wrap: wrap-reverse;
   justify-content: flex-end;
   margin: 5px;
+  pointer-events: none;
 }
 
 .effect-tray-icon {
@@ -24,4 +25,6 @@
   border: 4px solid #000;
   margin: 3px;
   box-sizing: border-box;
+
+  pointer-events: all;
 }

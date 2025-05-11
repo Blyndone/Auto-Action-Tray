@@ -132,10 +132,11 @@
   position: absolute;
   bottom: -420px;
   left: 50%;
-  width: min(var(--aat-item-size) * 5.8, var(--aat-main-tray-total-height) * 1.8);
-  height: min(var(--aat-item-size) * 5.8, var(--aat-main-tray-total-height) * 1.8);
+  width: min(var(--aat-item-size) * 5.8, var(--aat-main-tray-total-height) * 1.9);
+  height: min(var(--aat-item-size) * 5.8, var(--aat-main-tray-total-height) * 1.9);
   transform: translate(-50%, -50%) rotate(90deg);
   pointer-events: none;
+  z-index: 6;
 }
 
 .minimize-button {

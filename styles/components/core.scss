@@ -77,9 +77,12 @@
   position: absolute;
   bottom: calc(var(--aat-custom-tray-size));
   left: 50%;
-  transform: translateX(-50%) scale(var(--aat-scale, 1)); /* Adjust for scaling */
+
+  transform: translateX(-50%) scale(var(--aat-scale, 1));
+
   z-index: 0;
   transform-origin: center calc(100% + var(--aat-custom-tray-size) - 10px);
+
   height: var(--aat-main-tray-total-height);
 
   // background: rgba(117, 117, 117, 0.7);
@@ -105,13 +108,13 @@
   user-select: none;
 }
 .common {
-  z-index: 1;
+  z-index: 7;
 }
 .classFeatures {
-  z-index: 2;
+  z-index: 8;
 }
 .items {
-  z-index: 3;
+  z-index: 9;
 }
 .modifier-highlight {
 }

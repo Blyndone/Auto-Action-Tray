@@ -21,6 +21,10 @@ import { AATItem } from './items/item.js'
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
+    gsap.config({
+      force3D: true,
+    });
+ 
     super(options)
     this.socket = options.socket
 
@@ -995,7 +999,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       maxDuration: 0.1,
       snap: {
         x: function (value) {
-          console.log(value)
+
           return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + padding + 2
         },
       },
@@ -1024,7 +1028,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       maxDuration: 0.1,
       snap: {
         x: function (value) {
-          console.log(value)
+     
           return (
             Math.floor(value / hotbar.iconSize) * hotbar.iconSize + handleSize + padding * 2 + 4
           )
