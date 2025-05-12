@@ -14,9 +14,8 @@ export function registerHandlebarsHelpers() {
     return a != b
   })
 
-  
   Handlebars.registerHelper('getDeathActive', function (type, death, index) {
-    if (death[type] == 3) { 
+    if (death[type] == 3) {
       return 'active-full'
     }
     return death[type] >= index ? 'active' : 'inactive'
@@ -98,6 +97,10 @@ export function registerHandlebarsHelpers() {
       ritual: `<i class="fa-solid fa-square icon-ritual"></i>`,
       customStaticTray: `<i class="fa-solid fa-swords icon-custom"></i>`,
       bonusSpell: '<i class="fa-solid fa-square-plus icon-default"></i>',
+      spellUseSpentSlot: `<i class="fa-solid  fa-square icon-slot icon-depleted "></i>`,
+      spellUseSpentSlotSpent: `<i class="fa-solid  fa-square icon-slot-spent icon-depleted "></i>`,
+      spellUseSpentPact: `<i class="fa-solid  fa-square icon-pact icon-depleted"></i>`,
+      spellUseSpentPactSpent: `<i class="fa-solid  fa-square icon-pact-spent icon-depleted"></i>`,
     }
     let trayIcon =
       tray.id == 'spell-0'
@@ -111,12 +114,14 @@ export function registerHandlebarsHelpers() {
     switch (trayIcon) {
       case 'slot':
         if (tray.totalSlots == 0) {
-          return '<i class="fa-solid fa-square-plus icon-default"></i>'
+          return icons.bonusSpell
         }
-        return (
-          icons.slot.repeat(tray.availableSlots) +
-          icons.slotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
-        )
+        if (this.application.combatHandler.actions.spellSlot == 0) {
+          return (
+            icons.spellUseSpentSlot.repeat(tray.availableSlots) +
+            icons.spellUseSpentSlotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
+          )
+        } else return icons.slot.repeat(tray.availableSlots) + icons.slotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
       case 'action':
         return this.application.combatHandler.actions.action == 0 ? icons.actionSpent : icons.action
       case 'bonus':
@@ -128,10 +133,12 @@ export function registerHandlebarsHelpers() {
       case 'customStaticTray':
         return icons.customStaticTray
       case 'pact':
-        return (
-          icons.pact.repeat(tray.availableSlots) +
-          icons.pactSpent.repeat(tray.totalSlots - tray.availableSlots)
-        )
+        if (this.application.combatHandler.actions.spellSlot == 0) {
+          return (
+            icons.spellUseSpentPact.repeat(tray.availableSlots) +
+            icons.spellUseSpentPactSpent.repeat(tray.totalSlots - tray.availableSlots)
+          )
+        } else return icons.pact.repeat(tray.availableSlots) + icons.pactSpent.repeat(tray.totalSlots - tray.availableSlots)
       case 'ritual':
         return icons.ritual
 

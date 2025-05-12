@@ -250,7 +250,7 @@ export class AnimationHandler {
       trayOut.trays.forEach((tray) => {
         let xOffset = 0
         if (tray == trayIn) {
-          if (tray.id != 'common') xOffset = -22
+          if (tray.id != 'common') xOffset = -33
           this.setStackedTrayPos(tray)
           gsap.to(`.container-${tray.id}`, {
             force3D:false,

@@ -207,7 +207,7 @@ export class StaticTray extends AbilityTray {
     let slots = actor.system.spells
 
     let levels = Object.keys(slots)
-      .filter((key) => slots[key].value > 0)
+      .filter((key) => slots[key].value > 0 && key !== 'pact')
       .map((key) => slots[key].level)
 
     let allItems = options.application.getActorAbilities(actor.uuid)

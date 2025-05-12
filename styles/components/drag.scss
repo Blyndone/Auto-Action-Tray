@@ -1,8 +1,10 @@
+@use 'mixins' as *;
+
 .drag-handle-container {
   height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 5);
   width: calc(var(--aat-item-size) / 3 + 2px);
   padding: 15px 0px 15px 6px;
-  background: #5b5b5b;
+  @include background-color;
 }
 .drag-handle {
   height: 100%;
@@ -27,7 +29,7 @@
   height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 2);
   width: calc((var(--aat-item-size) / 3));
   position: absolute;
-  background: #5b5b5b;
+  @include background-color;
   right: 0;
   z-index: 3;
 }

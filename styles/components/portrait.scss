@@ -48,6 +48,7 @@
     margin-right: 30px;
     overflow: hidden;
     border-radius: 50%;
+    border: 5px solid var(--aat-border-color-light);
     outline: 8px solid var(--aat-border-color);
     vertical-align: middle;
 
@@ -59,6 +60,7 @@
       height: 100%;
       pointer-events: none;
       border-radius: 50%;
+
       box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8);
       outline: 8px solid rgba(39, 39, 39, 1);
     }
@@ -81,7 +83,7 @@
     // width: min(calc(var(--aat-item-size) * 2.9), calc(var(--aat-main-tray-total-height) * 0.9));
     // height: min(calc(var(--aat-item-size) * 2.9), calc(var(--aat-main-tray-total-height) * 0.9));
 
-    background: #5b5b5b;
+    @include background-color;
     vertical-align: middle;
     border: none;
     object-fit: cover;

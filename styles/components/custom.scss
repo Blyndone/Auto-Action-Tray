@@ -54,11 +54,10 @@
 }
 
 .tray-information {
-  background: #5b5b5b;
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  background: #5b5b5b;
+  @include background-color;
   border: 0 solid #2f2f2f;
   border-radius: 0 0 19px 19px;
   outline: 2px solid var(--aat-border-color);

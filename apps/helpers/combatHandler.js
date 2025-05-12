@@ -1,31 +1,31 @@
-
 export class CombatHandler {
   constructor(options = {}) {
-    this.actor;
-    this.token;
-    this.combatantId = null;
-    this.inCombat;
-    this.combat;
-    this.isTurn = false;
-    this.isNext = false;
-    this.tillNextTurn = 0;
-    this.hotbar = options.hotbar;
-    this.previousCircleValue = null;
+    this.actor
+    this.token
+    this.combatantId = null
+    this.inCombat
+    this.combat
+    this.isTurn = false
+    this.isNext = false
+    this.tillNextTurn = 0
+    this.hotbar = options.hotbar
+    this.previousCircleValue = null
     this.actions = {
       action: 1,
       bonus: 1,
       movement: 30,
       reaction: 1,
-      spellSlot: 1
-    };
+      spellSlot: 1,
+    }
   }
 
   async setActor(actor) {
     if (this.actor != actor) {
-      this.setDefaultActions(actor);
+      this.setDefaultActions(actor)
     }
-    this.actor = actor;
-    await this.setCombat(actor);
+    this.actor = actor
+    await this.setCombat(actor)
+    this.getActorActions()
   }
   setDefaultActions(actor) {
     this.actions = {
@@ -37,84 +37,135 @@ export class CombatHandler {
       bonus: 1,
       movement: actor.system.attributes.movement.walk,
       reaction: 1,
-      spellSlot: 1
-    };
-   
+      spellSlot: 1,
+    }
   }
-  consumeAction(type, value = 1) {
-    if (!this.isTurn) return;
-    this.actions[type] -= value;
+
+  setCombatData() {
+    let data = {
+      combatId: this.combat?.id,
+      round: this.combat?.round,
+      turn: this.combat?.turn,
+    }
+    this.actions = { ...this.actions, ...data }
+  }
+
+  consumeAction(type, isSpell, value = 1) {
+    if (!this.isTurn) return
+    this.actions[type] -= value
+    if (this.actions.spellSlot != 0) {
+      this.actions.spellSlot = isSpell ? 0 : 1
+    }
     if (this.actions[type] < 0) {
-      this.actions[type] = 0;
+      this.actions[type] = 0
+    }
+    this.setActorActions()
+  }
+
+  setActorActions() {
+    if (this.actor != null) {
+      this.actor.setFlag('auto-action-tray', 'combat', {
+        combat: JSON.stringify(this.actions),
+      })
+    }
+  }
+
+  getActorActions() {
+    if (this.actor != null) {
+      let data = this.actor.getFlag('auto-action-tray', 'combat')?.combat
+      if (data) {
+        data = JSON.parse(data)
+        if (this.checkCurrentTurn(data)) {
+          this.actions = data
+        } else {
+          this.clearActorActions()
+        }
+      }
+    }
+  }
+  checkCurrentTurn(data) {
+    return (
+      this.combatantId == data.combatantId &&
+      this.combat?.id == data.combatId &&
+      this.combat?.round == data.round &&
+      this.combat?.turn == data.turn
+    )
+  }
+
+  clearActorActions() {
+    if (this.actor != null) {
+      this.actor.unsetFlag('auto-action-tray', 'combat')
     }
   }
 
   async setCombat(actor) {
     if (this.actor != actor) {
-      this.setDefaultActions(actor);
+      this.setDefaultActions(actor)
     }
-    this.actor = actor;
-    this.token = actor.getActiveTokens()[0] || null;
-    this.inCombat = actor.inCombat;
-    this.isTurn = false;
-    this.isNext = false;
-    this.tillNextTurn = 0;
-    this.combat = null;
-    let value = 0;
+    this.actor = actor
+    this.token = actor.getActiveTokens()[0] || null
+    this.inCombat = actor.inCombat
+    this.isTurn = false
+    this.isNext = false
+    this.tillNextTurn = 0
+    this.combat = null
+    let value = 0
     if (this.inCombat && this.token && this.token.combatant) {
-      this.combat = this.token.combatant.combat;
-      this.combatantId = this.token.combatant.id;
-      this.getInitPlacement();
-      value = 100 * (1 - this.tillNextTurn / this.combat.turns.length);
-      this.previousCircleValue = value;
+      this.combat = this.token.combatant.combat
+      this.combatantId = this.token.combatant.id
+      this.getInitPlacement()
+      value = 100 * (1 - this.tillNextTurn / this.combat.turns.length)
+      this.previousCircleValue = value
     }
-    await this.hotbar.render({ parts: ["endTurn"] });
-    this.hotbar.animationHandler.setCircle(value);
+    await this.hotbar.render({ parts: ['endTurn'] })
+    this.hotbar.animationHandler.setCircle(value)
   }
 
   async updateCombat(actor, event) {
     if (this.actor !== actor || this.combat == null) {
-      this.setCombat(actor);
+      this.setCombat(actor)
     }
     if (!this.actor.getActiveTokens()[0].combatant) {
-      this.isTurn = false;
-      this.isNext = false;
-      this.inCombat = false;
-      this.tillNextTurn = 0;
-      this.previousCircleValue = 0;
-      this.setDefaultActions(actor);
-      await this.hotbar.render({ parts: ["centerTray"] });
-      await this.hotbar.render({ parts: ["endTurn"] });
-      this.hotbar.animationHandler.setCircle(0);
-      return;
+      this.isTurn = false
+      this.isNext = false
+      this.inCombat = false
+      this.tillNextTurn = 0
+      this.previousCircleValue = 0
+      this.setDefaultActions(actor)
+      await this.hotbar.render({ parts: ['centerTray'] })
+      await this.hotbar.render({ parts: ['endTurn'] })
+      this.hotbar.animationHandler.setCircle(0)
+      return
     }
-    this.getInitPlacement();
+
+    this.setCombatData()
+    this.getInitPlacement()
     if (!this.isTurn) {
-      this.setDefaultActions(this.actor);
+      this.setDefaultActions(this.actor)
     }
     let start = this.previousCircleValue
       ? this.previousCircleValue
-      : 100 * (1 - (this.tillNextTurn + 1) / this.combat.turns.length);
-    let end = 100 * (1 - this.tillNextTurn / this.combat.turns.length);
-    await this.hotbar.render({ parts: ["endTurn"] });
+      : 100 * (1 - (this.tillNextTurn + 1) / this.combat.turns.length)
+    let end = 100 * (1 - this.tillNextTurn / this.combat.turns.length)
+    await this.hotbar.render({ parts: ['endTurn'] })
     if (this.previousCircleValue >= 100) {
-      await this.hotbar.render({ parts: ["centerTray"] });
+      await this.hotbar.render({ parts: ['centerTray'] })
     }
-    this.hotbar.animationHandler.setCircle(start);
-    this.hotbar.animationHandler.animateCircle(start, end, this);
-    this.previousCircleValue = end >= 100 ? 0 : end;
+    this.hotbar.animationHandler.setCircle(start)
+    this.hotbar.animationHandler.animateCircle(start, end, this)
+    this.previousCircleValue = end >= 100 ? 0 : end
   }
 
   getInitPlacement() {
-    let init = this.combat.turns;
-    let initIndex = init.findIndex(e => e.id == this.combatantId);
-    let turn = this.combat.turn;
-    let diff = initIndex - turn;
+    let init = this.combat.turns
+    let initIndex = init.findIndex((e) => e.id == this.combatantId)
+    let turn = this.combat.turn
+    let diff = initIndex - turn
     if (diff < 0) {
-      diff = init.length - turn + initIndex;
+      diff = init.length - turn + initIndex
     }
-    this.isTurn = diff == 0;
-    this.isNext = diff == 1;
-    this.tillNextTurn = diff;
+    this.isTurn = diff == 0
+    this.isNext = diff == 1
+    this.tillNextTurn = diff
   }
 }

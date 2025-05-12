@@ -35,7 +35,7 @@
   overflow: hidden;
   align-items: center;
   position: relative;
-  background: #5b5b5b;
+  @include background-color;
   border-radius: 15px 15px 0px 0px;
   z-index: 5;
   .activity-selection-text {
@@ -108,7 +108,7 @@
 
   .ability-ol {
     @include ability-tray-size;
-    background: #5b5b5b;
+    @include background-color;
     flex-direction: column;
     border-radius: 10px;
     justify-content: center;

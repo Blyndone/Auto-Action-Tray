@@ -362,7 +362,7 @@ export class Actions {
     if (targets?.canceled == true || targets === undefined) return
     //Item Use
     if (activity?.tooltip?.actionType) {
-      this.combatHandler.consumeAction(activity.tooltip.actionType)
+      this.combatHandler.consumeAction(activity.tooltip.actionType, activity.isScaledSpell)
     }
 
     if (

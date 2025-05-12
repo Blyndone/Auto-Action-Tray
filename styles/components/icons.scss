@@ -15,22 +15,17 @@
   font-size: 30px;
 }
 
-.icon-depleted {
-  filter: brightness(0.5) contrast(1.2);
-}
-
-.icon-slot {
-  @include icon;
-  color: #00aaff;
-  text-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
-  font-size: 24px;
-}
-
 .icon-slot-cantrip {
   @include icon;
   color: #00aaff;
   text-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
   font-size: 30px;
+}
+.icon-slot {
+  @include icon;
+  color: #00aaff;
+  text-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
+  font-size: 24px;
 }
 
 .icon-slot-spent {
@@ -49,7 +44,7 @@
 
 .icon-pact-spent {
   @include icon;
-  color: #71528a;
+  color: #9d72c0;
   opacity: 0.6;
   font-size: 24px;
 }
@@ -91,4 +86,8 @@
     outline: none;
     box-shadow: 0 0 5px rgba(255, 77, 77, 0.6);
   }
+}
+
+.icon-depleted {
+  filter: brightness(0.5) contrast(1.2);
 }
