@@ -65,16 +65,16 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
   position: absolute;
   bottom: calc(var(--aat-custom-tray-size));
   left: 50%;
-  transform: translateX(-50%) scale(var(--aat-scale, 1));
   z-index: 0;
+  transform: translateX(-50%) scale(var(--aat-scale, 1));
   transform-origin: center calc(100% + var(--aat-custom-tray-size) - 10px);
   height: var(--aat-main-tray-total-height);
   background-blend-mode: multiply;
   border-radius: 200px 50px 50px 200px;
-  box-sizing: border-box;
 }
 #auto-action-tray #context-menu {
   scale: calc(1 / var(--aat-scale));
@@ -124,7 +124,6 @@
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   height: var(--aat-main-tray-total-height);
   padding: var(--aat-main-tray-padding);
   width: calc((var(--aat-item-size) + var(--aat-main-tray-gap)) * var(--aat-item-tray-item-width-count) + var(--aat-main-tray-padding) * 2);
@@ -166,7 +165,6 @@
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   border: 2px solid #f1f1f1;
   border-radius: 4px;
   background-color: #0d0d12;
@@ -356,7 +354,6 @@
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   position: absolute;
   width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
   height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count));
@@ -631,7 +628,6 @@
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -940,7 +936,6 @@ img.item-equipped {
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   border-radius: 200px 0px 0px 200px;
   border-right: 0px;
   position: relative;
@@ -1067,7 +1062,6 @@ img.item-equipped {
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   background: #333;
 }
 
@@ -1154,7 +1148,6 @@ img.item-equipped {
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -1439,7 +1432,6 @@ img.item-equipped {
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   border: 0px;
   padding: var(--aat-main-tray-padding);
   transition: 0.3s ease-in-out;
@@ -1470,7 +1462,6 @@ img.item-equipped {
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   border-radius: 0px 200px 200px 0px;
   border-left: 0px;
   position: relative;
@@ -1553,7 +1544,6 @@ img.item-equipped {
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  filter: drop-shadow(0px 7px 15px black);
   display: flex;
   flex-wrap: wrap;
   grid-template-columns: repeat(2, 1fr);
