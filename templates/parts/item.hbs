@@ -11,8 +11,9 @@
         data-action="viewItem"
         class="ability-button ability-button-passive"
       {{else}}
+      data-action-type={{item.tooltip.actionType}}
         data-action="useItem"
-        class="ability-button"
+        class="ability-button action-hover"
       {{/if}}
     >
       {{#if (eq isActive false)}}

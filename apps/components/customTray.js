@@ -94,7 +94,12 @@ export class CustomTray extends AbilityTray {
           'consumable',
         ]
 
-        this.abilities = allItems.filter((e) => !e.isActive && !excludedTypes.includes(e.type))
+        this.abilities = allItems.filter(
+          (e) =>
+            !e.isActive &&
+            (!excludedTypes.includes(e.type) ||
+              (e.type == 'equipment' && e.item?.transferredEffects?.length > 0)),
+        )
 
         this.id = 'passive'
         break

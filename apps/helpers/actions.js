@@ -88,7 +88,7 @@ export class Actions {
     if (percent > 50) {
       percent = 100
     }
-    document.documentElement.style.setProperty('--aat-character-health-percent', percent)
+    document.getElementById('auto-action-tray').style.setProperty('--aat-character-health-percent', percent)
     return percent
   }
 
@@ -490,7 +490,7 @@ export class Actions {
   }
 
   static async increaseRowCount() {
-    const root = document.documentElement
+    const root = document.getElementById('auto-action-tray')
     const current = parseInt(
       getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),
     )
@@ -507,7 +507,7 @@ export class Actions {
   }
 
   static async decreaseRowCount() {
-    const root = document.documentElement
+    const root = document.getElementById('auto-action-tray')
     const current = parseInt(
       getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),
     )

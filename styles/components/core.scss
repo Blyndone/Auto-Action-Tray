@@ -1,4 +1,4 @@
-:root {
+#auto-action-tray {
   --aat-scale: 0.6;
   --aat-border-width: 5px;
   --aat-item-size: 100px;
@@ -67,8 +67,7 @@
   --aat-multi-1: rgb(255, 250, 0);
   --aat-multi-2: #86d632;
   --aat-multi-aux: #00ccff;
-}
-#auto-action-tray {
+
   display: flex;
   flex-direction: row;
   justify-content: center;

@@ -12,7 +12,9 @@
             alt='{{item.name}}' 
             data-item-id='{{item.id}}' 
             data-index='{{@index}}' 
-            data-trayid='{{tray.id}}' 
+            data-trayid='{{tray.id}}'
+            data-action-type={{item.tooltip.actionType}}
+            class="action-hover"
           />
         {{else}}
           <img 
@@ -21,7 +23,8 @@
             data-item-id='{{item.id}}' 
             data-index='{{@index}}' 
             data-trayid='{{tray.id}}' 
-            class='spell-item-container-img-upcast' 
+             data-action-type={{item.tooltip.actionType}}
+            class='spell-item-container-img-upcast action-hover' 
           />
           <div class='spell-item-container-text-upcast'>+</div>
         {{/if}}

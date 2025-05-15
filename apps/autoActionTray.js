@@ -23,8 +23,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     gsap.registerPlugin(DrawSVGPlugin)
     gsap.config({
       force3D: false,
-    });
- 
+    })
+
     super(options)
     this.socket = options.socket
 
@@ -154,7 +154,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         return
       }
       let color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
-      document.documentElement.style.setProperty('--aat-modifier-highlight-color', color)
+      document
+        .getElementById('auto-action-tray')
+        .style.setProperty('--aat-modifier-highlight-color', color)
       const elements = document.querySelectorAll('.modifier-highlight')
       elements.forEach((el) => {
         el.classList.add('modifier-active')
@@ -166,7 +168,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       if (!e.ctrlKey) this.ctrlDown = false
 
       const elements = document.querySelectorAll('.modifier-highlight')
-      document.documentElement.style.setProperty('--aat-modifier-highlight-color', '')
+      document
+        .getElementById('auto-action-tray')
+        .style.setProperty('--aat-modifier-highlight-color', '')
       elements.forEach((el) => {
         el.classList.remove('modifier-active')
       })
@@ -303,7 +307,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       abilities: items.map((i) => new AATItem(i)),
     })
   }
-  // actor Actor5e, token TokenDocument5e
+
   getSavedActor(actor, token) {
     if (token.actorLink) {
       return this.savedActors.find((a) => a.id == actor.id)
@@ -438,13 +442,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (config?.rowCount && this.rowCount != config.rowCount) {
       this.rowCount = config.rowCount
       this.totalabilities = this.rowCount * this.columnCount
-      const root = document.documentElement
+      const root = document.getElementById('auto-action-tray')
     }
-    if (!config?.rowCount) { 
+    if (!config?.rowCount) {
       this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
       this.totalabilities = this.rowCount * this.columnCount
     }
-    
+
     await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
     this.setActor(actor)
@@ -459,10 +463,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (this.currentTray.id == 'stacked') {
-      document.documentElement.style.setProperty(
-        '--aat-stacked-spacer-width',
-        this.iconSize / 3 + 'px',
-      )
+      document
+        .getElementById('auto-action-tray')
+        .style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
     }
 
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
@@ -502,7 +505,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       rowCount: game.settings.get('auto-action-tray', 'rowCount'),
     }
 
-
     if (config?.theme && config?.theme != '') {
       game.settings.set('auto-action-tray', 'tempTheme', config.theme)
     } else {
@@ -515,7 +517,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
 
-    document.documentElement.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
+    document
+      .getElementById('auto-action-tray')
+      .style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
@@ -953,6 +957,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  static toggleActionHover(type) {}
+
   //#region DragDrop
   #createDragDropHandlers() {
     return this.options.dragDrop.map((d) => {
@@ -978,6 +984,35 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
+    if (options.parts.includes('centerTray')) {
+      document.querySelectorAll('.action-hover').forEach((source) => {
+        let targetSelector = source.getAttribute('data-action-type')
+        switch (targetSelector) {
+          case 'action':
+            targetSelector = '.icon-action'
+            break
+          case 'bonus':
+            targetSelector = '.icon-bonus'
+            break
+          default:
+            targetSelector = null
+            break
+        }
+
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector)
+
+          source.addEventListener('mouseenter', () => {
+            target?.classList.add('highlight')
+          })
+
+          source.addEventListener('mouseleave', () => {
+            target?.classList.remove('highlight')
+          })
+        }
+      })
+    }
+
     if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
 
     this.animationHandler.setAllStackedTrayPos(this.currentTray)
@@ -999,7 +1034,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       maxDuration: 0.1,
       snap: {
         x: function (value) {
-
           return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + padding + 2
         },
       },
@@ -1028,7 +1062,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       maxDuration: 0.1,
       snap: {
         x: function (value) {
-     
           return (
             Math.floor(value / hotbar.iconSize) * hotbar.iconSize + handleSize + padding * 2 + 4
           )

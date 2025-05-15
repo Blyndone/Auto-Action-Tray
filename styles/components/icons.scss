@@ -91,3 +91,7 @@
 .icon-depleted {
   filter: brightness(0.5) contrast(1.2);
 }
+
+.highlight {
+  filter: drop-shadow(0 0 7px rgba(255, 255, 255, 1));
+}

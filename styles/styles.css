@@ -1,4 +1,4 @@
-:root {
+#auto-action-tray {
   --aat-scale: 0.6;
   --aat-border-width: 5px;
   --aat-item-size: 100px;
@@ -58,9 +58,6 @@
   --aat-multi-1: rgb(255, 250, 0);
   --aat-multi-2: #86d632;
   --aat-multi-aux: #00ccff;
-}
-
-#auto-action-tray {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -569,13 +566,12 @@
 .stacked-tray-spacer-container {
   position: relative;
   height: 100%;
-  width: 100%;
+  width: calc(100% - var(--aat-stacked-spacer-width) + var(--aat-main-tray-padding) - var(--aat-main-tray-gap));
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  overflow: visible;
-  clip-path: inset(-7px var(--aat-stacked-spacer-width) -5px -5px);
+  overflow: hidden;
 }
 
 .effect-tray-container {
@@ -749,6 +745,10 @@
 
 .icon-depleted {
   filter: brightness(0.5) contrast(1.2);
+}
+
+.highlight {
+  filter: drop-shadow(0 0 7px rgb(255, 255, 255));
 }
 
 .transparent-box {

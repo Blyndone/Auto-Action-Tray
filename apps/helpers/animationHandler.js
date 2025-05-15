@@ -234,13 +234,12 @@ export class AnimationHandler {
 
   async animateSpacer(width) {
     gsap.to('.stacked-tray-spacer-container', {
-      // force3D: false,
-      clipPath: `inset(-7px ${width}px -5px -5px)`,
+      width: `calc(100% - ${width}px + var(--aat-main-tray-padding) - var(--aat-main-tray-gap))`,
       duration: 0.4,
       onComplete: () => {
-        document.documentElement.style.setProperty('--aat-stacked-spacer-width', width + 'px')
+        document.getElementById('auto-action-tray').style.setProperty('--aat-stacked-spacer-width', width + 'px');
       },
-    })
+    });
   }
 
   async animateStackedTrayOut(trayOut, trayIn) {

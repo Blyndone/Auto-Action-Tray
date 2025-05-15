@@ -23,12 +23,12 @@ export class AbilityTray {
     let columnCount = 10
     if (game.settings.get('auto-action-tray', 'rowCount')) {
       rowCount =  this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
-      document.documentElement.style.setProperty('--item-tray-item-height-count', rowCount)
+      document.getElementById('auto-action-tray').style.setProperty('--item-tray-item-height-count', rowCount)
     }
 
     if (game.settings.get('auto-action-tray', 'columnCount')) {
       columnCount = game.settings.get('auto-action-tray', 'columnCount')
-      document.documentElement.style.setProperty(' --item-tray-item-width-count', columnCount)
+      document.getElementById('auto-action-tray').style.setProperty(' --item-tray-item-width-count', columnCount)
     }
 
     let totalabilities = (rowCount + 1) * columnCount

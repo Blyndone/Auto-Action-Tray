@@ -43,13 +43,15 @@
 .stacked-tray-spacer-container {
   position: relative;
   height: 100%;
-  width: 100%;
+  width: calc(
+    100% - var(--aat-stacked-spacer-width) + var(--aat-main-tray-padding) - var(--aat-main-tray-gap)
+  );
   overflow: hidden;
   // margin-right: var(--aat-stacked-spacer-width);
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  overflow: visible;
+  overflow: hidden;
   // overflow-y: visible;
-  clip-path: inset(-7px var(--aat-stacked-spacer-width) -5px -5px);
+  // clip-path: inset(-7px var(--aat-stacked-spacer-width) -5px -5px);
 }

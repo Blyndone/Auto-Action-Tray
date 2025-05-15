@@ -43,6 +43,7 @@ export class CombatHandler {
 
   setCombatData() {
     let data = {
+      combatantId: this.combat?.combatant.id,
       combatId: this.combat?.id,
       round: this.combat?.round,
       turn: this.combat?.turn,
