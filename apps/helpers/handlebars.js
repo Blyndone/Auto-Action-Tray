@@ -31,7 +31,7 @@ export function registerHandlebarsHelpers() {
   })
 
   Handlebars.registerHelper('selectItemTooltip', function (item, tray) {
-    if (tray.type != 'static' || 'activity') return item.tooltip
+    if (tray.type != 'static' && tray.type != 'activity') return item.tooltip
     if (tray.spellLevel) {
       return item.defaultActivity.tooltips.find((e) => e.spellLevel == tray.spellLevel)
     } else {
