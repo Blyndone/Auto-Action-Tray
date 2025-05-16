@@ -8,7 +8,9 @@
 
 ## Module Preview
 
-Auto Action Tray is a custom action bar and character tray for Foundry VTT. It provides a streamlined and visually appealing way to access character abilities, items, and actions efficiently during gameplay.
+Auto Action Tray is a sleek, dynamic action bar and character tray for Foundry VTT. It auto-sorts your actions, spells, and abilities into categorized trays, complete with smart tooltips that show damage estimates and critical info.
+
+Designed for both players and GMs, it includes quick-access bars for skills, saves, and dice rolls, plus a Targeting Helper that provides visual feedback for item use. Trays and themes adapt based on class or creature type, while NPC multiattacks are parsed and grouped for clarity.
 
 ## ✨ Features
 
