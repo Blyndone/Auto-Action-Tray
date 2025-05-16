@@ -8,7 +8,7 @@
 
 ## Module Preview
 
-Auto Action Tray is a custom action bar and character tray for Foundry VTT, inspired by the Baldur’s Gate 3 UI. It provides a streamlined and visually appealing way to access character abilities, items, and actions efficiently during gameplay.
+Auto Action Tray is a custom action bar and character tray for Foundry VTT. It provides a streamlined and visually appealing way to access character abilities, items, and actions efficiently during gameplay.
 
 ## ✨ Features
 
