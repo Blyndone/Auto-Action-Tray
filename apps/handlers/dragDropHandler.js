@@ -1,6 +1,5 @@
 import { StaticTray } from '../components/staticTray.js'
-import { CustomStaticTray } from '../components/customStaticTray.js'
-import { ItemConfig } from './itemConfig.js'
+import { ItemConfig } from '../dialogs/itemConfig.js'
 import { AATItem } from '../items/item.js'
 export class DragDropHandler {
   static _onDragStart(event, hotbar) {

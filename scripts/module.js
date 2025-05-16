@@ -24,7 +24,6 @@ export async function preloadHandlebarsTemplates() {
     'modules/auto-action-tray/templates/parts/activity-tray.hbs',
     'modules/auto-action-tray/templates/parts/target-tray.hbs',
     'modules/auto-action-tray/templates/parts/condition-tray.hbs',
-    
   ]
   const paths = {}
   for (const path of partials) {
@@ -169,13 +168,13 @@ Hooks.once('ready', async function () {
     default: 'theme-classic',
   })
 
-    game.settings.register('auto-action-tray', 'tempTheme', {
+  game.settings.register('auto-action-tray', 'tempTheme', {
     name: 'tempTheme',
     scope: 'client',
     default: 'theme-classic',
   })
 
-  game.settings.set("auto-action-tray", "tempTheme", game.settings.get("auto-action-tray", "theme"))
+  game.settings.set('auto-action-tray', 'tempTheme', game.settings.get('auto-action-tray', 'theme'))
 
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',
@@ -218,11 +217,11 @@ Hooks.once('ready', async function () {
     config: true,
 
     type: Number,
-    default: .6,
+    default: 0.6,
 
     range: {
-      min: .2,
-      step: .05,
+      min: 0.2,
+      step: 0.05,
       max: 1.5,
     },
 
@@ -346,6 +345,6 @@ Hooks.once('ready', async function () {
       id: 'auto-action-tray',
       socket: socket,
     })
-    hotbar.render(true)
+    // hotbar.render(true)
   }
 })

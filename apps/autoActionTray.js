@@ -5,12 +5,12 @@ import { StaticTray } from './components/staticTray.js'
 import { ActivityTray } from './components/activityTray.js'
 import { EquipmentTray } from './components/equipmentTray.js'
 import { SkillTray } from './components/skillTray.js'
-import { CombatHandler } from './helpers/combatHandler.js'
+import { CombatHandler } from './handlers/combatHandler.js'
 import { registerHandlebarsHelpers } from './helpers/handlebars.js'
-import { AnimationHandler } from './helpers/animationHandler.js'
-import { DragDropHandler } from './helpers/dragDropHandler.js'
+import { AnimationHandler } from './handlers/animationHandler.js'
+import { DragDropHandler } from './handlers/dragDropHandler.js'
 import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js'
-import { TrayConfig } from './helpers/trayConfig.js'
+import { TrayConfig } from './dialogs/trayConfig.js'
 import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
@@ -184,6 +184,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       let event = null
       this.generateActorItems(this.actor, event)
       this.initialTraySetup(this.actor, event)
+      this.render(true)
+    } else { 
+      Actions.minimizeTray.bind(this)()
+      Hooks.once('controlToken', () => {
+        document.getElementById('aat-maximize-button').remove()
+        this.render(true)
+      })
     }
   }
 
@@ -464,8 +471,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (this.currentTray.id == 'stacked') {
       document
-        .getElementById('auto-action-tray')
-        .style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
+        .getElementById('auto-action-tray')?.style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
     }
 
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
@@ -518,8 +524,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     document
-      .getElementById('auto-action-tray')
-      .style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
+      .getElementById('auto-action-tray')?.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })

@@ -1,5 +1,5 @@
 import { TargetHelper } from './targetHelper.js'
-import { ItemConfig } from './itemConfig.js'
+import { ItemConfig } from '../dialogs/itemConfig.js'
 import { ActivityTray } from '../components/activityTray.js'
 
 export class Actions {
@@ -88,7 +88,7 @@ export class Actions {
     if (percent > 50) {
       percent = 100
     }
-    document.getElementById('auto-action-tray').style.setProperty('--aat-character-health-percent', percent)
+    document.getElementById('auto-action-tray')?.style.setProperty('--aat-character-health-percent', percent)
     return percent
   }
 
@@ -151,6 +151,7 @@ export class Actions {
 
     let wrapper = document.createElement('div')
     wrapper.classList.add('bar-controls', 'minimize-button')
+    wrapper.id = 'aat-maximize-button'
 
     let link = document.createElement('a')
     link.id = 'aat-maximize'

@@ -87,17 +87,7 @@ export class TrayConfig {
       hint: 'Clear previous custom Static Trays',
     })
 
-    // const concentrationColor = fields.createTextInput({
-    //   name: 'concentrationColor',
-    //   value: this.trayOptions['concentrationColor'],
-    // })
 
-    // const concentrationColorGroup = fields.createFormGroup({
-    //   input: concentrationColor,
-
-    //   label: 'Concentration Color',
-    //   hint: 'Input a color for concentration highlight.  Colors should be in Hex; Ex. #c9593f',
-    // })
 
     const selectInput = fields.createSelectInput({
       options: [
@@ -123,13 +113,7 @@ export class TrayConfig {
       hint: 'Choose between portrait or token display',
     })
 
-    // const imageScale = fields.createNumberInput({
-    //   name: 'imageScale',
-    //   min: 0.1,
-    //   max: 10,
-    //   step: 0.1,
-    //   value: this.trayOptions['imageScale'],
-    // })
+
 
     const imageScale = createSliderInput({
       name: 'imageScale',
@@ -190,7 +174,7 @@ export class TrayConfig {
     })
 
     const content = ` ${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
-    let dialogElement // store the dialog DOM here
+    let dialogElement 
     let handlers = {}
     let initialValues = {
       imageScale: this.trayOptions['imageScale'],
@@ -206,7 +190,7 @@ export class TrayConfig {
       rejectClose: false,
 
       render: (event, dialogEl) => {
-        dialogElement = dialogEl // save for later
+        dialogElement = dialogEl 
 
         const form = dialogEl.querySelector('form')
         const elements = form.elements
@@ -256,7 +240,7 @@ export class TrayConfig {
         },
       ],
     }).then((result) => {
-      // Use saved dialogElement to remove listeners
+
       const form = dialogElement?.querySelector('form')
       if (form) {
         const elements = form.elements
@@ -266,7 +250,7 @@ export class TrayConfig {
         elements.imageY?.removeEventListener('input', handlers.imageY)
       }
 
-      // Your existing result processing
+  
       if (event.target.dataset.action === 'cancel' || !result) {
         this.trayOptions = { ...this.trayOptions, ...initialValues }
         this.render({ parts: ['characterImage'] })

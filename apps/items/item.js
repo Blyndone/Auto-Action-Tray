@@ -1,4 +1,4 @@
-import { ItemConfig } from '../helpers/itemConfig.js'
+import { ItemConfig } from '../dialogs/itemConfig.js'
 import { AATActivity } from './activity.js'
 import { AATItemTooltip } from './itemTooltip.js'
 

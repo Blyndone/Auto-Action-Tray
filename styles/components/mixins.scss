@@ -32,7 +32,7 @@
   align-self: center;
 }
 @mixin background-color {
-  background: #5b5b5b;
+  background: var(--aat-background-color, #5b5b5b);
 }
 
 @mixin inset-tray {
