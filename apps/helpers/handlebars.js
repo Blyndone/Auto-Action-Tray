@@ -160,7 +160,7 @@ export function registerHandlebarsHelpers() {
   })
 
   Handlebars.registerHelper('setConcentrationColor', function (color) {
-    document.getElementById('auto-action-tray').style.setProperty('--concentration-color', color)
+    document.getElementById('auto-action-tray')?.style.setProperty('--concentration-color', color)
   })
 
   Handlebars.registerHelper('formatLink', function (link) {
