@@ -309,6 +309,9 @@ export class Actions {
   }
 
   static async useItem(event, target) {
+    if (this.targetHelper.active) { 
+      return
+    }
     let altDown = this.altDown
     let ctrlDown = this.ctrlDown
 
@@ -367,7 +370,7 @@ export class Actions {
 
     if (
       (activity?.useSlot ?? this.activityTray.useSlot) &&
-      this.actor.system.spells[selectedSpellLevel.slot].value < 1
+      this.actor.system.spells[selectedSpellLevel.slot]?.value < 1
     ) {
       ui.notifications.error(`No spell slots available`)
       return
