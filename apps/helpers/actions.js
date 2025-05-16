@@ -88,7 +88,9 @@ export class Actions {
     if (percent > 50) {
       percent = 100
     }
-    document.getElementById('auto-action-tray')?.style.setProperty('--aat-character-health-percent', percent)
+    document
+      .getElementById('auto-action-tray')
+      ?.style.setProperty('--aat-character-health-percent', percent)
     return percent
   }
 
@@ -223,6 +225,7 @@ export class Actions {
   }
 
   static async selectActivity(item) {
+    this.activityTray.useSlot = true
     let activity = null
     let selectedSpellLevel = null
     let itemConfig = ItemConfig.getItemConfig(item)
@@ -361,6 +364,15 @@ export class Actions {
       selectedSpellLevel,
     )
     if (targets?.canceled == true || targets === undefined) return
+
+    if (
+      (activity?.useSlot ?? this.activityTray.useSlot) &&
+      this.actor.system.spells[selectedSpellLevel.slot].value < 1
+    ) {
+      ui.notifications.error(`No spell slots available`)
+      return
+    }
+
     //Item Use
     if (activity?.tooltip?.actionType) {
       this.combatHandler.consumeAction(activity.tooltip.actionType, activity.isScaledSpell)
@@ -499,12 +511,11 @@ export class Actions {
     const next = Math.min(current + 1, 6)
 
     this.rowCount = next
-   
+
     this.totalabilities = this.rowCount * this.columnCount
     this.trayOptions['rowCount'] = this.rowCount
     await Actions.setTrayConfig.bind(this)({ rowCount: this.rowCount })
     this.initialTraySetup(this.actor)
-    
   }
 
   static async decreaseRowCount() {
@@ -522,7 +533,6 @@ export class Actions {
     this.trayOptions['rowCount'] = this.rowCount
     await Actions.setTrayConfig.bind(this)({ rowCount: this.rowCount })
     this.initialTraySetup(this.actor)
- 
   }
 
   static changeDice() {
