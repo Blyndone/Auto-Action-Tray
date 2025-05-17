@@ -6,6 +6,7 @@ export class AnimationHandler {
     this.defaultTray = options.defaultTray || 'stacked'
     this.verticalBounds = this.hotbar.iconSize * (this.hotbar.rowCount + 1)
     this.horizontalBounds = this.hotbar.iconSize * (this.hotbar.columnCount + 1)
+    this.circleAnimator = null
   }
 
   async pushTray(trayId) {
@@ -337,7 +338,8 @@ export class AnimationHandler {
       baseColor,
       value,
     )}) drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(baseColor, value)}) `
-    gsap.set('.circle-svg', {
+    this.circleAnimator?.kill()
+    this.circleAnimator = gsap.set('.circle-svg', {
       drawSVG: `0%
           ${value}%`,
       stroke: this.getAdjustedColor(baseColor, value),
@@ -355,15 +357,6 @@ export class AnimationHandler {
     let accentColor = getComputedStyle(element).getPropertyValue('--aat-accent-color').trim()
     let accentColorLight = getComputedStyle(element).getPropertyValue('--aat-accent-color-light').trim()
 
-    console.log('All colors', {
-      color,
-      color100,
-      mainColor,
-      mainColorLight,
-      accentColor,
-      accentColorLight,
-    })
-
 
     let baseColor = end == 100 ? color100 : color
     let glowpx = end == 100 ? 8 : 4
@@ -373,7 +366,8 @@ export class AnimationHandler {
     )}) drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(baseColor, end)}) `
 
     if (end == 100) {
-      gsap.fromTo(
+      this.circleAnimator?.kill()
+      this.circleAnimator = gsap.fromTo(
         '.end-turn-btn',
         {
           background: `radial-gradient( ${accentColor}, ${accentColorLight})`,
@@ -384,9 +378,13 @@ export class AnimationHandler {
         },
       )
     }
-    gsap.fromTo(
+    this.circleAnimator?.kill()
+    this.circleAnimator = gsap.fromTo(
       '.circle-svg',
-      { drawSVG: `0% ${start}%` },
+      {
+        drawSVG: `0% ${start}%`,
+        stroke: this.getAdjustedColor(baseColor, start),
+        filter: filter  },
       {
         drawSVG: `0% ${end}%`,
         duration: 3,
