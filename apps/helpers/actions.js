@@ -309,7 +309,7 @@ export class Actions {
   }
 
   static async useItem(event, target) {
-    if (this.targetHelper.active) { 
+    if (this.targetHelper.active) {
       return
     }
     let altDown = this.altDown
@@ -339,7 +339,7 @@ export class Actions {
     }
 
     let options = await Actions.selectActivity.bind(this)(item)
-    if (!options) return
+    if (!options?.activity || Object.keys(options.activity).length === 0) return
     let selectedSpellLevel = options.selectedSpellLevel,
       activity = options.activity
 
