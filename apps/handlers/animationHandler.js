@@ -4,12 +4,12 @@ export class AnimationHandler {
     this.animationDuration = 0.5
     this.animationStack = []
     this.defaultTray = options.defaultTray || 'stacked'
-    this.verticalBounds = this.hotbar.iconSize  * (this.hotbar.rowCount +1)
-    this.horizontalBounds = this.hotbar.iconSize  * (this.hotbar.columnCount +1)
+    this.verticalBounds = this.hotbar.iconSize * (this.hotbar.rowCount + 1)
+    this.horizontalBounds = this.hotbar.iconSize * (this.hotbar.columnCount + 1)
   }
 
   async pushTray(trayId) {
-    if (this.animationStack.at(-1) == 'activity' && trayId == 'target-helper') { 
+    if (this.animationStack.at(-1) == 'activity' && trayId == 'target-helper') {
       this.setTray('target-helper')
       return
     }
@@ -33,7 +33,6 @@ export class AnimationHandler {
       await this.animateTrays(trayId, trayOut, this.hotbar)
     }
   }
-
 
   async clearStack() {
     this.animationStack = [this.defaultTray]
@@ -59,7 +58,7 @@ export class AnimationHandler {
 
   async animateTrays(trayInId, trayOutId, hotbar) {
     if (trayInId == trayOutId) return
-    
+
     if (trayOutId == 'target-helper' && trayInId == 'activity') {
       trayInId = 'stacked'
     }
@@ -175,7 +174,7 @@ export class AnimationHandler {
       })
 
       gsap.to(`.${tray.id}`, {
-        force3D:false,
+        force3D: false,
         opacity: 1,
         y: 0,
         x: 0,
@@ -218,7 +217,7 @@ export class AnimationHandler {
       }
 
       gsap.to(`.${tray.id}`, {
-        force3D:false,
+        force3D: false,
         opacity: 1,
         y: yOffset,
         x: xOffset,
@@ -237,9 +236,11 @@ export class AnimationHandler {
       width: `calc(100% - ${width}px + var(--aat-main-tray-padding) - var(--aat-main-tray-gap))`,
       duration: 0.4,
       onComplete: () => {
-        document.getElementById('auto-action-tray').style.setProperty('--aat-stacked-spacer-width', width + 'px');
+        document
+          .getElementById('auto-action-tray')
+          .style.setProperty('--aat-stacked-spacer-width', width + 'px')
       },
-    });
+    })
   }
 
   async animateStackedTrayOut(trayOut, trayIn) {
@@ -252,7 +253,7 @@ export class AnimationHandler {
           if (tray.id != 'common') xOffset = -33
           this.setStackedTrayPos(tray)
           gsap.to(`.container-${tray.id}`, {
-            force3D:false,
+            force3D: false,
             opacity: 1,
             x: xOffset,
             duration: AnimationHandler.getAnimationDuration(tray.id),
@@ -263,7 +264,7 @@ export class AnimationHandler {
           })
         } else {
           gsap.to(`.container-${tray.id}`, {
-            force3D:false,
+            force3D: false,
             opacity: 1,
             x: this.horizontalBounds,
             duration: AnimationHandler.getAnimationDuration(tray.id),
@@ -283,7 +284,7 @@ export class AnimationHandler {
       this.animateSpacer(this.hotbar.iconSize / 3)
       trayIn.trays.forEach((tray) => {
         gsap.to(`.container-${tray.id}`, {
-          force3D:false,
+          force3D: false,
           opacity: 1,
           x: tray.xPos,
           duration: AnimationHandler.getAnimationDuration(tray.id),
@@ -297,7 +298,6 @@ export class AnimationHandler {
   }
 
   setAllStackedTrayPos(stackedTray) {
-  
     stackedTray.trays.forEach((tray) => {
       gsap.set(`.container-${tray.id}`, {
         // force3D: false,
@@ -323,8 +323,14 @@ export class AnimationHandler {
   }
 
   setCircle(value) {
-    let color100 = '#01a3e4'
-    let color = '#1D86AF'
+    //hoverColor
+    let theme = game.settings.get('auto-action-tray', 'tempTheme')
+    let element = document.querySelector(`.${theme}`)
+    let color = getComputedStyle(element).getPropertyValue('--aat-hover-color').trim()
+    let color100 = getComputedStyle(element).getPropertyValue('--aat-hover-color-light').trim()
+    // let color100 = '#01a3e4'
+    // //hoverColorDim
+    // let color = '#1D86AF'
     let baseColor = value == 100 ? color100 : color
     let glowpx = value == 100 ? 8 : 4
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
@@ -340,8 +346,16 @@ export class AnimationHandler {
   }
 
   async animateCircle(start, end, hotbar) {
-    let color100 = '#01a3e4'
-    let color = '#1D86AF'
+    let theme = game.settings.get('auto-action-tray', 'tempTheme')
+    let element = document.querySelector(`.${theme}`)
+    let color = getComputedStyle(element).getPropertyValue('--aat-hover-color').trim()
+    let color100 = getComputedStyle(element).getPropertyValue('--aat-hover-color-light').trim()
+    let mainColor = getComputedStyle(element).getPropertyValue('--aat-main-color').trim()
+    let mainColorLight = getComputedStyle(element).getPropertyValue('--aat-main-color-light').trim()
+    let accentColor = getComputedStyle(element).getPropertyValue('--aat-accent-color').trim()
+    let accentColorLight = getComputedStyle(element).getPropertyValue('--aat-accent-color-light').trim()
+
+
     let baseColor = end == 100 ? color100 : color
     let glowpx = end == 100 ? 8 : 4
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(
@@ -353,10 +367,10 @@ export class AnimationHandler {
       gsap.fromTo(
         '.end-turn-btn',
         {
-          background: 'radial-gradient( #ff8725, #552502)',
+          background: `radial-gradient( ${accentColor}, ${accentColorLight})`,
         },
         {
-          background: 'radial-gradient( #ff4800, #000000)',
+          background: `radial-gradient( ${color100} -25%, ${mainColor} 60%)`,
           duration: 1,
         },
       )

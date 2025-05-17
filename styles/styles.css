@@ -1503,14 +1503,23 @@ img.item-equipped {
 }
 
 .end-turn-btn {
-  background: radial-gradient(#ff4800, #000);
+  background: radial-gradient(var(--aat-hover-color-light), var(--aat-main-color));
 }
 .end-turn-btn:active {
-  background: radial-gradient(#fc3c1b, #420000);
-  box-shadow: inset 0 0 15px #3a0804;
+  background: radial-gradient(var(--aat-hover-accent-color), var(--aat-hover-color-dim));
+  box-shadow: inset 0 0 15px var(--aat-hover-color-dim);
 }
 .end-turn-btn:hover {
-  box-shadow: 0 0 10px #ff7b50, inset 0 0 10px #3a0804;
+  box-shadow: 0 0 10px var(--aat-hover-color), inset 0 0 10px var(--aat-hover-color-dim);
+}
+
+.end-turn-btn-nohover {
+  background: radial-gradient(var(--aat-accent-color), var(--aat-accent-color-light));
+  pointer-events: none;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .end-turn-btn-dice {
@@ -1530,15 +1539,6 @@ img.item-equipped {
 }
 .end-turn-btn-dice .end-turn-btn-dice-icon i {
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 6px rgba(0, 0, 0, 0.8);
-}
-
-.end-turn-btn-nohover {
-  background: radial-gradient(#ff8725, #552502);
-  pointer-events: none;
-  display: flex;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
 }
 
 .end-turn-btn-text {
@@ -1640,7 +1640,7 @@ img.item-equipped {
   --aat-accent-color-light: #8a43e4;
   --aat-border-color-light: #9276d4;
   --aat-hover-color: #df77ff;
-  --aat-hover-color-light: rgba(191, 128, 255, 0.9);
+  --aat-hover-color-light: #bf80ffe6;
   --aat-hover-color-dim: #6a2e7c;
   --aat-hover-accent-color: #cc99ff;
   --aat-drag-handle-color: #6a2ea3;
@@ -1649,9 +1649,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #c47fff;
   --aat-prof-color: #c19aff;
   --aat-expertise-color: #e1caf8;
-  --aat-tray-button-background-color: rgb(55, 45, 70);
+  --aat-tray-button-background-color: #372d46;
   --aat-tray-button-border-color: #9169c5ec;
-  --aat-tray-button-accent: rgba(36, 36, 54, 0.6);
+  --aat-tray-button-accent: #24243699;
   --aat-tooltip-bg: #2a203b;
   --aat-tooltip-border: #915cf2;
   --aat-tooltip-text: #dfccff;
@@ -1681,7 +1681,7 @@ img.item-equipped {
   --aat-accent-color-light: #a30000;
   --aat-border-color-light: #990000;
   --aat-hover-color: #c77070;
-  --aat-hover-color-light: rgba(230, 50, 50, 0.9);
+  --aat-hover-color-light: #e63232e6;
   --aat-hover-color-dim: #590000;
   --aat-hover-accent-color: #ff2b2b;
   --aat-drag-handle-color: #830303;
@@ -1690,9 +1690,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #ffffff;
   --aat-prof-color: #f5f5f5;
   --aat-expertise-color: #e0e0e0;
-  --aat-tray-button-background-color: rgb(68, 0, 0);
+  --aat-tray-button-background-color: #440000;
   --aat-tray-button-border-color: #a60000;
-  --aat-tray-button-accent: rgba(40, 0, 0, 0.5);
+  --aat-tray-button-accent: #28000080;
   --aat-tooltip-bg: #150000;
   --aat-tooltip-border: #b30000;
   --aat-tooltip-text: #ffffff;
@@ -1722,7 +1722,7 @@ img.item-equipped {
   --aat-accent-color-light: #78c0e0;
   --aat-border-color-light: #217ca3;
   --aat-hover-color: #4ee2a0;
-  --aat-hover-color-light: rgba(78, 226, 160, 0.8);
+  --aat-hover-color-light: #4ee2a0cc;
   --aat-hover-color-dim: #1e2e3f;
   --aat-hover-accent-color: #65d9ff;
   --aat-drag-handle-color: #005a87;
@@ -1731,9 +1731,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #65d9ff;
   --aat-prof-color: #a9e7ff;
   --aat-expertise-color: #c2ecff;
-  --aat-tray-button-background-color: rgb(30, 60, 75);
+  --aat-tray-button-background-color: #1e3c4b;
   --aat-tray-button-border-color: #508ca494;
-  --aat-tray-button-accent: rgba(22, 33, 44, 0.6);
+  --aat-tray-button-accent: #16212c99;
   --aat-tooltip-bg: #1e1e2e;
   --aat-tooltip-border: #3a9ad9;
   --aat-tooltip-text: #e0f0ff;
@@ -1763,8 +1763,8 @@ img.item-equipped {
   --aat-accent-color-light: #ffa285;
   --aat-border-color-light: #ff645d;
   --aat-hover-color: #ff6666;
-  --aat-hover-color-light: rgba(255, 102, 102, 0.8);
-  --aat-hover-color-dim: rgba(156, 61, 58, 0.863);
+  --aat-hover-color-light: #ff6666cc;
+  --aat-hover-color-dim: #9c3d3adc;
   --aat-hover-accent-color: #ff9980;
   --aat-drag-handle-color: #8c1f1f;
   --aat-drag-handle-light: #d94d4d;
@@ -1772,9 +1772,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #ff6666;
   --aat-prof-color: #fd9d7c;
   --aat-expertise-color: #ffd8cc;
-  --aat-tray-button-background-color: rgb(85, 50, 40);
+  --aat-tray-button-background-color: #553228;
   --aat-tray-button-border-color: #9c5e4f94;
-  --aat-tray-button-accent: rgba(36, 24, 24, 0.6);
+  --aat-tray-button-accent: #24181899;
   --aat-tooltip-bg: #1a0f0f;
   --aat-tooltip-border: #aa2e2e;
   --aat-tooltip-text: #ffb6a0;
@@ -1804,8 +1804,8 @@ img.item-equipped {
   --aat-accent-color-light: #5fbcd3;
   --aat-border-color-light: #7fdff5;
   --aat-hover-color: #7fdff5;
-  --aat-hover-color-light: rgba(160, 235, 255, 0.9);
-  --aat-hover-color-dim: rgb(32, 72, 82);
+  --aat-hover-color-light: #a0ebffe6;
+  --aat-hover-color-dim: #204852;
   --aat-hover-accent-color: #a7f6ff;
   --aat-drag-handle-color: #469caa;
   --aat-drag-handle-light: #5fbcd3;
@@ -1813,9 +1813,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #82deea;
   --aat-prof-color: #b3f4ea;
   --aat-expertise-color: #92ffe9;
-  --aat-tray-button-background-color: rgb(40, 60, 65);
+  --aat-tray-button-background-color: #283c41;
   --aat-tray-button-border-color: #70d6e494;
-  --aat-tray-button-accent: rgba(20, 30, 30, 0.6);
+  --aat-tray-button-accent: #141e1e99;
   --aat-tooltip-bg: #111b20;
   --aat-tooltip-border: #5ebad4;
   --aat-tooltip-text: #e0faff;
@@ -1845,7 +1845,7 @@ img.item-equipped {
   --aat-accent-color-light: #c23232;
   --aat-border-color-light: #933333;
   --aat-hover-color: #ff4d4d;
-  --aat-hover-color-light: rgba(255, 77, 77, 0.8);
+  --aat-hover-color-light: #ff4d4dcc;
   --aat-hover-color-dim: #661a1a;
   --aat-hover-accent-color: #e05252;
   --aat-drag-handle-color: #3a2c2c;
@@ -1854,9 +1854,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #aa5c5c;
   --aat-prof-color: #ff9494;
   --aat-expertise-color: #ffcccc;
-  --aat-tray-button-background-color: rgb(30, 25, 25);
+  --aat-tray-button-background-color: #1e1919;
   --aat-tray-button-border-color: #b33a3aec;
-  --aat-tray-button-accent: rgba(28, 28, 28, 0.6);
+  --aat-tray-button-accent: #1c1c1c99;
   --aat-tooltip-bg: #1a1a1a;
   --aat-tooltip-border: #c23232;
   --aat-tooltip-text: #f5dcdc;
@@ -1886,7 +1886,7 @@ img.item-equipped {
   --aat-accent-color-light: #bb3f1d;
   --aat-border-color-light: #e57c49;
   --aat-hover-color: #ff9c63;
-  --aat-hover-color-light: rgba(255, 156, 99, 0.85);
+  --aat-hover-color-light: #ff9c63d9;
   --aat-hover-color-dim: #9c3e1d;
   --aat-hover-accent-color: #ffd2aa;
   --aat-drag-handle-color: #b5421f;
@@ -1895,9 +1895,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #ff9c63;
   --aat-prof-color: #ffc7a3;
   --aat-expertise-color: #ffe1c8;
-  --aat-tray-button-background-color: rgb(42, 22, 15);
+  --aat-tray-button-background-color: #2a160f;
   --aat-tray-button-border-color: #e56b2fec;
-  --aat-tray-button-accent: rgba(32, 16, 10, 0.6);
+  --aat-tray-button-accent: #20100a99;
   --aat-tooltip-bg: #2e1a14;
   --aat-tooltip-border: #e56b2f;
   --aat-tooltip-text: #ffeadd;
@@ -1927,7 +1927,7 @@ img.item-equipped {
   --aat-accent-color-light: #a17a7d;
   --aat-border-color-light: #9e7f81;
   --aat-hover-color: #d2a1a1;
-  --aat-hover-color-light: rgba(210, 161, 161, 0.85);
+  --aat-hover-color-light: #d2a1a1d9;
   --aat-hover-color-dim: #3f292f;
   --aat-hover-accent-color: #e6b2b2;
   --aat-drag-handle-color: #5f3d41;
@@ -1936,9 +1936,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #d2a1a1;
   --aat-prof-color: #d2a1a1;
   --aat-expertise-color: #e6b2b2;
-  --aat-tray-button-background-color: rgb(34, 25, 28);
+  --aat-tray-button-background-color: #22191c;
   --aat-tray-button-border-color: #9c6e6dec;
-  --aat-tray-button-accent: rgba(38, 28, 32, 0.6);
+  --aat-tray-button-accent: #261c2099;
   --aat-tooltip-bg: #1d1216;
   --aat-tooltip-border: #7d6a6d;
   --aat-tooltip-text: #f1d4d2;
@@ -1968,7 +1968,7 @@ img.item-equipped {
   --aat-accent-color-light: #746b65;
   --aat-border-color-light: #867d77;
   --aat-hover-color: #9f938c;
-  --aat-hover-color-light: rgba(159, 147, 140, 0.85);
+  --aat-hover-color-light: #9f938cd9;
   --aat-hover-color-dim: #332f2b;
   --aat-hover-accent-color: #b8ada6;
   --aat-drag-handle-color: #4b4541;
@@ -1977,9 +1977,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #c2b8b1;
   --aat-prof-color: #9f938c;
   --aat-expertise-color: #b8ada6;
-  --aat-tray-button-background-color: rgb(29, 27, 25);
+  --aat-tray-button-background-color: #1d1b19;
   --aat-tray-button-border-color: #746b65ec;
-  --aat-tray-button-accent: rgba(36, 33, 31, 0.6);
+  --aat-tray-button-accent: #24211f99;
   --aat-tooltip-bg: #1c1410;
   --aat-tooltip-border: #5a4a44;
   --aat-tooltip-text: #e1c8b8;
@@ -2009,8 +2009,8 @@ img.item-equipped {
   --aat-accent-color-light: #a8bfc9;
   --aat-border-color-light: #666666;
   --aat-hover-color: #99ccff;
-  --aat-hover-color-light: rgba(153, 204, 255, 0.8);
-  --aat-hover-color-dim: rgb(73, 73, 88);
+  --aat-hover-color-light: #99ccffcc;
+  --aat-hover-color-dim: #494958;
   --aat-hover-accent-color: #add8e6;
   --aat-drag-handle-color: #444444;
   --aat-drag-handle-light: #666666;
@@ -2018,9 +2018,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #888888;
   --aat-prof-color: #add8e6;
   --aat-expertise-color: #d4ecf8;
-  --aat-tray-button-background-color: rgb(60, 60, 65);
+  --aat-tray-button-background-color: #3c3c41;
   --aat-tray-button-border-color: #7a7a7a94;
-  --aat-tray-button-accent: rgba(20, 30, 30, 0.6);
+  --aat-tray-button-accent: #141e1e99;
   --aat-tooltip-bg: #2e2e2e;
   --aat-tooltip-border: #666666;
   --aat-tooltip-text: #ffffff;
@@ -2050,7 +2050,7 @@ img.item-equipped {
   --aat-accent-color-light: #a8c68c;
   --aat-border-color-light: #a1d295;
   --aat-hover-color: #c1e7a7;
-  --aat-hover-color-light: rgba(193, 231, 167, 0.85);
+  --aat-hover-color-light: #c1e7a7d9;
   --aat-hover-color-dim: #3e5f2c;
   --aat-hover-accent-color: #d1f5b7;
   --aat-drag-handle-color: #597b3a;
@@ -2059,9 +2059,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #d1f5b7;
   --aat-prof-color: #b3e27b;
   --aat-expertise-color: #c9f299;
-  --aat-tray-button-background-color: rgb(36, 53, 30);
+  --aat-tray-button-background-color: #24351e;
   --aat-tray-button-border-color: #9fbf75ec;
-  --aat-tray-button-accent: rgba(24, 34, 18, 0.6);
+  --aat-tray-button-accent: #18221299;
   --aat-tooltip-bg: #2a3b1a;
   --aat-tooltip-border: #9fbf75;
   --aat-tooltip-text: #f4f7e1;
@@ -2091,7 +2091,7 @@ img.item-equipped {
   --aat-accent-color-light: #f5a08f;
   --aat-border-color-light: #f1a593;
   --aat-hover-color: #f8c4a7;
-  --aat-hover-color-light: rgba(248, 196, 167, 0.85);
+  --aat-hover-color-light: #f8c4a7d9;
   --aat-hover-color-dim: #9e1f1a;
   --aat-hover-accent-color: #f8c4a7;
   --aat-drag-handle-color: #b93d2a;
@@ -2100,9 +2100,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #f8c4a7;
   --aat-prof-color: #f5a08f;
   --aat-expertise-color: #f8b09d;
-  --aat-tray-button-background-color: rgb(73, 29, 19);
+  --aat-tray-button-background-color: #491d13;
   --aat-tray-button-border-color: #f08a74ec;
-  --aat-tray-button-accent: rgba(42, 12, 6, 0.6);
+  --aat-tray-button-accent: #2a0c0699;
   --aat-tooltip-bg: #4e1a12;
   --aat-tooltip-border: #f08a74;
   --aat-tooltip-text: #f9d8c4;
@@ -2132,7 +2132,7 @@ img.item-equipped {
   --aat-accent-color-light: #9f57b5;
   --aat-border-color-light: #a674c1;
   --aat-hover-color: #c187d8;
-  --aat-hover-color-light: rgba(193, 135, 216, 0.85);
+  --aat-hover-color-light: #c187d8d9;
   --aat-hover-color-dim: #6d0c6c;
   --aat-hover-accent-color: #c7a7e6;
   --aat-drag-handle-color: #7e3a9d;
@@ -2141,9 +2141,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #c7a7e6;
   --aat-prof-color: #ba80d4;
   --aat-expertise-color: #c7a7e6;
-  --aat-tray-button-background-color: rgb(49, 22, 45);
+  --aat-tray-button-background-color: #31162d;
   --aat-tray-button-border-color: #ba80d4ec;
-  --aat-tray-button-accent: rgba(27, 17, 32, 0.6);
+  --aat-tray-button-accent: #1b112099;
   --aat-tooltip-bg: #4c1c4f;
   --aat-tooltip-border: #ba80d4;
   --aat-tooltip-text: #f0c2f5;
@@ -2173,7 +2173,7 @@ img.item-equipped {
   --aat-accent-color-light: #dfc071;
   --aat-border-color-light: #d0b36e;
   --aat-hover-color: #d5b14b;
-  --aat-hover-color-light: rgba(213, 177, 75, 0.85);
+  --aat-hover-color-light: #d5b14bd9;
   --aat-hover-color-dim: #a78f3d;
   --aat-hover-accent-color: #e1bb65;
   --aat-drag-handle-color: #b68c42;
@@ -2182,12 +2182,12 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #e1bb65;
   --aat-prof-color: #f5c938;
   --aat-expertise-color: #e4d28f;
-  --aat-tray-button-background-color: rgb(85, 68, 40);
+  --aat-tray-button-background-color: #554428;
   --aat-tray-button-border-color: #d0b36e;
-  --aat-tray-button-accent: rgba(49, 37, 23, 0.6);
-  --aat-tooltip-bg: #2f1e0d; /* Darken the background for better contrast */
+  --aat-tray-button-accent: #31251799;
+  --aat-tooltip-bg: #2f1e0d;
   --aat-tooltip-border: #d0b36e;
-  --aat-tooltip-text: #f4e1a0; /* Soft yellow for better readability */
+  --aat-tooltip-text: #f4e1a0;
   --aat-tooltip-font: serif;
   --aat-tooltip-upper-icon: #d4b14b;
   --aat-tooltip-header: #f5d57d;
@@ -2200,7 +2200,7 @@ img.item-equipped {
   --aat-tooltip-broken: #9b8c59;
   --aat-tooltip-effect: #ffd14e;
   --aat-tooltip-info: #f5db6e;
-  --aat-tooltip-footer-bg: #2f1e0d; /* Dark background to balance brightness */
+  --aat-tooltip-footer-bg: #2f1e0d;
   --aat-tooltip-footer: #e1c37b;
   --aat-action-tag-bg: #b68c42;
   --aat-action-tag-text: #ffffff;
@@ -2214,7 +2214,7 @@ img.item-equipped {
   --aat-accent-color-light: #7ec77a;
   --aat-border-color-light: #89d487;
   --aat-hover-color: #a4e3a1;
-  --aat-hover-color-light: rgba(150, 225, 150, 0.9);
+  --aat-hover-color-light: #96e196e6;
   --aat-hover-color-dim: #4a7a47;
   --aat-hover-accent-color: #b3f3b1;
   --aat-drag-handle-color: #577d53;
@@ -2223,9 +2223,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #b6ffb3;
   --aat-prof-color: #94e5a2;
   --aat-expertise-color: #ccf1d1;
-  --aat-tray-button-background-color: rgb(38, 54, 38);
+  --aat-tray-button-background-color: #263626;
   --aat-tray-button-border-color: #76c57aec;
-  --aat-tray-button-accent: rgba(42, 54, 42, 0.6);
+  --aat-tray-button-accent: #2a362a99;
   --aat-tooltip-bg: #263c26;
   --aat-tooltip-border: #6ddf76;
   --aat-tooltip-text: #dcf5db;
@@ -2255,7 +2255,7 @@ img.item-equipped {
   --aat-accent-color-light: #9e9e9e;
   --aat-border-color-light: #b4b4b4;
   --aat-hover-color: #bbbbbb;
-  --aat-hover-color-light: rgba(200, 200, 200, 0.85);
+  --aat-hover-color-light: #c8c8c8d9;
   --aat-hover-color-dim: #4d4d4d;
   --aat-hover-accent-color: #d1d1d1;
   --aat-drag-handle-color: #5e5e5e;
@@ -2264,9 +2264,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #d0d0d0;
   --aat-prof-color: #cccccc;
   --aat-expertise-color: #e6e6e6;
-  --aat-tray-button-background-color: rgb(45, 45, 45);
+  --aat-tray-button-background-color: #2d2d2d;
   --aat-tray-button-border-color: #a5a5a5ec;
-  --aat-tray-button-accent: rgba(36, 36, 36, 0.6);
+  --aat-tray-button-accent: #24242499;
   --aat-tooltip-bg: #202020;
   --aat-tooltip-border: #8f8f8f;
   --aat-tooltip-text: #f0f0f0;
@@ -2296,7 +2296,7 @@ img.item-equipped {
   --aat-accent-color-light: #81a16c;
   --aat-border-color-light: #9cbe75;
   --aat-hover-color: #b0db93;
-  --aat-hover-color-light: rgba(176, 219, 147, 0.85);
+  --aat-hover-color-light: #b0db93d9;
   --aat-hover-color-dim: #3f5426;
   --aat-hover-accent-color: #a2d07a;
   --aat-drag-handle-color: #5c7d43;
@@ -2305,9 +2305,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #a2d07a;
   --aat-prof-color: #b1d78f;
   --aat-expertise-color: #c5e1a3;
-  --aat-tray-button-background-color: rgb(61 146 105);
+  --aat-tray-button-background-color: #3d9269;
   --aat-tray-button-border-color: #a1c58dec;
-  --aat-tray-button-accent: rgba(18, 15, 13, 0.6);
+  --aat-tray-button-accent: #120f0d99;
   --aat-tooltip-bg: #3e3e2e;
   --aat-tooltip-border: #a1c58d;
   --aat-tooltip-text: #f0f7e3;
@@ -2337,7 +2337,7 @@ img.item-equipped {
   --aat-accent-color-light: #a9c7f2;
   --aat-border-color-light: #8fb3de;
   --aat-hover-color: #c9e3ff;
-  --aat-hover-color-light: rgba(200, 220, 255, 0.8);
+  --aat-hover-color-light: #c8dcffcc;
   --aat-hover-color-dim: #446b8d;
   --aat-hover-accent-color: #d9eeff;
   --aat-drag-handle-color: #3e6288;
@@ -2346,9 +2346,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #b8dbff;
   --aat-prof-color: #b0d4f8;
   --aat-expertise-color: #d6eaff;
-  --aat-tray-button-background-color: rgb(30, 40, 60);
+  --aat-tray-button-background-color: #1e283c;
   --aat-tray-button-border-color: #7db1ddec;
-  --aat-tray-button-accent: rgba(38, 54, 78, 0.6);
+  --aat-tray-button-accent: #26364e99;
   --aat-tooltip-bg: #1f2d3e;
   --aat-tooltip-border: #a4c6eb;
   --aat-tooltip-text: #e6f3ff;
@@ -2378,7 +2378,7 @@ img.item-equipped {
   --aat-accent-color-light: #a3d2a1;
   --aat-border-color-light: #8cae7d;
   --aat-hover-color: #a8d59f;
-  --aat-hover-color-light: rgba(168, 213, 159, 0.85);
+  --aat-hover-color-light: #a8d59fd9;
   --aat-hover-color-dim: #3c5a38;
   --aat-hover-accent-color: #b0d69f;
   --aat-drag-handle-color: #4a6839;
@@ -2387,9 +2387,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #b0cc96;
   --aat-prof-color: #87d68b;
   --aat-expertise-color: #c5f2c1;
-  --aat-tray-button-background-color: rgb(40, 60, 30);
+  --aat-tray-button-background-color: #283c1e;
   --aat-tray-button-border-color: #7f9b72ec;
-  --aat-tray-button-accent: rgba(29, 39, 19, 0.6);
+  --aat-tray-button-accent: #1d271399;
   --aat-tooltip-bg: #2a3e2a;
   --aat-tooltip-border: #7f9b72;
   --aat-tooltip-text: #d6f2c4;
@@ -2419,7 +2419,7 @@ img.item-equipped {
   --aat-accent-color-light: #b74d4d;
   --aat-border-color-light: #7a2c2c;
   --aat-hover-color: #e14c4c;
-  --aat-hover-color-light: rgba(225, 76, 76, 0.85);
+  --aat-hover-color-light: #e14c4cd9;
   --aat-hover-color-dim: #4b1010;
   --aat-hover-accent-color: #ff8c8c;
   --aat-drag-handle-color: #6a1f1f;
@@ -2428,9 +2428,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #ff8a8a;
   --aat-prof-color: #e14c4c;
   --aat-expertise-color: #ff8c8c;
-  --aat-tray-button-background-color: rgb(41, 15, 15);
+  --aat-tray-button-background-color: #290f0f;
   --aat-tray-button-border-color: #7a2c2cec;
-  --aat-tray-button-accent: rgba(42, 18, 18, 0.6);
+  --aat-tray-button-accent: #2a121299;
   --aat-tooltip-bg: #2a0c0c;
   --aat-tooltip-border: #5a1414;
   --aat-tooltip-text: #f1d4d2;
@@ -2460,7 +2460,7 @@ img.item-equipped {
   --aat-accent-color-light: #f78b9d;
   --aat-border-color-light: #fda6b1;
   --aat-hover-color: #ffb6c1;
-  --aat-hover-color-light: rgba(255, 182, 193, 0.85);
+  --aat-hover-color-light: #ffb6c1d9;
   --aat-hover-color-dim: #842642;
   --aat-hover-accent-color: #ffd1dd;
   --aat-drag-handle-color: #a0263a;
@@ -2469,9 +2469,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #ffb1c7;
   --aat-prof-color: #ffacc4;
   --aat-expertise-color: #ffe4ed;
-  --aat-tray-button-background-color: rgb(50, 25, 35);
+  --aat-tray-button-background-color: #321923;
   --aat-tray-button-border-color: #e95d7bec;
-  --aat-tray-button-accent: rgba(42, 20, 28, 0.6);
+  --aat-tray-button-accent: #2a141c99;
   --aat-tooltip-bg: #2d0f1a;
   --aat-tooltip-border: #f25478;
   --aat-tooltip-text: #ffe6ee;
@@ -2501,7 +2501,7 @@ img.item-equipped {
   --aat-accent-color-light: #6f4a82;
   --aat-border-color-light: #7e5a9d;
   --aat-hover-color: #9e6bbf;
-  --aat-hover-color-light: rgba(158, 107, 191, 0.85);
+  --aat-hover-color-light: #9e6bbfd9;
   --aat-hover-color-dim: #3d1e53;
   --aat-hover-accent-color: #c0a0e1;
   --aat-drag-handle-color: #3c1e50;
@@ -2510,9 +2510,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #c0a0e1;
   --aat-prof-color: #a489d1;
   --aat-expertise-color: #c8a8e3;
-  --aat-tray-button-background-color: rgb(32, 22, 38);
+  --aat-tray-button-background-color: #201626;
   --aat-tray-button-border-color: #5e4b89ec;
-  --aat-tray-button-accent: rgba(19, 14, 25, 0.6);
+  --aat-tray-button-accent: #130e1999;
   --aat-tooltip-bg: #2a1932;
   --aat-tooltip-border: #5e4b89;
   --aat-tooltip-text: #e0c1ff;
@@ -2542,7 +2542,7 @@ img.item-equipped {
   --aat-accent-color-light: #6c92ff;
   --aat-border-color-light: #839deb;
   --aat-hover-color: #a0bfff;
-  --aat-hover-color-light: rgba(180, 200, 255, 0.9);
+  --aat-hover-color-light: #b4c8ffe6;
   --aat-hover-color-dim: #2a4172;
   --aat-hover-accent-color: #ccdfff;
   --aat-drag-handle-color: #3b4f99;
@@ -2551,9 +2551,9 @@ img.item-equipped {
   --aat-drag-handle-hover-light: #b3ceff;
   --aat-prof-color: #b0c4ff;
   --aat-expertise-color: #d6e1ff;
-  --aat-tray-button-background-color: rgb(28, 34, 60);
+  --aat-tray-button-background-color: #1c223c;
   --aat-tray-button-border-color: #6e8cecec;
-  --aat-tray-button-accent: rgba(20, 28, 46, 0.6);
+  --aat-tray-button-accent: #141c2e99;
   --aat-tooltip-bg: #1a2340;
   --aat-tooltip-border: #6e90ff;
   --aat-tooltip-text: #e4ebff;

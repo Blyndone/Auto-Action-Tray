@@ -77,16 +77,26 @@
 }
 
 .end-turn-btn {
-  background: radial-gradient(#ff4800, #000);
+  background: radial-gradient(var(--aat-hover-color-light), var(--aat-main-color));
+
   &:active {
-    background: radial-gradient(#fc3c1b, #420000);
-    box-shadow: inset 0 0 15px #3a0804;
+    background: radial-gradient(var(--aat-hover-accent-color), var(--aat-hover-color-dim));
+    box-shadow: inset 0 0 15px var(--aat-hover-color-dim);
   }
+
   &:hover {
-    box-shadow: 0 0 10px #ff7b50, inset 0 0 10px #3a0804;
+    box-shadow: 0 0 10px var(--aat-hover-color), inset 0 0 10px var(--aat-hover-color-dim);
   }
 }
 
+.end-turn-btn-nohover {
+  background: radial-gradient(var(--aat-accent-color), var(--aat-accent-color-light));
+  pointer-events: none;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
 .end-turn-btn-dice {
   color: #fff;
   // border: 3px solid var(--aat-border-color);
@@ -108,15 +118,6 @@
       text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 6px rgba(0, 0, 0, 0.8);
     }
   }
-}
-
-.end-turn-btn-nohover {
-  background: radial-gradient(#ff8725, #552502);
-  pointer-events: none;
-  display: flex;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
 }
 
 .end-turn-btn-text {
