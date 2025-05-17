@@ -50,19 +50,21 @@
     </li>
 
   </ol>
-
+  {{log item}}
   {{#if (eq item.type 'spell')}}
-    <div class='use-slot-text-container'>
-      Use Slot:
-      <input
-        id='useSlot'
-        name='useSlot'
-        type='checkbox'
-        class='use-slot-checkbox'
-        checked='true'
-        data-action='useSlot'
-      />
-    </div>
+    {{#if (neq item.spellLevel 0)}}
+      <div class='use-slot-text-container'>
+        Use Slot:
+        <input
+          id='useSlot'
+          name='useSlot'
+          type='checkbox'
+          class='use-slot-checkbox'
+          checked='true'
+          data-action='useSlot'
+        />
+      </div>
+    {{/if}}
   {{/if}}
 
 </div>
