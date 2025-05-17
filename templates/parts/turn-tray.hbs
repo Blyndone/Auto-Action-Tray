@@ -31,32 +31,35 @@
         stroke-linecap='round'
       />
     </svg>
+    {{#if combatHandler.inCombat}}
 
-    {{#if combatHandler.isTurn}}
-      <div class='end-turn-btn' data-action='endTurn'>
-        {{#if combatHandler.inCombat}}
-          <div class='end-turn-btn-text'>
-            End Turn<br />
-            <i class='fa-solid fa-hourglass-half'></i>
+      <div class='combat-inner-container'>
+
+        {{#if combatHandler.isTurn}}
+          <div class='end-turn-btn' data-action='endTurn'>
+
+            <div class='end-turn-btn-text'>
+              End Turn<br />
+              <i class='fa-solid fa-hourglass-half'></i>
+            </div>
+
+          </div>
+        {{else}}
+          <div class='end-turn-btn-not-turn'>
+            <div class='end-turn-btn-text'>
+              Next Turn:<br />
+              {{combatHandler.tillNextTurn}}
+              Turns
+            </div>
           </div>
         {{/if}}
       </div>
     {{else}}
-      {{#if combatHandler.inCombat}}
-        <div class='end-turn-btn-nohover'>
-          <div class='end-turn-btn-text'>
-            Next Turn:<br />
-            {{combatHandler.tillNextTurn}}
-            Turns
-          </div>
+      <div class='end-turn-btn-dice' data-action='rollD20'>
+        <div class='end-turn-btn-dice-icon'>
+          {{{diceIcon currentDice}}}
         </div>
-      {{else}}
-        <div class='end-turn-btn-dice' data-action='rollD20'>
-          <div class='end-turn-btn-dice-icon'>
-            {{{diceIcon currentDice}}}
-          </div>
-        </div>
-      {{/if}}
+      </div>
     {{/if}}
 
   </div>

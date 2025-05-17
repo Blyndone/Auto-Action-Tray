@@ -18,11 +18,7 @@ export class StackedTray {
       this.getSavedData();
       this.setTrayPositions(this.positions);
     } else {
-      this.setTrayPositions([
-        0,
-        this.hotbar.iconSize * 5 + 2 + 5,
-        this.hotbar.iconSize * 31 / 3 + 4 + 10
-      ]);
+      this.setTrayPositions([0, Infinity, Infinity]);
     }
   }
   setActive() {
@@ -51,7 +47,14 @@ export class StackedTray {
   }
 
   setTrayPositions(trayPositions) {
-    const defaults = [0, 105, 1050];
+    let handleSize = this.hotbar.iconSize / 3 + 2;
+    let pos1 =
+      Math.floor(this.hotbar.columnCount / 3) * this.hotbar.iconSize + 7;
+    let pos2 =
+      Math.floor(this.hotbar.columnCount * 2 / 3) * this.hotbar.iconSize +
+      handleSize +
+      14;
+    const defaults = [0, pos1, pos2];
     const maxPos = this.hotbar.iconSize * this.hotbar.columnCount;
 
     for (let i = 0; i < 3; i++) {

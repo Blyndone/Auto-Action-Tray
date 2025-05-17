@@ -155,8 +155,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
       let color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
       document
-        .getElementById('auto-action-tray')
-        .style.setProperty('--aat-modifier-highlight-color', color)
+        .getElementById('auto-action-tray')?.style.setProperty('--aat-modifier-highlight-color', color)
       const elements = document.querySelectorAll('.modifier-highlight')
       elements.forEach((el) => {
         el.classList.add('modifier-active')
@@ -169,8 +168,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       const elements = document.querySelectorAll('.modifier-highlight')
       document
-        .getElementById('auto-action-tray')
-        .style.setProperty('--aat-modifier-highlight-color', '')
+        .getElementById('auto-action-tray')?.style.setProperty('--aat-modifier-highlight-color', '')
       elements.forEach((el) => {
         el.classList.remove('modifier-active')
       })
@@ -186,11 +184,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.initialTraySetup(this.actor, event)
       this.render(true)
     } else { 
-      Actions.minimizeTray.bind(this)()
-      Hooks.once('controlToken', () => {
-        document.getElementById('aat-maximize-button').remove()
-        this.render(true)
-      })
+      // Actions.minimizeTray.bind(this)()
+      // Hooks.once('controlToken', () => {
+      //   document.getElementById('aat-maximize-button').remove()
+      //   this.render(true)
+      // })
+      this.render(true)
     }
   }
 
@@ -472,6 +471,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.currentTray.id == 'stacked') {
       document
         .getElementById('auto-action-tray')?.style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
+    } else { 
+      document
+      .getElementById('auto-action-tray')?.style.setProperty('--aat-stacked-spacer-width', '0px')
+    
     }
 
     let data = actor.getFlag('auto-action-tray', 'delayedItems')

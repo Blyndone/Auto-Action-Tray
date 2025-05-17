@@ -355,6 +355,15 @@ export class AnimationHandler {
     let accentColor = getComputedStyle(element).getPropertyValue('--aat-accent-color').trim()
     let accentColorLight = getComputedStyle(element).getPropertyValue('--aat-accent-color-light').trim()
 
+    console.log('All colors', {
+      color,
+      color100,
+      mainColor,
+      mainColorLight,
+      accentColor,
+      accentColorLight,
+    })
+
 
     let baseColor = end == 100 ? color100 : color
     let glowpx = end == 100 ? 8 : 4
@@ -370,7 +379,7 @@ export class AnimationHandler {
           background: `radial-gradient( ${accentColor}, ${accentColorLight})`,
         },
         {
-          background: `radial-gradient( ${color100} -25%, ${mainColor} 60%)`,
+          background: `radial-gradient( ${color100}, ${mainColor} )`,
           duration: 1,
         },
       )

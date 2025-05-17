@@ -1,9 +1,13 @@
-#auto-action-tray {
+:root {
   --aat-scale: 0.6;
-  --aat-border-width: 5px;
-  --aat-item-size: 100px;
   --aat-item-tray-item-width-count: 15;
   --aat-item-tray-item-height-count: 3;
+}
+
+#auto-action-tray {
+  --aat-border-width: 5px;
+  --aat-item-size: 100px;
+
   --aat-main-tray-padding: 7px;
   --aat-main-tray-gap: 2px;
   --aat-main-tray-total-height: calc(
