@@ -395,6 +395,27 @@
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
 }
 
+.button-value {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: serif;
+  color: #f1f1f1;
+  font-size: 25px;
+  line-height: 1.2;
+  padding: 0 3px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  font-size: 28px;
+  font-weight: bold;
+}
+
 .small-button {
   display: flex;
   justify-content: center;
@@ -425,6 +446,18 @@
 
 .small-button-skill-save {
   justify-content: space-between;
+}
+
+.small-button-skill-save .button-value {
+  display: none;
+}
+
+.small-button-skill-save:hover .button-label {
+  display: none;
+}
+
+.small-button-skill-save:hover .button-value {
+  display: flex;
 }
 
 .small-button-active {
@@ -1152,7 +1185,7 @@ img.item-equipped {
   justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
-  min-width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 2);
+  width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
   height: 332px;
   padding: var(--aat-main-tray-padding);
   border-radius: 15px 15px 0px 0px;

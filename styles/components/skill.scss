@@ -11,9 +11,12 @@
   justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
-  min-width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 2);
+  width: calc(var(--aat-item-size) * 2 + var(--aat-main-tray-padding) * 4);
   height: 332px;
   padding: var(--aat-main-tray-padding);
   border-radius: 15px 15px 0px 0px;
   z-index: 4;
+}
+
+.small-button-skill-save {
 }

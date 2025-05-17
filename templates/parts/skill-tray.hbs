@@ -15,7 +15,10 @@
     >
     <div class="button-label">
       {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
-    </div>  
+    </div>       
+     <div class="button-value">
+        {{skill.bonus}}
+    </div>
     </div>
   {{/each}}
 {{else}}
@@ -33,6 +36,9 @@
     >
     <div class="button-label">
       {{{skill.icon}}}&nbsp;{{capitalize skill.abbreviation}}
+      </div>
+      <div class="button-value">
+        {{skill.bonus}}
       </div>
     </div>
   {{/each}}

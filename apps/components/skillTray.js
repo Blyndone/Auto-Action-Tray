@@ -134,7 +134,8 @@ export class SkillTray {
       ability: skills.ability,
       modifier: skills.total,
       proficient: skills.proficient,
-      icon: skillAbbr[name].icon
+      icon: skillAbbr[name].icon,
+      bonus: skills.total >= 0 ? `+${skills.total}` : skills.total
     };
     return skill;
   }
@@ -144,6 +145,7 @@ export class SkillTray {
       actor = fromUuidSync(this.actorUuid);
     }
     let saves = actor.system.abilities[`${abbreviation}`];
+
     let save = {
       name: this.savesNames[abbreviation],
       abbreviation: abbreviation,
@@ -151,7 +153,8 @@ export class SkillTray {
       ability: abbreviation,
       modifier: saves.value,
       proficient: saves.proficient,
-      icon: this.saveIcons[abbreviation]
+      icon: this.saveIcons[abbreviation],
+      bonus: saves.save.value >= 0 ? `+${saves.save.value}` : saves.save.value
     };
     return save;
   }

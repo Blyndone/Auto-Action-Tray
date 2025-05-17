@@ -1,5 +1,5 @@
 @use 'mixins' as *;
-.button-label {
+@mixin text-style {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -16,6 +16,14 @@
   text-overflow: ellipsis;
   text-align: center;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+.button-label {
+  @include text-style;
+}
+.button-value {
+  @include text-style;
+  font-size: 28px;
+  font-weight: bold;
 }
 
 .small-button {
@@ -35,6 +43,18 @@
 
 .small-button-skill-save {
   justify-content: space-between;
+}
+
+.small-button-skill-save .button-value {
+  display: none;
+}
+
+.small-button-skill-save:hover .button-label {
+  display: none;
+}
+
+.small-button-skill-save:hover .button-value {
+  display: flex;
 }
 
 .small-button-active {
