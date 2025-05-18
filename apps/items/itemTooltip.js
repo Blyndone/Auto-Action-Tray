@@ -1,8 +1,8 @@
 export class AATItemTooltip {
   constructor(item, activity, options = {}) {
     this.name = item.name
-    this.type = item.type
     this.item = item
+    this.type = this.setType()
     this.activity = activity ? activity : item.defaultActivity
     this.damageLabel = ''
     this.damageFormulaLabel = ''
@@ -17,6 +17,39 @@ export class AATItemTooltip {
     this.saveLabel = ''
     this.concentrationLabel = ''
     this.setValues()
+  }
+
+  setType() {
+    switch (this.item.type) {
+      case 'spell':
+        let components = this.item.item.system.properties
+        let compMap = {
+          vocal: 'V',
+          somatic: 'S',
+          material: 'M',
+          concentration: 'C',
+          ritual: 'R',
+        }
+  
+        let comp = components
+          .map((e) => compMap[e])
+          .filter(Boolean)
+        comp = [...comp].join(', ')
+  
+        return comp ? `Spell - ${comp}` : 'Spell'
+      case 'weapon':
+        let subtype = this.item.item.system.attackType
+        if (subtype) {
+          subtype = subtype.charAt(0).toUpperCase() + subtype.slice(1);
+          return 'Weapon - ' + subtype
+        }
+        return 'Weapon'
+      default:
+        return  this.item.type.charAt(0).toUpperCase() + this.item.type.slice(1);
+ 
+    }
+
+
   }
 
   setValues() {
@@ -58,7 +91,7 @@ export class AATItemTooltip {
 
     this.diceLabel =
       dice + data.map((x) => x.formula).join(' <br><i class="fa-solid fa-dice-d6"></i> ')
-    
+
     const minDamage = data.reduce((sum, x) => sum + Number(x.min), 0)
     const maxDamage = data.reduce((sum, x) => sum + Number(x.max), 0)
     const damageType = data[0].damageTypes !== 'Healing' ? ' Damage' : ' Healing'

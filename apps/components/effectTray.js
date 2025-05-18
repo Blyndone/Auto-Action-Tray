@@ -27,9 +27,9 @@ export class EffectTray {
     );
 
     this.effects = effects;
-    if (!this.hotbar.animating) {
-      this.hotbar.render({ parts: ["effectsTray"] });
-    }
+    // if (!this.hotbar.animating) {
+    this.hotbar.render({ parts: ["effectsTray"] });
+    // }
   }
   static async removeEffect(event, element) {
     await foundry.applications.api.DialogV2
