@@ -120,7 +120,7 @@ export class StaticTray extends AbilityTray {
       case 'bonusSpell':
         this.abilities = allItems
           .filter((e) => e.type === 'spell' && !e.isScaledSpell)
-          .sort((a, b) => b.spellLevel - a.spellLevel)
+
 
         this.id = 'bonusSpell'
         break
@@ -148,7 +148,7 @@ export class StaticTray extends AbilityTray {
                 e.item.system.preparation?.mode == 'atwill'),
           )
 
-          .sort((a, b) => b.spellLevel - a.spellLevel)
+          
 
         this.id = 'spell-' + this.spellLevel
         this.category = 'leveledSpell'
@@ -157,7 +157,7 @@ export class StaticTray extends AbilityTray {
       case 'pact':
         this.abilities = allItems
           .filter((e) => e.item.system.preparation?.mode == 'pact')
-          .sort((a, b) => b.spellLevel - a.spellLevel)
+
 
         this.id = 'pact'
         break
@@ -167,7 +167,7 @@ export class StaticTray extends AbilityTray {
         this.id = 'ritual'
         break
     }
-    this.abilities.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
+    this.abilities.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity)).sort((a, b) => b?.spellLevel - a?.spellLevel)
     this.abilities = this.abilities.filter((e) => e!= null)
   }
 
