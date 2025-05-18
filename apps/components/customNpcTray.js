@@ -149,21 +149,30 @@ export class CustomNpcTray extends AbilityTray {
           }
         })
       }
-      this.abilities.push(multiattack)
-      this.padNewRow()
+      if (this.abilities.length > 0) {
+        this.abilities.push(multiattack)
+        this.padNewRow()
+      }
     }
 
     switch (this.category) {
       case 'common':
+        const typeOrder = { weapon: 0, feat: 1, spell: 2 }
         this.abilities = [
           ...this.abilities,
-          ...allItems.filter(
-            (e) =>
-              e.isActive &&
-              e.type !== 'spell' &&
-              e.type !== 'consumable' &&
-              !this.abilities.some((a) => a?.name === e.name),
-          ),
+          ...allItems
+            .filter(
+              (e) =>
+                e.isActive &&
+                e.type !== 'spell' &&
+                e.type !== 'consumable' &&
+                !this.abilities.some((a) => a?.name === e.name),
+            )
+            .sort((a, b) => {
+              const orderA = typeOrder[a.type] ?? Infinity
+              const orderB = typeOrder[b.type] ?? Infinity
+              return orderA - orderB
+            }),
         ]
         this.id = 'common'
         break
@@ -255,7 +264,8 @@ export class CustomNpcTray extends AbilityTray {
     const highestIndex = trays[0].abilities
       .map((ability, index) => (ability !== null ? index : -1))
       .reduce((max, current) => Math.max(max, current), -1)
-      this.rowCount = trays[0].application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
+    this.rowCount =
+      trays[0].application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
     trays[0].abilities = trays[0].abilities.slice(0, highestIndex + 1)
     trays.slice(1).forEach((tray) => {
       tray.abilities.forEach((ability) => {
