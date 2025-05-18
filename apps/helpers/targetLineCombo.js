@@ -307,7 +307,6 @@ class TargetText extends protoText {
   moveText(endPos) {
     if (this.text) {
       this.text.position.set(endPos.x + 15, endPos.y - 30);
-      // canvas.app.stage.addChild(this.targetText);
     }
   }
 }

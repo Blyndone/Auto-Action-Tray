@@ -345,6 +345,6 @@ Hooks.once('ready', async function () {
       id: 'auto-action-tray',
       socket: socket,
     })
-    // hotbar.render(true)
+
   }
 })

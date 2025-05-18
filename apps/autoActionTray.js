@@ -30,8 +30,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this.animating = false
 
-    // this.animationDuration = 0.7
-
     this.#dragDrop = this.#createDragDropHandlers()
     this.isEditable = true
 
@@ -50,10 +48,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.activityTray = null
     this.equipmentTray = null
 
-    // { name: 'ActorName',
-    //   id: 'ActorId',
-    //   type: 'npc / pc',
-    //   abilities: [AATItem, AATItem]}
     this.savedActors = []
 
     this.itemConfigItem = null
@@ -278,12 +272,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         return
       case controlled == true && this.actor != event.actor:
         this.actor = event.actor ? event.actor : event
-        // this.generateActorItems(this.actor, event)
         this.initialTraySetup(this.actor, event)
     }
   }
 
-  //actor Actor5e, event Token5e
+
   async generateActorItems(actor, event) {
     let token = event == null ? await actor.getTokenDocument() : event.document
     let savedActor = this.getSavedActor(actor, token)
@@ -665,7 +658,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else {
       if (event.target.actor == hotbar.actor) {
         let currentTrayId = hotbar.currentTray.id
-        // hotbar.generateActorItems(hotbar.actor, event.target)
+
         hotbar.initialTraySetup(hotbar.actor, event.target, currentTrayId)
       }
       return wrapped(...args)

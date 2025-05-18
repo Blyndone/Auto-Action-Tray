@@ -165,19 +165,7 @@ export class CombatHandler {
       this.getPlayerInitPlacement()
     }
   }
-  // getInitPlacement() {
 
-  //   let init = this.combat.turns.filter((e) =>!e.isDefeated && e.visible && !e.hidden && !e.token.hidden)
-  //   let initIndex = init.findIndex((e) => e.id == this.combatantId)
-  //   let turn = init.findIndex((e) => e.id == this.combat.turns[this.combat.turn].id)
-  //   let diff = initIndex - turn
-  //   if (diff < 0) {
-  //     diff = init.length - turn + initIndex
-  //   }
-  //   this.isTurn = diff == 0
-  //   this.isNext = diff == 1
-  //   this.tillNextTurn = diff
-  // }
   getGMInitPlacement() {
     let init = this.combat.turns
     this.visibleCombatSize = init.length

@@ -76,7 +76,7 @@ export class DragDropHandler {
 
     if (index == data.index) return
 
-    // Handle different data types
+
     switch (data.type) {
       case 'Item':
         let item = fromUuidSync(data.uuid)

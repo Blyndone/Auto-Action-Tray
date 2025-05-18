@@ -324,14 +324,12 @@ export class AnimationHandler {
   }
 
   setCircle(value) {
-    //hoverColor
+
     let theme = game.settings.get('auto-action-tray', 'tempTheme')
     let element = document.querySelector(`.${theme}`)
     let color = getComputedStyle(element).getPropertyValue('--aat-hover-color').trim()
     let color100 = getComputedStyle(element).getPropertyValue('--aat-hover-color-light').trim()
-    // let color100 = '#01a3e4'
-    // //hoverColorDim
-    // let color = '#1D86AF'
+
     let baseColor = value == 100 ? color100 : color
     let glowpx = value == 100 ? 8 : 4
     let filter = `drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(

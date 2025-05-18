@@ -259,9 +259,7 @@ export class Actions {
   }
 
   static async getTargets(item, activity, selectedSpellLevel) {
-    // if (selectedSpellLevel.slot == 'pact') {
-    //   selectedSpellLevel.slot = item.pactLevel
-    // }
+
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
     let itemConfig = item.itemConfig
