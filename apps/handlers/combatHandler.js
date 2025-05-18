@@ -3,6 +3,7 @@ export class CombatHandler {
     this.actor
     this.token
     this.combatantId = null
+    this.visibleCombatSize = 0
     this.inCombat
     this.combat
     this.isTurn = false
@@ -115,7 +116,7 @@ export class CombatHandler {
       this.combat = this.token.combatant.combat
       this.combatantId = this.token.combatant.id
       this.getInitPlacement()
-      value = 100 * (1 - this.tillNextTurn / this.combat.turns.length)
+      value = 100 * (1 - this.tillNextTurn / this.visibleCombatSize)
       this.previousCircleValue = value
     }
     await this.hotbar.render({ parts: ['endTurn'] })
@@ -146,21 +147,68 @@ export class CombatHandler {
     }
     let start = this.previousCircleValue
       ? this.previousCircleValue
-      : 100 * (1 - (this.tillNextTurn + 1) / this.combat.turns.length)
-    let end = 100 * (1 - this.tillNextTurn / this.combat.turns.length)
+      : 100 * (1 - (this.tillNextTurn + 1) / this.visibleCombatSize)
+    let end = 100 * (1 - this.tillNextTurn / this.visibleCombatSize)
     await this.hotbar.render({ parts: ['endTurn'] })
     if (this.previousCircleValue >= 100) {
       await this.hotbar.render({ parts: ['centerTray'] })
     }
     // this.hotbar.animationHandler.setCircle(start)
-    this.hotbar.animationHandler.animateCircle(start < 100 ? start: 0, end, this)
+    this.hotbar.animationHandler.animateCircle(start < 100 ? start : 0, end, this)
     this.previousCircleValue = end >= 100 ? 0 : end
   }
 
   getInitPlacement() {
+    if (game.user.isGM) {
+      this.getGMInitPlacement()
+    } else {
+      this.getPlayerInitPlacement()
+    }
+  }
+  // getInitPlacement() {
+
+  //   let init = this.combat.turns.filter((e) =>!e.isDefeated && e.visible && !e.hidden && !e.token.hidden)
+  //   let initIndex = init.findIndex((e) => e.id == this.combatantId)
+  //   let turn = init.findIndex((e) => e.id == this.combat.turns[this.combat.turn].id)
+  //   let diff = initIndex - turn
+  //   if (diff < 0) {
+  //     diff = init.length - turn + initIndex
+  //   }
+  //   this.isTurn = diff == 0
+  //   this.isNext = diff == 1
+  //   this.tillNextTurn = diff
+  // }
+  getGMInitPlacement() {
     let init = this.combat.turns
+    this.visibleCombatSize = init.length
     let initIndex = init.findIndex((e) => e.id == this.combatantId)
     let turn = this.combat.turn
+    let diff = initIndex - turn
+    if (diff < 0) {
+      diff = init.length - turn + initIndex
+    }
+    this.isTurn = diff == 0
+    this.isNext = diff == 1
+    this.tillNextTurn = diff
+  }
+  getPlayerInitPlacement() {
+    let init = this.combat.turns.filter((e) => !e.isDefeated && e.visible && !e.hidden)
+    this.visibleCombatSize = init.length
+    let initIndex = init.findIndex((e) => e.id == this.combatantId)
+
+    let turn = init.findIndex((e) => e.id == this.combat.turns[this.combat.turn].id)
+    if (turn == -1) {
+      for (let i = this.combat.turn - 1; i > this.combat.turn - this.combat.turns.length; i--) {
+        turn = init.findIndex((e) => e.id == this.combat.turns.at(i).id)
+        if (turn != -1) {
+          if (init[turn].id == this.combatantId) {
+            turn++
+          }
+          break
+        }
+      }
+    }
+
     let diff = initIndex - turn
     if (diff < 0) {
       diff = init.length - turn + initIndex

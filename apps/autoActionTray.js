@@ -184,12 +184,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.initialTraySetup(this.actor, event)
       this.render(true)
     } else { 
-      // Actions.minimizeTray.bind(this)()
-      // Hooks.once('controlToken', () => {
-      //   document.getElementById('aat-maximize-button').remove()
-      //   this.render(true)
-      // })
       this.render(true)
+      Actions.minimizeTray.bind(this)()
+      Hooks.once('controlToken', () => {
+        document.getElementById('aat-maximize-button').remove()
+        this.render(true)
+      })
     }
   }
 
@@ -270,6 +270,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   //#region Hooks
   _onControlToken = (event, controlled) => {
+    if (event?.actor.type == 'vehicle' || event?.actor.type == 'group') return
     if (this.targetHelper.selectingTargets) return
     this.hpTextActive = false
     switch (true) {
