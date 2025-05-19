@@ -9,7 +9,7 @@
       data-tooltip-direction="UP"
       {{#if (eq isActive false)}}
         data-action="viewItem"
-        class="ability-button ability-button-passive"
+        class="ability-button ability-button-passive "
       {{else}}
       data-action-type={{item.tooltip.actionType}}
         data-action="useItem"
@@ -17,8 +17,13 @@
       {{/if}}
     >
       {{#if (eq isActive false)}}
-        <div class="transparent-box-passive" data-index="{{@index}}">
+      {{#if (eq item.type 'container')}}
+        <div class="transparent-box-passive item-type-container" data-index="{{@index}}">
+      {{else}}
+        <div class="transparent-box-passive " data-index="{{@index}}">
+      {{/if}}
           <img
+              class="{{item.rarity}}-item {{getItemActive item.name @root.activeEffects}}"
             src="{{item.img}}"
             alt="{{item.name}}"
             data-item-id="{{item.id}}"
@@ -32,9 +37,9 @@
         {{else}}
           <img
             {{#if item.equipped}}
-              class="{{item.rarity}}-item item-equipped"
+              class="{{item.rarity}}-item item-equipped {{getItemActive item.name @root.activeEffects}}"
             {{/if}}
-            class="{{item.rarity}}-item"
+            class="{{item.rarity}}-item {{getItemActive item.name @root.activeEffects}}"
             src="{{item.img}}"
             alt="{{item.name}}"
             data-item-id="{{item._id}}"

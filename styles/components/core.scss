@@ -122,3 +122,14 @@
 .modifier-highlight.modifier-active {
   border: var(--aat-modifier-highlight-color) solid 5px;
 }
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}

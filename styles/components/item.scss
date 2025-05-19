@@ -14,31 +14,37 @@
 img.common-item {
   border: 3px solid #333;
   @include hover;
+  @include active-animation(#333);
 }
 
 img.uncommon-item {
   border: 3px solid #11cf00;
   @include hover;
+  @include active-animation(#11cf00);
 }
 
 img.rare-item {
   border: 3px solid #164cfc;
   @include hover;
+  @include active-animation(#164cfc);
 }
 
 img.veryRare-item {
   border: 3px solid #a665e4;
   @include hover;
+  @include active-animation(#a665e4);
 }
 
 img.legendary-item {
   border: 3px solid #e29404;
   @include hover;
+  @include active-animation(#e29404);
 }
 
 img.artifact-item {
   border: 3px solid #c00505;
   @include hover;
+  @include active-animation(#c00505);
 }
 
 img.item-equipped {

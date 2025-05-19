@@ -21,14 +21,25 @@ export class EffectTray {
           img: effect.img,
           duration: effect.duration,
           type: effect.type,
-          isTemporary: effect.isTemporary
+          isTemporary: effect.isTemporary,
+          source: effect.parent.name
         };
       })
     );
 
     this.effects = effects;
+
+    let effectNames = effects.map(e => {
+      const parts = e.name.split(":");
+      return parts.length > 1 ? parts[1].trim() : e.name;
+    });
+    let effectSources = effects.map(e => e.source);
+    this.hotbar.activeEffects = [
+      ...new Set([...effectNames, ...effectSources])
+    ];
+
     // if (!this.hotbar.animating) {
-    this.hotbar.render({ parts: ["effectsTray"] });
+    this.hotbar.render({ parts: ["effectsTray", "centerTray"] });
     // }
   }
   static async removeEffect(event, element) {

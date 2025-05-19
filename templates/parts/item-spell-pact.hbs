@@ -1,4 +1,10 @@
-<img src='{{item.img}}' alt='{{item.name}}' data-item-id='{{item.id}}' data-index='{{@index}}' />
+<img
+  src='{{item.img}}'
+  alt='{{item.name}}'
+  data-item-id='{{item.id}}'
+  data-index='{{@index}}'
+  class='{{getItemActive item.name @root.activeEffects}}'
+/>
 
 {{#if (eq item.uses '')}}
   <div class='spell-item-container-text'>

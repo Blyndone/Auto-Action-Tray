@@ -47,9 +47,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.staticTrays = []
     this.activityTray = null
     this.equipmentTray = null
-
+    
     this.savedActors = []
-
+    
     this.itemConfigItem = null
     this.skillTray = null
     this.stackedTray = new StackedTray({
@@ -59,7 +59,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       name: 'stacked',
     })
     this.effectsTray = new EffectTray()
-
+    this.activeEffects =[]
+    
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
@@ -601,7 +602,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.combatHandler.setCombat(this.actor)
     }
     if (!this.animating) {
-      this.render({ parts: ['centerTray'] })
+      this.render({ parts: ['centerTray', 'characterImage'] })
     }
   }
 
@@ -727,6 +728,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       itemConfigItem: this.itemConfigItem,
       targetHelper: this.targetHelper,
       actions: this.combatHandler.actions,
+      activeEffects: this.activeEffects,
     }
 
     return context

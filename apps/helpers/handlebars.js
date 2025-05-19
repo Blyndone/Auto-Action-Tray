@@ -21,6 +21,11 @@ export function registerHandlebarsHelpers() {
     return death[type] >= index ? 'active' : 'inactive'
   })
 
+  Handlebars.registerHelper('getItemActive', function (itemName, activeEffects) {
+    return activeEffects.includes(itemName) ? 'animated-border' : ''
+  })
+
+
   Handlebars.registerHelper('capitalize', function (str) {
     if (!str) return ''
     return str.charAt(0).toUpperCase() + str.slice(1)

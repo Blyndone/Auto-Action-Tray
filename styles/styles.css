@@ -110,6 +110,16 @@
   border: var(--aat-modifier-highlight-color) solid 5px;
 }
 
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
 .abilities-tray {
   position: absolute;
   display: flex;
@@ -203,6 +213,11 @@
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
 }
+.ability-tray-container img.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #333, var(--aat-hover-color), #333 50%) border-box;
+  animation: 2s rotate linear infinite;
+}
 .ability-tray-container .ability-button-passive img {
   display: flex;
   justify-content: center;
@@ -214,6 +229,15 @@
 .ability-tray-container .ability-button-passive img:hover {
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
+}
+.ability-tray-container .ability-button-passive img.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #2c2d2e, var(--aat-hover-color), #2c2d2e 50%) border-box;
+  animation: 2s rotate linear infinite;
+}
+.ability-tray-container .item-type-container img {
+  border-radius: 25%;
+  border: 4px solid #838383;
 }
 .ability-tray-container .ability-ol {
   width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
@@ -831,6 +855,11 @@ img.common-item:hover {
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
 }
+img.common-item.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #333, var(--aat-hover-color), #333 50%) border-box;
+  animation: 2s rotate linear infinite;
+}
 
 img.uncommon-item {
   border: 3px solid #11cf00;
@@ -838,6 +867,11 @@ img.uncommon-item {
 img.uncommon-item:hover {
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
+}
+img.uncommon-item.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #11cf00, var(--aat-hover-color), #11cf00 50%) border-box;
+  animation: 2s rotate linear infinite;
 }
 
 img.rare-item {
@@ -847,6 +881,11 @@ img.rare-item:hover {
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
 }
+img.rare-item.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #164cfc, var(--aat-hover-color), #164cfc 50%) border-box;
+  animation: 2s rotate linear infinite;
+}
 
 img.veryRare-item {
   border: 3px solid #a665e4;
@@ -854,6 +893,11 @@ img.veryRare-item {
 img.veryRare-item:hover {
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
+}
+img.veryRare-item.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #a665e4, var(--aat-hover-color), #a665e4 50%) border-box;
+  animation: 2s rotate linear infinite;
 }
 
 img.legendary-item {
@@ -863,6 +907,11 @@ img.legendary-item:hover {
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
 }
+img.legendary-item.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #e29404, var(--aat-hover-color), #e29404 50%) border-box;
+  animation: 2s rotate linear infinite;
+}
 
 img.artifact-item {
   border: 3px solid #c00505;
@@ -870,6 +919,11 @@ img.artifact-item {
 img.artifact-item:hover {
   border: 3px solid var(--aat-hover-color);
   box-shadow: 0 0 5px var(--aat-hover-color);
+}
+img.artifact-item.animated-border {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #c00505, var(--aat-hover-color), #c00505 50%) border-box;
+  animation: 2s rotate linear infinite;
 }
 
 img.item-equipped {
@@ -2223,7 +2277,7 @@ img.item-equipped {
   --aat-tray-button-background-color: #554428;
   --aat-tray-button-border-color: #d0b36e;
   --aat-tray-button-accent: #31251799;
-  --aat-tooltip-bg: #2f1e0d;
+  --aat-tooltip-bg: #554603;
   --aat-tooltip-border: #d0b36e;
   --aat-tooltip-text: #f4e1a0;
   --aat-tooltip-font: serif;
