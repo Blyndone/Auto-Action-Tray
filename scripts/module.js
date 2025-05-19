@@ -184,10 +184,10 @@ Hooks.once('ready', async function () {
     type: Number,
     default: 3,
 
-    choices: {
-      2: '2 Rows',
-      3: '3 Rows',
-      4: '4 Rows',
+    range: {
+      min: 2,
+      step: 1,
+      max: 5,
     },
 
     requiresReload: true,
@@ -201,10 +201,10 @@ Hooks.once('ready', async function () {
     type: Number,
     default: 15,
 
-    choices: {
-      10: '10 Columns',
-      15: '15 Columns',
-      20: '20 Columns',
+    range: {
+      min: 10,
+      step: 1,
+      max: 30,
     },
 
     requiresReload: true,

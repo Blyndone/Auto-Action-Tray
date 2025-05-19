@@ -80,6 +80,9 @@ export class CustomTray extends AbilityTray {
             const bPriority = priority[b.item.system.type.value] ?? 10
             return aPriority - bPriority
           })
+        let containers = allItems.filter((e) => e.type === 'container')
+        this.padNewRow()
+        this.abilities.push(...containers)
         this.id = 'items'
         break
       case 'passive':

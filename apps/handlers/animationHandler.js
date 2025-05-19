@@ -327,6 +327,7 @@ export class AnimationHandler {
 
     let theme = game.settings.get('auto-action-tray', 'tempTheme')
     let element = document.querySelector(`.${theme}`)
+    if (!element) { return }
     let color = getComputedStyle(element).getPropertyValue('--aat-hover-color').trim()
     let color100 = getComputedStyle(element).getPropertyValue('--aat-hover-color-light').trim()
 
