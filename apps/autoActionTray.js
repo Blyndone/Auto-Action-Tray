@@ -59,7 +59,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       name: 'stacked',
     })
     this.effectsTray = new EffectTray()
-    this.activeEffects =[]
+    this.activeEffects = []
+    this.concentrationItem = null
     
     this.combatHandler = new CombatHandler({
       hotbar: this,
@@ -230,6 +231,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       rollDeathSave: AutoActionTray.rollDeathSave,
       increaseRowCount: AutoActionTray.increaseRowCount,
       decreaseRowCount: AutoActionTray.decreaseRowCount,
+      removeConcentration: AutoActionTray.removeConcentration,
     },
   }
 
@@ -729,6 +731,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       targetHelper: this.targetHelper,
       actions: this.combatHandler.actions,
       activeEffects: this.activeEffects,
+      concentrationItem: this.concentrationItem,
     }
 
     return context
@@ -781,7 +784,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         },
       },
     ]
-    new ContextMenu(this.element, '.character-image', characterContextMenu, {
+    new ContextMenu(this.element, '.portrait-container', characterContextMenu, {
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
       _expandUp: true,
@@ -800,6 +803,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         jQuery: true,
       },
     )
+    new ContextMenu(
+      this.element,
+      '.concentration-item',
+      {},
+      {
+        onOpen: EffectTray.removeEffect.bind(this),
+        jQuery: true,
+      },
+    )
+
     new ContextMenu(
       this.element,
       '.end-turn-btn-dice',
@@ -853,6 +866,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   getTray(trayId) {
     return Actions.getTray.bind(this)(trayId)
+  }
+  static removeConcentration(event, element){ 
+    EffectTray.removeConcentration.bind(this)(event, element)
   }
 
   static openSheet(event, target) {

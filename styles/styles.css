@@ -1020,6 +1020,53 @@ img.item-equipped {
   pointer-events: none;
 }
 
+.concentration-item {
+  position: absolute;
+  bottom: 0px;
+  left: -98px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.concentration-item.animated-border {
+  border: 6px solid rgba(0, 0, 0, 0);
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), var(--aat-border-color), var(--aat-hover-color), var(--aat-border-color) 50%) border-box;
+  animation: 2s rotate linear infinite;
+  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light), 0px 0px 11px 5px black;
+}
+.concentration-item img {
+  height: 90px;
+}
+
+.concentration-cancel {
+  position: absolute;
+  bottom: 58px;
+  left: -38px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: var(--aat-border-color-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  color: #f1f1f1;
+  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light), 0px 0px 11px 5px black;
+  outline: 6px solid var(--aat-border-color);
+  transition: all 0.3s ease-in-out;
+}
+.concentration-cancel:hover {
+  background: var(--aat-hover-color-light);
+  outline: 6px solid var(--aat-border-color-light);
+  cursor: pointer;
+}
+
 .character-image {
   background: var(--aat-background-color, #5b5b5b);
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);

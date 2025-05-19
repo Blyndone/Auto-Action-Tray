@@ -1,5 +1,22 @@
 <div class="character-image">
+  {{#if @root.concentrationItem}}
+  {{#if (eq actor.system.attributes.hp.value 0)}}
+  {{else}}
+<div class="concentration-item animated-border" data-effect-id ="{{@root.concentrationItem.id}}" data-name="{{@root.concentrationItem.name}}" data-concentration=true>
 
+        <img
+            data-tooltip="{{> 'AAT.item-tooltip' @root.concentrationItem.tooltip}}"
+            data-tooltip-direction="UP"
+            src="{{@root.concentrationItem.img}}"
+            alt="{{@root.concentrationItem.name}}"
+          
+          />
+</div>
+          <div class="concentration-cancel" data-effect-id ="{{@root.concentrationItem.id}}" data-name="{{@root.concentrationItem.name}}" data-action="removeConcentration">
+            <i class="fa-solid fa-xmark"></i>
+          </div>
+{{/if}}
+{{/if}}
   {{#if (eq actor.system.attributes.hp.value 0)}}
   {{#if (eq actor.type 'character')}}
 <div class="arc-container">
@@ -13,6 +30,7 @@
 </div>
 {{/if}}
 {{/if}}
+<div class="portrait-container">
   <div class="image-container 
     {{#if (concentration this.actor)}}
       {{setConcentrationColor trayOptions.concentrationColor}}
@@ -58,5 +76,5 @@
   >
     <i class="fa-solid fa-minus"></i>
   </div>
-
+</div>
 </div>

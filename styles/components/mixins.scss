@@ -68,3 +68,14 @@
     animation: 2s rotate linear infinite;
   }
 }
+@mixin active-animation-size($border-color, $border-size) {
+  &.animated-border {
+    border: $border-size solid #00000000;
+    background: linear-gradient(#333, #333) padding-box,
+      conic-gradient(from var(--angle), $border-color, var(--aat-hover-color), $border-color 50%)
+        border-box;
+    animation: 2s rotate linear infinite;
+    box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light),
+      0px 0px 11px 5px black;
+  }
+}
