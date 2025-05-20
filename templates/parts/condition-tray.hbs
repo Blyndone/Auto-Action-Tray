@@ -9,7 +9,7 @@
           data-tooltip-direction='UP'
           data-action='toggleCondition' 
           data-tooltip="{{> 'AAT.effect-tooltip' condition }}"
-                class='ability-button {{#if condition.active}}activity-button{{else}}activity-button-inactive{{/if}}'
+                class='condition-button {{#if condition.active}}condition-button-active animated-border{{else}}condition-button-inactive{{/if}}'
         >
           <img 
             src='{{condition.img}}' 

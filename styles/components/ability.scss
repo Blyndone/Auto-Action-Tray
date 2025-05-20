@@ -156,7 +156,7 @@
     }
 
     li {
-      background: #333;
+      // background: #333;
       margin: 16px;
       margin-bottom: 32px;
       width: calc(var(--aat-item-size) * 0.8);
@@ -215,6 +215,25 @@
   img {
     width: calc(var(--aat-item-size) * 0.8);
     height: calc(var(--aat-item-size) * 0.8);
+  }
+}
+.condition-button {
+  width: calc(var(--aat-item-size) * 0.9);
+  height: calc(var(--aat-item-size) * 0.9);
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 0 15px 1px var(--aat-border-color);
+  overflow: hidden;
+  display: flex;
+  border: 4px solid var(--aat-border-color);
+  @include hover;
+  img {
+  }
+  &.condition-button-active {
+    @include active-animation(var(--aat-hover-color-dim));
+  }
+  &.condition-button-inactive {
+    filter: brightness(0.45);
   }
 }
 
