@@ -47,9 +47,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.staticTrays = []
     this.activityTray = null
     this.equipmentTray = null
-    
+
     this.savedActors = []
-    
+
     this.itemConfigItem = null
     this.skillTray = null
     this.stackedTray = new StackedTray({
@@ -61,7 +61,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.effectsTray = new EffectTray()
     this.activeEffects = []
     this.concentrationItem = null
-    
+
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
@@ -151,7 +151,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
       let color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
       document
-        .getElementById('auto-action-tray')?.style.setProperty('--aat-modifier-highlight-color', color)
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-modifier-highlight-color', color)
       const elements = document.querySelectorAll('.modifier-highlight')
       elements.forEach((el) => {
         el.classList.add('modifier-active')
@@ -164,7 +165,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
       const elements = document.querySelectorAll('.modifier-highlight')
       document
-        .getElementById('auto-action-tray')?.style.setProperty('--aat-modifier-highlight-color', '')
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-modifier-highlight-color', '')
       elements.forEach((el) => {
         el.classList.remove('modifier-active')
       })
@@ -179,7 +181,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.generateActorItems(this.actor, event)
       this.initialTraySetup(this.actor, event)
       this.render(true)
-    } else { 
+    } else {
       this.render(true)
       Actions.minimizeTray.bind(this)()
       Hooks.once('controlToken', () => {
@@ -278,7 +280,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         this.initialTraySetup(this.actor, event)
     }
   }
-
 
   async generateActorItems(actor, event) {
     let token = event == null ? await actor.getTokenDocument() : event.document
@@ -467,11 +468,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (this.currentTray.id == 'stacked') {
       document
-        .getElementById('auto-action-tray')?.style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
-    } else { 
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
+    } else {
       document
-      .getElementById('auto-action-tray')?.style.setProperty('--aat-stacked-spacer-width', '0px')
-    
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-stacked-spacer-width', '0px')
     }
 
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
@@ -524,7 +526,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     document
-      .getElementById('auto-action-tray')?.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
+      .getElementById('auto-action-tray')
+      ?.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
@@ -784,7 +787,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         },
       },
     ]
-    new ContextMenu(this.element, '.portrait-container', characterContextMenu, {
+    new ContextMenu(this.element, '.character-image', characterContextMenu, {
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
       _expandUp: true,
@@ -794,24 +797,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
     })
-    new ContextMenu(
-      this.element,
-      '.effect-tray-icon',
-      {},
-      {
-        onOpen: EffectTray.removeEffect.bind(this),
-        jQuery: true,
-      },
-    )
-    new ContextMenu(
-      this.element,
-      '.concentration-item',
-      {},
-      {
-        onOpen: EffectTray.removeEffect.bind(this),
-        jQuery: true,
-      },
-    )
+    new ContextMenu(this.element, '.effect-tray-icon', [], {
+      onOpen: EffectTray.removeEffect.bind(this),
+      jQuery: true,
+    })
+    // new ContextMenu(this.element, '.concentration-item', [], {
+    //   onOpen: EffectTray.removeEffect.bind(this),
+    //   jQuery: true,
+    // })
 
     new ContextMenu(
       this.element,
@@ -867,7 +860,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   getTray(trayId) {
     return Actions.getTray.bind(this)(trayId)
   }
-  static removeConcentration(event, element){ 
+  static removeConcentration(event, element) {
     EffectTray.removeConcentration.bind(this)(event, element)
   }
 
