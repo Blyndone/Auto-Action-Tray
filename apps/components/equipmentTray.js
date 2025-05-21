@@ -25,18 +25,16 @@ export class EquipmentTray extends CustomTray {
     let meleeWeapons
     meleeWeapons = allItems.filter(
       (e) =>
-        (e.item.system.type?.value === 'simpleM' ||
-          e.item.system.type?.value === 'martialM' ||
-          (e.item.system.type?.value === 'natural' && !e.item.system.range?.long)) &&
-        e.item.system.equipped,
+        ((e.item.system.type?.value === 'simpleM' || e.item.system.type?.value === 'martialM') &&
+          e.item.system.equipped) ||
+        e.item.system.type?.value === 'natural',
     )
     this.meleeWeapon = meleeWeapons[0]
     this.rangedWeapon = allItems.filter(
       (e) =>
-        (e.item.system.type?.value === 'simpleR' ||
-          e.item.system.type?.value === 'martialR' ||
-          (e.item.system.type?.value === 'natural' && e.item.system.range?.long)) &&
-        e.item.system.equipped,
+        ((e.item.system.type?.value === 'simpleR' || e.item.system.type?.value === 'martialR') &&
+          e.item.system.equipped) ||
+        (e.item.system.type?.value === 'natural' && e.item.system.range?.long),
     )[0]
     if (!this.rangedWeapon) {
       this.rangedWeapon = meleeWeapons[1] ? meleeWeapons[1] : null
@@ -62,8 +60,8 @@ export class EquipmentTray extends CustomTray {
     let data = actor.getFlag('auto-action-tray', 'data')
     if (data) {
       if (data[this.id] != null) {
-        this.meleeWeapon = allItems.find(e=> e.id == JSON.parse(data[this.id].meleeWeapon))
-        this.rangedWeapon = allItems.find(e=> e.id == JSON.parse(data[this.id].rangedWeapon))
+        this.meleeWeapon = allItems.find((e) => e.id == JSON.parse(data[this.id].meleeWeapon))
+        this.rangedWeapon = allItems.find((e) => e.id == JSON.parse(data[this.id].rangedWeapon))
 
         this.savedData = true
       }

@@ -1492,7 +1492,10 @@ img.item-equipped {
 }
 
 .tooltip-description .roll-link,
-.tooltip-description .roll-link-group {
+.tooltip-description .roll-link-group,
+.tooltip-description .content-link,
+.tooltip-description .refrence-link {
+  background-color: var(--aat-tooltip-bg);
   color: var(--aat-tooltip-roll-link);
   text-decoration: underline;
   text-decoration-color: var(--aat-tooltip-roll-link);

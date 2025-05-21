@@ -91,7 +91,8 @@ export class AATItem {
   }
 
   async setDescription() {
-    this.description = await TextEditor.enrichHTML(this.item.system.description.value)
+    this.description = await TextEditor.enrichHTML(this.item.system.description.value, {relativeTo: this.item})
+    
     this.activities.forEach(async (activity) => {
       activity.setAllDescriptions()
     })

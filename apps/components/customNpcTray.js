@@ -29,15 +29,82 @@ export class CustomNpcTray extends AbilityTray {
     return matches
   }
 
+  cleanDesc(desc, allItems) {
+    desc = desc.replace(
+      /data-roll-item-uuid="[^"]*?\.mmSpellcasting00\.(Activity\.[A-Za-z0-9]+)".*?<\/span>/g,
+      (_, activityId) => {
+        return `>[[/item .mmSpellcasting00.${activityId}]]`
+      },
+    )
+
+    desc = desc.replace(/<\/?[^>]+>/g, '')
+
+    let itemPattern = /\[\[\/item \.mm([^\]])[^\]]*\]\]/g
+
+    desc = desc.replace(itemPattern, (match, idFragment) => {
+      match = match.replace(/(\[\[\/item \.mm|\]|Spellcasting00\.)/g, '')
+      match = match.replace(/0+$/, '')
+
+      if (match.startsWith('Activity')) {
+        let spellcasting = allItems.find((i) => i.name === 'Spellcasting')
+        if (spellcasting) {
+          match = spellcasting.item.system?.activities
+            .find((i) => i.id === match.replace('Activity.', ''))
+            ?.cachedSpell?.name.replace(' ', '')
+        }
+      }
+
+      let item = allItems.find((i) =>
+        i.name
+          .replace(/\s+/g, '')
+          .toLowerCase()
+          .replaceAll(' ', '')
+          .startsWith(match.toLowerCase()),
+      )
+
+      if (item) {
+        return item.name
+      }
+    })
+    itemPattern = /\[\[\/item \.([^\]]+)\]\]/g
+
+    desc = desc.replace(itemPattern, (match, idFragment) => {
+      let item = allItems.find((i) => i.id === idFragment)
+      return item.name
+    })
+
+    return desc
+  }
+
   generateNpcTray() {
     let actor = fromUuidSync(this.actorUuid)
 
     this.abilities = []
     let allItems = this.application.getActorAbilities(this.actorUuid)
-    let multiattack = allItems.find((e) => e.name === 'Multiattack')
+    allItems.forEach((e) => {
+      e.name = e.name.replace(/\s*\([^)]*\)/g, '')
+    })
+
+    let multiattack = allItems.find(
+      (e) => e.name === 'Multiattack' || e.name.startsWith('Multiattack'),
+    )
     if (multiattack && this.category === 'common') {
+      // let foundItem = await fromUuid(".mmRend0000000000", { relative: multiattack.item })
+      // console.log(foundItem)
+
       let multigroupIndex = 0
       let desc = multiattack.description
+      let options = {
+        documents: false,
+        links: false,
+        rolls: false,
+        embeds: false,
+        secrets: false,
+      }
+
+      desc = this.cleanDesc(desc, allItems)
+      console.log(desc)
+
       let itemNames = allItems.map((e) => e.name.toLowerCase())
       // itemNames.push('melee')
       // itemNames.push('ranged')
