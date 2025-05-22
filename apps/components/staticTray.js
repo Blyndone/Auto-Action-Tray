@@ -145,7 +145,8 @@ export class StaticTray extends AbilityTray {
               (e.isPrepared == true ||
                 e.item.system.preparation?.mode == 'innate' ||
                 e.item.system.preparation?.mode == 'always' ||
-                e.item.system.preparation?.mode == 'atwill'),
+                e.item.system.preparation?.mode == 'atwill') ||
+                actor?.system?.spells['spell' + this.spellLevel]?.max == 0,
           )
 
           
@@ -190,6 +191,7 @@ export class StaticTray extends AbilityTray {
       ...actor.items.filter(CustomStaticTray.checkOverride).map((e) => e.id),
     ])
 
+    
     let customStaticTrays = Array.from(
       customStaticTraysUuids,
       (e) =>
@@ -200,8 +202,21 @@ export class StaticTray extends AbilityTray {
           keyItemId: e,
           application: options.application,
         }),
-    )
-
+      )
+   
+    if (actor.system?.resources?.legact?.max > 0) { 
+      customStaticTrays.push(
+        new CustomStaticTray({
+          category: 'customStaticTray',
+          actorUuid: actor.uuid,
+          label: 'Legendary Actions',
+          keyItemId: null,
+          application: options.application,
+        }),
+      )
+  
+      }
+      
     let spellTray = []
 
     let slots = actor.system.spells

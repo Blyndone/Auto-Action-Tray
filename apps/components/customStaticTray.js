@@ -60,11 +60,11 @@ export class CustomStaticTray extends AbilityTray {
     )
 
     this.padNewRow()
-    this.abilities.push(allItems.find((e) => e.id == this.keyItem.id))
+    this.abilities.push(allItems.find((e) => e.id == this.keyItem?.id))
 
-    this.id = 'customStaticTray' + '-' + this.keyItemId
+    this.id = this.keyItemId ? 'customStaticTray-legendary' + '-' + this.keyItemId : 'customStaticTray-legendary'
 
-    this.icon = this.getIcon(this.keyItem, actor)
+    this.icon = '<i class="fa-solid fa-crown icon-custom"></i>'
     this.onCompleteGeneration()
   }
 
