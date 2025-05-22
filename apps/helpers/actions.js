@@ -442,7 +442,7 @@ export class Actions {
           { configure: false },
         )
     }
-    game.user.updateTokenTargets([])
+    // game.user.updateTokenTargets([])
     if (this.currentTray instanceof ActivityTray) {
       this.animationHandler.popTray()
     }
