@@ -13,7 +13,7 @@
             data-item-id='{{item.id}}' 
             data-index='{{@index}}' 
             data-trayid='{{tray.id}}'
-            data-action-type={{item.tooltip.actionType}}
+            data-action-type='{{item.tooltip.actionType}}'
             class="action-hover {{getItemActive item.name @root.activeEffects}}"
           />
         {{else}}
@@ -23,7 +23,7 @@
             data-item-id='{{item.id}}' 
             data-index='{{@index}}' 
             data-trayid='{{tray.id}}' 
-             data-action-type={{item.tooltip.actionType}}
+             data-action-type='{{item.tooltip.actionType}}'
             class='spell-item-container-img-upcast action-hover {{getItemActive item.name @root.activeEffects}}' 
           />
           <div class='spell-item-container-text-upcast'>+</div>
