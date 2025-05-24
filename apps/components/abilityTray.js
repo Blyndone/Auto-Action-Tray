@@ -13,8 +13,8 @@ export class AbilityTray {
     this.label = options.label || ''
     this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
-  async onCompleteGeneration() {
-   this.application.requestRender('centerTray')
+  static onCompleteGeneration() {
+   this.requestRender('centerTray')
   }
 
   padArray(arr, filler = null) {

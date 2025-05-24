@@ -313,11 +313,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.pendingRender = true
       await this.completeAnimation
     }
-    await this.render({
-      parts: this.renderQueue,
+    let tmp = this.renderQueue 
+    this.renderQueue = []
+    let complete = await this.render({
+      parts: tmp,
     })
     this.pendingRender = false
-    this.renderQueue = []
   }
 
   async generateActorItems(actor, event) {
@@ -1042,6 +1043,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onRender(context, options) {
+
+
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
     if (options.parts.includes('centerTray')) {

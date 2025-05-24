@@ -345,9 +345,9 @@ export class CustomNpcTray extends AbilityTray {
     })
 
     trays[0].abilities = trays[0].padArray(trays[0].abilities)
-    trays.forEach((e) => {
-      e.onCompleteGeneration()
-    })
+  
+      AbilityTray.onCompleteGeneration.bind(options.application)()
+  
     return trays
   }
 }

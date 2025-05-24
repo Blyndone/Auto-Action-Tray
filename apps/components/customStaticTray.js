@@ -65,7 +65,7 @@ export class CustomStaticTray extends AbilityTray {
     this.id = this.keyItemId ? 'customStaticTray-legendary' + '-' + this.keyItemId : 'customStaticTray-legendary'
 
     this.icon = '<i class="fa-solid fa-crown icon-custom"></i>'
-    this.onCompleteGeneration()
+    AbilityTray.onCompleteGeneration.bind(this.application)()
   }
 
   generateTray() {
@@ -93,7 +93,7 @@ export class CustomStaticTray extends AbilityTray {
       this.id = 'customStaticTray' + '-' + this.keyItemId
 
       this.icon = this.getIcon(this.keyItem, actor)
-      this.onCompleteGeneration()
+      AbilityTray.onCompleteGeneration.bind(this.application)()
     }
   }
 
