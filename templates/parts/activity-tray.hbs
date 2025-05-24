@@ -3,34 +3,23 @@
   <ol class='activity-ol'>
 
     <div class='activity-selection-text'>
-      {{#if (eq activities.0.type 'spell')}}
-        Select a Spell Slot:
-      {{else}}
+
         Select an Activity
-      {{/if}}
+
     </div>
 
     {{#each activities as |activity|}}
       <li>
         <div
-          {{#if (eq activity.type 'spell')}}
-            data-item-id='{{activity.itemId}}'
-          {{else}}
-            data-item-id='{{activity.id}}'
-          {{/if}}
+          data-item-id='{{activity.id}}'
           data-index='{{@index}}'
           data-type='{{activity.type}}'
           data-selectedSpellLevel='{{activity.actorSpellData.level}}'
           data-tooltip-direction='UP'
           data-action='useActivity'
           data-tooltip="{{> 'AAT.item-tooltip' activity.tooltip}}"
-        
-          {{#if (eq activity.actorSpellData.value 0)}}
-            class='ability-button activity-button-inactive'
-          {{else}}
- 
-            class='ability-button activity-button'
-          {{/if}}
+          class='ability-button activity-button'
+
         >
           <img
             src='{{activity.img}}'
@@ -44,32 +33,12 @@
           </div>
         </div>
 
-        <div class="activity-slot-icon-container">
-          {{#if (eq activity.type 'spell')}}
-            {{#if (eq activity.actorSpellData.value 0)}}
-              <i class="fa-solid fa-square icon-slot icon-slot-spent"></i>
-            {{else}}
-              <i class="fa-solid fa-square icon-slot icon-slot"></i>
-            {{/if}}
-          {{/if}}
-        </div>
+
       </li>
     {{/each}}
 
   </ol>
 
-  {{#if (eq activities.0.type 'spell')}}
-    <div class="use-slot-text-container">
-      Use Slot:
-      <input
-        id='useSlot'
-        name='useSlot'
-        type='checkbox'
-        class='use-slot-checkbox'
-        checked='true'
-        data-action='useSlot'
-      />
-    </div>
-  {{/if}}
+
 
 </div>

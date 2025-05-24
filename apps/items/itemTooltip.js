@@ -1,6 +1,8 @@
 export class AATItemTooltip {
   constructor(item, activity, options = {}) {
-    this.name = item.name
+    
+    this.spellLevel = options.spellLevel ?? item.item.system.level ?? null
+    this.name = this.setName(item, activity)
     this.item = item
     this.type = this.setType()
     this.activity = activity ? activity : item.defaultActivity
@@ -11,12 +13,31 @@ export class AATItemTooltip {
     this.actionType = ''
     this.ritualActivationTimeLabel = ''
     this.rangeLabel = ''
-    this.spellLevel = options.spellLevel ?? item.item.system.level ?? null
     this.targetCount = options.targetCount ?? null
-
     this.saveLabel = ''
     this.concentrationLabel = ''
     this.setValues()
+  }
+
+  setName(item, activity) {
+    let blacklist = [
+      'Attack',
+      'Cast',
+      'Check',
+      'Damage',
+      'Enchant',
+      'Forward',
+      'Heal',
+      'Save',
+      'Summon',
+      'Use',
+    ]
+    let name = activity?.activity ? activity.activity.name : item.name
+    blacklist.includes(name.replace('Midi ', '')) ? (name = item.name) : ''
+    if (item.type == 'spell' && this.spellLevel != 0 && item.isScaledSpell && this.spellLevel != item.item.system.level) {
+      name = `${name} (Level ${this.spellLevel})`
+    }
+    return name
   }
 
   setType() {
@@ -30,26 +51,21 @@ export class AATItemTooltip {
           concentration: 'C',
           ritual: 'R',
         }
-  
-        let comp = components
-          .map((e) => compMap[e])
-          .filter(Boolean)
+
+        let comp = components.map((e) => compMap[e]).filter(Boolean)
         comp = [...comp].join(', ')
-  
+
         return comp ? `Spell - ${comp}` : 'Spell'
       case 'weapon':
         let subtype = this.item.item.system.attackType
         if (subtype) {
-          subtype = subtype.charAt(0).toUpperCase() + subtype.slice(1);
+          subtype = subtype.charAt(0).toUpperCase() + subtype.slice(1)
           return 'Weapon - ' + subtype
         }
         return 'Weapon'
       default:
-        return  this.item.type.charAt(0).toUpperCase() + this.item.type.slice(1);
- 
+        return this.item.type.charAt(0).toUpperCase() + this.item.type.slice(1)
     }
-
-
   }
 
   setValues() {

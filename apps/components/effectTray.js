@@ -47,9 +47,7 @@ export class EffectTray {
     }
 
     // if (!this.hotbar.animating) {
-    this.hotbar.render({
-      parts: ['effectsTray', 'centerTray', 'characterImage'],
-    })
+    this.hotbar.requestRender(['effectsTray', 'centerTray', 'characterImage'])
     // }
   }
   static async removeEffect(event, element) {

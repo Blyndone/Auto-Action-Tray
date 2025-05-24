@@ -39,6 +39,11 @@
           {{> "AAT.activity-tray" activities=activityTray.abilities }}
         </div>
       {{/if}}
+         {{#if spellLevelTray.active}}
+        <div class="abilities-tray activity-tray spellLevel">
+          {{> "AAT.spell-level-tray" activities=spellLevelTray.abilities }}
+        </div>
+      {{/if}}
 
 
       {{#if targetHelper.active}}

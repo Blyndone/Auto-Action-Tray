@@ -34,14 +34,9 @@ export class ActivityTray extends AbilityTray {
     }
   }
 
-  async setActivities(item, actor) {
+  setSpellLevelActivites(item, actor) {
     this.abilities = []
-    if (
-      item.type == 'spell' &&
-      item.activities.length == 1 &&
-      item.spellLevel > 0 &&
-      ActivityTray.checkSpellConfigurable(item)
-    ) {
+    if (item.spellLevel > 0 && ActivityTray.checkSpellConfigurable(item)) {
       Object.keys(actor.system.spells).forEach((spell) => {
         if (
           item.spellLevel <= actor.system.spells[spell].level &&
@@ -57,9 +52,11 @@ export class ActivityTray extends AbilityTray {
           this.abilities.push(tempitem)
         }
       })
-    } else {
-      this.abilities = item.activities.map((e) => e)
     }
+  }
+
+  setActivities(item, actor) {
+    this.abilities = item.activities.map((e) => e)
   }
 
   async getActivities(item, actor) {
@@ -77,7 +74,7 @@ export class ActivityTray extends AbilityTray {
       return item.defaultActivity
     }
     hotbar.selectingActivity = true
-    hotbar.animationHandler.pushTray('activity')
+    hotbar.animationHandler.pushTray(this.id)
 
     let act
     try {
@@ -94,8 +91,9 @@ export class ActivityTray extends AbilityTray {
   }
 
   static useActivity(event, target) {
+    //This can be an Activity or a Spell Level Selection
     let selectedSpellLevel = target.dataset.selectedspelllevel
-    let useSlot = this.activityTray.useSlot
+    let useSlot = this.useSlot
     if (useSlot && !ActivityTray.checkSlotAvailable.bind(this)(selectedSpellLevel)) {
       return
     }
@@ -133,11 +131,11 @@ export class ActivityTray extends AbilityTray {
     return true
   }
 
-  static useSlot(event) {
-    this.activityTray.useSlot = event.target.checked
-  }
+
   static cancelSelection(event, target) {
-    this.activityTray.rejectActivity(new Error('User canceled activity selection'))
+    if (this.currentTray.id == 'activity') {
+      this.activityTray?.rejectActivity(new Error('User canceled activity selection'))
+    } 
     this.rejectActivity = null
   }
   rejectActivity() {

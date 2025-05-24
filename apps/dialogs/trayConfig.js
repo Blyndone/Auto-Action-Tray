@@ -198,7 +198,7 @@ export class TrayConfig {
         handlers.imageScale = (e) => {
           this.trayOptions['imageScale'] = e.target.value
           e.target.nextElementSibling.textContent = e.target.value
-          this.render({ parts: ['characterImage'] })
+          this.requestRender('characterImage')
         }
 
         handlers.imageType = (e) => {
@@ -206,19 +206,19 @@ export class TrayConfig {
           this.trayOptions['imageScale'] = 1
           this.trayOptions['imageX'] = 0
           this.trayOptions['imageY'] = 0
-          this.render({ parts: ['characterImage'] })
+          this.requestRender('characterImage')
         }
 
         handlers.imageX = (e) => {
           this.trayOptions['imageX'] = e.target.value
           e.target.nextElementSibling.textContent = e.target.value
-          this.render({ parts: ['characterImage'] })
+          this.requestRender('characterImage')
         }
 
         handlers.imageY = (e) => {
           this.trayOptions['imageY'] = e.target.value
           e.target.nextElementSibling.textContent = e.target.value
-          this.render({ parts: ['characterImage'] })
+          this.requestRender('characterImage')
         }
 
         elements.imageScale.addEventListener('input', handlers.imageScale)
@@ -253,7 +253,7 @@ export class TrayConfig {
   
       if (event.target.dataset.action === 'cancel' || !result) {
         this.trayOptions = { ...this.trayOptions, ...initialValues }
-        this.render({ parts: ['characterImage'] })
+        this.requestRender('characterImage')
         return
       }
       if (actor !== this.actor) return

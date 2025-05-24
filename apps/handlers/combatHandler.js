@@ -119,7 +119,7 @@ export class CombatHandler {
       value = 100 * (1 - this.tillNextTurn / this.visibleCombatSize)
       this.previousCircleValue = value
     }
-    await this.hotbar.render({ parts: ['endTurn'] })
+    this.hotbar.requestRender('endTurn')
     this.hotbar.animationHandler.setCircle(value)
   }
 
@@ -134,8 +134,8 @@ export class CombatHandler {
       this.tillNextTurn = 0
       this.previousCircleValue = null
       this.setDefaultActions(actor)
-      await this.hotbar.render({ parts: ['centerTray'] })
-      await this.hotbar.render({ parts: ['endTurn'] })
+      hotbar.requestRender(['centerTray', 'endTurn'])
+      
       this.hotbar.animationHandler.setCircle(0)
       return
     }
@@ -149,9 +149,9 @@ export class CombatHandler {
       ? this.previousCircleValue
       : 100 * (1 - (this.tillNextTurn + 1) / this.visibleCombatSize)
     let end = 100 * (1 - this.tillNextTurn / this.visibleCombatSize)
-    await this.hotbar.render({ parts: ['endTurn'] })
+    this.hotbar.requestRender('endTurn')
     if (this.previousCircleValue >= 100) {
-      await this.hotbar.render({ parts: ['centerTray'] })
+      this.hotbar.requestRender('centerTray')
     }
     // this.hotbar.animationHandler.setCircle(start)
     this.hotbar.animationHandler.animateCircle(start < 100 ? start : 0, end, this)

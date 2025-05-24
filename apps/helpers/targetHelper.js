@@ -15,7 +15,7 @@ export class TargetHelper {
     this.socket.register('setPhantomInRange', this.setPhantomInRange.bind(this))
     this.socket.register('destroyPhantomLine', this.destroyPhantomLine.bind(this))
     this.socket.register('setPhantomYOffset', this.setPhantomYOffset.bind(this))
-
+    
     this.stage = canvas.stage
     this.activity = null
     this.activityRange = 0
@@ -31,6 +31,7 @@ export class TargetHelper {
     this.active = false
     this.selectingTargets = false
     this.item = null
+    this.useSlot = false
     this.mouseMoveHandler = null
     this.selectedTargets = null
     this.rejectTargets = null
@@ -128,6 +129,7 @@ export class TargetHelper {
   }
 
   async requestTargets(item, activity, actor, targetCount, singleRoll) {
+    this.useSlot = false
     this.selectingTargets = true
     this.clearData()
     this.setSingleRoll(singleRoll)

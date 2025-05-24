@@ -60,8 +60,10 @@
           name='useSlot'
           type='checkbox'
           class='use-slot-checkbox'
-          checked='true'
-          data-action='useSlot'
+          {{#if @root.useSlot}}
+          checked='checked'
+          {{/if}}
+          data-action='toggleUseSlot'
         />
       </div>
     {{/if}}

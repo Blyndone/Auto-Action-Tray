@@ -10,12 +10,11 @@ export class AnimationHandler {
   }
 
   async pushTray(trayId) {
-    if (this.animationStack.at(-1) == 'activity' && trayId == 'target-helper') {
-      this.setTray('target-helper')
-      return
-    }
+
     this.animationStack.push(trayId)
     await this.animateTrays(trayId, this.animationStack.at(-2), this.hotbar)
+    const tempTrays = ['target-helper', 'activity', 'spellLevel']
+    this.animationStack = [...this.animationStack.filter((e) => !tempTrays.includes(e)), trayId]
   }
 
   async popTray(animate = true) {
@@ -50,8 +49,9 @@ export class AnimationHandler {
     switch (trayId) {
       case 'activity':
         return 0.5
+
       case 'target-helper':
-        return 0.3
+        return 0.5
       default:
         return 0.5
     }
@@ -60,28 +60,21 @@ export class AnimationHandler {
   async animateTrays(trayInId, trayOutId, hotbar) {
     if (trayInId == trayOutId) return
 
-    if (trayOutId == 'target-helper' && trayInId == 'activity') {
-      trayInId = 'stacked'
-    }
+    // if (trayOutId == 'target-helper' && trayInId == 'activity') {
+    //   trayInId = 'stacked'
+    // }
 
     let trayIn = this.findTray(trayInId, hotbar)
     let trayOut = this.findTray(trayOutId, hotbar)
     hotbar.trayInformation = trayIn.label
 
-    hotbar.animating = true
+    hotbar.startAnimation()
     trayIn.setActive()
     trayOut.setActive()
-    if (trayIn.id == 'stacked') {
-      trayIn.setActive()
-    }
-    if (trayOut.id == 'stacked') {
-      trayOut.setActive()
-    }
-
     hotbar.currentTray = trayIn
     hotbar.targetTray = trayOut
 
-    await hotbar.render({ parts: ['centerTray'] })
+    await hotbar.requestRender('centerTray', true)
 
     trayIn?.trays?.forEach((tray) => {
       this.setPreStackedTrayPos(tray, trayOut)
@@ -116,24 +109,17 @@ export class AnimationHandler {
 
     Promise.all([p1, p2])
       .then(() => {
-        hotbar.animating = false
+        hotbar.endAnimation()
         trayIn = hotbar.getTray(trayInId)
         trayOut = hotbar.getTray(trayOutId)
-        if (trayIn.id == 'stacked') {
-          trayOut.setInactive()
-          trayIn.setActive()
-        } else if (trayOut.id == 'stacked') {
-          trayOut.setInactive()
-          trayIn.setActive()
-        } else {
-          trayIn.setActive()
-          trayOut.setInactive()
-        }
+        trayOut.setInactive()
+        trayIn.setActive()
+
         hotbar.currentTray = trayIn
         hotbar.targetTray = trayOut
       })
       .then(async () => {
-        await hotbar.render({ parts: ['centerTray'] })
+        hotbar.requestRender('centerTray')
       })
       .then(() => {
         if (trayIn.id == 'stacked') {
@@ -146,10 +132,10 @@ export class AnimationHandler {
 
   animateTrayIn(tray) {
     return new Promise((resolve) => {
-      this.hotbar.animating = true
+      this.hotbar.startAnimation()
       this.hotbar.targetTray = tray
 
-      tray.setActive()
+      // tray.setActive()
       let xOffset = 0
       let yOffset = 0
       switch (tray.type) {
@@ -157,6 +143,9 @@ export class AnimationHandler {
           yOffset = -1 * this.verticalBounds
           break
         case 'activity':
+          yOffset = this.verticalBounds
+          break
+        case 'spellLevel':
           yOffset = this.verticalBounds
           break
         case 'custom':
@@ -196,10 +185,10 @@ export class AnimationHandler {
       })
     }
     return new Promise((resolve) => {
-      this.hotbar.animating = true
+      this.hotbar.startAnimation()
       this.hotbar.currentTray = tray
 
-      tray.setActive()
+      // tray.setActive()
       let xOffset = 0
       let yOffset = 0
       switch (tray.type) {
@@ -207,6 +196,9 @@ export class AnimationHandler {
           yOffset = -1 * this.verticalBounds
           break
         case 'activity':
+          yOffset = this.verticalBounds
+          break
+        case 'spellLevel':
           yOffset = this.verticalBounds
           break
         case 'custom':
@@ -324,10 +316,11 @@ export class AnimationHandler {
   }
 
   setCircle(value) {
-
     let theme = game.settings.get('auto-action-tray', 'tempTheme')
     let element = document.querySelector(`.${theme}`)
-    if (!element) { return }
+    if (!element) {
+      return
+    }
     let color = getComputedStyle(element).getPropertyValue('--aat-hover-color').trim()
     let color100 = getComputedStyle(element).getPropertyValue('--aat-hover-color-light').trim()
 
@@ -354,8 +347,9 @@ export class AnimationHandler {
     let mainColor = getComputedStyle(element).getPropertyValue('--aat-main-color').trim()
     let mainColorLight = getComputedStyle(element).getPropertyValue('--aat-main-color-light').trim()
     let accentColor = getComputedStyle(element).getPropertyValue('--aat-accent-color').trim()
-    let accentColorLight = getComputedStyle(element).getPropertyValue('--aat-accent-color-light').trim()
-
+    let accentColorLight = getComputedStyle(element)
+      .getPropertyValue('--aat-accent-color-light')
+      .trim()
 
     let baseColor = end == 100 ? color100 : color
     let glowpx = end == 100 ? 8 : 4
@@ -383,7 +377,8 @@ export class AnimationHandler {
       {
         drawSVG: `0% ${start}%`,
         stroke: this.getAdjustedColor(baseColor, start),
-        filter: filter  },
+        filter: filter,
+      },
       {
         drawSVG: `0% ${end}%`,
         duration: 3,

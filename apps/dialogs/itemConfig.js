@@ -105,7 +105,7 @@ export class ItemConfig {
         this.toggleItemSelector();
         this.itemConfigItem = null;
         if (result === "cancel" || result == null) {
-          this.render({ parts: ["equipmentMiscTray"] });
+          this.requestRender("equipmentMiscTray");
           return;
         }
         if (result === "reset") {
@@ -120,7 +120,7 @@ export class ItemConfig {
             JSON.stringify(result)
           );
         }
-        this.render({ parts: ["equipmentMiscTray"] });
+        this.requestRender("equipmentMiscTray");
       });
   }
 

@@ -1,8 +1,13 @@
 import { TargetHelper } from './targetHelper.js'
 import { ItemConfig } from '../dialogs/itemConfig.js'
 import { ActivityTray } from '../components/activityTray.js'
+import { SpellLevelTray } from '../components/spellLevelTray.js'
 
 export class Actions {
+  static logToChat(message, alias, actor) {
+    ChatMessage.create({ content: message, speaker: { alias: alias, actor: actor } })
+  }
+
   static setDefaultTray() {
     if (this.actor.type === 'npc') {
       this.currentTray = this.customTrays.find((e) => e.id == 'common')
@@ -37,6 +42,7 @@ export class Actions {
       this.customTrays.find((tray) => tray.id == trayId) ||
       [this.conditionTray].find((tray) => tray.id == trayId) ||
       [this.activityTray].find((tray) => tray.id == trayId) ||
+      [this.spellLevelTray].find((tray) => tray.id == trayId) ||
       (trayId == 'target-helper' ? this.targetHelper : null)
     )
   }
@@ -116,31 +122,31 @@ export class Actions {
     if (this.selectingActivity) return
     this.trayOptions['locked'] = !this.trayOptions['locked']
     this.setTrayConfig({ locked: this.trayOptions['locked'] })
-    this.render({ parts: ['equipmentMiscTray', 'centerTray'] })
+    this.requestRender(['equipmentMiscTray', 'centerTray'])
   }
   static toggleSkillTrayPage() {
     if (this.selectingActivity) return
     this.trayOptions['skillTrayPage'] = this.trayOptions['skillTrayPage'] == 0 ? 1 : 0
     this.setTrayConfig({ skillTrayPage: this.trayOptions['skillTrayPage'] })
 
-    this.render({ parts: ['skillTray'] })
+    this.requestRender('skillTray')
   }
   static toggleFastForward() {
     if (this.selectingActivity) return
     this.trayOptions['fastForward'] = !this.trayOptions['fastForward']
     this.setTrayConfig({ fastForward: this.trayOptions['fastForward'] })
-    this.render({ parts: ['equipmentMiscTray'] })
+    this.requestRender('equipmentMiscTray')
   }
   static toggleTargetHelper() {
     this.trayOptions['enableTargetHelper'] = !this.trayOptions['enableTargetHelper']
     this.setTrayConfig({ enableTargetHelper: this.trayOptions['enableTargetHelper'] })
-    this.render({ parts: ['equipmentMiscTray'] })
+    this.requestRender('equipmentMiscTray')
   }
 
   static toggleItemSelector() {
     this.itemSelectorEnabled = !this.itemSelectorEnabled
 
-    this.render({ parts: ['equipmentMiscTray'] })
+    this.requestRender('equipmentMiscTray')
   }
   static minimizeTray() {
     this.close({ animate: false })
@@ -178,7 +184,7 @@ export class Actions {
   static toggleHpText() {
     this.hpTextActive = !this.hpTextActive
 
-    this.render({ parts: ['characterImage'] }).then(() => {
+    this.requestRender('characterImage').then(() => {
       if (this.hpTextActive) {
         const inputField = document.querySelector('.hpinput')
         inputField.focus()
@@ -189,7 +195,7 @@ export class Actions {
   static async updateHp(data) {
     if (data == '') {
       this.hpTextActive = false
-      this.render({ parts: ['characterImage'] })
+      this.requestRender('characterImage')
       return
     }
 
@@ -220,14 +226,15 @@ export class Actions {
           break
       }
       await this.actor.update(updates)
-      this.render({ parts: ['characterImage'] })
+      this.requestRender('characterImage')
     }
   }
 
-  static async selectActivity(item) {
+  static async selectActivityWorkflow(item) {
+    let ritualCast = this.currentTray.id == 'ritual'
     this.activityTray.useSlot = true
     let activity = null
-    let selectedSpellLevel = null
+    let selectedSpellLevel = ritualCast ? item.spellLevel : this.currentTray.spellLevel
     let itemConfig = ItemConfig.getItemConfig(item)
     let fastForward =
       itemConfig?.fastForward == 'always'
@@ -236,18 +243,33 @@ export class Actions {
         ? false
         : this.trayOptions['fastForward']
 
-    if (fastForward) {
-      selectedSpellLevel = this.currentTray.spellLevel
+    if (item.activities.length <= 1 || fastForward) {
       activity = item.defaultActivity
     } else {
-      if (this.activityTray?.abilities?.length > 1) {
-        activity = await this.activityTray.selectAbility(item, this.actor, this)
-        activity = { ...item.activities.find((e) => e.id == activity?.itemId), ...activity }
-        if (activity == null) return
-        selectedSpellLevel = !selectedSpellLevel ? activity['selectedSpellLevel'] : ''
-      } else {
-        activity = item.defaultActivity
+      activity = await Actions.selectActivity.bind(this)(item)
+
+      if (
+        activity == null || // covers both null and undefined
+        (typeof activity === 'object' &&
+          !Array.isArray(activity) &&
+          Object.keys(activity).length === 0)
+      ) {
+        return
       }
+    }
+    if (item.type == 'spell' && !fastForward && item.spellLevel > 0 && !ritualCast) {
+      let spellData = await Actions.selectSpellLevel.bind(this)(item)
+
+      if (
+        spellData == null ||
+        (typeof spellData === 'object' &&
+          !Array.isArray(spellData) &&
+          Object.keys(spellData).length === 0)
+      ) {
+        return
+      }
+      selectedSpellLevel = spellData?.selectedSpellLevel
+      this.activityTray.useSlot = spellData?.useSlot
     }
 
     selectedSpellLevel =
@@ -255,11 +277,28 @@ export class Actions {
         ? { slot: 'pact' }
         : { slot: selectedSpellLevel ? 'spell' + selectedSpellLevel : null }
 
-    return { activity: activity, selectedSpellLevel: selectedSpellLevel }
+    return {
+      activity: activity,
+      selectedSpellLevel: selectedSpellLevel,
+    }
+  }
+
+  static async selectActivity(item) {
+    this.activityTray.setActivities(item, this.actor)
+    let activity = await this.activityTray.selectAbility(item, this.actor, this)
+    activity = item.activities.find((e) => e.id == activity?.itemId)
+    if (activity == null) return
+    this.useSlot = activity?.useSlot
+    return activity
+  }
+
+  static async selectSpellLevel(item) {
+    this.spellLevelTray.setActivities(item, this.actor)
+    let spellData = await this.spellLevelTray.selectAbility(item, this.actor, this)
+    return spellData
   }
 
   static async getTargets(item, activity, selectedSpellLevel) {
-
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
     let itemConfig = item.itemConfig
@@ -268,7 +307,6 @@ export class Actions {
       itemConfig && itemConfig['numTargets'] != undefined && !itemConfig['useDefaultTargetCount']
         ? itemConfig['numTargets']
         : targetCount
-
     if (
       this.trayOptions['enableTargetHelper'] &&
       targetCount > 0 &&
@@ -306,41 +344,7 @@ export class Actions {
     return result
   }
 
-  static async useItem(event, target) {
-    if (this.targetHelper.active) {
-      return
-    }
-    let altDown = this.altDown
-    let ctrlDown = this.ctrlDown
-
-    game.tooltip.deactivate()
-    let ritualCast = target.dataset.trayid == 'ritual'
-
-    let itemId = target.dataset.itemId
-    let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
-    this.activityTray.getActivities(item, this.actor)
-
-    if (ritualCast) {
-      let activity = item.defaultActivity.activity
-      let options = await Actions.selectActivity.bind(this)(item)
-      if (options) {
-        activity = options.activity.activity
-      }
-      if (!activity) return
-      await activity.use(
-        {
-          consume: { spellSlot: false },
-        },
-        { configure: false },
-      )
-      return
-    }
-
-    let options = await Actions.selectActivity.bind(this)(item)
-    if (!options?.activity || Object.keys(options.activity).length === 0) return
-    let selectedSpellLevel = options.selectedSpellLevel,
-      activity = options.activity
-
+  static async promptEndConcentration(item) {
     let endConcentration = true
     let currentSpellName = this.conditionTray.checkConcentration()
     game.settings.get('auto-action-tray', 'promptConcentrationOverwrite')
@@ -355,6 +359,48 @@ export class Actions {
           return true
         })
     }
+    return endConcentration
+  }
+
+  static async useItem(event, target) {
+    this.useSlot = true
+    if (this.targetHelper.active) {
+      return
+    }
+    let altDown = this.altDown
+    let ctrlDown = this.ctrlDown
+    let useSlot = true
+    game.tooltip.deactivate()
+
+    let ritualCast = this.currentTray.id == 'ritual'
+    let itemId = target.dataset.itemId
+
+    let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
+
+    // if (ritualCast) {
+    //   let activity = item.defaultActivity.activity
+    //   let options = await Actions.selectActivityWorkflow.bind(this)(item)
+    //   if (options) {
+    //     activity = options.activity.activity
+    //   }
+    //   if (!activity) return
+    //   await activity.use(
+    //     {
+    //       consume: { spellSlot: false },
+    //     },
+    //     { configure: false },
+    //   )
+    //   return
+    // }
+
+    let options = await Actions.selectActivityWorkflow.bind(this)(item)
+
+    if (!options?.activity || Object.keys(options.activity).length === 0) return
+    let selectedSpellLevel = options.selectedSpellLevel,
+      activity = options.activity
+
+    //Concentration Check / Prompt
+    let endConcentration = await Actions.promptEndConcentration.bind(this)(item)
     if (!endConcentration) {
       return
     }
@@ -364,12 +410,12 @@ export class Actions {
       activity,
       selectedSpellLevel,
     )
+
     if (targets?.canceled == true || targets === undefined) return
 
-    if (
-      (activity?.useSlot ?? this.activityTray.useSlot) &&
-      this.actor.system.spells[selectedSpellLevel.slot]?.value < 1
-    ) {
+    useSlot = this.useSlot && activity?.useSlot && !ritualCast
+
+    if (useSlot && this.actor.system.spells[selectedSpellLevel.slot]?.value < 1) {
       ui.notifications.error(`No spell slots available`)
       return
     }
@@ -385,15 +431,11 @@ export class Actions {
       (itemConfig?.rollIndividual ?? true) &&
       !item?.concentration
     ) {
+      //Repeated Item Use
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
       let slotUse
-
-      if (activity.useSlot !== undefined) {
-        slotUse = activity.useSlot ? 1 : 0
-      } else {
-        slotUse = this.activityTray.useSlot === true ? 1 : 0
-      }
+      slotUse = useSlot === true ? 1 : 0
 
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
@@ -417,10 +459,7 @@ export class Actions {
         await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
       }
     } else {
-      // if (!this.fastForward) {
-      //   this.animationHandler.animateTrays(this.targetTray.id, this.currentTray.id, this)
-      // }
-
+      //Singluar Item Use
       item.item.system.activities
         .get(
           activity?.itemId ||
@@ -437,7 +476,7 @@ export class Actions {
               disadvantage: ctrlDown,
             },
             spell: selectedSpellLevel,
-            consume: { spellSlot: activity?.useSlot },
+            consume: { spellSlot: useSlot },
           },
           { configure: false },
         )
@@ -501,7 +540,7 @@ export class Actions {
 
     params.roll = { advantage: advantage, disadvantage: disadvantage, legacy: false }
     await this.actor.rollDeathSave(params.roll, params.dialog, params.message)
-    this.render({ parts: ['characterImage'] })
+    this.requestRender('characterImage')
   }
 
   static async increaseRowCount() {
@@ -539,7 +578,7 @@ export class Actions {
 
   static changeDice() {
     this.currentDice = this.currentDice < 5 ? this.currentDice + 1 : 0
-    this.render({ parts: ['endTurn'] })
+    this.requestRender('endTurn')
   }
 
   static viewItem(event, target) {
@@ -556,6 +595,10 @@ export class Actions {
     target.classList.add('selected')
   }
 
+  static toggleUseSlot(event, target) {
+    this.useSlot = target.checked
+  }
+
   static increaseTargetCount() {
     this.targetHelper.increaseTargetCount()
   }
@@ -569,10 +612,12 @@ export class Actions {
     if (this.currentTray instanceof ActivityTray) {
       ActivityTray.cancelSelection.bind(this)(event, target)
     }
+    if (this.currentTray instanceof SpellLevelTray) {
+      SpellLevelTray.cancelSelection.bind(this)(event, target)
+    }
     if (this.currentTray instanceof TargetHelper) {
       TargetHelper.cancelSelection.bind(this)(event, target)
-    } else {
-      this.animationHandler.popTray()
     }
+    this.animationHandler.popTray()
   }
 }

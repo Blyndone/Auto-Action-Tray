@@ -45,11 +45,11 @@ export class DragDropHandler {
     }
     if (event.target.parentElement.dataset.index === 'meleeWeapon') {
       hotbar.equipmentTray.setMeleeWeapon(fromUuidSync(data.uuid))
-      hotbar.render({ parts: ['equipmentMiscTray'] })
+      hotbar.requestRender('equipmentMiscTray')
       return
     } else if (event.target.parentElement.dataset.index === 'rangedWeapon') {
       hotbar.equipmentTray.setRangedWeapon(fromUuidSync(data.uuid))
-      hotbar.render({ parts: ['equipmentMiscTray'] })
+      hotbar.requestRender('equipmentMiscTray')
       return
     }
 
@@ -57,19 +57,19 @@ export class DragDropHandler {
     if (index == 'meleeWeapon') {
       let item = fromUuidSync(data.uuid)
       hotbar.equipmentTray.setMeleeWeapon(item)
-      hotbar.render({ parts: ['equipmentMiscTray'] })
+      hotbar.requestRender('equipmentMiscTray')
       return
     }
     if (index == 'rangedWeapon') {
       let item = fromUuidSync(data.uuid)
       hotbar.equipmentTray.setRangedWeapon(item)
-      hotbar.render({ parts: ['equipmentMiscTray'] })
+      hotbar.requestRender('equipmentMiscTray')
       return
     }
     if (index == 'itemConfig') {
       let item = fromUuidSync(data.uuid)
       hotbar.itemConfigItem = hotbar.getActorAbilities(hotbar.actor.uuid).find((e) => e.id == item.id)
-      hotbar.render({ parts: ['equipmentMiscTray'] })
+      hotbar.requestRender('equipmentMiscTray')
       ItemConfig.itemConfig.bind(hotbar)(item)
       return
     }
@@ -84,7 +84,7 @@ export class DragDropHandler {
         let targetTray = hotbar.getTray(event.target.dataset.trayid)
         targetTray?.setAbility(index, new AATItem(item))
         sourceTray?.setAbility(data.index, null)
-        hotbar.render({ parts: ['centerTray'] })
+        this.hotbar.requestRender('centerTray')
         break
 
       default:
@@ -98,15 +98,15 @@ export class DragDropHandler {
     }
     if (data.index == 'meleeWeapon') {
       hotbar.equipmentTray.setMeleeWeapon(null)
-      hotbar.render({ parts: ['equipmentMiscTray'] })
+      hotbar.requestRender('equipmentMiscTray')
       return
     }
     if (data.index == 'rangedWeapon') {
       hotbar.equipmentTray.setRangedWeapon(null)
-      hotbar.render({ parts: ['equipmentMiscTray'] })
+      hotbar.requestRender('equipmentMiscTray')
       return
     }
     hotbar.getTray(data.trayId).setAbility(data.index, null)
-    hotbar.render({ parts: ['centerTray'] })
+    hotbar.requestRender('centerTray')
   }
 }

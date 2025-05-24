@@ -64,7 +64,7 @@ export class ConditionTray {
     this.actor = actor
     this.active = false
     this.setConditions()
-    this.application.render({ parts: ['centerTray'] })
+    this.application.requestRender('centerTray')
   }
   async setConditions() {
     if (this.conditions.length === 0) return
@@ -109,7 +109,7 @@ async toggleCondition(event, target) {
   }
 
   await this.setConditions();
-  this.application.render({ parts: ['centerTray'] });
+  this.application.requestRender('centerTray');
 }
 
 async toggleConcentration(condition) {

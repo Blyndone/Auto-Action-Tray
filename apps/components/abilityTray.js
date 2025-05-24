@@ -14,8 +14,7 @@ export class AbilityTray {
     this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
   async onCompleteGeneration() {
-    // this.enrichTrayDescriptions(this)
-    // this.generateTooltips(this)
+   this.application.requestRender('centerTray')
   }
 
   padArray(arr, filler = null) {
@@ -131,7 +130,7 @@ export class AbilityTray {
           break
       }
 
-      this.render({ parts: ['centerTray'] })
+      this.requestRender('centerTray')
       return
     } else {
       AbilityTray.setDelayedData(new AATItem(item), item.parent)
@@ -149,7 +148,7 @@ export class AbilityTray {
       tray.deleteItem(item.id)
     })
     this.checkTrayDiff()
-    this.render({ parts: ['centerTray'] })
+    this.requestRender('centerTray')
   }
 
   deleteItem(itemId) {

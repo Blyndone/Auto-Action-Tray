@@ -3,6 +3,7 @@ const { api } = foundry.applications
 import { CustomTray } from './components/customTray.js'
 import { StaticTray } from './components/staticTray.js'
 import { ActivityTray } from './components/activityTray.js'
+import { SpellLevelTray } from './components/spellLevelTray.js'
 import { EquipmentTray } from './components/equipmentTray.js'
 import { SkillTray } from './components/skillTray.js'
 import { CombatHandler } from './handlers/combatHandler.js'
@@ -29,6 +30,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.socket = options.socket
 
     this.animating = false
+    this.completeAnimation = null
+    this.renderQueue = []
+    this.pendingRender = false
 
     this.#dragDrop = this.#createDragDropHandlers()
     this.isEditable = true
@@ -42,6 +46,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.actorHealthPercent = 100
     this.currentTray = null
     this.targetTray = null
+    this.useSlot = true
 
     this.customTrays = []
     this.staticTrays = []
@@ -123,10 +128,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateItem', this._onUpdateItem.bind(this))
     Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
     Hooks.on('dnd5e.beginConcentrating', (actor) => {
-      if (actor == this.actor) this.render({ parts: ['characterImage'] })
+      if (actor == this.actor) this.requestRender('characterImage')
     })
     Hooks.on('dnd5e.endConcentration', (actor) => {
-      if (actor == this.actor) this.render({ parts: ['characterImage'] })
+      if (actor == this.actor) this.requestRender('characterImage')
     })
     Hooks.on('updateCombat', this._onUpdateCombat.bind(this))
     Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this))
@@ -222,8 +227,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       trayConfig: AutoActionTray.trayConfig,
       toggleHpText: AutoActionTray.toggleHpText,
       useActivity: ActivityTray.useActivity,
+      useSpellLevel: SpellLevelTray.useActivity,
       cancelSelection: Actions.cancelSelection,
-      useSlot: ActivityTray.useSlot,
+      toggleUseSlot: AutoActionTray.toggleUseSlot,
       rollD20: AutoActionTray.rollDice,
       increaseTargetCount: AutoActionTray.increaseTargetCount,
       decreaseTargetCount: AutoActionTray.decreaseTargetCount,
@@ -279,6 +285,39 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         this.actor = event.actor ? event.actor : event
         this.initialTraySetup(this.actor, event)
     }
+  }
+
+  startAnimation() {
+    this.animating = true
+    this.completeAnimation = new Promise((resolve) => {
+      this._resolveAnimation = resolve
+    })
+  }
+
+  endAnimation() {
+    this.animating = false
+    if (this._resolveAnimation) {
+      this._resolveAnimation()
+      this._resolveAnimation = null
+    }
+  }
+
+  async requestRender(partID, force = false) {
+    const arr = Array.isArray(partID) ? partID : [partID]
+    this.renderQueue.push(...arr)
+    this.renderQueue = [...new Set(this.renderQueue)]
+    if (this.pendingRender && !force) {
+      return
+    }
+    if (this.animating && !force) {
+      this.pendingRender = true
+      await this.completeAnimation
+    }
+    await this.render({
+      parts: this.renderQueue,
+    })
+    this.pendingRender = false
+    this.renderQueue = []
   }
 
   async generateActorItems(actor, event) {
@@ -439,6 +478,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
       this.activityTray.rejectActivity = null
+      this.spellLevelTray.rejectActivity(new Error('User canceled activity selection'))
+      this.spellLevelTray.rejectActivity = null
     }
 
     let config = this.getTrayConfig()
@@ -546,6 +587,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.activityTray = ActivityTray.generateActivityTray(actor, {
       application: this,
     })
+    this.spellLevelTray = SpellLevelTray.generateActivityTray(actor, {
+      application: this,
+    })
     this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
     this.skillTray = SkillTray.generateCustomTrays(actor)
@@ -578,9 +622,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.effectsTray.setEffects()
     this.stackedTray.setActor(this.actor)
     this.checkTrayDiff()
-    if (!this.animating) {
-      this.render({ parts: ['centerTray'] })
-    }
+    this.requestRender('centerTray')
   }
 
   checkTrayDiff() {
@@ -606,9 +648,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.combatHandler.inCombat) {
       this.combatHandler.setCombat(this.actor)
     }
-    if (!this.animating) {
-      this.render({ parts: ['centerTray', 'characterImage'] })
-    }
+
+    this.requestRender(['centerTray', 'characterImage'])
   }
 
   _onUpdateCombat = (event) => {
@@ -630,7 +671,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.currentTray.id == 'condition') {
       this.conditionTray.setConditions()
     }
-    this.render({ parts: ['centerTray', 'characterImage'] })
+    this.requestRender('centerTray', 'characterImage')
   }
   _onDeleteActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
@@ -638,14 +679,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.currentTray.id == 'condition') {
       this.conditionTray.setConditions()
     }
-    this.render({ parts: ['centerTray', 'characterImage'] })
+    this.requestRender('centerTray', 'characterImage')
   }
   _onUpdateActiveEffect = (effect) => {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
     if (this.currentTray.id == 'condition') {
       this.conditionTray.setConditions()
-      this.render({ parts: ['centerTray'] })
+      this.requestRender('centerTray')
     }
   }
 
@@ -722,6 +763,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       trayOptions: this.trayOptions,
       trayInformation: this.trayInformation,
       activityTray: this.activityTray,
+      useSlot: this.useSlot,
+      spellLevelTray: this.spellLevelTray,
       combatHandler: this.combatHandler,
       itemSelectorEnabled: this.itemSelectorEnabled,
       hpTextActive: this.hpTextActive,
@@ -921,6 +964,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   static useSkillSave(event, target) {
     Actions.useSkillSave.bind(this)(event, target)
+  }
+
+  static toggleUseSlot(event, target) { 
+    Actions.toggleUseSlot.bind(this)(event, target)
   }
 
   static async rollDice() {
