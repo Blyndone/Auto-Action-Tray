@@ -128,7 +128,7 @@ export class AATItemTooltip {
   }
   setConcentrationLabel() {
     if (this.item.concentration) {
-      this.concentrationLabel = `<i class='fa-solid fa-moon'></i> Concentration`
+      this.concentrationLabel = `<i class='fa-solid fa-moon'></i>  Concentration  <i class='fa-solid fa-moon'></i>`
     } else {
       this.concentrationLabel = ``
     }

@@ -37,8 +37,12 @@
       </span>
     </span>
   </div>
+  {{#if (neq concentrationLabel '')}}
+    <div class='tooltip-concentration'>
+      <div class='animated-border'>
 
-  <div class='tooltip-upper-icon'>
-    {{concentrationLabel}}
-  </div>
+        {{concentrationLabel}}
+      </div>
+    </div>
+  {{/if}}
 </div>

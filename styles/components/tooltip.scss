@@ -1,3 +1,4 @@
+@use 'mixins' as *;
 .tooltip-container {
   /* background: var(--aat-tooltip-bg); */
   background-color: var(--aat-tooltip-bg);
@@ -20,13 +21,29 @@
   position: relative;
 }
 
-.tooltip-upper-icon {
-  position: absolute;
-  right: 0;
-  top: 0;
-  margin: 6px;
-  font-size: 16px;
-  color: var(--aat-tooltip-upper-icon);
+.tooltip-concentration {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px;
+  margin-top: 8px;
+  width: 100%;
+  div {
+    font-size: 16px;
+    color: var(--aat-tooltip-footer);
+
+    background: var(--aat-tooltip-footer-bg);
+    display: flex;
+    align-items: center;
+    width: min-content;
+    padding: 4px 10px;
+    outline: 2px solid var(--aat-border-color);
+    border-radius: 2px;
+    @include active-animation-size(var(--aat-border-color), 2px);
+  }
+  i {
+    padding: 0 4px;
+  }
 }
 
 .tooltip-header h2 {
