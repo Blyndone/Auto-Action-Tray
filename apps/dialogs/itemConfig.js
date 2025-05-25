@@ -71,7 +71,66 @@ export class ItemConfig {
       hint: "Override the Number of Targets for this item."
     });
 
-    const content = `${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${rollIndividualGroup.outerHTML} ${fastForwardGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
+    const createEl = (tag, props = {}, styles = {}) => {
+      const el = document.createElement(tag);
+      Object.assign(el, props);
+      Object.assign(el.style, styles);
+      return el;
+    };
+
+    const header = createEl(
+      "h3",
+      { innerText: `Configure: ${item.name}` },
+      { textAlign: "center", marginBottom: "10px" }
+    );
+
+    const img = createEl(
+      "img",
+      { src: item.img },
+      { width: "100px", height: "100px" }
+    );
+
+    const description = createEl(
+      "div",
+      {
+        innerHTML: `<div>${item.name}<br><div class='hint'>${item.system
+          .description.value}</div></div>`
+      },
+      {
+        fontSize: "14px",
+        textAlign: "left",
+        padding: "5px",
+        overflowY: "auto",
+        maxHeight: "200px",
+        flex: "1"
+      }
+    );
+
+    const itemblock = createEl(
+      "div",
+      {},
+      {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        border: "1px solid black",
+        padding: "10px",
+        borderRadius: "10px",
+        boxShadow: "0px 0px 10px black",
+        width: "100%",
+        boxSizing: "border-box",
+        position: "relative",
+        zIndex: "9999",
+        overflow: "hidden",
+        maxHeight: "250px",
+        overflowY: "auto",
+        overflowX: "hidden"
+      }
+    );
+
+    itemblock.append(img, description);
+
+    const content = `${header.outerHTML} ${itemblock.outerHTML} ${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${rollIndividualGroup.outerHTML} ${fastForwardGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
 
     await foundry.applications.api.DialogV2
       .wait({
