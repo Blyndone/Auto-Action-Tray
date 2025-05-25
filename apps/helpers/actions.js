@@ -143,8 +143,12 @@ export class Actions {
     this.requestRender('equipmentMiscTray')
   }
 
-  static toggleItemSelector() {
-    this.itemSelectorEnabled = !this.itemSelectorEnabled
+  static toggleItemSelector(event, force = null) {
+    if (force == null) {
+      this.itemSelectorEnabled = !this.itemSelectorEnabled
+    } else { 
+      this.itemSelectorEnabled = force
+    }
 
     this.requestRender('equipmentMiscTray')
   }

@@ -18,6 +18,7 @@ import { StackedTray } from './components/stackedTray.js'
 import { TargetHelper } from './helpers/targetHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
 import { AATItem } from './items/item.js'
+import { ItemConfig } from './dialogs/itemConfig.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
@@ -800,6 +801,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         },
       },
       {
+        name: 'Configure Item',
+        icon: "<i class='fas fa-cog fa-fw'></i>",
+        callback: (li) => {
+          let item = this.getActorAbilities(this.actor.uuid).find(
+            (e) => e.id == li[0].dataset.itemId,
+          ).item
+          ItemConfig.itemConfig.bind(this)(item)
+        },
+      },
+      {
         name: 'Remove',
         icon: "<i class='fas fa-trash fa-fw'></i>",
         callback: (li) => this._onAction(li[0], 'remove'),
@@ -951,8 +962,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   static toggleItemSelector() {
     Actions.toggleItemSelector.bind(this)()
   }
-  toggleItemSelector() {
-    Actions.toggleItemSelector.bind(this)()
+  toggleItemSelector(event, force) {
+    Actions.toggleItemSelector.bind(this)(event, force)
   }
   static minimizeTray() {
     Actions.minimizeTray.bind(this)()
@@ -1183,17 +1194,18 @@ class AltContextMenu extends ContextMenu {
     const rect = menu[0].parentElement.getBoundingClientRect()
     const parentRect = newParent.getBoundingClientRect()
     let scale = 1 / game.settings.get('auto-action-tray', 'scale')
-    let top = rect.top - parentRect.top - rect.height 
-    let left = rect.left - parentRect.left
-    top = top * scale  
+    // let contextMenu = menu[0].getBoundingClientRect()
+
+    let top = rect.top - parentRect.top
+    let left = rect.left - parentRect.left + rect.width + 5
+    top = top * scale
     left = left * scale
 
     newParent.appendChild(menu[0])
     menu[0].style.position = 'absolute'
     menu[0].style.top = `${top}px`
     menu[0].style.left = `${left}px`
-
+    menu[0].style.transformOrigin = 'top left'
     super._animateOpen(menu)
   }
-
 }

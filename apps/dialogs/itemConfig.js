@@ -102,7 +102,7 @@ export class ItemConfig {
         ]
       })
       .then(result => {
-        this.toggleItemSelector();
+        this.toggleItemSelector({}, false);
         this.itemConfigItem = null;
         if (result === "cancel" || result == null) {
           this.requestRender("equipmentMiscTray");
