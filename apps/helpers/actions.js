@@ -112,7 +112,7 @@ export class Actions {
   }
 
   static async setTray(event, target) {
-    if (this.animating == true || this.selectingActivity == true) return
+    if (this.animating == true || this.selectingActivity == true || this.targetHelper.selectingTargets == true ) return
     // let trayIn = this.getTray(target.dataset.id)
 
     this.animationHandler.setTray(target.dataset.id)
