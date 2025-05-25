@@ -811,6 +811,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         },
       },
       {
+        name: 'Display in Chat',
+        icon: "<i class='fas fa-comment-dots fa-fw'></i>",
+        callback: (li) => {
+          let item = this.getActorAbilities(this.actor.uuid).find(
+            (e) => e.id == li[0].dataset.itemId,
+          ).item
+          item.displayCard()
+        },
+      },
+      {
         name: 'Remove',
         icon: "<i class='fas fa-trash fa-fw'></i>",
         callback: (li) => this._onAction(li[0], 'remove'),
