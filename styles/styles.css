@@ -79,6 +79,7 @@
 #auto-action-tray #context-menu {
   scale: calc(1 / var(--aat-scale));
   width: auto;
+  z-index: 100;
 }
 
 #hotbar-directory-controls {

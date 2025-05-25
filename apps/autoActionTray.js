@@ -313,7 +313,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.pendingRender = true
       await this.completeAnimation
     }
-    let tmp = this.renderQueue 
+    let tmp = this.renderQueue
     this.renderQueue = []
     let complete = await this.render({
       parts: tmp,
@@ -837,10 +837,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       _expandUp: true,
     })
 
-    new ContextMenu(this.element, '.ability-button', itemContextMenu, {
-      onOpen: this._onOpenContextMenu(),
-      jQuery: true,
-    })
+    new AltContextMenu(
+      this.element,
+      '.ability-button',
+      itemContextMenu,
+      {
+        onOpen: (target) => {
+          this._onOpenContextMenu(target)
+        },
+        jQuery: true,
+      },
+      'auto-action-tray',
+    )
     new ContextMenu(this.element, '.effect-tray-icon', [], {
       onOpen: EffectTray.removeEffect.bind(this),
       jQuery: true,
@@ -861,7 +869,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     )
   }
 
-  _onOpenContextMenu(event) {
+  _onOpenContextMenu(target) {
+    // if (!target) return
+    // console.log(target)
+    // const rect = target.getBoundingClientRect()
+
     return
   }
 
@@ -967,7 +979,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.useSkillSave.bind(this)(event, target)
   }
 
-  static toggleUseSlot(event, target) { 
+  static toggleUseSlot(event, target) {
     Actions.toggleUseSlot.bind(this)(event, target)
   }
 
@@ -1043,8 +1055,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onRender(context, options) {
-
-
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
     if (options.parts.includes('centerTray')) {
@@ -1162,4 +1172,28 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _onDropCanvas(data) {
     DragDropHandler._onDropCanvas(data, this)
   }
+}
+class AltContextMenu extends ContextMenu {
+  constructor(element, selector, menuItems, options, parentSelector) {
+    super(element, selector, menuItems, options)
+    this.parentSelector = parentSelector
+  }
+  async _animateOpen(menu) {
+    const newParent = document.getElementById(this.parentSelector)
+    const rect = menu[0].parentElement.getBoundingClientRect()
+    const parentRect = newParent.getBoundingClientRect()
+    let scale = 1 / game.settings.get('auto-action-tray', 'scale')
+    let top = rect.top - parentRect.top - rect.height 
+    let left = rect.left - parentRect.left
+    top = top * scale  
+    left = left * scale
+
+    newParent.appendChild(menu[0])
+    menu[0].style.position = 'absolute'
+    menu[0].style.top = `${top}px`
+    menu[0].style.left = `${left}px`
+
+    super._animateOpen(menu)
+  }
+
 }
