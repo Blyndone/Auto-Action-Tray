@@ -1,6 +1,5 @@
 export class AATItemTooltip {
   constructor(item, activity, options = {}) {
-    
     this.spellLevel = options.spellLevel ?? item.item.system.level ?? null
     this.name = this.setName(item, activity)
     this.item = item
@@ -34,7 +33,12 @@ export class AATItemTooltip {
     ]
     let name = activity?.activity ? activity.activity.name : item.name
     blacklist.includes(name.replace('Midi ', '')) ? (name = item.name) : ''
-    if (item.type == 'spell' && this.spellLevel != 0 && item.isScaledSpell && this.spellLevel != item.item.system.level) {
+    if (
+      item.type == 'spell' &&
+      this.spellLevel != 0 &&
+      item.isScaledSpell &&
+      this.spellLevel != item.item.system.level
+    ) {
       name = `${name} (Level ${this.spellLevel})`
     }
     return name
@@ -116,7 +120,30 @@ export class AATItemTooltip {
   }
 
   setDescription() {
-    this.description = this.item.description
+    if (this.item.type === 'container' && this.item.item.system?.allContainedItems.size > 0) {
+      let itemList = this.item.item.system.allContainedItems.map((e) => e.name)
+
+      let tableHTML = `<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">
+        <thead><tr><th colspan="2">Contents</th></tr></thead>
+        <tbody>`
+      for (let i = 0; i < itemList.length; i += 2) {
+        tableHTML += '<tr>'
+        tableHTML += `<td>${itemList[i]}</td>`
+        tableHTML += i + 1 < itemList.length ? `<td>${itemList[i + 1]}</td>` : '<td></td>'
+        tableHTML += '</tr>'
+      }
+      tableHTML += '</tbody></table>'
+
+      let maxLength = 200
+      let shortDesc = this.item.description || ''
+      if (shortDesc.length > maxLength) {
+        shortDesc = shortDesc.slice(0, maxLength).trim() + '...'
+      }
+
+      this.description = shortDesc + '<br>' + tableHTML
+    } else {
+      this.description = this.item.description
+    }
   }
 
   setSaveLabel() {
