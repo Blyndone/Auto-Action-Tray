@@ -19,6 +19,7 @@ import { TargetHelper } from './helpers/targetHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
 import { AATItem } from './items/item.js'
 import { ItemConfig } from './dialogs/itemConfig.js'
+import { DraggableTrayContainer } from './handlers/draggableHandler.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
@@ -64,6 +65,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       type: 'stacked',
       name: 'stacked',
     })
+
     this.effectsTray = new EffectTray()
     this.activeEffects = []
     this.concentrationItem = null
@@ -123,6 +125,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.iconSize = 100
     }
     this.animationHandler = new AnimationHandler({ hotbar: this, defaultTray: 'stacked' })
+    this.draggableTrays = new DraggableTrayContainer({
+      application: this,
+    })
 
     Hooks.on('controlToken', this._onControlToken.bind(this))
     Hooks.on('updateActor', this._onUpdateActor.bind(this))
@@ -509,16 +514,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.setDefaultTray()
     }
 
-    if (this.currentTray.id == 'stacked') {
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty('--aat-stacked-spacer-width', this.iconSize / 3 + 'px')
-    } else {
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty('--aat-stacked-spacer-width', '0px')
-    }
-
     let data = actor.getFlag('auto-action-tray', 'delayedItems')
     if (data != undefined) {
       let delayedItems = JSON.parse(data)
@@ -596,7 +591,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
     this.skillTray = SkillTray.generateCustomTrays(actor)
     this.stackedTray.setInactive()
-    this.stackedTray.setTrays(this.customTrays.slice(0, 3))
+    const favoriteTray = this.customTrays.find((e) => e.id === 'favoriteItems')
+    this.stackedTray.setTrays([
+      ...this.customTrays.slice(0, 3),
+      ...(favoriteTray ? [favoriteTray] : []),
+    ])
     this.customTrays = [this.stackedTray, ...this.customTrays]
   }
 
@@ -650,8 +649,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.combatHandler.inCombat) {
       this.combatHandler.setCombat(this.actor)
     }
+    if (change?.system?.favorites) {
+      this.checkTrayDiff()
+      if (actor.system.favorites.length <= 1) {
+        this.initialTraySetup(this.actor, null, this.currentTray.id)
+      }
 
-    this.requestRender(['centerTray', 'characterImage'])
+      this.requestRender(['centerTray', 'characterImage'])
+    }
   }
 
   _onUpdateCombat = (event) => {
@@ -1075,6 +1080,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     return this.#dragDrop
   }
 
+  createDraggable(trayId, index) {}
+
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
@@ -1108,67 +1115,23 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
+    this.draggableTrays.createAllDraggables()
+    this.animationHandler.setAllStackedTrayPos(this.draggableTrays.draggableTrays)
 
-    this.animationHandler.setAllStackedTrayPos(this.currentTray)
-    const hotbar = this
-    let handleSize = hotbar.iconSize / 3 + 2
-    let spacerSize = hotbar.iconSize / 3
-    let padding = 5
-
-    let classFeatures = Draggable.create('.container-classFeatures', {
-      type: 'x',
-      bounds: {
-        minX: 0,
-        maxX: hotbar.stackedTray.trays[2].xPos - handleSize,
-      },
-      force3D: false,
-      handle: '.handle-classFeatures',
-      inertia: true,
-      zIndexBoost: false,
-      maxDuration: 0.1,
-      snap: {
-        x: function (value) {
-          return Math.floor(value / hotbar.iconSize) * hotbar.iconSize + padding + 2
-        },
-      },
-      onThrowComplete: function () {
-        hotbar.stackedTray.setTrayPosition(
-          'classFeatures',
-          Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + padding + 2,
-        )
-        items[0].applyBounds({
-          minX: this.endX + handleSize,
-          maxX: hotbar.columnCount * (hotbar.iconSize + 2) - handleSize - spacerSize,
-        })
-      },
-    })
-
-    let items = Draggable.create('.container-items', {
-      type: 'x',
-      bounds: {
-        minX: hotbar.stackedTray.trays[1].xPos + handleSize,
-        maxX: hotbar.columnCount * (hotbar.iconSize + 2) - handleSize - spacerSize,
-      },
-      force3D: false,
-      handle: '.handle-items',
-      zIndexBoost: false,
-      inertia: true,
-      maxDuration: 0.1,
-      snap: {
-        x: function (value) {
-          return (
-            Math.floor(value / hotbar.iconSize) * hotbar.iconSize + handleSize + padding * 2 + 4
-          )
-        },
-      },
-      onThrowComplete: function () {
-        hotbar.stackedTray.setTrayPosition(
-          'items',
-          Math.floor(this.endX / hotbar.iconSize) * hotbar.iconSize + handleSize + padding * 2 + 4,
-        )
-        classFeatures[0].applyBounds({ minX: 0, maxX: this.endX - handleSize })
-      },
-    })
+    if (this.currentTray.id == 'stacked') {
+      let spacerWidth =
+        (this.iconSize - (((this.draggableTrays.trayCount - 1) % 3) * this.iconSize) / 3) %
+        this.iconSize
+      spacerWidth = spacerWidth == 0 ? 0 : spacerWidth + 14
+      document
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-stacked-spacer-width', spacerWidth + 'px')
+    } else {
+      document
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-stacked-spacer-width', '0px')
+    }
+    return
   }
 
   _canDragStart(selector) {

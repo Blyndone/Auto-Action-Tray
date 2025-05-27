@@ -257,7 +257,15 @@ export class AbilityTray {
     return game.settings.get('auto-action-tray', 'saveNpcData')
   }
 
+  regenerateTray(tray) { 
+
+    this.generateTray()
+  }
+
   checkDiff(itemMap) {
+    if (this.id == 'favoriteItems') { 
+      this.regenerateTray(this)
+    }
     this.abilities = this.abilities.map((e) => itemMap.get(e?.id) || e)
   }
 

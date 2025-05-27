@@ -28,7 +28,7 @@
   padding: var(--aat-main-tray-padding);
   width: calc(
     (var(--aat-item-size) + var(--aat-main-tray-gap)) * var(--aat-item-tray-item-width-count) +
-      var(--aat-main-tray-padding) * 2
+      var(--aat-main-tray-padding) * 4
   );
   // margin: 5px;
   display: flex;

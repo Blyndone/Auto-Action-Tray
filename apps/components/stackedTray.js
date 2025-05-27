@@ -18,7 +18,7 @@ export class StackedTray {
       this.getSavedData();
       this.setTrayPositions(this.positions);
     } else {
-      this.setTrayPositions([0, Infinity, Infinity]);
+      this.setTrayPositions([0, Infinity, Infinity, Infinity]);
     }
   }
   setActive() {
@@ -48,21 +48,41 @@ export class StackedTray {
 
   setTrayPositions(trayPositions) {
     let handleSize = this.hotbar.iconSize / 3 + 2;
-    let pos1 =
-      Math.floor(this.hotbar.columnCount / 3) * this.hotbar.iconSize + 7;
-    let pos2 =
-      Math.floor(this.hotbar.columnCount * 2 / 3) * this.hotbar.iconSize +
-      handleSize +
-      14;
-    const defaults = [0, pos1, pos2];
+    const trayCount = this.trays.length;
+    let trayPos = index => {
+      if (index == 0) return 0;
+      return (
+        Math.floor(this.hotbar.columnCount * index / trayCount) *
+          this.hotbar.iconSize +
+        7 +
+        (index - 1) * (handleSize + 7)
+      );
+    };
+    let defaults = [];
+    for (let i = 0; i < trayCount; i++) {
+      defaults.push(trayPos(i));
+    }
     const maxPos = this.hotbar.iconSize * this.hotbar.columnCount;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < trayCount; i++) {
       this.trays[i].xPos =
-        trayPositions[i] >= 0 && trayPositions[i] < maxPos
+        trayPositions[i] >= 0 &&
+        trayPositions[i] < maxPos &&
+        trayPositions[i] != null
           ? trayPositions[i]
           : defaults[i];
     }
+    this.hotbar.draggableTrays.setTrays(
+      this.trays.map(tray => ({
+        id: tray.id,
+        xMin: tray.xPos,
+        tray: tray
+      }))
+    );
+
+    this.hotbar.draggableTrays.setTrayPositions(
+      this.trays.map(tray => tray.xPos)
+    );
   }
 
   setTrayPosition(trayId, xPos) {

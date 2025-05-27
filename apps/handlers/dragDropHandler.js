@@ -84,7 +84,7 @@ export class DragDropHandler {
         let targetTray = hotbar.getTray(event.target.dataset.trayid)
         targetTray?.setAbility(index, new AATItem(item))
         sourceTray?.setAbility(data.index, null)
-        this.hotbar.requestRender('centerTray')
+        hotbar.requestRender('centerTray')
         break
 
       default:

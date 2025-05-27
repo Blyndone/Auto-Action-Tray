@@ -274,7 +274,11 @@ export class AnimationHandler {
   async animateStackedTrayIn(trayIn, trayOut) {
     return new Promise(async (resolve) => {
       let animationComplete = trayIn.trays.length
-      this.animateSpacer(this.hotbar.iconSize / 3)
+      const iconSize = this.hotbar.iconSize
+      let trayCount = trayIn.trays.length
+      let spacerWidth = iconSize / 3
+      let width = (iconSize - ((trayCount-1) % 3) * spacerWidth) % iconSize
+      this.animateSpacer(width == 0 ? 0 : width + 14)
       trayIn.trays.forEach((tray) => {
         gsap.to(`.container-${tray.id}`, {
           force3D: false,
@@ -291,11 +295,11 @@ export class AnimationHandler {
   }
 
   setAllStackedTrayPos(stackedTray) {
-    stackedTray.trays.forEach((tray) => {
+    stackedTray.forEach((tray) => {
       gsap.set(`.container-${tray.id}`, {
         // force3D: false,
         opacity: 1,
-        x: tray.xPos,
+        x: tray.xMin,
       })
     })
   }

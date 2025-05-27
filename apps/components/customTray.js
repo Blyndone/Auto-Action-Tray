@@ -19,6 +19,7 @@ export class CustomTray extends AbilityTray {
   }
 
   generateTray() {
+    const actor = fromUuidSync(this.actorUuid)
     let allItems = this.application.getActorAbilities(this.actorUuid)
     allItems.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
     switch (this.category) {
@@ -85,7 +86,7 @@ export class CustomTray extends AbilityTray {
         this.abilities.push(...containers)
         this.id = 'items'
         break
-      case 'passive':
+      case 'passiveItems':
         const excludedTypes = [
           'equipment',
           'loot',
@@ -104,7 +105,7 @@ export class CustomTray extends AbilityTray {
               (e.type == 'equipment' && e.item?.transferredEffects?.length > 0)),
         )
 
-        this.id = 'passive'
+        this.id = 'passiveItems'
         break
       case 'reaction':
         this.abilities = allItems.filter((e) =>
@@ -114,6 +115,13 @@ export class CustomTray extends AbilityTray {
         break
       case 'custom':
         this.id = 'custom'
+        break
+      case 'favoriteItems':
+        let favorites = actor.system.favorites.map((e) => e.id.split('.').pop())
+        this.abilities = allItems
+          .map((e) => (favorites.includes(e.id) ? e : null))
+          .filter((e) => e !== null)
+        this.id = 'favoriteItems'
         break
     }
 
@@ -146,8 +154,8 @@ export class CustomTray extends AbilityTray {
       application: options.application,
     })
     let passiveTray = new CustomTray({
-      category: 'passive',
-      id: 'passive',
+      category: 'passiveItems',
+      id: 'passiveItems',
       trayLabel: 'Passive',
       actorUuid: actor.uuid,
       application: options.application,
@@ -169,6 +177,14 @@ export class CustomTray extends AbilityTray {
       application: options.application,
     })
 
+    let favoritesTray = new CustomTray({
+      category: 'favoriteItems',
+      id: 'favoriteItems',
+      trayLabel: 'Favorites',
+      actorUuid: actor.uuid,
+      application: options.application,
+    })
+
     let exclusions = new Set([
       ...classTray.abilities,
       ...consumablesTray.abilities,
@@ -185,7 +201,15 @@ export class CustomTray extends AbilityTray {
       commonTray.abilities = commonTray.padArray([...nonSpells, ...spells])
     }
 
-    let trays = [commonTray, classTray, consumablesTray, reactionTray, passiveTray, customTray]
+    let trays = [
+      commonTray,
+      classTray,
+      consumablesTray,
+      reactionTray,
+      passiveTray,
+      customTray,
+      favoritesTray,
+    ]
 
     trays = trays.filter(
       (e) =>
@@ -193,7 +217,7 @@ export class CustomTray extends AbilityTray {
         e.category == 'common' ||
         e.category == 'classFeatures' ||
         e.category == 'items' ||
-        e.cataegory === 'custom',
+        e.category === 'custom',
     )
     AbilityTray.onCompleteGeneration.bind(options.application)()
     return trays
