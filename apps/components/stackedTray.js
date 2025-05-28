@@ -124,6 +124,7 @@ export class StackedTray {
 
   setSavedData() {
     let actor = this.actor;
+
     if (actor != null) {
       actor.setFlag("auto-action-tray", "data", {
         stackedPositions: JSON.stringify(this.positions)

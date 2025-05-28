@@ -10,7 +10,6 @@ export class AnimationHandler {
   }
 
   async pushTray(trayId) {
-
     this.animationStack.push(trayId)
     await this.animateTrays(trayId, this.animationStack.at(-2), this.hotbar)
     const tempTrays = ['target-helper', 'activity', 'spellLevel']
@@ -277,7 +276,7 @@ export class AnimationHandler {
       const iconSize = this.hotbar.iconSize
       let trayCount = trayIn.trays.length
       let spacerWidth = iconSize / 3
-      let width = (iconSize - ((trayCount-1) % 3) * spacerWidth) % iconSize
+      let width = (iconSize - ((trayCount - 1) % 3) * spacerWidth) % iconSize
       this.animateSpacer(width == 0 ? 0 : width + 14)
       trayIn.trays.forEach((tray) => {
         gsap.to(`.container-${tray.id}`, {
@@ -295,11 +294,21 @@ export class AnimationHandler {
   }
 
   setAllStackedTrayPos(stackedTray) {
+    // let positions = stackedTray.map((e) => e.tray.xPos)
+    // for (let i = positions.length - 2; i >= 0; i--) {
+    //   if (positions[i] > positions[i + 1] - this.hotbar.iconSize) {
+    //     positions[i] = positions[i + 1] - this.hotbar.iconSize
+    //   }
+    // }
+    // stackedTray.forEach((tray, index) => {
+    //   tray.tray.xPos = positions[index]
+    // })
+
     stackedTray.forEach((tray) => {
       gsap.set(`.container-${tray.id}`, {
         // force3D: false,
         opacity: 1,
-        x: tray.xMin,
+        x: tray.tray.xPos,
       })
     })
   }

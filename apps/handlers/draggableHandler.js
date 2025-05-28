@@ -21,7 +21,7 @@ export class DraggableTrayContainer {
       const draggableTray = new DraggableTray({
         id: tray.id,
         xMin: tray.xMin,
-        tray: tray,
+        tray: tray.tray,
       })
       return draggableTray
     })
@@ -56,8 +56,8 @@ export class DraggableTrayContainer {
     tray.draggable = Draggable.create(`.container-${tray.id}`, {
       type: 'x',
       bounds: {
-        minX: index != 1 ? Math.max(this.draggableTrays[index - 1]?.xMin + container.spacerSize || 0) : 0,
-        maxX: Math.min(this.draggableTrays[index + 1]?.xMin || this.trayMax),
+        minX: index != 1 ? Math.max(this.draggableTrays[index - 1]?.tray.xPos + container.spacerSize || 0) : 0,
+        maxX: Math.min(this.draggableTrays[index + 1]?.tray.xPos - container.spacerSize || this.trayMax),
       },
       force3D: false,
       handle: `.handle-${tray.id}`,
@@ -113,7 +113,7 @@ class DraggableTray {
     this.position = options.position || 0
     this.index = 0
     this.xMax = Infinity
-    this.xMin = 0
+    this.xMin = options?.xMin  || 0
     this.draggable = null
     this.tray = options.tray || null
   }
@@ -133,7 +133,7 @@ class DraggableTray {
   }
   setMin(xMin) {
     this.xMin = xMin
-    this.tray.tray.xPos = xMin
+    // this.tray.xPos = xMin
   }
   setMax(xMax) {
     this.xMax = xMax
