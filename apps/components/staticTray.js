@@ -231,7 +231,7 @@ export class StaticTray extends AbilityTray {
       .filter((key) => slots[key].value > 0 && key !== 'pact')
       .map((key) => slots[key].level)
 
-    let allItems = options.application.getActorAbilities(actor.uuid)
+    let allItems = options.cachedAbilities || options.application.getActorAbilities(actor.uuid)
     let spells = allItems.filter((e) => e.type === 'spell' && e.isPrepared && e.isScaledSpell)
 
     if (spells.length > 0) {

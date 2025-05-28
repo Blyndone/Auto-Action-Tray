@@ -187,9 +187,9 @@ export class AbilityTray {
     }
   }
 
-  getSavedData() {
+  getSavedData(cachedAbilities) {
     let actor = fromUuidSync(this.actorUuid)
-    let allItems = this.application.getActorAbilities(this.actorUuid)
+    let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     if (!this.saveNpcData() && actor.type == 'npc') {
       return
     }

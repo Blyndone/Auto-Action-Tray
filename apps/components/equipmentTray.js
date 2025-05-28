@@ -12,7 +12,7 @@ export class EquipmentTray extends CustomTray {
     if (!this.savedData && !this.checkSavedData(this.id)) {
       this.generateTray(cachedAbilities)
     } else {
-      this.getSavedData()
+      this.getSavedData(options.cachedAbilities)
     }
   }
 
@@ -55,9 +55,9 @@ export class EquipmentTray extends CustomTray {
     })
   }
 
-  getSavedData() {
+  getSavedData(cachedAbilities) {
     let actor = fromUuidSync(this.actorUuid)
-    let allItems = this.application.getActorAbilities(this.actorUuid)
+    let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     let data = actor.getFlag('auto-action-tray', 'data')
     if (data) {
       if (data[this.id] != null) {

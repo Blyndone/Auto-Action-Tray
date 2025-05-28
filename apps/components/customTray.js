@@ -14,7 +14,7 @@ export class CustomTray extends AbilityTray {
     if (!this.savedData && !this.checkSavedData(this.id)) {
       this.generateTray(options.cachedAbilities)
     } else {
-      this.getSavedData()
+      this.getSavedData(options.cachedAbilities)
     }
   }
 
