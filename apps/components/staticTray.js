@@ -10,8 +10,9 @@ export class StaticTray extends AbilityTray {
     this.totalSlots = options.totalSlots
     this.availableSlots = options.availableSlots
     this.type = 'static'
+    
     this.setInactive()
-    this.generateTray()
+    this.generateTray(options.cachedAbilities)
   }
 
   padAbilityBoundaries() {
@@ -32,10 +33,10 @@ export class StaticTray extends AbilityTray {
     this.abilities = tmp
   }
 
-  generateTray() {
+  generateTray(cachedAbilities) {
     let actor = fromUuidSync(this.actorUuid)
 
-    let allItems = this.application.getActorAbilities(this.actorUuid)
+    let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     switch (this.category) {
       case 'action':
         this.abilities = allItems
@@ -178,17 +179,20 @@ export class StaticTray extends AbilityTray {
       label: 'Action',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities:  options.cachedAbilities,
     })
     let bonusTray = new StaticTray({
       category: 'bonus',
       label: 'Bonus Action',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let customStaticTraysUuids = new Set([
       ...CustomStaticTray.getCustomStaticTrays(actor),
       ...actor.items.filter(CustomStaticTray.checkOverride).map((e) => e.id),
+      
     ])
 
     
@@ -201,6 +205,7 @@ export class StaticTray extends AbilityTray {
           label: actor.items.get(e).name,
           keyItemId: e,
           application: options.application,
+          cachedAbilities:  options.cachedAbilities,
         }),
       )
    
@@ -212,6 +217,7 @@ export class StaticTray extends AbilityTray {
           label: 'Legendary Actions',
           keyItemId: null,
           application: options.application,
+          cachedAbilities:  options.cachedAbilities,
         }),
       )
   
@@ -242,6 +248,7 @@ export class StaticTray extends AbilityTray {
           totalSlots: actor.system?.spells['spell' + level]?.max,
           availableSlots: level == 0 ? 1 : actor.system?.spells['spell' + level]?.value,
           application: options.application,
+          cachedAbilities: options.cachedAbilities,
         }),
       )
     })
@@ -251,6 +258,7 @@ export class StaticTray extends AbilityTray {
       label: 'Bonus Spells',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let pactTray = new StaticTray({
@@ -261,6 +269,7 @@ export class StaticTray extends AbilityTray {
       totalSlots: actor.system.spells.pact.max,
       availableSlots: actor.system.spells.pact.value,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let ritualTray = new StaticTray({
@@ -268,6 +277,7 @@ export class StaticTray extends AbilityTray {
       label: 'Rituals',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let staticTrays = [

@@ -10,17 +10,17 @@ export class EquipmentTray extends CustomTray {
     this.type = 'custom'
     this.application = options.application
     if (!this.savedData && !this.checkSavedData(this.id)) {
-      this.generateTray()
+      this.generateTray(cachedAbilities)
     } else {
       this.getSavedData()
     }
   }
 
-  generateTray() {
+  generateTray(cachedAbilities) {
     let tmpActor
     let actor = fromUuidSync(this.actorUuid)
     tmpActor = actor
-    let allItems = this.application.getActorAbilities(this.actorUuid)
+    let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     allItems.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
     let meleeWeapons
     meleeWeapons = allItems.filter(
@@ -51,6 +51,7 @@ export class EquipmentTray extends CustomTray {
       id: 'equipment',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
   }
 

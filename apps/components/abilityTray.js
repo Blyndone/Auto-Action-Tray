@@ -14,7 +14,12 @@ export class AbilityTray {
     this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
   static onCompleteGeneration() {
-   this.requestRender('centerTray')
+  
+    foundry.utils.throttle(
+      () => this.requestRender('centerTray'),
+      500,
+    )
+   
   }
 
   padArray(arr, filler = null) {

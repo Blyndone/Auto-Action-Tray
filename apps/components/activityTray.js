@@ -83,7 +83,7 @@ export class ActivityTray extends AbilityTray {
         this.rejectActivity = reject
       })
     } catch (error) {
-      console.log('AAT - Activity selection canceled')
+      // console.log('AAT - Activity selection canceled')
       act = null
     }
     hotbar.selectingActivity = false

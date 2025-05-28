@@ -87,7 +87,7 @@ export class DraggableTrayContainer {
           (index - 1) * (container.handleSize + container.padding)
         application.stackedTray.setTrayPosition(tray.id, min)
         tray.setMin(min)
-        console.log('Tray position updated:', tray.id, min)
+        // console.log('Tray position updated:', tray.id, min)
         if (index - 1 != 0) {
           container.draggableTrays[index - 1].applyBounds({
             maxX: tray.xMin - container.spacerSize,
@@ -98,10 +98,10 @@ export class DraggableTrayContainer {
             minX: tray.xMin + container.spacerSize,
           })
         }
-        console.log('Throw complete for tray:', tray.id)
-        console.log('New position:', this.x)
-        console.log('New min:', min)
-        console.log('draggableTrays:', container.draggableTrays)
+        // console.log('Throw complete for tray:', tray.id)
+        // console.log('New position:', this.x)
+        // console.log('New min:', min)
+        // console.log('draggableTrays:', container.draggableTrays)
       },
     })
   }

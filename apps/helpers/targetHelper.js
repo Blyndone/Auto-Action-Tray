@@ -180,7 +180,7 @@ export class TargetHelper {
         this.rejectTargets = reject
       })
     } catch (error) {
-      console.log('AAT - Target selection canceled')
+      // console.log('AAT - Target selection canceled')
       this.selectingTargets = false
       targets = null
     }

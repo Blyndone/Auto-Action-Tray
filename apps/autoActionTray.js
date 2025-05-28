@@ -36,6 +36,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.renderQueue = []
     this.pendingRender = false
 
+    this.throttledRender = foundry.utils.throttle(async () => await this.completeRender(), 500)
+
     this.#dragDrop = this.#createDragDropHandlers()
     this.isEditable = true
 
@@ -312,18 +314,25 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     const arr = Array.isArray(partID) ? partID : [partID]
     this.renderQueue.push(...arr)
     this.renderQueue = [...new Set(this.renderQueue)]
-    if (this.pendingRender && !force) {
-      return
-    }
+
+    if (this.pendingRender && !force) return
+
     if (this.animating && !force) {
       this.pendingRender = true
       await this.completeAnimation
     }
-    let tmp = this.renderQueue
+
+    if (force) {
+      await this.completeRender()
+    } else {
+      this.throttledRender()
+    }
+  }
+
+  async completeRender() {
+    const tmp = this.renderQueue
     this.renderQueue = []
-    let complete = await this.render({
-      parts: tmp,
-    })
+    await this.render({ parts: tmp })
     this.pendingRender = false
   }
 
@@ -572,20 +581,25 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   generateTrays(actor) {
+    let abilities = this.getActorAbilities(actor.uuid)
     this.staticTrays = StaticTray.generateStaticTrays(actor, {
       application: this,
+      cachedAbilities: abilities,
     })
     this.customTrays = CustomTray.generateCustomTrays(actor, {
       application: this,
+      cachedAbilities: abilities,
     })
     this.equipmentTray = EquipmentTray.generateCustomTrays(actor, {
       application: this,
+      cachedAbilities: abilities,
     })
     this.activityTray = ActivityTray.generateActivityTray(actor, {
       application: this,
     })
     this.spellLevelTray = SpellLevelTray.generateActivityTray(actor, {
       application: this,
+
     })
     this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
@@ -1083,6 +1097,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   createDraggable(trayId, index) {}
 
   _onRender(context, options) {
+    console.log(options.parts, Date.now())
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
     if (options.parts.includes('centerTray')) {
@@ -1115,6 +1130,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
+
     this.draggableTrays.createAllDraggables()
     this.animationHandler.setAllStackedTrayPos(this.draggableTrays.draggableTrays)
 

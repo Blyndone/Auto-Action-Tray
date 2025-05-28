@@ -103,7 +103,7 @@ export class CustomNpcTray extends AbilityTray {
       }
 
       desc = this.cleanDesc(desc, allItems)
-      console.log(desc)
+      // console.log(desc)
 
       let itemNames = allItems.map((e) => e.name.toLowerCase())
       // itemNames.push('melee')

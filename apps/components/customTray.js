@@ -12,15 +12,15 @@ export class CustomTray extends AbilityTray {
     this.trayLabel = options.trayLabel
 
     if (!this.savedData && !this.checkSavedData(this.id)) {
-      this.generateTray()
+      this.generateTray(options.cachedAbilities)
     } else {
       this.getSavedData()
     }
   }
 
-  generateTray() {
+  generateTray(cachedAbilities) {
     const actor = fromUuidSync(this.actorUuid)
-    let allItems = this.application.getActorAbilities(this.actorUuid)
+    let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     allItems.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
     switch (this.category) {
       case 'common':
@@ -138,6 +138,7 @@ export class CustomTray extends AbilityTray {
       trayLabel: 'Common',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
     let classTray = new CustomTray({
       category: 'classFeatures',
@@ -145,6 +146,7 @@ export class CustomTray extends AbilityTray {
       trayLabel: 'Features',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
     let consumablesTray = new CustomTray({
       category: 'items',
@@ -152,6 +154,7 @@ export class CustomTray extends AbilityTray {
       trayLabel: 'Consumables',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
     let passiveTray = new CustomTray({
       category: 'passiveItems',
@@ -159,6 +162,7 @@ export class CustomTray extends AbilityTray {
       trayLabel: 'Passive',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let reactionTray = new CustomTray({
@@ -167,6 +171,7 @@ export class CustomTray extends AbilityTray {
       trayLabel: 'Reactions',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let customTray = new CustomTray({
@@ -175,6 +180,7 @@ export class CustomTray extends AbilityTray {
       trayLabel: 'Custom',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let favoritesTray = new CustomTray({
@@ -183,6 +189,7 @@ export class CustomTray extends AbilityTray {
       trayLabel: 'Favorites',
       actorUuid: actor.uuid,
       application: options.application,
+      cachedAbilities: options.cachedAbilities,
     })
 
     let exclusions = new Set([
