@@ -13,7 +13,9 @@ export class AnimationHandler {
     this.animationStack.push(trayId)
     await this.animateTrays(trayId, this.animationStack.at(-2), this.hotbar)
     const tempTrays = ['target-helper', 'activity', 'spellLevel']
-    this.animationStack = [...this.animationStack.filter((e) => !tempTrays.includes(e)), trayId]
+    this.animationStack = Array.from(
+      new Set([...this.animationStack.filter((e) => !tempTrays.includes(e)), trayId]),
+    )
   }
 
   async popTray(animate = true) {
