@@ -98,12 +98,24 @@ export class CustomTray extends AbilityTray {
           'consumable',
         ]
 
-        this.abilities = allItems.filter(
-          (e) =>
-            !e.isActive &&
-            (!excludedTypes.includes(e.type) ||
-              (e.type == 'equipment' && e.item?.transferredEffects?.length > 0)),
-        )
+        this.abilities = allItems
+          .filter(
+            (e) =>
+              (!e.isActive &&
+                (!excludedTypes.includes(e.type) ||
+                  (e.type == 'equipment' && e.item?.transferredEffects?.length > 0))) ||
+              (e.type === 'equipment' && e.equipped),
+          )
+          .sort((a, b) => {
+            const priority = {
+              equipment: 0,
+              tool: 1,
+              feat: 2,
+            }
+            const aPriority = priority[a.type] ?? 10
+            const bPriority = priority[b.type] ?? 10
+            return aPriority - bPriority
+          })
 
         this.id = 'passiveItems'
         break
@@ -121,6 +133,20 @@ export class CustomTray extends AbilityTray {
         this.abilities = allItems
           .map((e) => (favorites.includes(e.id) ? e : null))
           .filter((e) => e !== null)
+          .sort((a, b) => a?.spellLevel - b?.spellLevel)
+          .sort((a, b) => {
+            const priority = {
+              weapon: 0,
+              equipment: 1,
+              feat: 2,
+              spell: 3,
+              consumable: 4,
+            }
+            const aPriority = priority[a.type] ?? 10
+            const bPriority = priority[b.type] ?? 10
+            return aPriority - bPriority
+          })
+
         this.id = 'favoriteItems'
         break
     }
