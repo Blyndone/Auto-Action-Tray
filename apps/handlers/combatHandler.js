@@ -134,7 +134,7 @@ export class CombatHandler {
       this.tillNextTurn = 0
       this.previousCircleValue = null
       this.setDefaultActions(actor)
-      await hotbar.requestRender(['centerTray', 'endTurn'], true)
+      await this.hotbar.requestRender(['centerTray', 'endTurn'], true)
 
       this.hotbar.animationHandler.setCircle(0)
       return
