@@ -147,10 +147,13 @@ export class AATItemTooltip {
   }
 
   setSaveLabel() {
-    if (this.activity?.type == 'save') {
-      let saveType = this.activity.save.ability.first()
-      let saveDc = this.activity.save.dc.value
-      this.saveLabel = `<i class='fa-solid fa-shield-halved'></i>  ${saveType?.toUpperCase()} - DC ${saveDc}  `
+    if (this.activity?.activity?.type == 'save') {
+      let saveType = this.activity.activity?.save.ability.first()
+      let saveDc = this.activity.activity?.save.dc.value
+      this.saveLabel = ` <i class='fa-solid fa-shield-halved'></i>  ${
+        saveType ? saveType.charAt(0).toUpperCase() + saveType.slice(1).toLowerCase() : ''
+      }
+ - DC ${saveDc}  `
     }
   }
   setConcentrationLabel() {
