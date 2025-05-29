@@ -16,8 +16,6 @@ export class TrayConfig {
       if (typeof options.step === 'number') input.setAttribute('step', String(options.step))
       if (typeof options.value === 'number') input.setAttribute('value', String(options.value))
 
-
-
       const display = document.createElement('div')
       display.id = options.name + '-label'
       display.classList.add('value-display')
@@ -87,8 +85,6 @@ export class TrayConfig {
       hint: 'Clear previous custom Static Trays',
     })
 
-
-
     const selectInput = fields.createSelectInput({
       options: [
         {
@@ -112,8 +108,6 @@ export class TrayConfig {
       label: 'Select Character Image Type',
       hint: 'Choose between portrait or token display',
     })
-
-
 
     const imageScale = createSliderInput({
       name: 'imageScale',
@@ -173,8 +167,18 @@ export class TrayConfig {
       hint: 'Automatically add items to the tray when they are created.',
     })
 
-    const content = ` ${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML}`
-    let dialogElement 
+    const classSkills = fields.createCheckboxInput({
+      name: 'classSkills',
+      value: this.trayOptions['classSkills'] ?? true ,
+    })
+    const classSkillsGroup = fields.createFormGroup({
+      input: classSkills,
+      label: 'Class Skills',
+      hint: 'Display Class Specific Skills in the Tray.',
+    })
+
+    const content = ` ${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML} ${classSkillsGroup.outerHTML} `
+    let dialogElement
     let handlers = {}
     let initialValues = {
       imageScale: this.trayOptions['imageScale'],
@@ -190,7 +194,7 @@ export class TrayConfig {
       rejectClose: false,
 
       render: (event, dialogEl) => {
-        dialogElement = dialogEl 
+        dialogElement = dialogEl
 
         const form = dialogEl.querySelector('form')
         const elements = form.elements
@@ -240,7 +244,6 @@ export class TrayConfig {
         },
       ],
     }).then((result) => {
-
       const form = dialogElement?.querySelector('form')
       if (form) {
         const elements = form.elements
@@ -250,7 +253,6 @@ export class TrayConfig {
         elements.imageY?.removeEventListener('input', handlers.imageY)
       }
 
-  
       if (event.target.dataset.action === 'cancel' || !result) {
         this.trayOptions = { ...this.trayOptions, ...initialValues }
         this.requestRender('characterImage')
