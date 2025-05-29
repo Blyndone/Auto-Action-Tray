@@ -324,6 +324,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (force) {
       await this.completeRender()
+      return Promise.resolve();
     } else {
       this.throttledRender()
     }
@@ -334,6 +335,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.renderQueue = []
     await this.render({ parts: tmp })
     this.pendingRender = false
+    return Promise.resolve();
   }
 
   async generateActorItems(actor, event) {
