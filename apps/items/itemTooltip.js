@@ -31,17 +31,19 @@ export class AATItemTooltip {
       'Summon',
       'Use',
     ]
-    let name = activity?.activity ? activity.activity.name : item.name
-    blacklist.includes(name.replace('Midi ', '')) ? (name = item.name) : ''
+    let itemName = item.name
+    let activityName = activity?.activity ? activity.activity.name : ''
+    blacklist.includes(activityName.replace('Midi ', '')) ? (activityName = item.name) : ''
+    const duplicateName = itemName == activityName
     if (
       item.type == 'spell' &&
       this.spellLevel != 0 &&
       item.isScaledSpell &&
       this.spellLevel != item.item.system.level
     ) {
-      name = `${name} (Level ${this.spellLevel})`
+      itemName = `${itemName} (Level ${this.spellLevel})`
     }
-    return name
+    return duplicateName || activityName == '' ? itemName : `${itemName} <br> <span class='activity-name'>${activityName}</span>` 
   }
 
   setType() {

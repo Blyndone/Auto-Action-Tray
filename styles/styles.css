@@ -1481,6 +1481,13 @@ img.item-equipped {
   color: var(--aat-tooltip-header);
 }
 
+.activity-name {
+  font-size: 18px;
+  color: var(--aat-tooltip-damage);
+  padding: 20px;
+  line-height: 24px;
+}
+
 .tooltip-subtitle {
   margin-top: 6px;
   margin-left: 15px;
