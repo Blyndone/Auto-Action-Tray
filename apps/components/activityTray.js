@@ -134,11 +134,11 @@ export class ActivityTray extends AbilityTray {
 
   static cancelSelection(event, target) {
     if (this.currentTray.id == 'activity') {
-      this.activityTray?.rejectActivity(new Error('User canceled activity selection'))
+      this.activityTray?.rejectAct(new Error('User canceled activity selection'))
     } 
     this.rejectActivity = null
   }
-  rejectActivity() {
+  rejectAct() {
     if (this.rejectActivity) {
       this.rejectActivity(new Error('User canceled activity selection'))
       this.rejectActivity = null

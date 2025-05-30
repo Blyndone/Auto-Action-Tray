@@ -296,16 +296,7 @@ export class AnimationHandler {
   }
 
   setAllStackedTrayPos(stackedTray) {
-    // let positions = stackedTray.map((e) => e.tray.xPos)
-    // for (let i = positions.length - 2; i >= 0; i--) {
-    //   if (positions[i] > positions[i + 1] - this.hotbar.iconSize) {
-    //     positions[i] = positions[i + 1] - this.hotbar.iconSize
-    //   }
-    // }
-    // stackedTray.forEach((tray, index) => {
-    //   tray.tray.xPos = positions[index]
-    // })
-
+    if (!this.hotbar.rendered) return
     stackedTray.forEach((tray) => {
       gsap.set(`.container-${tray.id}`, {
         // force3D: false,
