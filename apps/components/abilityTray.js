@@ -196,6 +196,8 @@ export class AbilityTray {
   }
 
   getSavedData(cachedAbilities) {
+    console.log('getSavedData', this.id, this.actorUuid)
+    console.time('getSavedData')
     let actor = fromUuidSync(this.actorUuid)
     let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     if (!this.saveNpcData() && actor.type == 'npc') {
@@ -211,6 +213,10 @@ export class AbilityTray {
         if (this.abilities.length == 0 || this.abilities.every((item) => item === null)) {
           actor.unsetFlag('auto-action-tray', 'data.' + this.id)
         }
+      } else {
+        if (data[this.id] && !data[this.id]?.abilities) {
+          this.abilities = this.padArray(this.abilities)
+        }
       }
       if (data[this.id]?.macros != null) {
         this.macros = JSON.parse(data[this.id].macros).map((e) => ({
@@ -219,9 +225,10 @@ export class AbilityTray {
         }))
         this.addMacrosToTray()
       }
-      this.setSavedData()
+      // this.setSavedData()
       this.savedData = true
     }
+    console.timeEnd('getSavedData')
   }
 
   static setDelayedData(item, actor) {
@@ -241,6 +248,8 @@ export class AbilityTray {
   }
 
   setSavedData() {
+    console.log('setSavedData', this.id, this.actorUuid)
+    console.time('setSavedData')
     let actor = fromUuidSync(this.actorUuid)
     if (!this.saveNpcData() && actor.type == 'npc') {
       return
@@ -267,6 +276,7 @@ export class AbilityTray {
       }
     }
     this.savedData = true
+    console.timeEnd('setSavedData')
   }
 
   setAbility(index, ability) {
@@ -285,13 +295,13 @@ export class AbilityTray {
       index: index,
       macro: macro,
     })
+    this.setSavedData()
   }
 
   addMacrosToTray() {
     this.macros.forEach((macro) => {
       this.abilities[macro.index] = new AATMacro(macro.macro)
     })
-    this.setSavedData()
   }
 
   getAbilities() {

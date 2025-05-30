@@ -129,7 +129,7 @@ export class SkillTray {
         },
         { level: -Infinity },
       )
-      this.characterClass = highestLevelClass.name.toLowerCase()
+      this.characterClass = highestLevelClass?.name?.toLowerCase()
     } else {
       this.characterClass = null
     }
