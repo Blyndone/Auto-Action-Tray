@@ -112,7 +112,12 @@ export class Actions {
   }
 
   static async setTray(event, target) {
-    if (this.animating == true || this.selectingActivity == true || this.targetHelper.selectingTargets == true ) return
+    if (
+      this.animating == true ||
+      this.selectingActivity == true ||
+      this.targetHelper.selectingTargets == true
+    )
+      return
     // let trayIn = this.getTray(target.dataset.id)
 
     this.animationHandler.setTray(target.dataset.id)
@@ -146,7 +151,7 @@ export class Actions {
   static toggleItemSelector(event, force = null) {
     if (force == null) {
       this.itemSelectorEnabled = !this.itemSelectorEnabled
-    } else { 
+    } else {
       this.itemSelectorEnabled = force
     }
 
@@ -380,7 +385,17 @@ export class Actions {
     let itemId = target.dataset.itemId
 
     let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
+    if (item == undefined) {
+      try {
+        item = game.macros.get(itemId)
 
+        item.execute()
+        return
+      } catch (e) {
+        console.error(`Item with ID ${itemId} not found in actor's abilities`, e)
+        return
+      }
+    }
     // if (ritualCast) {
     //   let activity = item.defaultActivity.activity
     //   let options = await Actions.selectActivityWorkflow.bind(this)(item)

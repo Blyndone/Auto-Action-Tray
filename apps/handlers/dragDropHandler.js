@@ -9,7 +9,7 @@ export class DragDropHandler {
     if (event.target.classList.contains('content-link')) return
 
     if (li.dataset.itemId === undefined) return
-    const effect = hotbar.actor.items.get(li.dataset.itemId)
+    const effect = hotbar.actor.items.get(li.dataset.itemId) || game.macros.get(li.dataset.itemId)
     let data = effect.toDragData()
     data.section = li.dataset.section
     data.index = li.dataset.index
@@ -23,7 +23,6 @@ export class DragDropHandler {
   static _onDragOver(event, hotbar) {}
 
   static async _onDrop(event, hotbar) {
-
     const dragData =
       event.dataTransfer.getData('application/json') || event.dataTransfer.getData('text/plain')
     if (!dragData) return
@@ -40,7 +39,12 @@ export class DragDropHandler {
       hotbar.actor.items.get(event.target.parentElement.dataset.itemId)
 
     let index = event.target.dataset.index
-    if (hotbar.currentTray instanceof StaticTray && index != 'itemConfig' && index != 'meleeWeapon' && index != 'rangedWeapon') { 
+    if (
+      hotbar.currentTray instanceof StaticTray &&
+      index != 'itemConfig' &&
+      index != 'meleeWeapon' &&
+      index != 'rangedWeapon'
+    ) {
       return
     }
     if (event.target.parentElement.dataset.index === 'meleeWeapon') {
@@ -68,7 +72,9 @@ export class DragDropHandler {
     }
     if (index == 'itemConfig') {
       let item = fromUuidSync(data.uuid)
-      hotbar.itemConfigItem = hotbar.getActorAbilities(hotbar.actor.uuid).find((e) => e.id == item.id)
+      hotbar.itemConfigItem = hotbar
+        .getActorAbilities(hotbar.actor.uuid)
+        .find((e) => e.id == item.id)
       hotbar.requestRender('equipmentMiscTray')
       ItemConfig.itemConfig.bind(hotbar)(item)
       return
@@ -76,17 +82,23 @@ export class DragDropHandler {
 
     if (index == data.index) return
 
+    let targetTray = hotbar.getTray(event.target.dataset.trayid)
+    let sourceTray = hotbar.getTray(data.trayId)
 
     switch (data.type) {
       case 'Item':
         let item = fromUuidSync(data.uuid)
-        let sourceTray = hotbar.getTray(data.trayId)
-        let targetTray = hotbar.getTray(event.target.dataset.trayid)
         targetTray?.setAbility(index, new AATItem(item))
         sourceTray?.setAbility(data.index, null)
         hotbar.requestRender('centerTray')
         break
-
+      case 'Macro':
+        let macro = fromUuidSync(data.uuid)
+        targetTray?.setMacro(index, macro)
+        sourceTray?.setMacro(data.index, null)
+        targetTray?.addMacrosToTray()
+        hotbar.requestRender('centerTray')
+        return
       default:
         return
     }
@@ -106,7 +118,11 @@ export class DragDropHandler {
       hotbar.requestRender('equipmentMiscTray')
       return
     }
-    hotbar.getTray(data.trayId).setAbility(data.index, null)
+    if (data.type == 'Macro') {
+      hotbar.getTray(data.trayId).setMacro(data.index, null)
+    } else {
+      hotbar.getTray(data.trayId).setAbility(data.index, null)
+    }
     hotbar.requestRender('centerTray')
   }
 }

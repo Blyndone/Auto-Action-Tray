@@ -1,10 +1,11 @@
 import { AATItem } from '../items/item.js'
-
+import { AATMacro } from '../items/macro.js'
 export class AbilityTray {
   constructor(options = {}) {
     this.id = null
     this.application = options.application || null
     this.abilities = []
+    this.macros = []
     this.category = options.category || null
     this.actorUuid = options.actorUuid || null
     this.setInactive()
@@ -14,25 +15,25 @@ export class AbilityTray {
     this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
   static onCompleteGeneration() {
-  
-    foundry.utils.throttle(
-      () => this.requestRender('centerTray'),
-      500,
-    )
-   
+    foundry.utils.throttle(() => this.requestRender('centerTray'), 500)
   }
 
   padArray(arr, filler = null) {
     let rowCount = 2
     let columnCount = 10
     if (game.settings.get('auto-action-tray', 'rowCount')) {
-      rowCount =  this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
-      document.getElementById('auto-action-tray')?.style.setProperty('--item-tray-item-height-count', rowCount)
+      rowCount = this.rowCount =
+        this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
+      document
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--item-tray-item-height-count', rowCount)
     }
 
     if (game.settings.get('auto-action-tray', 'columnCount')) {
       columnCount = game.settings.get('auto-action-tray', 'columnCount')
-      document.getElementById('auto-action-tray')?.style.setProperty(' --item-tray-item-width-count', columnCount)
+      document
+        .getElementById('auto-action-tray')
+        ?.style.setProperty(' --item-tray-item-width-count', columnCount)
     }
 
     let totalabilities = (rowCount + 1) * columnCount
@@ -41,11 +42,10 @@ export class AbilityTray {
     return [...arr, ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)]
   }
 
-  padNewRow() { 
-       while (this.abilities.length % this.rowCount !== 0) {
-        this.abilities.push(null)
+  padNewRow() {
+    while (this.abilities.length % this.rowCount !== 0) {
+      this.abilities.push(null)
     }
-    
   }
 
   static _onCreateItem(item) {
@@ -158,8 +158,16 @@ export class AbilityTray {
 
   deleteItem(itemId) {
     let index = this.abilities.findIndex((e) => e?.id == itemId)
+
     if (index > -1) {
+      if (this.abilities[index] instanceof AATMacro) {
+        this.macros = this.macros.filter((e) => e.index != index)
+      }
       this.abilities[index] = null
+      this.setSavedData()
+    } else {
+      this.macros = this.macros.filter((e) => e.macro.id != itemId)
+      this.abilities = this.abilities.filter((e) => e?.id != itemId)
       this.setSavedData()
     }
   }
@@ -203,9 +211,16 @@ export class AbilityTray {
         if (this.abilities.length == 0 || this.abilities.every((item) => item === null)) {
           actor.unsetFlag('auto-action-tray', 'data.' + this.id)
         }
-        this.setSavedData()
-        this.savedData = true
       }
+      if (data[this.id]?.macros != null) {
+        this.macros = JSON.parse(data[this.id].macros).map((e) => ({
+          index: e.index,
+          macro: game.macros.get(e.macroId) || null,
+        }))
+        this.addMacrosToTray()
+      }
+      this.setSavedData()
+      this.savedData = true
     }
   }
 
@@ -235,15 +250,47 @@ export class AbilityTray {
       if (temparr.length == 0) {
         return
       }
+
       actor.setFlag('auto-action-tray', 'data', {
         [this.id]: { abilities: JSON.stringify(temparr) },
       })
+      if (this.macros.length > 0) {
+        actor.setFlag('auto-action-tray', 'data', {
+          [this.id]: {
+            macros: JSON.stringify(
+              this.macros.map((e) => ({ index: e.index, macroId: e.macro.id })),
+            ),
+          },
+        })
+      } else {
+        actor.unsetFlag('auto-action-tray', 'data.' + this.id + '.macros')
+      }
     }
     this.savedData = true
   }
 
   setAbility(index, ability) {
     this.abilities[index] = ability
+    this.setSavedData()
+  }
+
+  setMacro(index, macro) {
+    if (macro == null) {
+      this.macros = this.macros.filter((e) => e.index != index)
+      this.abilities[index] = null
+      this.setSavedData()
+      return
+    }
+    this.macros.push({
+      index: index,
+      macro: macro,
+    })
+  }
+
+  addMacrosToTray() {
+    this.macros.forEach((macro) => {
+      this.abilities[macro.index] = new AATMacro(macro.macro)
+    })
     this.setSavedData()
   }
 
@@ -262,13 +309,12 @@ export class AbilityTray {
     return game.settings.get('auto-action-tray', 'saveNpcData')
   }
 
-  regenerateTray(tray) { 
-
+  regenerateTray(tray) {
     this.generateTray()
   }
 
   checkDiff(itemMap) {
-    if (this.id == 'favoriteItems') { 
+    if (this.id == 'favoriteItems') {
       this.regenerateTray(this)
     }
     this.abilities = this.abilities.map((e) => itemMap.get(e?.id) || e)

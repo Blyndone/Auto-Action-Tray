@@ -856,6 +856,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           this.actor.sheet.render(true)
         },
       },
+      {
+        name: 'Macro Directory',
+        icon: '<i class="fas fa-folder-open"></i>',
+        callback: () => {
+          game.macros.directory.render(true)
+        },
+      },
 
       {
         name: 'Reset Data',
