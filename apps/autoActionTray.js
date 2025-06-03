@@ -21,6 +21,7 @@ import { AATItem } from './items/item.js'
 import { ItemConfig } from './dialogs/itemConfig.js'
 import { DraggableTrayContainer } from './handlers/draggableHandler.js'
 
+
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
@@ -666,13 +667,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.combatHandler.setCombat(this.actor)
     }
     if (change?.system?.favorites) {
-      this.checkTrayDiff()
-      if (actor.system.favorites.length <= 1) {
-        this.initialTraySetup(this.actor, null, this.currentTray.id)
-      }
-
-      this.requestRender(['centerTray', 'characterImage'])
+      Actions.refreshFavorites.bind(this)(actor, {application : this})     
     }
+    this.requestRender(['centerTray', 'characterImage'])
   }
 
   _onUpdateCombat = (event) => {

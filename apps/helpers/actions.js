@@ -2,7 +2,7 @@ import { TargetHelper } from './targetHelper.js'
 import { ItemConfig } from '../dialogs/itemConfig.js'
 import { ActivityTray } from '../components/activityTray.js'
 import { SpellLevelTray } from '../components/spellLevelTray.js'
-
+import { CustomTray } from '../components/customTray.js'
 export class Actions {
   static logToChat(message, alias, actor) {
     ChatMessage.create({ content: message, speaker: { alias: alias, actor: actor } })
@@ -638,5 +638,31 @@ export class Actions {
       TargetHelper.cancelSelection.bind(this)(event, target)
     }
     this.animationHandler.popTray()
+  }
+  static async refreshFavorites(actor, options) {
+    await actor.unsetFlag('auto-action-tray', 'data.favoriteItems')
+    let abilities = this.getActorAbilities(actor.uuid)  
+     let favoritesTray = new CustomTray({
+      category: 'favoriteItems',
+      id: 'favoriteItems',
+      trayLabel: 'Favorites',
+      actorUuid: actor.uuid,
+      application: options.application,
+      cachedAbilities: abilities,
+     })
+    if (favoritesTray.abilities.length <= 0) {
+      this.customTrays = this.customTrays.filter((e) => e.id != 'favoriteItems')
+      this.stackedTray = this.stackedTray.trays.filter((e) => e.id != 'favoriteItems')
+    } else { 
+      this.customTrays = this.customTrays.filter((e) => e.id != 'favoriteItems')
+      this.customTrays.push(favoritesTray)
+      this.stackedTray.trays = this.stackedTray.trays.filter((e) => e.id != 'favoriteItems')
+      this.stackedTray.trays.push(favoritesTray)
+    }
+    this.initialTraySetup(actor)
+
+    
+    
+    
   }
 }

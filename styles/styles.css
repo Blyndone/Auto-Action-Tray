@@ -565,7 +565,7 @@
   display: flex;
   height: var(--aat-custom-tray-size);
   padding: 25px;
-  margin: 5px;
+  margin: 5px 2px;
   border: none;
   z-index: 6;
   border-radius: 5px;
@@ -1393,7 +1393,7 @@ img.item-equipped {
 .static-spell-level-container {
   position: relative;
   border-radius: 5px;
-  margin: 5px;
+  margin: 5px 2px;
   box-shadow: 0 0 11px 5px rgba(0, 0, 0, 0.5098039216);
   z-index: 6;
 }
