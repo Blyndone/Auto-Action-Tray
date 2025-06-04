@@ -273,7 +273,7 @@ export class TargetHelper {
       this.selectingTargets = false
       document.removeEventListener('mousemove', this.mouseMoveHandler)
       this.rejectTargets(new Error('No targets to remove'))
-      this.currentLine.clearLines()
+      // this.currentLine.clearLines()
       this.clearData()
       this.hotbar.animationHandler.popTray()
 

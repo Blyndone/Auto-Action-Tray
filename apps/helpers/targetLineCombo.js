@@ -189,10 +189,10 @@ class ItemImage {
     this.color = this.getRarityColor(options.itemRarity, options.itemSpellLevel)
     this.pos = options.startPos || { x: 0, y: 0 }
     this.alpha = options.alpha || 1
-    this.size = options.size || 50
+    this.size = options.size || 45
     this.animation
     const actor = game.actors.get(this.actorId)
-    this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + 70
+    this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + 35
 
     this.img = PIXI.Sprite.from(options.itemImg)
     this.img.anchor.set(0.5)
@@ -201,7 +201,7 @@ class ItemImage {
     this.img.height = this.size
     this.img.alpha = this.alpha
     this.img.zIndex = 2
-
+    this.active = true
     this.mask = new PIXI.Graphics()
     this.mask.beginFill(0xffffff)
     this.mask.drawCircle(this.pos.x, this.pos.y - this.anchor, this.size / 2)
@@ -233,41 +233,47 @@ class ItemImage {
     })
     this.composite.forEach((item) => {
       item.on('pointerover', () => {
-        this.composite.forEach((i) => gsap.to(i, { alpha: 0.0, duration: 0.3, overwrite: 'auto' }))
-        gsap.to(this.targettingText.text, { alpha: 0.25, duration: 0.3, overwrite: 'auto' })
+        if (!this.active) return
+
+        this.composite.forEach((i) => gsap.to(i, { alpha: 0.0, duration: 0.3 }))
+        gsap.to(this.targettingText.text, { alpha: 0.0, duration: 0.3 })
       })
       item.on('pointerout', () => {
-        this.composite.forEach((i) => gsap.to(i, { alpha: 1, duration: 0.3, overwrite: 'auto' }))
-        gsap.to(this.targettingText.text, { alpha: 1, duration: 0.3, overwrite: 'auto' })
+        if (!this.active) return
+        this.composite.forEach((i) => gsap.to(i, { alpha: 1, duration: 0.3 }))
+        gsap.to(this.targettingText.text, { alpha: 1, duration: 0.3 })
       })
       item.on('pointerdown', (event) => {
+        if (!this.active) return
         item.eventMode = 'none'
         let overevent = new MouseEvent('pointerover', event)
         event = new MouseEvent('pointerdown', event)
         game.canvas.app.view.dispatchEvent(overevent)
-        game.canvas.app.view.dispatchEvent(event) 
-        setTimeout(() => item.eventMode = 'static', 0);
+        game.canvas.app.view.dispatchEvent(event)
+        setTimeout(() => (item.eventMode = 'static'), 0)
       })
-    
     })
 
     if (this.targettingText) {
       this.targettingText.text.eventMode = 'static'
       this.targettingText.text.on('pointerover', () => {
-        this.composite.forEach((i) => gsap.to(i, { alpha: 0.0, duration: 0.3, overwrite: 'auto' }))
-        gsap.to(this.targettingText.text, { alpha: 0.25, duration: 0.3, overwrite: 'auto' })
+        if (!this.active) return
+        this.composite.forEach((i) => gsap.to(i, { alpha: 0.0, duration: 0.3 }))
+        gsap.to(this.targettingText.text, { alpha: 0.0, duration: 0.3 })
       })
       this.targettingText.text.on('pointerout', () => {
-        this.composite.forEach((i) => gsap.to(i, { alpha: 1, duration: 0.3, overwrite: 'auto' }))
-        gsap.to(this.targettingText.text, { alpha: 1, duration: 0.3, overwrite: 'auto' })
+        if (!this.active) return
+        this.composite.forEach((i) => gsap.to(i, { alpha: 1, duration: 0.3 }))
+        gsap.to(this.targettingText.text, { alpha: 1, duration: 0.3 })
       })
       this.targettingText.text.on('pointerdown', (event) => {
+        if (!this.active) return
         this.targettingText.text.eventMode = 'none'
         let overevent = new MouseEvent('pointerover', event)
         event = new MouseEvent('pointerdown', event)
         game.canvas.app.view.dispatchEvent(overevent)
-        game.canvas.app.view.dispatchEvent(event) 
-        setTimeout(() => this.targettingText.text.eventMode = 'static', 0);
+        game.canvas.app.view.dispatchEvent(event)
+        setTimeout(() => (this.targettingText.text.eventMode = 'static'), 0)
       })
     }
 
@@ -333,10 +339,15 @@ class ItemImage {
   }
 
   clear() {
+    this.active = false
     gsap.killTweensOf(this.composite)
+    // gsap.set(this.composite, {
+    //   pixi: { blur: 0, alpha: 0 },
+    // })
+
     gsap.to(this.composite, {
-      pixi: { blur: 0, alpha: 0 },
-      duration: 0.5,
+      pixi: { alpha: 0 },
+      duration: 0.3,
       onComplete: function () {
         this.animation.kill()
         if (this.img || this.mask || this.border || this.shadow) {
@@ -401,7 +412,7 @@ class TargettingText extends protoText {
       dropShadowColor: this.color,
       fill: '#ffffff',
       fontFamily: 'Georgia',
-      fontSize: 20,
+      fontSize: 19,
       fontStyle: 'italic',
       strokeThickness: 3,
       resolution: 3,
@@ -430,7 +441,7 @@ class TargettingText extends protoText {
     }
   }
   setTargetingText(pos, itemType, itemName, spellLevel) {
-    let anchor = (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 30
+    let anchor = (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 73
     let suffix = ''
     if (spellLevel?.slot && spellLevel.slot !== 'spell0') {
       suffix = ` (Level ${spellLevel.slot.replace(/[a-zA-z]/g, '')})`
