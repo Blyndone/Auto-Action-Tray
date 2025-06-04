@@ -284,7 +284,13 @@ export class Actions {
     selectedSpellLevel =
       item?.preparationMode == 'pact'
         ? { slot: 'pact' }
-        : { slot: selectedSpellLevel ? 'spell' + selectedSpellLevel : null }
+        : {
+            slot: selectedSpellLevel
+              ? 'spell' + selectedSpellLevel
+              : item.spellLevel == 0
+              ? 'spell0'
+              : null,
+          }
 
     return {
       activity: activity,
@@ -327,6 +333,7 @@ export class Actions {
         this.actor,
         targetCount,
         singleRoll,
+        selectedSpellLevel,
       )
       if (targets == null) return { canceled: true }
     }
@@ -641,28 +648,26 @@ export class Actions {
   }
   static async refreshFavorites(actor, options) {
     await actor.unsetFlag('auto-action-tray', 'data.favoriteItems')
-    let abilities = this.getActorAbilities(actor.uuid)  
-     let favoritesTray = new CustomTray({
+
+    let abilities = this.getActorAbilities(actor.uuid)
+
+    let favoritesTray = new CustomTray({
       category: 'favoriteItems',
       id: 'favoriteItems',
       trayLabel: 'Favorites',
       actorUuid: actor.uuid,
       application: options.application,
       cachedAbilities: abilities,
-     })
-    if (favoritesTray.abilities.length <= 0) {
-      this.customTrays = this.customTrays.filter((e) => e.id != 'favoriteItems')
-      this.stackedTray = this.stackedTray.trays.filter((e) => e.id != 'favoriteItems')
-    } else { 
-      this.customTrays = this.customTrays.filter((e) => e.id != 'favoriteItems')
+    })
+
+    this.customTrays = this.customTrays.filter((e) => e.id !== 'favoriteItems')
+    this.stackedTray.trays = this.stackedTray.trays.filter((e) => e.id !== 'favoriteItems')
+
+    if (favoritesTray.abilities.length > 0) {
       this.customTrays.push(favoritesTray)
-      this.stackedTray.trays = this.stackedTray.trays.filter((e) => e.id != 'favoriteItems')
       this.stackedTray.trays.push(favoritesTray)
     }
-    this.initialTraySetup(actor)
 
-    
-    
-    
+    this.initialTraySetup(actor)
   }
 }

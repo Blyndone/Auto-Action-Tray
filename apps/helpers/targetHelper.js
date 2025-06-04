@@ -128,7 +128,7 @@ export class TargetHelper {
     } catch (error) {}
   }
 
-  async requestTargets(item, activity, actor, targetCount, singleRoll) {
+  async requestTargets(item, activity, actor, targetCount, singleRoll, selectedSpellLevel) {
     this.useSlot = false
     this.selectingTargets = true
     this.clearData()
@@ -152,6 +152,9 @@ export class TargetHelper {
       actorId: actor.id,
       itemName: item.name,
       itemType: item.type,
+      itemImg: item.img,
+      itemRarity: item.rarity,
+      itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
     })
     if (this.sendTargetLines) {
@@ -163,6 +166,9 @@ export class TargetHelper {
         color: this.currentLine.color,
         itemName: item.name,
         itemType: item.type,
+        itemImg: item.img,
+        itemRarity: item.rarity,
+        itemSpellLevel: selectedSpellLevel,
       })
     }
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
@@ -450,7 +456,7 @@ export class TargetHelper {
     if (!selectedSpellLevel.slot) {
       return activity.tooltip?.targetCount
     }
-    if (selectedSpellLevel.slot) {
+    if (selectedSpellLevel.slot && selectedSpellLevel.slot != 'spell0') {
       if ( selectedSpellLevel.slot != 'pact') {
         spellLevel = parseInt(selectedSpellLevel.slot.replaceAll(/[a-zA-Z]/g, ''))
       } else { 
