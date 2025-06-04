@@ -15,7 +15,7 @@ export class TargetHelper {
     this.socket.register('setPhantomInRange', this.setPhantomInRange.bind(this))
     this.socket.register('destroyPhantomLine', this.destroyPhantomLine.bind(this))
     this.socket.register('setPhantomYOffset', this.setPhantomYOffset.bind(this))
-    
+
     this.stage = canvas.stage
     this.activity = null
     this.activityRange = 0
@@ -109,6 +109,58 @@ export class TargetHelper {
       }
       return true
     })
+  }
+
+  createUseNotification(item, activity, actor, selectedSpellLevel) {
+    this.selectingTargets = true
+    this.clearData()
+    if (this.sendTargetLines) {
+      this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
+    }
+    this.setData(actor, activity)
+    this.activityRange = this.getActivityRange(item, activity)
+
+    let suffix = ''
+    if (selectedSpellLevel?.slot && selectedSpellLevel.slot !== 'spell0') {
+      suffix = ` (Level ${selectedSpellLevel.slot.replace(/[a-zA-z]/g, '')})`
+    }
+    let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
+    this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
+
+
+    this.currentLine = new TargetLineCombo({
+      useLines:false,
+      startPos: this.startPos,
+      startLinePos: this.startLinePos,
+      actorId: actor.id,
+      itemName: item.name,
+      itemType: item.type,
+      itemImg: item.img,
+      itemRarity: item.rarity,
+      itemSpellLevel: selectedSpellLevel,
+      activityRange: this.activityRange,
+    })
+    if (this.sendTargetLines) {
+      this.socket.executeForOthers('newPhantomLine', {
+        useLines:false,
+        id: this.currentLine.id,
+        actorId: this.actorId,
+        startPos: this.startPos,
+        startLinePos: this.startLinePos,
+        color: this.currentLine.color,
+        itemName: item.name,
+        itemType: item.type,
+        itemImg: item.img,
+        itemRarity: item.rarity,
+        itemSpellLevel: selectedSpellLevel,
+      })
+    }
+
+    
+  }
+  clearUseNotification() {
+    this.selectingTargets = false
+    this.clearData()
   }
 
   clearData() {
@@ -457,11 +509,11 @@ export class TargetHelper {
       return activity.tooltip?.targetCount
     }
     if (selectedSpellLevel.slot && selectedSpellLevel.slot != 'spell0') {
-      if ( selectedSpellLevel.slot != 'pact') {
+      if (selectedSpellLevel.slot != 'pact') {
         spellLevel = parseInt(selectedSpellLevel.slot.replaceAll(/[a-zA-Z]/g, ''))
-      } else { 
+      } else {
         spellLevel = item.pactLevel
-      } 
+      }
 
       targetCount = item.activities
         .find((e) => e.id == activity.id)

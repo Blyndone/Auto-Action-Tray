@@ -486,7 +486,9 @@ export class Actions {
       }
     } else {
       //Singluar Item Use
-      item.item.system.activities
+      this.targetHelper.createUseNotification(item, activity, this.actor, selectedSpellLevel)
+
+      let result = await item.item.system.activities
         .get(
           activity?.itemId ||
             activity?._id ||
@@ -505,7 +507,9 @@ export class Actions {
             consume: { spellSlot: useSlot },
           },
           { configure: false },
-        )
+      )
+
+      this.targetHelper.clearUseNotification() 
     }
     // game.user.updateTokenTargets([])
     if (this.currentTray instanceof ActivityTray) {

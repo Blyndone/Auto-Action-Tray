@@ -1,18 +1,24 @@
 export class TargetLineCombo {
   constructor(options) {
+    this.useLines = options.useLines || true
     this.yOffset = options.yOffset || 0
     this.phantom = options.phantom || false
     this.id = options.id || foundry.utils.randomID()
     this.actorId = options.actorId
-    this.line = new TargetLine({
-      ...options,
-      yOffset: this.yOffset,
-    })
-    this.glowLine = new GlowLine({
-      ...options,
-      yOffset: this.yOffset,
-    })
-    this.text = !this.phantom ? new TargetText(options) : null
+    this.line = null
+    this.glowLine = null
+    this.text = null
+    if (this.useLines) {
+      this.line = new TargetLine({
+        ...options,
+        yOffset: this.yOffset,
+      })
+      this.glowLine = new GlowLine({
+        ...options,
+        yOffset: this.yOffset,
+      })
+      this.text = !this.phantom ? new TargetText(options) : null
+    }
     this.firstLine = options.firstLine !== undefined ? options.firstLine : true
     this.targettingText = this.firstLine ? new TargettingText(options) : null
     this.itemImg = this.firstLine ? new ItemImage(options, this.targettingText) : null
