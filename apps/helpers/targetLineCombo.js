@@ -1,5 +1,7 @@
 export class TargetLineCombo {
   constructor(options) {
+    this.useName = options.sendName ?? game.settings.get('auto-action-tray', 'enableUseItemName') // sendName
+    this.useIcon = options.sendIcon ?? game.settings.get('auto-action-tray', 'enableUseItemIcon') // sendIcon
     this.useLines = options.useLines || true
     this.yOffset = options.yOffset || 0
     this.phantom = options.phantom || false
@@ -20,8 +22,12 @@ export class TargetLineCombo {
       this.text = !this.phantom ? new TargetText(options) : null
     }
     this.firstLine = options.firstLine !== undefined ? options.firstLine : true
-    this.targettingText = this.firstLine ? new TargettingText(options) : null
-    this.itemImg = this.firstLine ? new ItemImage(options, this.targettingText) : null
+    if (this.useName) {
+      this.targettingText = this.firstLine ? new TargettingText(options) : null
+    }
+    if (this.useIcon) {
+      this.itemImg = this.firstLine ? new ItemImage(options, this.targettingText) : null
+    }
     this.rangeBoundary = this.firstLine ? new TargetBoundary(options) : null
     this.startPos = options.startPos
     this.startLinePos = options.startLinePos
@@ -32,34 +38,34 @@ export class TargetLineCombo {
   }
 
   clearLines() {
-    this.line.clear()
-    this.glowLine.clear()
-    this.firstLine ? this.targettingText.clear() : null
-    this.firstLine ? this.rangeBoundary.clear() : null
-    this.firstLine ? this.itemImg.clear() : null
+    this.line?.clear()
+    this.glowLine?.clear()
+    this.firstLine ? this.targettingText?.clear() : null
+    this.firstLine ? this.rangeBoundary?.clear() : null
+    this.firstLine ? this.itemImg?.clear() : null
     if (!this.phantom) {
       this.clearText()
     }
   }
   clearRangeBoundary() {
-    this.rangeBoundary.clear()
+    this.rangeBoundary?.clear()
   }
   destroyLines() {
-    this.line.destroy()
-    this.glowLine.destroy()
-    this.firstLine ? this.targettingText.clear() : null
-    this.firstLine ? this.rangeBoundary.clear() : null
-    this.firstLine ? this.itemImg.clear() : null
+    this.line?.destroy()
+    this.glowLine?.destroy()
+    this.firstLine ? this.targettingText?.clear() : null
+    this.firstLine ? this.rangeBoundary?.clear() : null
+    this.firstLine ? this.itemImg?.clear() : null
     if (!this.phantom) {
       this.clearText()
     }
   }
   forceDestroyLines() {
-    this.line.forceDestroy()
-    this.glowLine.forceDestroy()
-    this.firstLine ? this.targettingText.clear() : null
-    this.firstLine ? this.rangeBoundary.clear() : null
-    this.firstLine ? this.itemImg.clear() : null
+    this.line?.forceDestroy()
+    this.glowLine?.forceDestroy()
+    this.firstLine ? this.targettingText?.clear() : null
+    this.firstLine ? this.rangeBoundary?.clear() : null
+    this.firstLine ? this.itemImg?.clear() : null
     if (!this.phantom) {
       this.clearText()
     }
@@ -195,11 +201,10 @@ class ItemImage {
     this.color = this.getRarityColor(options.itemRarity, options.itemSpellLevel)
     this.pos = options.startPos || { x: 0, y: 0 }
     this.alpha = options.alpha || 1
-    this.size = options.size || 45
+    this.size = options.size || game.settings.get('auto-action-tray', 'useItemIconSize') || 45
     this.animation
     const actor = game.actors.get(this.actorId)
-    this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + 28
-
+    this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + this.size / 2 + 5
     this.img = PIXI.Sprite.from(options.itemImg)
     this.img.anchor.set(0.5)
     this.img.position.set(this.pos.x, this.pos.y - this.anchor)
@@ -401,6 +406,7 @@ class GlowLine extends protoLine {
 class TargettingText extends protoText {
   constructor(options) {
     super(options)
+    this.useIcon = options.sendIcon ?? game.settings.get('auto-action-tray', 'enableUseItemIcon')
     if (!options.itemName || !options.itemType) {
       return
     }
@@ -418,7 +424,7 @@ class TargettingText extends protoText {
       dropShadowColor: this.color,
       fill: '#ffffff',
       fontFamily: 'Georgia',
-      fontSize: 19,
+      fontSize: game.settings.get('auto-action-tray', 'useItemTextSize') || 19,
       fontStyle: 'italic',
       strokeThickness: 3,
       resolution: 3,
@@ -447,7 +453,11 @@ class TargettingText extends protoText {
     }
   }
   setTargetingText(pos, itemType, itemName, spellLevel) {
-    let anchor = (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 65
+    let offset = !this.useIcon 
+      ? 0
+      : game.settings.get('auto-action-tray', 'useItemIconSize') || 45
+    let anchor =
+      (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 20 + offset
     let suffix = ''
     if (spellLevel?.slot && spellLevel.slot !== 'spell0') {
       suffix = ` (Level ${spellLevel.slot.replace(/[a-zA-z]/g, '')})`
@@ -473,6 +483,7 @@ class TargettingText extends protoText {
 class TargetText extends protoText {
   constructor(options) {
     super(options)
+    this.fontSize = game.settings.get('auto-action-tray', 'useItemTextSize') || 25
     this.style = new PIXI.TextStyle({
       dropShadow: true,
       dropShadowAlpha: 0.6,
@@ -482,7 +493,7 @@ class TargetText extends protoText {
       dropShadowColor: '#000000',
       fill: '#ffffff',
       fontFamily: 'Georgia',
-      fontSize: 25,
+      fontSize: this.fontSize,
       strokeThickness: 3,
       resolution: 3,
     })
@@ -491,7 +502,7 @@ class TargetText extends protoText {
   }
   moveText(endPos) {
     if (this.text) {
-      this.text.position.set(endPos.x + 15, endPos.y - 30)
+      this.text.position.set(endPos.x + 15, endPos.y - this.fontSize -5)
     }
   }
 }

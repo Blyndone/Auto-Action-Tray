@@ -120,7 +120,23 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
+  game.settings.register('auto-action-tray', 'scale', {
+    name: 'Scale',
+    hint: 'Set the Scale of the Hotbar',
+    scope: 'client',
+    config: true,
 
+    type: Number,
+    default: 0.6,
+
+    range: {
+      min: 0.2,
+      step: 0.05,
+      max: 1.5,
+    },
+
+    requiresReload: true,
+  })
   game.settings.register('auto-action-tray', 'autoTheme', {
     name: 'Auto Theme',
     hint: 'Will automatically set the theme based on the selected actors class',
@@ -211,23 +227,7 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-  game.settings.register('auto-action-tray', 'scale', {
-    name: 'Scale',
-    hint: 'Set the Scale of the Hotbar',
-    scope: 'client',
-    config: true,
 
-    type: Number,
-    default: 0.6,
-
-    range: {
-      min: 0.2,
-      step: 0.05,
-      max: 1.5,
-    },
-
-    requiresReload: true,
-  })
 
   game.settings.register('auto-action-tray', 'enableRangeBoundary', {
     name: 'Enable Range Boundary',
@@ -239,6 +239,65 @@ Hooks.once('ready', async function () {
     default: true,
 
     requiresReload: true,
+  })
+  game.settings.register('auto-action-tray', 'enableUseItemName', {
+    name: 'Enable Use Item Name',
+    hint: 'Shows the Item Name above the token when using an item',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
+
+
+  game.settings.register('auto-action-tray', 'enableUseItemIcon', {
+    name: 'Enable Use Item Icon',
+    hint: 'Shows the Item Icon above the token when using an item',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
+
+  game.settings.register('auto-action-tray', 'useItemIconSize', {
+    name: 'Use Item Icon Size',
+    hint: 'Size of the Item Icon above the token when using an item',
+    scope: 'client',
+    config: true,
+
+    type: Number,
+    default: 45,
+
+    range: {
+      min: 20,
+      step: 5,
+      max: 100,
+    },
+
+    requiresReload: false,
+  })
+  game.settings.register('auto-action-tray', 'useItemTextSize', {
+    name: 'Use Item Text Size',
+    hint: 'Size of the Item Text above the token when using an item',
+    scope: 'client',
+    config: true,
+
+    type: Number,
+    default: 19,
+
+    range: {
+      min: 5,
+      step: 1,
+      max: 30,
+    },
+
+    requiresReload: false,
   })
 
   game.settings.register('auto-action-tray', 'recieveTargetLines', {
@@ -283,6 +342,7 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
+
   game.settings.register('auto-action-tray', 'muliItemUseDelay', {
     name: 'Multi Item Use Delay',
     hint: 'Delay in miliseconds between using multiple items.',

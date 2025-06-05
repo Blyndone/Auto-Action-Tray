@@ -142,7 +142,9 @@ export class TargetHelper {
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
-        useLines:false,
+        useLines: false,
+        sendName: game.settings.get('auto-action-tray', 'enableUseItemName'),
+        sendIcon: game.settings.get('auto-action-tray', 'enableUseItemIcon'),
         id: this.currentLine.id,
         actorId: this.actorId,
         startPos: this.startPos,
@@ -211,6 +213,7 @@ export class TargetHelper {
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
+        
         id: this.currentLine.id,
         actorId: this.actorId,
         startPos: this.startPos,
@@ -221,6 +224,8 @@ export class TargetHelper {
         itemImg: item.img,
         itemRarity: item.rarity,
         itemSpellLevel: selectedSpellLevel,
+        sendName: game.settings.get('auto-action-tray', 'enableUseItemName'),
+        sendIcon: game.settings.get('auto-action-tray', 'enableUseItemIcon'),
       })
     }
     this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)

@@ -486,7 +486,13 @@ export class Actions {
         await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
       }
     } else {
-      this.targetHelper.createUseNotification(item, activity, this.actor, selectedSpellLevel)
+      let useNotification =
+        game.settings.get('auto-action-tray', 'enableUseItemName') ||
+        game.settings.get('auto-action-tray', 'enableUseItemIcon')
+
+      if (useNotification) {
+        this.targetHelper.createUseNotification(item, activity, this.actor, selectedSpellLevel)
+      }
 
       const minimumTime = 2000
       const delay = new Promise((resolve) => setTimeout(resolve, minimumTime))
@@ -512,11 +518,11 @@ export class Actions {
           { configure: false },
         )
 
-  
       const [result] = await Promise.all([usePromise, delay])
 
-      this.targetHelper.clearUseNotification()
-
+      if (useNotification) {
+        this.targetHelper.clearUseNotification()
+      }
       if (this.currentTray instanceof ActivityTray) {
         this.animationHandler.popTray()
       }
