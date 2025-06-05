@@ -3,6 +3,7 @@ import { ItemConfig } from '../dialogs/itemConfig.js'
 import { ActivityTray } from '../components/activityTray.js'
 import { SpellLevelTray } from '../components/spellLevelTray.js'
 import { CustomTray } from '../components/customTray.js'
+
 export class Actions {
   static logToChat(message, alias, actor) {
     ChatMessage.create({ content: message, speaker: { alias: alias, actor: actor } })
@@ -485,10 +486,12 @@ export class Actions {
         await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
       }
     } else {
-      //Singluar Item Use
       this.targetHelper.createUseNotification(item, activity, this.actor, selectedSpellLevel)
 
-      let result = await item.item.system.activities
+      const minimumTime = 2000
+      const delay = new Promise((resolve) => setTimeout(resolve, minimumTime))
+
+      const usePromise = item.item.system.activities
         .get(
           activity?.itemId ||
             activity?._id ||
@@ -507,13 +510,16 @@ export class Actions {
             consume: { spellSlot: useSlot },
           },
           { configure: false },
-      )
+        )
 
-      this.targetHelper.clearUseNotification() 
-    }
-    // game.user.updateTokenTargets([])
-    if (this.currentTray instanceof ActivityTray) {
-      this.animationHandler.popTray()
+  
+      const [result] = await Promise.all([usePromise, delay])
+
+      this.targetHelper.clearUseNotification()
+
+      if (this.currentTray instanceof ActivityTray) {
+        this.animationHandler.popTray()
+      }
     }
   }
 

@@ -198,7 +198,7 @@ class ItemImage {
     this.size = options.size || 45
     this.animation
     const actor = game.actors.get(this.actorId)
-    this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + 35
+    this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + 28
 
     this.img = PIXI.Sprite.from(options.itemImg)
     this.img.anchor.set(0.5)
@@ -284,7 +284,7 @@ class ItemImage {
     }
 
     this.animation = gsap.to(this.composite, {
-      y: '+=10',
+      y: '-=10',
       duration: 2,
       repeat: -1,
       ease: 'sine.inOut',
@@ -447,7 +447,7 @@ class TargettingText extends protoText {
     }
   }
   setTargetingText(pos, itemType, itemName, spellLevel) {
-    let anchor = (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 73
+    let anchor = (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 65
     let suffix = ''
     if (spellLevel?.slot && spellLevel.slot !== 'spell0') {
       suffix = ` (Level ${spellLevel.slot.replace(/[a-zA-z]/g, '')})`
@@ -460,7 +460,7 @@ class TargettingText extends protoText {
       this.text.position.set(pos.x, pos.y - anchor)
 
       this.animation = gsap.to(this.text, {
-        y: this.text.y + 10,
+        y: this.text.y - 10,
         duration: 2,
         repeat: -1,
         ease: 'sine.inOut',
