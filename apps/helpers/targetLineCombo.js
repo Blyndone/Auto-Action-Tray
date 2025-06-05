@@ -226,7 +226,7 @@ class ItemImage {
     this.border.zIndex = 1
 
     this.shadow = new PIXI.Graphics()
-    this.shadow.lineStyle(4, 0x000000)
+    this.shadow.lineStyle(4, this.color)
     this.shadow.drawCircle(this.pos.x, this.pos.y - this.anchor, this.size / 2)
     this.shadow.endFill()
     this.shadow.filters = [new PIXI.filters.BlurFilter(8)]
