@@ -21,7 +21,6 @@ import { AATItem } from './items/item.js'
 import { ItemConfig } from './dialogs/itemConfig.js'
 import { DraggableTrayContainer } from './handlers/draggableHandler.js'
 
-
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     gsap.registerPlugin(DrawSVGPlugin)
@@ -325,7 +324,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (force) {
       await this.completeRender()
-      return Promise.resolve();
+      return Promise.resolve()
     } else {
       this.throttledRender()
     }
@@ -336,7 +335,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.renderQueue = []
     await this.render({ parts: tmp })
     this.pendingRender = false
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   async generateActorItems(actor, event) {
@@ -602,7 +601,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })
     this.spellLevelTray = SpellLevelTray.generateActivityTray(actor, {
       application: this,
-
     })
     this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
@@ -667,7 +665,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.combatHandler.setCombat(this.actor)
     }
     if (change?.system?.favorites) {
-      Actions.refreshFavorites.bind(this)(actor, {application : this})     
+      Actions.refreshFavorites.bind(this)(actor, { application: this })
     }
     this.requestRender(['centerTray', 'characterImage'])
   }
@@ -836,6 +834,21 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
             (e) => e.id == li[0].dataset.itemId,
           ).item
           item.displayCard()
+        },
+      },
+      {
+        name: 'Toggle Favorite',
+        icon: "<i class='fas fa-star fa-fw'></i>",
+        callback: (li) => {
+          let item = this.getActorAbilities(this.actor.uuid).find(
+            (e) => e.id == li[0].dataset.itemId,
+          ).item
+          const uuid = item.getRelativeUUID(this.actor);
+          if (this.actor.system.hasFavorite(uuid)) {
+            this.actor.system.removeFavorite(uuid)
+          } else {
+            this.actor.system.addFavorite({ type: "item", id: uuid })
+          }
         },
       },
       {
@@ -1185,21 +1198,36 @@ class AltContextMenu extends ContextMenu {
   }
   async _animateOpen(menu) {
     const newParent = document.getElementById(this.parentSelector)
-    const rect = menu[0].parentElement.getBoundingClientRect()
+    const scale = 1 / game.settings.get('auto-action-tray', 'scale')
+    const menuEl = menu[0]
+
+    const triggerRect = menuEl.parentElement.getBoundingClientRect()
     const parentRect = newParent.getBoundingClientRect()
-    let scale = 1 / game.settings.get('auto-action-tray', 'scale')
-    // let contextMenu = menu[0].getBoundingClientRect()
+    const menuRect = menuEl.getBoundingClientRect()
 
-    let top = rect.top - parentRect.top
-    let left = rect.left - parentRect.left + rect.width + 5
-    top = top * scale
-    left = left * scale
+    let top = (triggerRect.top - parentRect.top) * scale
+    let left = (triggerRect.left - parentRect.left + triggerRect.width + 5) * scale
 
-    newParent.appendChild(menu[0])
-    menu[0].style.position = 'absolute'
-    menu[0].style.top = `${top}px`
-    menu[0].style.left = `${left}px`
-    menu[0].style.transformOrigin = 'top left'
-    super._animateOpen(menu)
+    newParent.appendChild(menuEl)
+    menuEl.style.position = 'absolute'
+    menuEl.style.visibility = 'hidden'
+    menuEl.style.top = '0px'
+    menuEl.style.left = '0px'
+    const measuredMenuRect = menuEl.getBoundingClientRect()
+    const menuHeight = measuredMenuRect.height * scale
+    const menuWidth = measuredMenuRect.width * scale
+    menuEl.style.visibility = 'visible'
+
+    const maxTop = parentRect.height * scale - menuHeight
+    const maxLeft = parentRect.width * scale - menuWidth
+
+    top = Math.min(top, Math.max(0, maxTop))
+    left = Math.min(left, Math.max(0, maxLeft))
+
+    menuEl.style.top = `${top}px`
+    menuEl.style.left = `${left}px`
+    menuEl.style.transformOrigin = 'top left'
+
+    await super._animateOpen(menu)
   }
 }
