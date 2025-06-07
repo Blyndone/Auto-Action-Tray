@@ -8,7 +8,8 @@ export class AATActivity {
     this.item = item
 
     this.img = activity.type == 'attack' ? item.img : activity.img
-    this.id = activity.id ? activity.id : item.id
+    this.activityId = activity.id
+    this.id = item.id
     this.activity = activity
     this.maxSpellLevel = item.maxSpellLevel
     this.isScaledSpell = item.isScaledSpell

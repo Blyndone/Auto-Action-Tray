@@ -129,23 +129,52 @@ export class CustomTray extends AbilityTray {
         this.id = 'custom'
         break
       case 'favoriteItems':
-        let favorites = actor.system.favorites.map((e) => e.id.split('.').pop())
-        this.abilities = allItems
-          .map((e) => (favorites.includes(e.id) ? e : null))
-          .filter((e) => e !== null)
-          .sort((a, b) => a?.spellLevel - b?.spellLevel)
-          .sort((a, b) => {
-            const priority = {
-              weapon: 0,
-              equipment: 1,
-              feat: 2,
-              spell: 3,
-              consumable: 4,
+        let favItems = actor.system.favorites
+          .map((e) => fromUuidSync(e.id, { relative: actor }))
+          .filter(Boolean)
+        let i = []
+        favItems.forEach((e) => {
+          if (e?.item) {
+            i.push({ itemId: e.item.id, activityId: e.id })
+          } else {
+            i.push({ itemId: e.id })
+          }
+        })
+        const matchingItems = []
+
+        allItems.forEach((e) => {
+          i.forEach((fav) => {
+            if (fav.itemId === e.id) {
+              if (fav.activityId) {
+                const matchedActivity = e.activities?.find(
+                  (activity) => activity.activityId === fav.activityId,
+                )
+                if (matchedActivity) matchingItems.push(matchedActivity)
+              } else {
+                matchingItems.push(e)
+              }
             }
-            const aPriority = priority[a.type] ?? 10
-            const bPriority = priority[b.type] ?? 10
-            return aPriority - bPriority
           })
+        })
+
+        let favorites = actor.system.favorites.map((e) => e.id.split('.').pop())
+        this.abilities = matchingItems
+        // this.abilities = allItems
+        //   .map((e) => (favorites.includes(e.id) ? e : null))
+        //   .filter((e) => e !== null)
+        //   .sort((a, b) => a?.spellLevel - b?.spellLevel)
+        //   .sort((a, b) => {
+        //     const priority = {
+        //       weapon: 0,
+        //       equipment: 1,
+        //       feat: 2,
+        //       spell: 3,
+        //       consumable: 4,
+        //     }
+        //     const aPriority = priority[a.type] ?? 10
+        //     const bPriority = priority[b.type] ?? 10
+        //     return aPriority - bPriority
+        //   })
 
         this.id = 'favoriteItems'
         break

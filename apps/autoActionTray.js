@@ -840,14 +840,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         name: 'Toggle Favorite',
         icon: "<i class='fas fa-star fa-fw'></i>",
         callback: (li) => {
-          let item = this.getActorAbilities(this.actor.uuid).find(
+          const item = this.getActorAbilities(this.actor.uuid).find(
             (e) => e.id == li[0].dataset.itemId,
           ).item
-          const uuid = item.getRelativeUUID(this.actor);
-          if (this.actor.system.hasFavorite(uuid)) {
-            this.actor.system.removeFavorite(uuid)
+          let itemId = item.getRelativeUUID(this.actor)
+          let type = 'item'
+          if (li[0].dataset.activityId) {
+            itemId += `.Activity.${li[0].dataset.activityId}`
+            type = 'activity'
+          }
+          if (this.actor.system.hasFavorite(itemId)) {
+            this.actor.system.removeFavorite(itemId)
           } else {
-            this.actor.system.addFavorite({ type: "item", id: uuid })
+            this.actor.system.addFavorite({ type: type, id: itemId })
           }
         },
       },

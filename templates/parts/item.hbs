@@ -3,6 +3,7 @@
     <div
       data-drag="true"
       data-item-id="{{item.id}}"
+      data-activity-id = "{{item.activityId}}"
       data-index="{{@index}}"
       data-trayid="{{tray.id}}"
       data-tooltip="{{> 'AAT.item-tooltip' (selectItemTooltip item tray)}}"
@@ -27,6 +28,7 @@
             src="{{item.img}}"
             alt="{{item.name}}"
             data-item-id="{{item.id}}"
+            data-activity-id = "{{item.activityId}}"
             data-trayid="{{tray.id}}"
             data-index="{{@index}}"
           />

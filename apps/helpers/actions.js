@@ -240,7 +240,7 @@ export class Actions {
     }
   }
 
-  static async selectActivityWorkflow(item) {
+  static async selectActivityWorkflow(item, activityId) {
     let ritualCast = this.currentTray.id == 'ritual'
     this.activityTray.useSlot = true
     let activity = null
@@ -253,20 +253,25 @@ export class Actions {
         ? false
         : this.trayOptions['fastForward']
 
-    if (item.activities.length <= 1 || fastForward) {
-      activity = item.defaultActivity
+    if (activityId) {
+      activity = item.activities.find((e) => e.activityId == activityId)
     } else {
-      activity = await Actions.selectActivity.bind(this)(item)
+      if (item.activities.length <= 1 || fastForward) {
+        activity = item.defaultActivity
+      } else {
+        activity = await Actions.selectActivity.bind(this)(item)
 
-      if (
-        activity == null || // covers both null and undefined
-        (typeof activity === 'object' &&
-          !Array.isArray(activity) &&
-          Object.keys(activity).length === 0)
-      ) {
-        return
+        if (
+          activity == null ||
+          (typeof activity === 'object' &&
+            !Array.isArray(activity) &&
+            Object.keys(activity).length === 0)
+        ) {
+          return
+        }
       }
     }
+
     if (item.type == 'spell' && !fastForward && item.spellLevel > 0 && !ritualCast) {
       let spellData = await Actions.selectSpellLevel.bind(this)(item)
 
@@ -391,7 +396,7 @@ export class Actions {
 
     let ritualCast = this.currentTray.id == 'ritual'
     let itemId = target.dataset.itemId
-
+    let activityId = target.dataset.activityId != '' ? target.dataset.activityId : null
     let item = this.getActorAbilities(this.actor.uuid).find((e) => e?.id == itemId)
     if (item == undefined) {
       try {
@@ -420,7 +425,7 @@ export class Actions {
     //   return
     // }
 
-    let options = await Actions.selectActivityWorkflow.bind(this)(item)
+    let options = await Actions.selectActivityWorkflow.bind(this)(item, activityId)
 
     if (!options?.activity || Object.keys(options.activity).length === 0) return
     let selectedSpellLevel = options.selectedSpellLevel,
@@ -451,7 +456,7 @@ export class Actions {
     if (activity?.tooltip?.actionType) {
       this.combatHandler.consumeAction(activity.tooltip.actionType, activity.isScaledSpell)
     }
-
+    console.log(this)
     if (
       targets &&
       targets.individual == true &&
@@ -467,7 +472,12 @@ export class Actions {
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
         await item.item.system.activities
-          .get(activity?.itemId || activity?._id || item.item.system.activities.contents[0].id)
+          .get(
+            activity?.activityId ||
+            activity?.itemId ||
+              activity?._id ||
+              item.item.system.activities.contents[0].id,
+          )
           .use(
             {
               advantage: altDown,
@@ -499,6 +509,7 @@ export class Actions {
 
       const usePromise = item.item.system.activities
         .get(
+          activity?.activityId ||
           activity?.itemId ||
             activity?._id ||
             activity?.id ||
@@ -528,6 +539,8 @@ export class Actions {
       }
     }
   }
+
+  
 
   static useSkillSave(event, target) {
     let advantage = event.altKey
