@@ -50,6 +50,11 @@ export class DraggableTrayContainer {
       }
     })
   }
+  setAllClipPaths(pos, duration) {
+    this.draggableTrays?.forEach((tray) => {
+      tray.setClipPath.bind(this)(tray, pos, duration)
+    })
+  }
 
   createDraggable(tray) {
     const index = tray.index
@@ -81,7 +86,7 @@ export class DraggableTrayContainer {
             Math.floor(value / container.iconSize) * container.iconSize +
             container.padding +
             (index - 1) * (container.handleSize + container.padding)
-          tray.setClipPath.bind(container)(tray, min, .1)
+          tray.setClipPath.bind(container)(tray, min, 0.1)
           return min
         },
       },
@@ -134,7 +139,16 @@ class DraggableTray {
     }
   }
   setClipPath(tray, pos, duration = null) {
+    
     function setClip(identifier, pos, duration = 0) {
+      const selector = `.container-${identifier}`
+      const element = document.querySelector(selector)
+      const newClipPath = `inset(0px ${pos}px 0px 0px)`
+      if (!element) return
+    
+      const currentClip = getComputedStyle(element).clipPath
+      if (currentClip === newClipPath) return
+    
       gsap.to(`.container-${identifier}`, {
         duration: duration,
         // ease: 'power3.out',

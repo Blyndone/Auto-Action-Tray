@@ -39,7 +39,7 @@
 
 @mixin inset-tray {
   @include background-color;
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;

@@ -139,7 +139,7 @@
 
 .ability-tray-container {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -179,7 +179,7 @@
 }
 .ability-tray-container .use-slot-checkbox {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -405,7 +405,7 @@
 
 .ability-selection-input {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -710,7 +710,7 @@
 
 .equipment-tray-container {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -1102,7 +1102,7 @@ img.item-equipped {
 
 .character-image {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -1229,7 +1229,7 @@ img.item-equipped {
 
 .hp-form {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -1315,7 +1315,7 @@ img.item-equipped {
 
 .skill-tray {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -1634,7 +1634,7 @@ img.item-equipped {
 
 .combat-inner-container {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -1652,7 +1652,7 @@ img.item-equipped {
 .end-turn-btn-dice,
 .end-turn-btn-not-turn {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -1689,7 +1689,7 @@ img.item-equipped {
 
 .dice-button-container {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
@@ -1777,7 +1777,7 @@ img.item-equipped {
 
 .misc-tray-container {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
