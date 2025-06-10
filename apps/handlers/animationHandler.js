@@ -77,6 +77,10 @@ export class AnimationHandler {
 
     await hotbar.requestRender('centerTray', true)
 
+    if (trayIn.id == 'stacked') {
+      this.hotbar.draggableTrays.createAllDraggables(0.5)
+    }
+
     trayIn?.trays?.forEach((tray) => {
       this.setPreStackedTrayPos(tray, trayOut)
     })
@@ -139,6 +143,7 @@ export class AnimationHandler {
       // tray.setActive()
       let xOffset = 0
       let yOffset = 0
+      let initialOpacity = 1
       switch (tray.type) {
         case 'static':
           yOffset = -1 * this.verticalBounds
@@ -155,11 +160,13 @@ export class AnimationHandler {
         case 'target':
           yOffset = -1 * this.verticalBounds
           break
+        case 'condition':
+          initialOpacity = 0
       }
 
       gsap.set(`.${tray.id}`, {
         // force3D: false,
-        opacity: 1,
+        opacity: initialOpacity,
         y: yOffset,
         x: xOffset,
       })
@@ -192,6 +199,7 @@ export class AnimationHandler {
       // tray.setActive()
       let xOffset = 0
       let yOffset = 0
+      let endOpactiy = 1
       switch (tray.type) {
         case 'static':
           yOffset = -1 * this.verticalBounds
@@ -208,11 +216,14 @@ export class AnimationHandler {
         case 'target':
           yOffset = -1 * this.verticalBounds
           break
+        case 'condition':
+          endOpactiy = 0
+          break
       }
 
       gsap.to(`.${tray.id}`, {
         force3D: false,
-        opacity: 1,
+        opacity: endOpactiy,
         y: yOffset,
         x: xOffset,
         inherit: true,

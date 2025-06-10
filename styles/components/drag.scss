@@ -3,8 +3,8 @@
 .drag-handle-container {
   height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 5);
   width: calc(var(--aat-item-size) / 3 + 2px);
-  padding: 15px 0px 15px 6px;
-  @include background-color;
+  padding: 5px 0px 5px 6px;
+  // @include background-color;
 }
 .drag-handle {
   height: 100%;

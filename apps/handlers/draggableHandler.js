@@ -37,14 +37,16 @@ export class DraggableTrayContainer {
     this.draggableTrays.forEach((tray, index) => {
       const position = trayPositions[index] || 0
       tray.setMin(position)
+      tray.setPos(position)
     })
     this.application.animationHandler.setAllStackedTrayPos(this.draggableTrays)
   }
 
-  createAllDraggables() {
+  createAllDraggables(duration = null) {
     this.draggableTrays?.forEach((tray, index) => {
       if (index != 0) {
         this.createDraggable.bind(this)(tray)
+        tray.setClipPath.bind(this)(tray, tray.position, duration)
       }
     })
   }
@@ -56,28 +58,31 @@ export class DraggableTrayContainer {
     tray.draggable = Draggable.create(`.container-${tray.id}`, {
       type: 'x',
       bounds: {
-        minX: index != 1 ? Math.max(this.draggableTrays[index - 1]?.tray.xPos + container.spacerSize || 0) : 0,
-        maxX: Math.min(this.draggableTrays[index + 1]?.tray.xPos - container.spacerSize || this.trayMax),
+        minX:
+          index != 1
+            ? Math.max(this.draggableTrays[index - 1]?.tray.xPos + container.spacerSize || 0)
+            : 0,
+        maxX: Math.min(
+          this.draggableTrays[index + 1]?.tray.xPos - container.spacerSize || this.trayMax,
+        ),
       },
       force3D: false,
       handle: `.handle-${tray.id}`,
       inertia: true,
       zIndexBoost: false,
       maxDuration: 0.1,
+      onDrag: function () {
+        tray.setClipPath.bind(container)(tray, this.x)
+      },
       snap: {
+        duration: 0.1,
         x: function (value) {
-          // console.log('Snapping value:', value)
-          // console.log(
-          //   'Snap',
-          //   Math.floor(value / container.iconSize) * container.iconSize +
-          //     container.padding +
-          //     (index - 1) * (container.handleSize + container.padding),
-          // )
-          return (
+          let min =
             Math.floor(value / container.iconSize) * container.iconSize +
             container.padding +
             (index - 1) * (container.handleSize + container.padding)
-          )
+          tray.setClipPath.bind(container)(tray, min, .1)
+          return min
         },
       },
       onThrowComplete: function () {
@@ -87,6 +92,7 @@ export class DraggableTrayContainer {
           (index - 1) * (container.handleSize + container.padding)
         application.stackedTray.setTrayPosition(tray.id, min)
         tray.setMin(min)
+        tray.setPos(min)
         // console.log('Tray position updated:', tray.id, min)
         if (index - 1 != 0) {
           container.draggableTrays[index - 1].applyBounds({
@@ -98,10 +104,6 @@ export class DraggableTrayContainer {
             minX: tray.xMin + container.spacerSize,
           })
         }
-        // console.log('Throw complete for tray:', tray.id)
-        // console.log('New position:', this.x)
-        // console.log('New min:', min)
-        // console.log('draggableTrays:', container.draggableTrays)
       },
     })
   }
@@ -113,7 +115,7 @@ class DraggableTray {
     this.position = options.position || 0
     this.index = 0
     this.xMax = Infinity
-    this.xMin = options?.xMin  || 0
+    this.xMin = options?.xMin || 0
     this.draggable = null
     this.tray = options.tray || null
   }
@@ -131,9 +133,41 @@ class DraggableTray {
       this.draggable[0].applyBounds(bounds)
     }
   }
+  setClipPath(tray, pos, duration = null) {
+    function setClip(identifier, pos, duration = 0) {
+      gsap.to(`.container-${identifier}`, {
+        duration: duration,
+        // ease: 'power3.out',
+        clipPath: `inset(0px ${pos}px 0px 0px)`,
+      })
+    }
+
+    duration = duration ? duration : 0
+    let clipPos
+    //setSelfClippath
+    if (this.draggableTrays.length - 1 > tray.index) {
+      let nextTray = this.draggableTrays[tray.index + 1]
+      clipPos = this.trayMax + pos - nextTray.position + this.padding + this.spacerSize * 2
+      setClip(tray.id, clipPos, duration)
+    }
+
+    //setprevious Clippath
+    if (tray.index > 0) {
+      let previousTray = this.draggableTrays[tray.index - 1]
+      clipPos =
+        this.trayMax -
+        pos +
+        previousTray.position +
+        this.padding +
+        this.spacerSize * (tray.index > 1 ? 2 : 1)
+      setClip(this.draggableTrays[tray.index - 1].id, clipPos, duration)
+    }
+  }
   setMin(xMin) {
     this.xMin = xMin
-    // this.tray.xPos = xMin
+  }
+  setPos(position) {
+    this.position = position
   }
   setMax(xMax) {
     this.xMax = xMax

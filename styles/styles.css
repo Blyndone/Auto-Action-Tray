@@ -138,7 +138,7 @@
 }
 
 .ability-tray-container {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -150,7 +150,6 @@
   overflow: hidden;
   align-items: center;
   position: relative;
-  background: var(--aat-background-color, #5b5b5b);
   border-radius: 15px 15px 0px 0px;
   z-index: 5;
 }
@@ -179,7 +178,7 @@
   justify-content: flex-start;
 }
 .ability-tray-container .use-slot-checkbox {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -214,7 +213,6 @@
   width: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   height: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   box-sizing: border-box;
-  position: relative;
   vertical-align: middle;
   align-self: center;
   max-width: 100%;
@@ -259,7 +257,6 @@
   list-style-type: none;
   padding: var(--aat-main-tray-padding);
   align-items: center;
-  background: var(--aat-background-color, #5b5b5b);
   flex-direction: column;
   border-radius: 10px;
   justify-content: center;
@@ -306,6 +303,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin: 18px;
 }
 .ability-tray-container .condition-ol img {
   border: 0;
@@ -406,7 +404,7 @@
 }
 
 .ability-selection-input {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -606,7 +604,7 @@
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   border: 0 solid #2f2f2f;
   border-radius: 0 0 19px 19px;
   outline: 2px solid var(--aat-border-color);
@@ -623,8 +621,7 @@
 .drag-handle-container {
   height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 5);
   width: calc(var(--aat-item-size) / 3 + 2px);
-  padding: 15px 0px 15px 6px;
-  background: var(--aat-background-color, #5b5b5b);
+  padding: 5px 0px 5px 6px;
 }
 
 .drag-handle {
@@ -645,7 +642,7 @@
   height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 2);
   width: calc(var(--aat-item-size) / 3);
   position: absolute;
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   right: 0;
   z-index: 3;
 }
@@ -712,7 +709,7 @@
 }
 
 .equipment-tray-container {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -734,7 +731,6 @@
   width: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   height: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   box-sizing: border-box;
-  position: relative;
   vertical-align: middle;
   align-self: center;
   max-width: 100%;
@@ -856,7 +852,6 @@
   width: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   height: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   box-sizing: border-box;
-  position: relative;
   vertical-align: middle;
   align-self: center;
   max-width: 100%;
@@ -876,7 +871,6 @@
   width: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   height: calc(var(--aat-item-size) - var(--aat-main-tray-gap) * 2);
   box-sizing: border-box;
-  position: relative;
   vertical-align: middle;
   align-self: center;
   max-width: 100%;
@@ -1107,7 +1101,7 @@ img.item-equipped {
 }
 
 .character-image {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -1211,7 +1205,7 @@ img.item-equipped {
   outline: 8px solid var(--aat-hover-color);
 }
 .character-image-container img {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   vertical-align: middle;
   border: none;
   object-fit: cover;
@@ -1234,7 +1228,7 @@ img.item-equipped {
 }
 
 .hp-form {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -1320,7 +1314,7 @@ img.item-equipped {
 }
 
 .skill-tray {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -1639,7 +1633,7 @@ img.item-equipped {
 }
 
 .combat-inner-container {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -1657,7 +1651,7 @@ img.item-equipped {
 .end-turn-btn,
 .end-turn-btn-dice,
 .end-turn-btn-not-turn {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -1694,7 +1688,7 @@ img.item-equipped {
 }
 
 .dice-button-container {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
@@ -1782,7 +1776,7 @@ img.item-equipped {
 }
 
 .misc-tray-container {
-  background: var(--aat-background-color, #5b5b5b);
+  background: var(--aat-background-color, rgba(85, 85, 85, 0.8470588235));
   box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.8);
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
