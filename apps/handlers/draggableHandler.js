@@ -46,13 +46,13 @@ export class DraggableTrayContainer {
     this.draggableTrays?.forEach((tray, index) => {
       if (index != 0) {
         this.createDraggable.bind(this)(tray)
-        tray.setClipPath.bind(this)(tray, tray.position, duration)
+        tray.setClipPath.bind(this)(tray, tray.position, duration, true)
       }
     })
   }
-  setAllClipPaths(pos, duration) {
+  setAllClipPaths(duration) {
     this.draggableTrays?.forEach((tray) => {
-      tray.setClipPath.bind(this)(tray, pos, duration)
+      tray.setClipPath.bind(this)(tray, tray.position, duration, true)
     })
   }
 
@@ -138,8 +138,9 @@ class DraggableTray {
       this.draggable[0].applyBounds(bounds)
     }
   }
-  setClipPath(tray, pos, duration = null) {
-    
+  setClipPath(tray, pos, duration = null, selfOnly = false) {
+//  return
+    console.log('Setting clip path for tray:', tray.id, 'at position:', pos, Date.now())
     function setClip(identifier, pos, duration = 0) {
       const selector = `.container-${identifier}`
       const element = document.querySelector(selector)
@@ -166,7 +167,8 @@ class DraggableTray {
     }
 
     //setprevious Clippath
-    if (tray.index > 0) {
+  
+    if (tray.index == 1 || !selfOnly && tray.index > 0) {
       let previousTray = this.draggableTrays[tray.index - 1]
       clipPos =
         this.trayMax -

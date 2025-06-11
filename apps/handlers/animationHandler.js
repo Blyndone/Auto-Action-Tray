@@ -79,7 +79,7 @@ export class AnimationHandler {
 
     if (trayIn.id == 'stacked') {
 
-      this.hotbar.draggableTrays.createAllDraggables(0.5)
+      this.hotbar.draggableTrays.setAllClipPaths(0.5)
     }
 
     trayIn?.trays?.forEach((tray) => {
@@ -294,13 +294,14 @@ export class AnimationHandler {
       let spacerWidth = iconSize / 3
       let width = (iconSize - ((trayCount - 1) % 3) * spacerWidth) % iconSize
       this.animateSpacer(width == 0 ? 0 : width + 14)
+      const tl = gsap.timeline()
       trayIn.trays.forEach((tray) => {
         // if (tray != trayOut) {
         //   gsap.set(`.container-${tray.id}`, {
         //     opacity: 0,
         //   })
         // }
-        gsap.to(`.container-${tray.id}`, {
+        tl.to(`.container-${tray.id}`, {
           force3D: false,
           opacity: 1,
           x: tray.xPos,
@@ -309,7 +310,7 @@ export class AnimationHandler {
             animationComplete > 0 ? resolve() : animationComplete--
             return
           },
-        })
+        },0)
       })
     })
   }
