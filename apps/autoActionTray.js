@@ -120,6 +120,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         columnCount = game.settings.get('auto-action-tray', 'columnCount')
         document.documentElement.style.setProperty('--aat-item-tray-item-width-count', columnCount)
       }
+      if (game.settings.get('auto-action-tray', 'bgOpacity') != null && game.settings.get('auto-action-tray', 'bgOpacity')!= undefined) {
+        let value = game.settings.get('auto-action-tray', 'bgOpacity')
+        const baseColor = `5b5b5b`
+        const hex = Math.floor(value * 255)
+          .toString(16)
+          .padStart(2, '0')
+        document.documentElement.style.setProperty('--aat-background-color', `#${baseColor}${hex}`)
+      }
 
       this.totalabilities = rowCount * columnCount
       this.rowCount = rowCount
