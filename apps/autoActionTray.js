@@ -1129,7 +1129,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   createDraggable(trayId, index) {}
 
   _onRender(context, options) {
-    console.log('AutoActionTray _onRender', context, options, Date.now())
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
     if (options.parts.includes('centerTray')) {

@@ -255,12 +255,13 @@ export class AnimationHandler {
     return new Promise(async (resolve) => {
       let animationComplete = trayOut.trays.length
       this.animateSpacer(0)
+      const tl = gsap.timeline()  
       trayOut.trays.forEach((tray) => {
         let xOffset = 0
         if (tray == trayIn) {
           if (tray.id != 'common') xOffset = -33
           this.setStackedTrayPos(tray)
-          gsap.to(`.container-${tray.id}`, {
+          tl.to(`.container-${tray.id}`, {
             force3D: false,
             opacity: 1,
             x: xOffset,
@@ -269,9 +270,9 @@ export class AnimationHandler {
               animationComplete > 0 ? resolve() : animationComplete--
               return
             },
-          })
+          }, 0)
         } else {
-          gsap.to(`.container-${tray.id}`, {
+          tl.to(`.container-${tray.id}`, {
             force3D: false,
             opacity: 0,
             x: this.horizontalBounds,
@@ -280,7 +281,7 @@ export class AnimationHandler {
               animationComplete > 0 ? resolve() : animationComplete--
               return
             },
-          })
+          }, 0)
         }
       })
     })
@@ -317,12 +318,13 @@ export class AnimationHandler {
 
   setAllStackedTrayPos(stackedTray) {
     if (!this.hotbar.rendered) return
+    const tl = gsap.timeline()
     stackedTray.forEach((tray) => {
-      gsap.set(`.container-${tray.id}`, {
+      tl.set(`.container-${tray.id}`, {
         // force3D: false,
         opacity: 1,
         x: tray.tray.xPos,
-      })
+      }, 0)
     })
   }
   setStackedTrayPos(tray) {

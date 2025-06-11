@@ -98,7 +98,6 @@ export class DraggableTrayContainer {
         application.stackedTray.setTrayPosition(tray.id, min)
         tray.setMin(min)
         tray.setPos(min)
-        // console.log('Tray position updated:', tray.id, min)
         if (index - 1 != 0) {
           container.draggableTrays[index - 1].applyBounds({
             maxX: tray.xMin - container.spacerSize,
@@ -139,8 +138,7 @@ class DraggableTray {
     }
   }
   setClipPath(tray, pos, duration = null, selfOnly = false) {
-//  return
-    console.log('Setting clip path for tray:', tray.id, 'at position:', pos, Date.now())
+
     function setClip(identifier, pos, duration = 0) {
       const selector = `.container-${identifier}`
       const element = document.querySelector(selector)
