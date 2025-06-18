@@ -77,6 +77,11 @@ export class AnimationHandler {
 
     await hotbar.requestRender('centerTray', true)
 
+    if (trayIn.id == 'stacked') {
+
+      this.hotbar.draggableTrays.setAllClipPaths(0.5)
+    }
+
     trayIn?.trays?.forEach((tray) => {
       this.setPreStackedTrayPos(tray, trayOut)
     })
@@ -139,6 +144,7 @@ export class AnimationHandler {
       // tray.setActive()
       let xOffset = 0
       let yOffset = 0
+      let initialOpacity = 1
       switch (tray.type) {
         case 'static':
           yOffset = -1 * this.verticalBounds
@@ -155,11 +161,14 @@ export class AnimationHandler {
         case 'target':
           yOffset = -1 * this.verticalBounds
           break
+        case 'condition':
+          yOffset = this.verticalBounds
       }
+      initialOpacity = 0
 
       gsap.set(`.${tray.id}`, {
         // force3D: false,
-        opacity: 1,
+        opacity: initialOpacity,
         y: yOffset,
         x: xOffset,
       })
@@ -192,6 +201,7 @@ export class AnimationHandler {
       // tray.setActive()
       let xOffset = 0
       let yOffset = 0
+      let endOpactiy = 1
       switch (tray.type) {
         case 'static':
           yOffset = -1 * this.verticalBounds
@@ -208,11 +218,15 @@ export class AnimationHandler {
         case 'target':
           yOffset = -1 * this.verticalBounds
           break
+        case 'condition':
+          yOffset = this.verticalBounds
+          break
       }
+      endOpactiy = 0
 
       gsap.to(`.${tray.id}`, {
         force3D: false,
-        opacity: 1,
+        opacity: endOpactiy,
         y: yOffset,
         x: xOffset,
         inherit: true,
@@ -241,12 +255,13 @@ export class AnimationHandler {
     return new Promise(async (resolve) => {
       let animationComplete = trayOut.trays.length
       this.animateSpacer(0)
+      const tl = gsap.timeline()  
       trayOut.trays.forEach((tray) => {
         let xOffset = 0
         if (tray == trayIn) {
           if (tray.id != 'common') xOffset = -33
           this.setStackedTrayPos(tray)
-          gsap.to(`.container-${tray.id}`, {
+          tl.to(`.container-${tray.id}`, {
             force3D: false,
             opacity: 1,
             x: xOffset,
@@ -255,18 +270,18 @@ export class AnimationHandler {
               animationComplete > 0 ? resolve() : animationComplete--
               return
             },
-          })
+          }, 0)
         } else {
-          gsap.to(`.container-${tray.id}`, {
+          tl.to(`.container-${tray.id}`, {
             force3D: false,
-            opacity: 1,
+            opacity: 0,
             x: this.horizontalBounds,
             duration: AnimationHandler.getAnimationDuration(tray.id),
             onComplete: () => {
               animationComplete > 0 ? resolve() : animationComplete--
               return
             },
-          })
+          }, 0)
         }
       })
     })
@@ -280,8 +295,14 @@ export class AnimationHandler {
       let spacerWidth = iconSize / 3
       let width = (iconSize - ((trayCount - 1) % 3) * spacerWidth) % iconSize
       this.animateSpacer(width == 0 ? 0 : width + 14)
+      const tl = gsap.timeline()
       trayIn.trays.forEach((tray) => {
-        gsap.to(`.container-${tray.id}`, {
+        // if (tray != trayOut) {
+        //   gsap.set(`.container-${tray.id}`, {
+        //     opacity: 0,
+        //   })
+        // }
+        tl.to(`.container-${tray.id}`, {
           force3D: false,
           opacity: 1,
           x: tray.xPos,
@@ -290,19 +311,20 @@ export class AnimationHandler {
             animationComplete > 0 ? resolve() : animationComplete--
             return
           },
-        })
+        },0)
       })
     })
   }
 
   setAllStackedTrayPos(stackedTray) {
     if (!this.hotbar.rendered) return
+    const tl = gsap.timeline()
     stackedTray.forEach((tray) => {
-      gsap.set(`.container-${tray.id}`, {
+      tl.set(`.container-${tray.id}`, {
         // force3D: false,
         opacity: 1,
         x: tray.tray.xPos,
-      })
+      }, 0)
     })
   }
   setStackedTrayPos(tray) {

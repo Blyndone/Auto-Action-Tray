@@ -272,7 +272,7 @@ export class Actions {
       }
     }
 
-    if (item.type == 'spell' && !fastForward && item.spellLevel > 0 && !ritualCast) {
+    if (item.type == 'spell' && !fastForward && item.spellLevel > 0 && !ritualCast && item.isScaledSpell) {
       let spellData = await Actions.selectSpellLevel.bind(this)(item)
 
       if (

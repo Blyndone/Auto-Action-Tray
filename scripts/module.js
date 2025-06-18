@@ -137,6 +137,30 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
+
+  game.settings.register('auto-action-tray', 'bgOpacity', {
+    name: 'Background Opacity',
+    hint: 'Set the Opacity of the Tray Background',
+    scope: 'client',
+    config: true,
+
+    type: Number,
+    default: 0.5,
+
+    range: {
+      min: 0,
+      step: .05,
+      max: 1,
+    },
+    onChange: value => { 
+      const baseColor = `5b5b5b`
+      const hex = Math.floor(value * 255).toString(16).padStart(2, '0')
+      document.documentElement.style.setProperty('--aat-background-color', `#${baseColor}${hex}`)
+    },
+
+    requiresReload: false,
+  })
+
   game.settings.register('auto-action-tray', 'autoTheme', {
     name: 'Auto Theme',
     hint: 'Will automatically set the theme based on the selected actors class',

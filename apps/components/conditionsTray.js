@@ -10,6 +10,7 @@ export class ConditionTray {
     this.actor = options?.actor || null
     this.active = false
     this.label = 'Conditions'
+    this.type = 'condition'
     this.generateTray()
   }
   static setCustomIcons() {
