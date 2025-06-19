@@ -97,7 +97,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       autoAddItems: true,
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
-      rangeBoundaryEnabled: true,
+      rangeBoundaryEnabled: game.settings.get('auto-action-tray', 'defaultRangeBoundary'),
     }
 
     let rowCount = 2
@@ -576,7 +576,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
       rowCount: game.settings.get('auto-action-tray', 'rowCount'),
-      rangeBoundaryEnabled: true,
+      rangeBoundaryEnabled: game.settings.get('auto-action-tray', 'defaultRangeBoundary'),
     }
 
     if (config?.theme && config?.theme != '') {
@@ -748,7 +748,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onHoverToken(token, hovered) {
-    if (!token || token == this.token || !this.token) return
+    const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
+    if (!hoverEnabled || !token || token == this.token || !this.token) return
     if (!hovered) {
       const allItems = document.querySelectorAll('.in-range')
       // gsap.killTweensOf(allItems)

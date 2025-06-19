@@ -252,6 +252,30 @@ Hooks.once('ready', async function () {
   })
 
 
+  game.settings.register('auto-action-tray', 'enableRangeHover', {
+    name: 'Enable Range Hover',
+    hint: 'Highlights Items that are in range when hovering over a token',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
+
+  game.settings.register('auto-action-tray', 'defaultRangeBoundary', {
+    name: 'Default Range Boundary',
+    hint: 'Deafault Tray Range Boundaryy for Hovering Items',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
+
 
   game.settings.register('auto-action-tray', 'enableRangeBoundary', {
     name: 'Enable Range Boundary',
