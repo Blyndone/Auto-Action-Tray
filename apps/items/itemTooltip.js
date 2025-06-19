@@ -12,6 +12,7 @@ export class AATItemTooltip {
     this.actionType = ''
     this.ritualActivationTimeLabel = ''
     this.rangeLabel = ''
+    this.range = ''
     this.targetCount = options.targetCount ?? null
     this.saveLabel = ''
     this.concentrationLabel = ''
@@ -169,13 +170,14 @@ export class AATItemTooltip {
   setRangeLabel() {
     const activity = this.activity.activity
     if (!activity) return
-
+    let range = 0;
     const icon = (type) => (type === 'spell' ? 'fa-wand-sparkles' : 'fa-bow-arrow')
 
     let label = ''
 
     if (activity.range.reach) {
       label += `<span class='range-icon'><i class='fa-solid fa-swords'></i></span> ${activity.range.reach} ft. Melee`
+      range = Math.max(range, activity.range.reach)
     }
 
     if (activity.range.value) {
@@ -183,8 +185,9 @@ export class AATItemTooltip {
         activity.range.value
       } ${activity.range.long ? ` / ${activity.range.long}` : ''} ft.
     `
+      range = Math.max(range, activity.range.value)
     }
-
+    this.range = range
     this.rangeLabel = label
   }
 

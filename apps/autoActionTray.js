@@ -42,6 +42,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.isEditable = true
 
     this.actor = null
+    this.token = null
     this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
 
     this.meleeWeapon = null
@@ -120,7 +121,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         columnCount = game.settings.get('auto-action-tray', 'columnCount')
         document.documentElement.style.setProperty('--aat-item-tray-item-width-count', columnCount)
       }
-      if (game.settings.get('auto-action-tray', 'bgOpacity') != null && game.settings.get('auto-action-tray', 'bgOpacity')!= undefined) {
+      if (
+        game.settings.get('auto-action-tray', 'bgOpacity') != null &&
+        game.settings.get('auto-action-tray', 'bgOpacity') != undefined
+      ) {
         let value = game.settings.get('auto-action-tray', 'bgOpacity')
         const baseColor = `5b5b5b`
         const hex = Math.floor(value * 255)
@@ -160,6 +164,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('createActiveEffect', this._onCreateActiveEffect.bind(this))
     Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
+    Hooks.on('hoverToken', this._onHoverToken.bind(this))
     Hooks.on('renderHotbar', () => {})
 
     this.altDown = false
@@ -299,6 +304,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         return
       case controlled == true && this.actor != event.actor:
         this.actor = event.actor ? event.actor : event
+        this.token = event
         this.initialTraySetup(this.actor, event)
     }
   }
@@ -736,6 +742,33 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
       return wrapped(...args)
     }
+  }
+
+  _onHoverToken(token, hovered) {
+    if (!token || token == this.token) return
+    if (!hovered) {
+      const allItems = document.querySelectorAll('.in-range')
+      // gsap.killTweensOf(allItems)
+
+      gsap.to(allItems, {
+        opacity: 0,
+        duration: 0.2,
+      })
+      return
+    }
+
+    let xDist = Math.abs(this.token.x - token.x) / canvas.grid.size
+    let yDist = Math.abs(this.token.y - token.y) / canvas.grid.size
+    let distance = Math.ceil(Math.abs(Math.max(xDist, yDist))) * 5
+
+    const allItems = document.querySelectorAll('[data-action-range]')
+    const filteredItems = Array.from(allItems).filter((el) => {
+      let range = parseFloat(el.getAttribute('data-action-range'))
+      return range != 0 && !isNaN(range) && range >= distance
+    })
+    const targetElements = filteredItems.map((el) => el.querySelector('.in-range')).filter(Boolean)
+    console.log('targetElements', targetElements)
+    gsap.to(targetElements, { opacity: .9, overwrite: true })
   }
 
   static _onTokenSelect2(hotbar, wrapped, ...args) {

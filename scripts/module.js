@@ -145,7 +145,7 @@ Hooks.once('ready', async function () {
     config: true,
 
     type: Number,
-    default: 0.5,
+    default: 0.85,
 
     range: {
       min: 0,
