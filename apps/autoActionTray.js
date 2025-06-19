@@ -79,6 +79,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.conditionTray = new ConditionTray({ application: this })
 
     this.itemSelectorEnabled = false
+    this.rangeBoundaryEnabled = true
     this.currentDice = 0
     this.dice = ['20', '12', '10', '8', '6', '4']
     this.trayInformation = ''
@@ -96,6 +97,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       autoAddItems: true,
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
+      rangeBoundaryEnabled: true,
     }
 
     let rowCount = 2
@@ -244,7 +246,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       toggleFastForward: AutoActionTray.toggleFastForward,
       toggleTargetHelper: AutoActionTray.toggleTargetHelper,
       minimizeTray: AutoActionTray.minimizeTray,
-      toggleItemSelector: AutoActionTray.toggleItemSelector,
+      toggleRangeBoundary: AutoActionTray.toggleRangeBoundary,
       trayConfig: AutoActionTray.trayConfig,
       toggleHpText: AutoActionTray.toggleHpText,
       useActivity: ActivityTray.useActivity,
@@ -574,6 +576,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
       rowCount: game.settings.get('auto-action-tray', 'rowCount'),
+      rangeBoundaryEnabled: true,
     }
 
     if (config?.theme && config?.theme != '') {
@@ -745,7 +748,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onHoverToken(token, hovered) {
-    if (!token || token == this.token) return
+    if (!token || token == this.token || !this.token) return
     if (!hovered) {
       const allItems = document.querySelectorAll('.in-range')
       // gsap.killTweensOf(allItems)
@@ -753,6 +756,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       gsap.to(allItems, {
         opacity: 0,
         duration: 0.2,
+        overwrite: true,
       })
       return
     }
@@ -767,8 +771,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return range != 0 && !isNaN(range) && range >= distance
     })
     const targetElements = filteredItems.map((el) => el.querySelector('.in-range')).filter(Boolean)
-    console.log('targetElements', targetElements)
-    gsap.to(targetElements, { opacity: .9, overwrite: true })
+    gsap.to(targetElements, { opacity: 0.9, overwrite: true })
   }
 
   static _onTokenSelect2(hotbar, wrapped, ...args) {
@@ -1053,12 +1056,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.toggleTargetHelper.bind(this)()
   }
 
-  static toggleItemSelector() {
-    Actions.toggleItemSelector.bind(this)()
+  static toggleRangeBoundary() {
+    Actions.toggleRangeBoundary.bind(this)()
   }
-  toggleItemSelector(event, force) {
-    Actions.toggleItemSelector.bind(this)(event, force)
-  }
+ 
   static minimizeTray() {
     Actions.minimizeTray.bind(this)()
   }
@@ -1165,6 +1166,26 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
     if (options.parts.includes('centerTray')) {
+      if (this.trayOptions['rangeBoundaryEnabled']) {
+        const rangedItems = document.querySelectorAll('[data-action-range]')
+        const filtered = Array.from(rangedItems).filter(
+          (node) => parseInt(node.dataset.actionRange) > 0,
+        )
+
+        filtered.forEach((node) => {
+          node.addEventListener('mouseenter', () => {
+            const range = node.dataset.actionRange
+            this.targetHelper.createRangeBoundary(range / 5, this.actor)
+          })
+        })
+
+        filtered.forEach((node) => {
+          node.addEventListener('mouseleave', () => {
+            this.targetHelper.destroyRangeBoundary()
+          })
+        })
+      }
+
       document.querySelectorAll('.action-hover').forEach((source) => {
         let targetSelector = source.getAttribute('data-action-type')
         switch (targetSelector) {

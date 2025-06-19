@@ -26,6 +26,7 @@ export class TargetHelper {
     this.targetLines = []
     this.phantomLines = []
     this.currentLine = null
+    this.rangeBoundary = null
     this.startPos
     this.startLinePos
     this.active = false
@@ -164,6 +165,26 @@ export class TargetHelper {
     this.selectingTargets = false
     this.clearData()
   }
+  createRangeBoundary(range, actor) {
+    this.setActor(actor)
+    this.rangeBoundary = new TargetLineCombo({
+      useLines: false,
+      sendIcon: false,
+      startPos: this.startPos,
+      startLinePos: this.startLinePos,
+      actorId: actor.id,
+      itemName: '',
+      itemType: '',
+      itemImg: '',
+      itemRarity: '',
+      itemSpellLevel: '',
+      activityRange: range,
+    })
+  }
+  destroyRangeBoundary() {
+    this.rangeBoundary?.clearRangeBoundary()
+    this.rangeBoundary = null
+  }
 
   clearData() {
     this.actor = null
@@ -171,6 +192,7 @@ export class TargetHelper {
     this.singleRoll = false
     this.targets = []
     this.clearTargetLines()
+    this.destroyRangeBoundary()
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
     }

@@ -79,6 +79,7 @@ export class Actions {
     this.deleteSavedActor(actor, token)
     this.generateActorItems(actor)
     this.initialTraySetup(this.actor)
+    this.targetHelper.clearData()
     this.render(true)
   }
 
@@ -149,14 +150,10 @@ export class Actions {
     this.requestRender('equipmentMiscTray')
   }
 
-  static toggleItemSelector(event, force = null) {
-    if (force == null) {
-      this.itemSelectorEnabled = !this.itemSelectorEnabled
-    } else {
-      this.itemSelectorEnabled = force
-    }
-
-    this.requestRender('equipmentMiscTray')
+  static toggleRangeBoundary(event, force = null) {
+    this.trayOptions['rangeBoundaryEnabled'] = !this.trayOptions['rangeBoundaryEnabled']
+    this.setTrayConfig({ rangeBoundaryEnabled: this.trayOptions['rangeBoundaryEnabled'] })
+    this.requestRender(['equipmentMiscTray', 'centerTray'])
   }
   static minimizeTray() {
     this.close({ animate: false })
@@ -385,6 +382,7 @@ export class Actions {
   }
 
   static async useItem(event, target) {
+    this.targetHelper.destroyRangeBoundary()
     this.useSlot = true
     if (this.targetHelper.active) {
       return
