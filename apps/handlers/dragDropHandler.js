@@ -33,7 +33,7 @@ export class DragDropHandler {
       console.error(e)
       return
     }
-
+    hotbar.targetHelper.destroyRangeBoundary()
     let target =
       hotbar.actor.items.get(event.target.dataset.itemId) ||
       hotbar.actor.items.get(event.target.parentElement.dataset.itemId)
@@ -108,6 +108,7 @@ export class DragDropHandler {
     if (hotbar.currentTray instanceof StaticTray) {
       return
     }
+    hotbar.targetHelper.destroyRangeBoundary()
     if (data.index == 'meleeWeapon') {
       hotbar.equipmentTray.setMeleeWeapon(null)
       hotbar.requestRender('equipmentMiscTray')

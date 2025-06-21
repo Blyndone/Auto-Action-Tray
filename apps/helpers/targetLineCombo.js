@@ -502,7 +502,7 @@ class TargetText extends protoText {
   }
   moveText(endPos) {
     if (this.text) {
-      this.text.position.set(endPos.x + 15, endPos.y - this.fontSize -5)
+      this.text.position.set(endPos.x + 5, endPos.y - this.fontSize -5)
     }
   }
 }

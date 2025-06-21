@@ -530,7 +530,7 @@
 
 .small-button-save {
   background: linear-gradient(180deg, var(--aat-accent-color), var(--aat-accent-color-light));
-  border: 5px solid var(--aat-border-color-light);
+  border: 4px solid var(--aat-border-color-light);
   height: calc(16.6666666667% - var(--aat-main-tray-gap) * 3);
 }
 

@@ -21,6 +21,7 @@ export class TargetHelper {
     this.activityRange = 0
     this.activityTargetCount = 3
     this.actor = null
+    this.color = game.user.color.css
     this.singleRoll = false
     this.targets = []
     this.targetLines = []
@@ -36,6 +37,7 @@ export class TargetHelper {
     this.mouseMoveHandler = null
     this.selectedTargets = null
     this.rejectTargets = null
+
     this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate')
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
     this.recieveTargetLines = game.settings.get('auto-action-tray', 'recieveTargetLines')
@@ -44,6 +46,16 @@ export class TargetHelper {
 
   setActor(actor) {
     this.actor = actor
+    let themeColor = null
+    if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
+       themeColor = getComputedStyle(
+        document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
+      )
+        .getPropertyValue('--aat-hover-color')
+        .trim()
+    } 
+
+    this.color = this.hotbar.trayOptions.targetColor || themeColor || game.user.color.css
     this.actorId = actor.id
     this.startPos = TargetHelper.getPositionFromActor(actor)
     this.startLinePos = TargetHelper.getLinePositionFromActor(actor)
@@ -128,9 +140,8 @@ export class TargetHelper {
     let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
     this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
 
-
     this.currentLine = new TargetLineCombo({
-      useLines:false,
+      useLines: false,
       startPos: this.startPos,
       startLinePos: this.startLinePos,
       actorId: actor.id,
@@ -140,6 +151,7 @@ export class TargetHelper {
       itemRarity: item.rarity,
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
+      color: this.color
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -158,8 +170,6 @@ export class TargetHelper {
         itemSpellLevel: selectedSpellLevel,
       })
     }
-
-    
   }
   clearUseNotification() {
     this.selectingTargets = false
@@ -167,6 +177,7 @@ export class TargetHelper {
   }
   createRangeBoundary(range, actor) {
     this.setActor(actor)
+    this.rangeBoundary?.clearRangeBoundary()
     this.rangeBoundary = new TargetLineCombo({
       useLines: false,
       sendIcon: false,
@@ -179,6 +190,7 @@ export class TargetHelper {
       itemRarity: '',
       itemSpellLevel: '',
       activityRange: range,
+      color: this.color
     })
   }
   destroyRangeBoundary() {
@@ -232,10 +244,10 @@ export class TargetHelper {
       itemRarity: item.rarity,
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
+      color: this.color
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
-        
         id: this.currentLine.id,
         actorId: this.actorId,
         startPos: this.startPos,
@@ -250,7 +262,7 @@ export class TargetHelper {
         sendIcon: game.settings.get('auto-action-tray', 'enableUseItemIcon'),
       })
     }
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     this.mouseMoveHandler = foundry.utils.throttle(
       (event) => this._onMouseMove(event),
       this.throttleSpeed,
@@ -293,7 +305,7 @@ export class TargetHelper {
           color: this.currentLine.color,
         })
       }
-      this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+      this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     } else {
       this.confirmTargets()
     }
@@ -336,12 +348,12 @@ export class TargetHelper {
   increaseTargetCount() {
     if (this.targets.length >= this.activityTargetCount) return
     this.activityTargetCount++
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
   }
   decreaseTargetCount() {
     if (this.activityTargetCount <= 1) return
     this.activityTargetCount--
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     if (this.targets.length == this.activityTargetCount) {
       this.confirmTargets()
     }
@@ -376,7 +388,7 @@ export class TargetHelper {
       this.targetLines.at(-1)?.destroyLines()
       this.targetLines.pop()
     }
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
   }
 
   static cancelSelection(event, target) {
@@ -409,6 +421,7 @@ export class TargetHelper {
       startLinePos: this.startLinePos,
       actorId: this.actor.id,
       firstLine: this.targetLines.length == 0,
+      color: this.color
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -419,7 +432,7 @@ export class TargetHelper {
         firstLine: this.targetLines.length == 0,
       })
     }
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     this.currentLine.drawLines(endPos)
     if (this.sendTargetLines) {
       this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)

@@ -172,6 +172,18 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
+  game.settings.register('auto-action-tray', 'autoThemeTargetingColor', {
+    name: 'Auto Theme Targeting Color ',
+    hint: 'Changes the Targeting Color based on the selected Actor',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
+
 
   game.settings.register('auto-action-tray', 'theme', {
     name: 'Color Theme',
@@ -208,6 +220,9 @@ Hooks.once('ready', async function () {
     }),
     default: 'theme-classic',
   })
+
+
+
 
   game.settings.register('auto-action-tray', 'tempTheme', {
     name: 'tempTheme',

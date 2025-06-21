@@ -26,11 +26,13 @@
 
 {{#if equipmentTray.meleeWeapon}}
   <img
-    class='{{equipmentTray.meleeWeapon.rarity}}-item'
+    class='{{equipmentTray.meleeWeapon.rarity}}-item  action-hover'
     data-item-id='{{equipmentTray.meleeWeapon.id}}'
     data-drag='true'
     data-action='useItem'
     data-index='meleeWeapon'
+     data-action-type='{{equipmentTray.meleeWeapon.tooltip.actionType}}'
+     data-action-range = "{{equipmentTray.meleeWeapon.tooltip.range}}"
     src='{{equipmentTray.meleeWeapon.img}}'
     alt='{{equipmentTray.meleeWeapon.name}}'
     {{#with equipmentTray.meleeWeapon}}a
@@ -44,11 +46,13 @@
 
 {{#if equipmentTray.rangedWeapon}}
   <img
-    class='{{equipmentTray.rangedWeapon.rarity}}-item'
+    class='{{equipmentTray.rangedWeapon.rarity}}-item  action-hover'
     data-drag='true'
     data-item-id='{{equipmentTray.rangedWeapon.id}}'
     data-action='useItem'
     data-index='rangedWeapon'
+         data-action-type='{{equipmentTray.rangedWeapon.tooltip.actionType}}'
+     data-action-range = "{{equipmentTray.rangedWeapon.tooltip.range}}"
     src='{{equipmentTray.rangedWeapon.img}}'
     alt='{{equipmentTray.rangedWeapon.name}}'
     {{#with equipmentTray.rangedWeapon}}
