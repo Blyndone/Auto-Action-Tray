@@ -167,7 +167,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
-    Hooks.on('renderHotbar', () => {})
+    Hooks.on('renderHotbar', () => { })
+
+
 
     this.altDown = false
     this.ctrlDown = false

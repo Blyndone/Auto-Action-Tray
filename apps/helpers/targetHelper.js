@@ -1,11 +1,13 @@
 import { TargetLineCombo } from './targetLineCombo.js'
 import { AATActivity } from '../items/activity.js'
+import { TemplateBoundary } from './templateBoundary.js'
 
 export class TargetHelper {
   constructor(options) {
     this.id = 'target-helper'
     this.label = ''
     this.type = 'target'
+
     this.socket = options.socket
     this.hotbar = options.hotbar
     this.socket.register('newPhantomLine', this.newPhantomLine.bind(this))
@@ -15,6 +17,12 @@ export class TargetHelper {
     this.socket.register('setPhantomInRange', this.setPhantomInRange.bind(this))
     this.socket.register('destroyPhantomLine', this.destroyPhantomLine.bind(this))
     this.socket.register('setPhantomYOffset', this.setPhantomYOffset.bind(this))
+
+    this.socket.register('createTemplateBoundary', this.createTemplateBoundary.bind(this))
+    this.socket.register('updateTemplateBoundary', this.updateTemplateBoundary.bind(this))
+    this.socket.register('destroyTemplateBoundary', this.destroyTemplateBoundary.bind(this))
+
+
 
     this.stage = canvas.stage
     this.activity = null
@@ -28,6 +36,8 @@ export class TargetHelper {
     this.phantomLines = []
     this.currentLine = null
     this.rangeBoundary = null
+    this.templateBoundary = new TemplateBoundary(options)
+    this.templateBoundaryUuid = null
     this.startPos
     this.startLinePos
     this.active = false
@@ -42,18 +52,110 @@ export class TargetHelper {
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
     this.recieveTargetLines = game.settings.get('auto-action-tray', 'recieveTargetLines')
     this.gridSize = game.canvas.scene.grid.size
+
+    Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
+      this.templateBoundaryUuid = activity.uuid
+      let themeColor = null
+      if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
+        themeColor = getComputedStyle(
+          document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
+        )
+          .getPropertyValue('--aat-hover-color')
+          .trim()
+      }
+  
+      const options = {
+        // activity: activity,
+        // template: created[0],
+        color: themeColor || game.user.color.css,
+        activityUuid: activity.uuid,
+        document: created[0].document,
+
+      }
+      this.createTemplateBoundary.bind(this)(options)
+      this.socket.executeForOthers(
+        'createTemplateBoundary', { ...options, phantom: true }
+      )
+    })
+    Hooks.on('refreshMeasuredTemplate', (template, state) => {
+      if (
+        !template.activity ||
+        !template.activity.uuid ||
+        this.templateBoundaryUuid != template.activity.uuid
+      )
+        return
+      
+      let options = {
+        activityUuid: template.activity.uuid,
+        document: template.document,
+      }
+      this.updateTemplateBoundary.bind(this)(options)
+      this.socket.executeForOthers(
+        'updateTemplateBoundary', { ...options, phantom: true },
+      )
+    })
+    Hooks.on('destroyMeasuredTemplate', (template) => {
+      if (
+        !template.activity ||
+        !template.activity.uuid ||
+        this.templateBoundaryUuid != template.activity.uuid
+      )
+        return
+        let options = {
+          activityUuid: template.activity.uuid,
+          document: template.document,
+        }
+      this.destroyTemplateBoundary.bind(this)(options)
+      this.templateBoundaryUuid = null
+      this.socket.executeForOthers(
+        'destroyTemplateBoundary', { ...options, phantom: true },
+      )
+    })
   }
+  createTemplateBoundary(options) {
+
+    this.templateBoundary?.createBoundary(options)
+   
+    console.log('Template Boundary created:', this.templateBoundary)
+  }
+  // createPhantomTemplateBoundary(options) {
+  //   // if (!this.recieveTargetLines) return
+  //   options = {
+  //     ...options,
+  //     phantom: true,
+  //   }
+  //   this.templateBoundary?.createBoundary(options)
+  // }
+
+  updateTemplateBoundary(template) {
+    console.log('Updating template boundary for:', template)
+    this.templateBoundary?.updateBoundary(template)
+
+  }
+  // updatePhantomTemplateBoundary(template) {
+  //   // if (!this.recieveTargetLines) return
+  //   this.templateBoundary?.updateBoundary(template)
+  // }
+
+  destroyTemplateBoundary(template) {
+    this.templateBoundary?.destroyBoundary(template)
+
+  }
+  // destroyPhantomTemplateBoundary(template) {
+  //   // if (!this.recieveTargetLines) return
+  //   this.templateBoundary?.destroyBoundary(template)
+  // }
 
   setActor(actor) {
     this.actor = actor
     let themeColor = null
     if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
-       themeColor = getComputedStyle(
+      themeColor = getComputedStyle(
         document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
       )
         .getPropertyValue('--aat-hover-color')
         .trim()
-    } 
+    }
 
     this.color = this.hotbar.trayOptions.targetColor || themeColor || game.user.color.css
     this.actorId = actor.id
@@ -151,7 +253,7 @@ export class TargetHelper {
       itemRarity: item.rarity,
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
-      color: this.color
+      color: this.color,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -190,7 +292,7 @@ export class TargetHelper {
       itemRarity: '',
       itemSpellLevel: '',
       activityRange: range,
-      color: this.color
+      color: this.color,
     })
   }
   destroyRangeBoundary() {
@@ -244,7 +346,7 @@ export class TargetHelper {
       itemRarity: item.rarity,
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
-      color: this.color
+      color: this.color,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -421,7 +523,7 @@ export class TargetHelper {
       startLinePos: this.startLinePos,
       actorId: this.actor.id,
       firstLine: this.targetLines.length == 0,
-      color: this.color
+      color: this.color,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
