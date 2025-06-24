@@ -269,7 +269,13 @@ export class Actions {
       }
     }
 
-    if (item.type == 'spell' && !fastForward && item.spellLevel > 0 && !ritualCast && item.isScaledSpell) {
+    if (
+      item.type == 'spell' &&
+      !fastForward &&
+      item.spellLevel > 0 &&
+      !ritualCast &&
+      item.isScaledSpell
+    ) {
       let spellData = await Actions.selectSpellLevel.bind(this)(item)
 
       if (
@@ -330,6 +336,9 @@ export class Actions {
       targetCount > 0 &&
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
+      ui.controls.initialize({ control: 'token', tool: 'select' })
+      canvas.tokens.activate({tool: "select"});
+
       targets = await this.targetHelper.requestTargets(
         item,
         activity,
@@ -472,7 +481,7 @@ export class Actions {
         await item.item.system.activities
           .get(
             activity?.activityId ||
-            activity?.itemId ||
+              activity?.itemId ||
               activity?._id ||
               item.item.system.activities.contents[0].id,
           )
@@ -508,7 +517,7 @@ export class Actions {
       const usePromise = item.item.system.activities
         .get(
           activity?.activityId ||
-          activity?.itemId ||
+            activity?.itemId ||
             activity?._id ||
             activity?.id ||
             item.item.system.activities.contents[0].id,
@@ -537,8 +546,6 @@ export class Actions {
       }
     }
   }
-
-  
 
   static useSkillSave(event, target) {
     let advantage = event.altKey

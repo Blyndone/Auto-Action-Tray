@@ -227,14 +227,28 @@ class RectangleBoundary extends protoBoundary {
     this.width = options.width
     let width = (options.distance * Math.sin((this.direction * Math.PI) / 180) * this.gridSize) / 5
     let height = (options.distance * Math.cos((this.direction * Math.PI) / 180) * this.gridSize) / 5
+
     this.boundary.clear()
     this.boundary.lineStyle(5, this.color, 1)
 
-    const rectWidth = height
-    const rectHeight = width
+    let rectX = 0
+    let rectY = 0
+    let rectWidth = height
+    let rectHeight = width
 
-    this.boundary.drawRect(0, 0, rectWidth, rectHeight)
 
+    if (rectWidth < 0) {
+      rectX += rectWidth
+      rectWidth = Math.abs(rectWidth)
+    }
+
+
+    if (rectHeight < 0) {
+      rectY += rectHeight
+      rectHeight = Math.abs(rectHeight)
+    }
+
+    this.boundary.drawRect(rectX, rectY, rectWidth, rectHeight)
     this.boundary.position.set(this.x, this.y)
 
     gsap.set(this.boundary, {
