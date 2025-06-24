@@ -22,8 +22,6 @@ export class TargetHelper {
     this.socket.register('updateTemplateBoundary', this.updateTemplateBoundary.bind(this))
     this.socket.register('destroyTemplateBoundary', this.destroyTemplateBoundary.bind(this))
 
-
-
     this.stage = canvas.stage
     this.activity = null
     this.activityRange = 0
@@ -54,97 +52,12 @@ export class TargetHelper {
     this.gridSize = game.canvas.scene.grid.size
 
     Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
-      this.templateBoundaryUuid = activity.uuid
-      let themeColor = null
-      if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
-        themeColor = getComputedStyle(
-          document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
-        )
-          .getPropertyValue('--aat-hover-color')
-          .trim()
-      }
-  
-      const options = {
-        // activity: activity,
-        // template: created[0],
-        color: themeColor || game.user.color.css,
-        activityUuid: activity.uuid,
-        document: created[0].document,
-
-      }
-      this.createTemplateBoundary.bind(this)(options)
-      this.socket.executeForOthers(
-        'createTemplateBoundary', { ...options, phantom: true }
-      )
+      if (!(activity.actor.id == this.actor.id)) return
+      this._HookCreateMeasuredTemplate(activity, created)
     })
-    Hooks.on('refreshMeasuredTemplate', (template, state) => {
-      if (
-        !template.activity ||
-        !template.activity.uuid ||
-        this.templateBoundaryUuid != template.activity.uuid
-      )
-        return
-      
-      let options = {
-        activityUuid: template.activity.uuid,
-        document: template.document,
-      }
-      this.updateTemplateBoundary.bind(this)(options)
-      this.socket.executeForOthers(
-        'updateTemplateBoundary', { ...options, phantom: true },
-      )
-    })
-    Hooks.on('destroyMeasuredTemplate', (template) => {
-      if (
-        !template.activity ||
-        !template.activity.uuid ||
-        this.templateBoundaryUuid != template.activity.uuid
-      )
-        return
-        let options = {
-          activityUuid: template.activity.uuid,
-          document: template.document,
-        }
-      this.destroyTemplateBoundary.bind(this)(options)
-      this.templateBoundaryUuid = null
-      this.socket.executeForOthers(
-        'destroyTemplateBoundary', { ...options, phantom: true },
-      )
-    })
+    this.refreshHook = null
+    this.destroyHook = null
   }
-  createTemplateBoundary(options) {
-
-    this.templateBoundary?.createBoundary(options)
-   
-    console.log('Template Boundary created:', this.templateBoundary)
-  }
-  // createPhantomTemplateBoundary(options) {
-  //   // if (!this.recieveTargetLines) return
-  //   options = {
-  //     ...options,
-  //     phantom: true,
-  //   }
-  //   this.templateBoundary?.createBoundary(options)
-  // }
-
-  updateTemplateBoundary(template) {
-    console.log('Updating template boundary for:', template)
-    this.templateBoundary?.updateBoundary(template)
-
-  }
-  // updatePhantomTemplateBoundary(template) {
-  //   // if (!this.recieveTargetLines) return
-  //   this.templateBoundary?.updateBoundary(template)
-  // }
-
-  destroyTemplateBoundary(template) {
-    this.templateBoundary?.destroyBoundary(template)
-
-  }
-  // destroyPhantomTemplateBoundary(template) {
-  //   // if (!this.recieveTargetLines) return
-  //   this.templateBoundary?.destroyBoundary(template)
-  // }
 
   setActor(actor) {
     this.actor = actor
@@ -594,7 +507,6 @@ export class TargetHelper {
       this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)
     }
 
-    // this.socket.executeForOthers('phantom', this.startPos, endPos)
   }
 
   static async getCursorCoordinates(onClickEvent) {
@@ -663,5 +575,83 @@ export class TargetHelper {
     }
 
     return targetCount
+  }
+
+  _HookCreateMeasuredTemplate(activity, created) {
+    this.templateBoundaryUuid = activity.uuid
+    // let themeColor = null
+    // if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
+    //   themeColor = getComputedStyle(
+    //     document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
+    //   )
+    //     .getPropertyValue('--aat-hover-color')
+    //     .trim()
+    // }
+
+    const options = {
+      color: this.color ||themeColor || game.user.color.css,
+      activityUuid: activity.uuid,
+      document: created[0].document,
+    }
+    this.createTemplateBoundary.bind(this)(options)
+    if (this.sendTargetLines) {
+      this.socket.executeForOthers('createTemplateBoundary', { ...options, phantom: true })
+    }
+
+    this.refreshHook = Hooks.on('refreshMeasuredTemplate', (template, state) => {
+      this._HookRefreshMeasuredTemplate(template, state)
+    })
+    this.destroyHook = Hooks.on('destroyMeasuredTemplate', (template) => {
+      this._HookDestroyMeasuredTemplate(template)
+    })
+  }
+  _HookRefreshMeasuredTemplate(template, state) {
+    if (
+      !template?.activity ||
+      !template?.activity.uuid ||
+      this.templateBoundaryUuid != template.activity.uuid
+    )
+      return
+
+    let options = {
+      activityUuid: template.activity.uuid,
+      document: template.document,
+    }
+    this.updateTemplateBoundary.bind(this)(options)
+    if (this.sendTargetLines) {
+      this.socket.executeForOthers('updateTemplateBoundary', { ...options, phantom: true })
+    }
+  }
+  _HookDestroyMeasuredTemplate(template) {
+    if (
+      !template?.activity ||
+      !template?.activity.uuid ||
+      this.templateBoundaryUuid != template.activity.uuid
+    )
+      return
+    let options = {
+      activityUuid: template.activity.uuid,
+      document: template.document,
+    }
+    this.destroyTemplateBoundary.bind(this)(options)
+    this.templateBoundaryUuid = null
+    if (this.sendTargetLines) {
+      this.socket.executeForOthers('destroyTemplateBoundary', { ...options, phantom: true })
+    }
+    Hooks.off('refreshMeasuredTemplate', this.refreshHook)
+    Hooks.off('destroyMeasuredTemplate', this.destroyHook)
+  }
+
+  createTemplateBoundary(options) {
+    if (!this.recieveTargetLines && options.phantom) return
+    this.templateBoundary?.createBoundary(options)
+  }
+
+  updateTemplateBoundary(template) {
+    this.templateBoundary?.updateBoundary(template)
+  }
+
+  destroyTemplateBoundary(template) {
+    this.templateBoundary?.destroyBoundary(template)
   }
 }
