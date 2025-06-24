@@ -579,21 +579,16 @@ export class TargetHelper {
 
   _HookCreateMeasuredTemplate(activity, created) {
     this.templateBoundaryUuid = activity.uuid
-    // let themeColor = null
-    // if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
-    //   themeColor = getComputedStyle(
-    //     document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
-    //   )
-    //     .getPropertyValue('--aat-hover-color')
-    //     .trim()
-    // }
 
     const options = {
       color: this.color ||themeColor || game.user.color.css,
       activityUuid: activity.uuid,
       document: created[0].document,
     }
-    this.createTemplateBoundary.bind(this)(options)
+    if (!this.createTemplateBoundary.bind(this)(options)) { 
+      return
+    }
+    
     if (this.sendTargetLines) {
       this.socket.executeForOthers('createTemplateBoundary', { ...options, phantom: true })
     }
@@ -618,7 +613,7 @@ export class TargetHelper {
       document: template.document,
     }
     this.updateTemplateBoundary.bind(this)(options)
-    if (this.sendTargetLines) {
+    if (this.sendTargetLines) { 
       this.socket.executeForOthers('updateTemplateBoundary', { ...options, phantom: true })
     }
   }
@@ -644,7 +639,7 @@ export class TargetHelper {
 
   createTemplateBoundary(options) {
     if (!this.recieveTargetLines && options.phantom) return
-    this.templateBoundary?.createBoundary(options)
+    return this.templateBoundary?.createBoundary(options)
   }
 
   updateTemplateBoundary(template) {
