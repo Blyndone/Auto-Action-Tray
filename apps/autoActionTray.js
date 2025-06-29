@@ -42,6 +42,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.isEditable = true
 
     this.actor = null
+    this.token = null
     this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
 
     this.meleeWeapon = null
@@ -78,6 +79,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.conditionTray = new ConditionTray({ application: this })
 
     this.itemSelectorEnabled = false
+    this.rangeBoundaryEnabled = true
     this.currentDice = 0
     this.dice = ['20', '12', '10', '8', '6', '4']
     this.trayInformation = ''
@@ -95,6 +97,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       autoAddItems: true,
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
+      rangeBoundaryEnabled: game.settings.get('auto-action-tray', 'defaultRangeBoundary'),
     }
 
     let rowCount = 2
@@ -120,7 +123,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         columnCount = game.settings.get('auto-action-tray', 'columnCount')
         document.documentElement.style.setProperty('--aat-item-tray-item-width-count', columnCount)
       }
-      if (game.settings.get('auto-action-tray', 'bgOpacity') != null && game.settings.get('auto-action-tray', 'bgOpacity')!= undefined) {
+      if (
+        game.settings.get('auto-action-tray', 'bgOpacity') != null &&
+        game.settings.get('auto-action-tray', 'bgOpacity') != undefined
+      ) {
         let value = game.settings.get('auto-action-tray', 'bgOpacity')
         const baseColor = `5b5b5b`
         const hex = Math.floor(value * 255)
@@ -160,7 +166,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('createActiveEffect', this._onCreateActiveEffect.bind(this))
     Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
-    Hooks.on('renderHotbar', () => {})
+    Hooks.on('hoverToken', this._onHoverToken.bind(this))
+    Hooks.on('renderHotbar', () => { })
+
+
 
     this.altDown = false
     this.ctrlDown = false
@@ -239,7 +248,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       toggleFastForward: AutoActionTray.toggleFastForward,
       toggleTargetHelper: AutoActionTray.toggleTargetHelper,
       minimizeTray: AutoActionTray.minimizeTray,
-      toggleItemSelector: AutoActionTray.toggleItemSelector,
+      toggleRangeBoundary: AutoActionTray.toggleRangeBoundary,
       trayConfig: AutoActionTray.trayConfig,
       toggleHpText: AutoActionTray.toggleHpText,
       useActivity: ActivityTray.useActivity,
@@ -299,6 +308,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         return
       case controlled == true && this.actor != event.actor:
         this.actor = event.actor ? event.actor : event
+        this.token = event
         this.initialTraySetup(this.actor, event)
     }
   }
@@ -568,6 +578,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
       rowCount: game.settings.get('auto-action-tray', 'rowCount'),
+      rangeBoundaryEnabled: game.settings.get('auto-action-tray', 'defaultRangeBoundary'),
     }
 
     if (config?.theme && config?.theme != '') {
@@ -736,6 +747,34 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
       return wrapped(...args)
     }
+  }
+
+  _onHoverToken(token, hovered) {
+    const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
+    if (!hoverEnabled || !token || token == this.token || !this.token) return
+    if (!hovered) {
+      const allItems = document.querySelectorAll('.in-range')
+      // gsap.killTweensOf(allItems)
+
+      gsap.to(allItems, {
+        opacity: 0,
+        duration: 0.2,
+        overwrite: true,
+      })
+      return
+    }
+
+    let xDist = Math.abs(this.token.x - token.x) / canvas.grid.size
+    let yDist = Math.abs(this.token.y - token.y) / canvas.grid.size
+    let distance = Math.ceil(Math.abs(Math.max(xDist, yDist))) * 5
+
+    const allItems = document.querySelectorAll('[data-action-range]')
+    const filteredItems = Array.from(allItems).filter((el) => {
+      let range = parseFloat(el.getAttribute('data-action-range'))
+      return range != 0 && !isNaN(range) && range >= distance
+    })
+    const targetElements = filteredItems.map((el) => el.querySelector('.in-range')).filter(Boolean)
+    gsap.to(targetElements, { opacity: 0.9, overwrite: true })
   }
 
   static _onTokenSelect2(hotbar, wrapped, ...args) {
@@ -1020,12 +1059,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.toggleTargetHelper.bind(this)()
   }
 
-  static toggleItemSelector() {
-    Actions.toggleItemSelector.bind(this)()
+  static toggleRangeBoundary() {
+    Actions.toggleRangeBoundary.bind(this)()
   }
-  toggleItemSelector(event, force) {
-    Actions.toggleItemSelector.bind(this)(event, force)
-  }
+ 
   static minimizeTray() {
     Actions.minimizeTray.bind(this)()
   }
@@ -1132,6 +1169,26 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.#dragDrop.forEach((d) => d.bind(this.element))
 
     if (options.parts.includes('centerTray')) {
+      if (this.trayOptions['rangeBoundaryEnabled']) {
+        const rangedItems = document.querySelectorAll('[data-action-range]')
+        const filtered = Array.from(rangedItems).filter(
+          (node) => parseInt(node.dataset.actionRange) > 0,
+        )
+
+        filtered.forEach((node) => {
+          node.addEventListener('mouseenter', () => {
+            const range = node.dataset.actionRange
+            this.targetHelper.createRangeBoundary(range / 5, this.actor)
+          })
+        })
+
+        filtered.forEach((node) => {
+          node.addEventListener('mouseleave', () => {
+            this.targetHelper.destroyRangeBoundary()
+          })
+        })
+      }
+
       document.querySelectorAll('.action-hover').forEach((source) => {
         let targetSelector = source.getAttribute('data-action-type')
         switch (targetSelector) {

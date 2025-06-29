@@ -25,9 +25,9 @@
   </div>
 </div>
 
-<div class="small-button"
-  data-action="toggleItemSelector"
-  data-tooltip="Item Configuration"
+<div class="{{#if trayOptions.rangeBoundaryEnabled}}small-button small-button-active{{else}}small-button{{/if}}"
+  data-action="toggleRangeBoundary"
+  data-tooltip="Toggle Range Boundary"
   data-tooltip-direction="UP">
   <div class="button-label">
     <i class="fa-solid fa-square-dashed"></i>

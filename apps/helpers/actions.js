@@ -79,6 +79,7 @@ export class Actions {
     this.deleteSavedActor(actor, token)
     this.generateActorItems(actor)
     this.initialTraySetup(this.actor)
+    this.targetHelper.clearData()
     this.render(true)
   }
 
@@ -149,14 +150,10 @@ export class Actions {
     this.requestRender('equipmentMiscTray')
   }
 
-  static toggleItemSelector(event, force = null) {
-    if (force == null) {
-      this.itemSelectorEnabled = !this.itemSelectorEnabled
-    } else {
-      this.itemSelectorEnabled = force
-    }
-
-    this.requestRender('equipmentMiscTray')
+  static toggleRangeBoundary(event, force = null) {
+    this.trayOptions['rangeBoundaryEnabled'] = !this.trayOptions['rangeBoundaryEnabled']
+    this.setTrayConfig({ rangeBoundaryEnabled: this.trayOptions['rangeBoundaryEnabled'] })
+    this.requestRender(['equipmentMiscTray', 'centerTray'])
   }
   static minimizeTray() {
     this.close({ animate: false })
@@ -272,7 +269,13 @@ export class Actions {
       }
     }
 
-    if (item.type == 'spell' && !fastForward && item.spellLevel > 0 && !ritualCast && item.isScaledSpell) {
+    if (
+      item.type == 'spell' &&
+      !fastForward &&
+      item.spellLevel > 0 &&
+      !ritualCast &&
+      item.isScaledSpell
+    ) {
       let spellData = await Actions.selectSpellLevel.bind(this)(item)
 
       if (
@@ -333,6 +336,9 @@ export class Actions {
       targetCount > 0 &&
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
+      ui.controls.initialize({ control: 'token', tool: 'select' })
+      canvas.tokens.activate({tool: "select"});
+
       targets = await this.targetHelper.requestTargets(
         item,
         activity,
@@ -385,6 +391,7 @@ export class Actions {
   }
 
   static async useItem(event, target) {
+    this.targetHelper.destroyRangeBoundary()
     this.useSlot = true
     if (this.targetHelper.active) {
       return
@@ -474,7 +481,7 @@ export class Actions {
         await item.item.system.activities
           .get(
             activity?.activityId ||
-            activity?.itemId ||
+              activity?.itemId ||
               activity?._id ||
               item.item.system.activities.contents[0].id,
           )
@@ -510,7 +517,7 @@ export class Actions {
       const usePromise = item.item.system.activities
         .get(
           activity?.activityId ||
-          activity?.itemId ||
+            activity?.itemId ||
             activity?._id ||
             activity?.id ||
             item.item.system.activities.contents[0].id,
@@ -539,8 +546,6 @@ export class Actions {
       }
     }
   }
-
-  
 
   static useSkillSave(event, target) {
     let advantage = event.altKey

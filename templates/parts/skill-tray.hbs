@@ -3,7 +3,7 @@
   {{#if (eq @root.skillTrayPage 0)}}
   {{#each skillTray.currentSkills as |skill|}}
     <div
-      class="small-button small-button-skill-save modifier-highlight
+      class="small-button divider-button small-button-skill-save modifier-highlight
         {{#if (eq skill.type 'save')}} small-button-save{{else}} small-button-skill{{/if}}
         {{#if (eq skill.proficient 1)}} proficient{{/if}}
         {{#if (eq skill.proficient 2)}} expertise{{/if}}"
@@ -20,6 +20,11 @@
         {{skill.bonus}}
     </div>
     </div>
+ 
+{{!-- {{#if (eq @index 5)}}
+  <div style="display: inline-block; width: 2px; height: 90%; background-color: black; vertical-align: middle; margin: 0 5px;"></div>
+{{/if}} --}}
+
   {{/each}}
 {{else}}
   {{#each skillTray.secondarySkills as |skill|}}

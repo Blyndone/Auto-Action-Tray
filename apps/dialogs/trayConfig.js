@@ -75,6 +75,25 @@ export class TrayConfig {
       label: 'Additional Custom Static Tray',
       hint: "Add an Item Resource here for auto-recognition. Enter the Item Name. The item must have limited uses. Additionally, other items that consume this resource should be configured to use the inputted item's available uses.",
     })
+
+    let themeColor = null
+    if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
+      themeColor = getComputedStyle(
+        document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
+      )
+        .getPropertyValue('--aat-hover-color')
+        .trim()
+    }
+    const targetColor = foundry.applications.elements.HTMLColorPickerElement.create({
+      name: 'targetColor',
+      value: this.trayOptions['targetColor'] || themeColor || game.user.color || '#ff0000',
+    })
+    const targetColorFieldGroup = fields.createFormGroup({
+      input: targetColor,
+      label: 'Target Line and Range Boundary Color',
+      hint: 'Select the color for the target line and range boundary.',
+    })
+
     const clearCustomStaticTrays = fields.createCheckboxInput({
       name: 'clearCustomStaticTrays',
       value: false,
@@ -169,7 +188,7 @@ export class TrayConfig {
 
     const classSkills = fields.createCheckboxInput({
       name: 'classSkills',
-      value: this.trayOptions['classSkills'] ?? true ,
+      value: this.trayOptions['classSkills'] ?? true,
     })
     const classSkillsGroup = fields.createFormGroup({
       input: classSkills,
@@ -177,7 +196,7 @@ export class TrayConfig {
       hint: 'Display Class Specific Skills in the Tray.',
     })
 
-    const content = ` ${themeGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML} ${classSkillsGroup.outerHTML} `
+    const content = `  ${themeGroup.outerHTML} ${targetColorFieldGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML} ${classSkillsGroup.outerHTML} `
     let dialogElement
     let handlers = {}
     let initialValues = {
@@ -264,7 +283,13 @@ export class TrayConfig {
       }
 
       if (result['theme']) {
-        game.settings.set('auto-action-tray', 'tempTheme', result.theme)
+        if (game.settings.get('auto-action-tray', 'tempTheme') != result.theme) {
+          game.settings.set('auto-action-tray', 'tempTheme', result.theme)
+
+          if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
+            result['targetColor'] = ''
+          }
+        }
       }
 
       if (result['clearCustomStaticTrays']) {

@@ -1,11 +1,13 @@
 import { TargetLineCombo } from './targetLineCombo.js'
 import { AATActivity } from '../items/activity.js'
+import { TemplateBoundary } from './templateBoundary.js'
 
 export class TargetHelper {
   constructor(options) {
     this.id = 'target-helper'
     this.label = ''
     this.type = 'target'
+
     this.socket = options.socket
     this.hotbar = options.hotbar
     this.socket.register('newPhantomLine', this.newPhantomLine.bind(this))
@@ -16,16 +18,24 @@ export class TargetHelper {
     this.socket.register('destroyPhantomLine', this.destroyPhantomLine.bind(this))
     this.socket.register('setPhantomYOffset', this.setPhantomYOffset.bind(this))
 
+    this.socket.register('createTemplateBoundary', this.createTemplateBoundary.bind(this))
+    this.socket.register('updateTemplateBoundary', this.updateTemplateBoundary.bind(this))
+    this.socket.register('destroyTemplateBoundary', this.destroyTemplateBoundary.bind(this))
+
     this.stage = canvas.stage
     this.activity = null
     this.activityRange = 0
     this.activityTargetCount = 3
     this.actor = null
+    this.color = game.user.color.css
     this.singleRoll = false
     this.targets = []
     this.targetLines = []
     this.phantomLines = []
     this.currentLine = null
+    this.rangeBoundary = null
+    this.templateBoundary = new TemplateBoundary(options)
+    this.templateBoundaryUuid = null
     this.startPos
     this.startLinePos
     this.active = false
@@ -35,14 +45,32 @@ export class TargetHelper {
     this.mouseMoveHandler = null
     this.selectedTargets = null
     this.rejectTargets = null
+
     this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate')
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
     this.recieveTargetLines = game.settings.get('auto-action-tray', 'recieveTargetLines')
     this.gridSize = game.canvas.scene.grid.size
+
+    Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
+      if (!(activity.actor.id == this.actor.id)) return
+      this._HookCreateMeasuredTemplate(activity, created)
+    })
+    this.refreshHook = null
+    this.destroyHook = null
   }
 
   setActor(actor) {
     this.actor = actor
+    let themeColor = null
+    if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
+      themeColor = getComputedStyle(
+        document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
+      )
+        .getPropertyValue('--aat-hover-color')
+        .trim()
+    }
+
+    this.color = this.hotbar.trayOptions.targetColor || themeColor || game.user.color.css
     this.actorId = actor.id
     this.startPos = TargetHelper.getPositionFromActor(actor)
     this.startLinePos = TargetHelper.getLinePositionFromActor(actor)
@@ -127,9 +155,8 @@ export class TargetHelper {
     let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
     this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
 
-
     this.currentLine = new TargetLineCombo({
-      useLines:false,
+      useLines: false,
       startPos: this.startPos,
       startLinePos: this.startLinePos,
       actorId: actor.id,
@@ -139,6 +166,7 @@ export class TargetHelper {
       itemRarity: item.rarity,
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
+      color: this.color,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -157,12 +185,32 @@ export class TargetHelper {
         itemSpellLevel: selectedSpellLevel,
       })
     }
-
-    
   }
   clearUseNotification() {
     this.selectingTargets = false
     this.clearData()
+  }
+  createRangeBoundary(range, actor) {
+    this.setActor(actor)
+    this.rangeBoundary?.clearRangeBoundary()
+    this.rangeBoundary = new TargetLineCombo({
+      useLines: false,
+      sendIcon: false,
+      startPos: this.startPos,
+      startLinePos: this.startLinePos,
+      actorId: actor.id,
+      itemName: '',
+      itemType: '',
+      itemImg: '',
+      itemRarity: '',
+      itemSpellLevel: '',
+      activityRange: range,
+      color: this.color,
+    })
+  }
+  destroyRangeBoundary() {
+    this.rangeBoundary?.clearRangeBoundary()
+    this.rangeBoundary = null
   }
 
   clearData() {
@@ -171,6 +219,7 @@ export class TargetHelper {
     this.singleRoll = false
     this.targets = []
     this.clearTargetLines()
+    this.destroyRangeBoundary()
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
     }
@@ -210,10 +259,10 @@ export class TargetHelper {
       itemRarity: item.rarity,
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
+      color: this.color,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
-        
         id: this.currentLine.id,
         actorId: this.actorId,
         startPos: this.startPos,
@@ -228,7 +277,7 @@ export class TargetHelper {
         sendIcon: game.settings.get('auto-action-tray', 'enableUseItemIcon'),
       })
     }
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     this.mouseMoveHandler = foundry.utils.throttle(
       (event) => this._onMouseMove(event),
       this.throttleSpeed,
@@ -271,7 +320,7 @@ export class TargetHelper {
           color: this.currentLine.color,
         })
       }
-      this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+      this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     } else {
       this.confirmTargets()
     }
@@ -314,12 +363,12 @@ export class TargetHelper {
   increaseTargetCount() {
     if (this.targets.length >= this.activityTargetCount) return
     this.activityTargetCount++
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
   }
   decreaseTargetCount() {
     if (this.activityTargetCount <= 1) return
     this.activityTargetCount--
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     if (this.targets.length == this.activityTargetCount) {
       this.confirmTargets()
     }
@@ -354,7 +403,7 @@ export class TargetHelper {
       this.targetLines.at(-1)?.destroyLines()
       this.targetLines.pop()
     }
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
   }
 
   static cancelSelection(event, target) {
@@ -387,6 +436,7 @@ export class TargetHelper {
       startLinePos: this.startLinePos,
       actorId: this.actor.id,
       firstLine: this.targetLines.length == 0,
+      color: this.color,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -397,7 +447,7 @@ export class TargetHelper {
         firstLine: this.targetLines.length == 0,
       })
     }
-    this.currentLine.setText(`${this.targets.length}/${this.activityTargetCount}`)
+    this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     this.currentLine.drawLines(endPos)
     if (this.sendTargetLines) {
       this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)
@@ -457,7 +507,6 @@ export class TargetHelper {
       this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)
     }
 
-    // this.socket.executeForOthers('phantom', this.startPos, endPos)
   }
 
   static async getCursorCoordinates(onClickEvent) {
@@ -526,5 +575,78 @@ export class TargetHelper {
     }
 
     return targetCount
+  }
+
+  _HookCreateMeasuredTemplate(activity, created) {
+    this.templateBoundaryUuid = activity.uuid
+
+    const options = {
+      color: this.color ||themeColor || game.user.color.css,
+      activityUuid: activity.uuid,
+      document: created[0].document,
+    }
+    if (!this.createTemplateBoundary.bind(this)(options)) { 
+      return
+    }
+    
+    if (this.sendTargetLines) {
+      this.socket.executeForOthers('createTemplateBoundary', { ...options, phantom: true })
+    }
+
+    this.refreshHook = Hooks.on('refreshMeasuredTemplate', (template, state) => {
+      this._HookRefreshMeasuredTemplate(template, state)
+    })
+    this.destroyHook = Hooks.on('destroyMeasuredTemplate', (template) => {
+      this._HookDestroyMeasuredTemplate(template)
+    })
+  }
+  _HookRefreshMeasuredTemplate(template, state) {
+    if (
+      !template?.activity ||
+      !template?.activity.uuid ||
+      this.templateBoundaryUuid != template.activity.uuid
+    )
+      return
+
+    let options = {
+      activityUuid: template.activity.uuid,
+      document: template.document,
+    }
+    this.updateTemplateBoundary.bind(this)(options)
+    if (this.sendTargetLines) { 
+      this.socket.executeForOthers('updateTemplateBoundary', { ...options, phantom: true })
+    }
+  }
+  _HookDestroyMeasuredTemplate(template) {
+    if (
+      !template?.activity ||
+      !template?.activity.uuid ||
+      this.templateBoundaryUuid != template.activity.uuid
+    )
+      return
+    let options = {
+      activityUuid: template.activity.uuid,
+      document: template.document,
+    }
+    this.destroyTemplateBoundary.bind(this)(options)
+    this.templateBoundaryUuid = null
+    if (this.sendTargetLines) {
+      this.socket.executeForOthers('destroyTemplateBoundary', { ...options, phantom: true })
+    }
+    Hooks.off('refreshMeasuredTemplate', this.refreshHook)
+    Hooks.off('destroyMeasuredTemplate', this.destroyHook)
+  }
+
+  createTemplateBoundary(options) {
+    if (!this.recieveTargetLines && options.phantom) return
+    return this.templateBoundary?.createBoundary(options)
+  }
+
+  updateTemplateBoundary(template) {
+    this.templateBoundary?.updateBoundary(template)
+  }
+
+  destroyTemplateBoundary(template) {
+    this.templateBoundary?.destroyBoundary(template)
   }
 }

@@ -8,6 +8,7 @@
       data-trayid="{{tray.id}}"
       data-tooltip="{{> 'AAT.item-tooltip' (selectItemTooltip item tray)}}"
       data-tooltip-direction="UP"
+      data-action-range = "{{item.tooltip.range}}"
       {{#if (eq isActive false)}}
         data-action="viewItem"
         class="ability-button ability-button-passive "
@@ -17,6 +18,8 @@
         class="ability-button action-hover"
       {{/if}}
     >
+
+
       {{#if (eq isActive false)}}
       {{#if (eq item.type 'container')}}
         <div class="transparent-box-passive item-type-container" data-index="{{@index}}">
@@ -52,6 +55,9 @@
       {{/if}}
 
       <div style="position: relative">
+                <div class="in-range-icon in-range">
+           {{!-- <i class="fa-regular fa-crosshairs-simple"></i> --}}
+          </div>
         {{#if item.wildcard}}
           <div class="wildcard-icon">
             <i class="fa-solid fa-asterisk"></i>
@@ -66,6 +72,7 @@
           {{item.uses}}
         </div>
       </div>
+      
     </div>
   {{else}}
     <div

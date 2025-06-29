@@ -166,14 +166,14 @@ export class AnimationHandler {
       }
       initialOpacity = 0
 
-      gsap.set(`.${tray.id}`, {
+      gsap.set(`#auto-action-tray .${tray.id}`, {
         // force3D: false,
         opacity: initialOpacity,
         y: yOffset,
         x: xOffset,
       })
 
-      gsap.to(`.${tray.id}`, {
+      gsap.to(`#auto-action-tray .${tray.id}`, {
         force3D: false,
         opacity: 1,
         y: 0,
@@ -189,7 +189,7 @@ export class AnimationHandler {
 
   async animateTrayOut(tray) {
     if (tray?.x) {
-      gsap.set(`.${tray.id}`, {
+      gsap.set(`#auto-action-tray .${tray.id}`, {
         // force3D: false,
         x: tray.x,
       })
@@ -224,7 +224,7 @@ export class AnimationHandler {
       }
       endOpactiy = 0
 
-      gsap.to(`.${tray.id}`, {
+      gsap.to(`#auto-action-tray .${tray.id}`, {
         force3D: false,
         opacity: endOpactiy,
         y: yOffset,
@@ -240,7 +240,7 @@ export class AnimationHandler {
   }
 
   async animateSpacer(width) {
-    gsap.to('.stacked-tray-spacer-container', {
+    gsap.to('#auto-action-tray .stacked-tray-spacer-container', {
       width: `calc(100% - ${width}px + var(--aat-main-tray-padding) - var(--aat-main-tray-gap))`,
       duration: 0.4,
       onComplete: () => {
@@ -261,7 +261,7 @@ export class AnimationHandler {
         if (tray == trayIn) {
           if (tray.id != 'common') xOffset = -33
           this.setStackedTrayPos(tray)
-          tl.to(`.container-${tray.id}`, {
+          tl.to(`#auto-action-tray .container-${tray.id}`, {
             force3D: false,
             opacity: 1,
             x: xOffset,
@@ -272,7 +272,7 @@ export class AnimationHandler {
             },
           }, 0)
         } else {
-          tl.to(`.container-${tray.id}`, {
+          tl.to(`#auto-action-tray .container-${tray.id}`, {
             force3D: false,
             opacity: 0,
             x: this.horizontalBounds,
@@ -298,11 +298,11 @@ export class AnimationHandler {
       const tl = gsap.timeline()
       trayIn.trays.forEach((tray) => {
         // if (tray != trayOut) {
-        //   gsap.set(`.container-${tray.id}`, {
+        //   gsap.set(`#auto-action-tray .container-${tray.id}`, {
         //     opacity: 0,
         //   })
         // }
-        tl.to(`.container-${tray.id}`, {
+        tl.to(`#auto-action-tray .container-${tray.id}`, {
           force3D: false,
           opacity: 1,
           x: tray.xPos,
@@ -320,7 +320,7 @@ export class AnimationHandler {
     if (!this.hotbar.rendered) return
     const tl = gsap.timeline()
     stackedTray.forEach((tray) => {
-      tl.set(`.container-${tray.id}`, {
+      tl.set(`#auto-action-tray .container-${tray.id}`, {
         // force3D: false,
         opacity: 1,
         x: tray.tray.xPos,
@@ -328,7 +328,7 @@ export class AnimationHandler {
     })
   }
   setStackedTrayPos(tray) {
-    gsap.set(`.container-${tray.id}`, {
+    gsap.set(`#auto-action-tray .container-${tray.id}`, {
       // force3D: false,
       opacity: 1,
       x: tray.xPos,
@@ -336,7 +336,7 @@ export class AnimationHandler {
   }
 
   setPreStackedTrayPos(tray, trayOut) {
-    gsap.set(`.container-${tray.id}`, {
+    gsap.set(`#auto-action-tray .container-${tray.id}`, {
       // force3D: false,
       opacity: 1,
       x: tray == trayOut ? 0 : 1500,
@@ -359,7 +359,7 @@ export class AnimationHandler {
       value,
     )}) drop-shadow(0 0 ${glowpx}px ${this.getAdjustedColor(baseColor, value)}) `
     this.circleAnimator?.kill()
-    this.circleAnimator = gsap.set('.circle-svg', {
+    this.circleAnimator = gsap.set('#auto-action-tray .circle-svg', {
       drawSVG: `0%
           ${value}%`,
       stroke: this.getAdjustedColor(baseColor, value),
@@ -389,7 +389,7 @@ export class AnimationHandler {
     if (end == 100) {
       this.circleAnimator?.kill()
       this.circleAnimator = gsap.fromTo(
-        '.end-turn-btn',
+        '#auto-action-tray .end-turn-btn',
         {
           background: `radial-gradient( ${accentColor}, ${accentColorLight})`,
         },
@@ -401,7 +401,7 @@ export class AnimationHandler {
     }
     this.circleAnimator?.kill()
     this.circleAnimator = gsap.fromTo(
-      '.circle-svg',
+      '#auto-action-tray .circle-svg',
       {
         drawSVG: `0% ${start}%`,
         stroke: this.getAdjustedColor(baseColor, start),
@@ -414,7 +414,7 @@ export class AnimationHandler {
         stroke: `${this.getAdjustedColor(baseColor, end)}`,
         filter: filter,
         onComplete: () => {
-          gsap.set('.circle-svg', {
+          gsap.set('#auto-action-tray .circle-svg', {
             drawSVG: `0%
           ${end}%`,
           })
