@@ -116,7 +116,7 @@ export class DraggableTrayContainer {
 class DraggableTray {
   constructor(options = {}) {
     this.id = options.id || ''
-    this.position = options.position || 0
+    this.position = options.tray.xPos || options.position || 0
     this.index = 0
     this.xMax = Infinity
     this.xMin = options?.xMin || 0

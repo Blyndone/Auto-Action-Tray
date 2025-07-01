@@ -21,6 +21,7 @@ export class AATItem {
     this.description = item.system.description.value
     this.name = this.item.name
     this.type = this.item.type
+    this.subtype = this.item.system?.type?.value ?? null
 
     this.setValues()
 

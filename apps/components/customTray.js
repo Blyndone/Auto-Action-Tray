@@ -69,23 +69,45 @@ export class CustomTray extends AbilityTray {
           })
         this.id = 'classFeatures'
         break
-      case 'items':
-        this.abilities = allItems
-          .filter((e) => e.type === 'consumable')
-          .sort((a, b) => {
-            const priority = {
-              potion: 0,
-              scroll: 1,
-            }
-            const aPriority = priority[a.item.system.type.value] ?? 10
-            const bPriority = priority[b.item.system.type.value] ?? 10
+
+      case 'items': {
+        const groups = [['potion', 'scroll'], ['tool'], ['container'], ['consumable']]
+
+        const priority = {
+          potion: 0,
+          scroll: 1,
+          tool: 2,
+          container: 3,
+          consumable: 10,
+        }
+
+        const groupedAbilities = []
+
+        for (const group of groups) {
+          const filtered = allItems.filter(
+            (e) =>
+              (group.includes(e.subtype) || group.includes(e.type)) &&
+              !groupedAbilities.includes(e),
+          )
+
+          filtered.sort((a, b) => {
+            const aPriority = priority[a.subtype] ?? priority[a.type] ?? 10
+            const bPriority = priority[b.subtype] ?? priority[b.type] ?? 10
             return aPriority - bPriority
           })
-        let containers = allItems.filter((e) => e.type === 'container')
-        this.padNewRow()
-        this.abilities.push(...containers)
+
+          groupedAbilities.push(...filtered)
+
+          while (groupedAbilities.length % this.rowCount !== 0) {
+            groupedAbilities.push(null)
+          }
+        }
+
+        this.abilities = groupedAbilities
         this.id = 'items'
         break
+      }
+
       case 'passiveItems':
         const excludedTypes = [
           'equipment',
@@ -206,7 +228,7 @@ export class CustomTray extends AbilityTray {
     let consumablesTray = new CustomTray({
       category: 'items',
       id: 'items',
-      trayLabel: 'Consumables',
+      trayLabel: 'Items',
       actorUuid: actor.uuid,
       application: options.application,
       cachedAbilities: options.cachedAbilities,

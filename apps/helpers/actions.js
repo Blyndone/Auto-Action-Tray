@@ -463,7 +463,6 @@ export class Actions {
     if (activity?.tooltip?.actionType) {
       this.combatHandler.consumeAction(activity.tooltip.actionType, activity.isScaledSpell)
     }
-    console.log(this)
     if (
       targets &&
       targets.individual == true &&

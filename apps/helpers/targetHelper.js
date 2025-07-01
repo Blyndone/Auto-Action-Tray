@@ -148,12 +148,12 @@ export class TargetHelper {
     this.setData(actor, activity)
     this.activityRange = this.getActivityRange(item, activity)
 
-    let suffix = ''
-    if (selectedSpellLevel?.slot && selectedSpellLevel.slot !== 'spell0') {
-      suffix = ` (Level ${selectedSpellLevel.slot.replace(/[a-zA-z]/g, '')})`
-    }
-    let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
-    this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
+    // let suffix = ''
+    // if (selectedSpellLevel?.slot && selectedSpellLevel.slot !== 'spell0') {
+    //   suffix = ` (Level ${selectedSpellLevel.slot.replace(/[a-zA-z]/g, '')})`
+    // }
+    // let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
+    // this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
 
     this.currentLine = new TargetLineCombo({
       useLines: false,
