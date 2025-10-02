@@ -569,11 +569,12 @@ export class TargetHelper {
         spellLevel = item.pactLevel
       }
 
-      targetCount = item.activities
+      let act = item.activities
         .find((e) => e.id == activity.id)
-        .tooltips.find((e) => e.spellLevel == spellLevel).targetCount
+      
+      targetCount = act.tooltips?.find((e) => e.spellLevel == spellLevel).targetCount || act.tooltip?.targetCount
+    
     }
-
     return targetCount
   }
 

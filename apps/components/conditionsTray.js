@@ -16,6 +16,8 @@ export class ConditionTray {
   static setCustomIcons() {
     ConditionTray.dndConditions.coreConditions.forEach((condition) => {
       if (condition.marker && condition.id != 'concentrating') return
+      const img = new Image()
+      img.src = condition.icon
       CONFIG.statusEffects.find((e) => e.id == condition.id).img = condition.icon
       if (CONFIG.DND5E.conditionTypes[condition.id]) {
         CONFIG.DND5E.conditionTypes[condition.id].icon = condition.icon
@@ -90,69 +92,71 @@ export class ConditionTray {
     })
   }
 
-async toggleCondition(event, target) {
-  let conditionId = target.dataset.id;
+  async toggleCondition(event, target) {
+    let conditionId = target.dataset.id
 
-  const condition = this.conditions.find((c) => c.id === conditionId);
+    const condition = this.conditions.find((c) => c.id === conditionId)
 
-  switch (true) {
-    case conditionId === 'concentrating':
-      await this.toggleConcentration(condition);
-      break;
-    
-    case !condition.marker:
-      await this.actor.toggleStatusEffect(conditionId);
-      break;
-    
-    default:
-      await this.toggleGeneralCondition(condition, conditionId);
-      break;
+    switch (true) {
+      case conditionId === 'concentrating':
+        await this.toggleConcentration(condition)
+        break
+
+      case !condition.marker:
+        await this.actor.toggleStatusEffect(conditionId)
+        break
+
+      default:
+        await this.toggleGeneralCondition(condition, conditionId)
+        break
+    }
+
+    await this.setConditions()
+    this.application.requestRender('centerTray')
   }
 
-  await this.setConditions();
-  this.application.requestRender('centerTray');
-}
+  async toggleConcentration(condition) {
+    const concentration = this.actor.collections.effects.find((e) =>
+      e.name.startsWith('Concentrating'),
+    )
 
-async toggleConcentration(condition) {
-  const concentration = this.actor.collections.effects.find((e) => e.name.startsWith('Concentrating'));
-  
-  if (concentration) {
-    await concentration.delete();
-  } else {
-    const effect = new ActiveEffect({
-      id: condition.id,
-      name: condition.name,
-      img: condition.icon,
-      description: condition.description,
-      statuses: [],
-      duration: { seconds: 999 },
-    });
-    await this.actor.createEmbeddedDocuments('ActiveEffect', [effect]);
+    if (concentration) {
+      await concentration.delete()
+    } else {
+      const effect = new ActiveEffect({
+        id: condition.id,
+        name: condition.name,
+        img: condition.icon,
+        description: condition.description,
+        statuses: [],
+        duration: { seconds: 999 },
+      })
+      await this.actor.createEmbeddedDocuments('ActiveEffect', [effect])
+    }
   }
-}
 
-async toggleGeneralCondition(condition, conditionId) {
-  let effect = this.actor.collections.effects.find(
-    (e) => e.name === conditionId || 
-           e.name === this.dndConditions.coreConditions.find((c) => c.id === conditionId).name,
-  );
+  async toggleGeneralCondition(condition, conditionId) {
+    let effect = this.actor.collections.effects.find(
+      (e) =>
+        e.name === conditionId ||
+        e.name === this.dndConditions.coreConditions.find((c) => c.id === conditionId).name,
+    )
 
-  if (effect) {
-    await effect.delete();
-  } else {
-    const duration = condition.duration === 'Condition' ? 999 : condition.duration;
-    effect = new ActiveEffect({
-      id: condition.id,
-      name: condition.name,
-      img: condition.icon,
-      description: condition.description,
-      statuses: [],
-      duration: { seconds: duration },
-    });
-    await this.actor.createEmbeddedDocuments('ActiveEffect', [effect]);
+    if (effect) {
+      await effect.delete()
+    } else {
+      const duration = condition.duration === 'Condition' ? 999 : condition.duration
+      effect = new ActiveEffect({
+        id: condition.id,
+        name: condition.name,
+        img: condition.icon,
+        description: condition.description,
+        statuses: [],
+        duration: { seconds: duration },
+      })
+      await this.actor.createEmbeddedDocuments('ActiveEffect', [effect])
+    }
   }
-}
-
 
   async getEnrichedText(conditionId) {
     const effect = CONFIG.statusEffects.find((e) => e.id === conditionId)

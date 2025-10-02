@@ -167,9 +167,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
-    Hooks.on('renderHotbar', () => { })
-
-
+    Hooks.on('renderHotbar', () => {})
 
     this.altDown = false
     this.ctrlDown = false
@@ -378,6 +376,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else {
       items = actor.token.delta.items
     }
+    
+    let urls = items.map((e) => e.img)
+    urls.forEach((url) => {
+      const img = new Image()
+      img.src = url
+    })
+
     this.savedActors.push({
       name: actor.name,
       id: actor.id,
@@ -648,7 +653,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     const index = abilities.findIndex((e) => e.id === item.id)
 
     if (index !== -1) {
-      abilities[index] = new AATItem(item)
+      let newItem = new AATItem(item)
+      if (abilities[index]?.multigroup) {
+        newItem.multigroup = abilities[index].multigroup
+      }
+      abilities[index] = newItem
     }
 
     this.staticTrays = StaticTray.generateStaticTrays(this.actor, { application: this })
@@ -750,6 +759,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onHoverToken(token, hovered) {
+    if (this.targetHelper.active) return
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
     if (!hovered) {
@@ -1062,7 +1072,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   static toggleRangeBoundary() {
     Actions.toggleRangeBoundary.bind(this)()
   }
- 
+
   static minimizeTray() {
     Actions.minimizeTray.bind(this)()
   }
