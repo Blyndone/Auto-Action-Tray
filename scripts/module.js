@@ -90,6 +90,19 @@ Hooks.once('init', async function () {
     },
     'MIXED',
   )
+  
+  libWrapper.register(
+    AUTOACTIONTRAY_MODULE_NAME,
+    'PIXI.EventSystem.prototype.setCursor',
+    function (wrapped, ...args) {
+      if (hotbar) {
+        AutoActionTray._onCursorChange(hotbar, wrapped, ...args)
+      } else return wrapped(...args)
+    },
+    'MIXED',
+  )
+
+
 
   preloadHandlebarsTemplates()
 })
@@ -420,6 +433,18 @@ Hooks.once('ready', async function () {
       step: 100,
       max: 3000,
     },
+
+    requiresReload: true,
+  })
+
+    game.settings.register('auto-action-tray', 'customTargettingCursors', {
+    name: 'Custom Targetting Cursors',
+    hint: 'Use Custom Targetting Cursors',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: true,
 
     requiresReload: true,
   })

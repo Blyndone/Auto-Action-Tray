@@ -169,6 +169,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
     Hooks.on('renderHotbar', () => {})
 
+    if (!game.settings.get('auto-action-tray', 'customTargettingCursors')) {
+      const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
+      libWrapper.unregister(AUTOACTIONTRAY_MODULE_NAME, 'PIXI.EventSystem.prototype.setCursor')
+    }
+
     this.altDown = false
     this.ctrlDown = false
     window.addEventListener('keydown', (e) => {
@@ -376,7 +381,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else {
       items = actor.token.delta.items
     }
-    
+
     let urls = items.map((e) => e.img)
     urls.forEach((url) => {
       const img = new Image()
@@ -759,7 +764,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onHoverToken(token, hovered) {
-    if (this.targetHelper.active) return
+    if (this.targetHelper.active && hovered) {
+      this.targetHelper.hovering = true
+    } else {
+      this.targetHelper.hovering = false
+    }
+
+    if (this.targetHelper.active || !this.actor) return
+
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
     if (!hovered) {
@@ -801,7 +813,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return event.stopPropagation()
     } else return wrapped(...args)
   }
-
+  static _onCursorChange(hotbar, wrapped, ...args) {
+    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+      if (hotbar.targetHelper.hovering) {
+        return wrapped("url('modules/auto-action-tray/icons/cursors/Sword.cur'), auto")
+      } else {
+        return wrapped("url('modules/auto-action-tray/icons/cursors/Crosshair.cur') 16 16, auto")
+      }
+    } else {
+      return wrapped(...args)
+    }
+  }
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
     if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {

@@ -39,6 +39,7 @@ export class TargetHelper {
     this.startPos
     this.startLinePos
     this.active = false
+    this.hovering = false
     this.selectingTargets = false
     this.item = null
     this.useSlot = false
@@ -232,6 +233,7 @@ export class TargetHelper {
   }
 
   async requestTargets(item, activity, actor, targetCount, singleRoll, selectedSpellLevel) {
+
     this.useSlot = false
     this.selectingTargets = true
     this.clearData()
@@ -331,6 +333,7 @@ export class TargetHelper {
     document.removeEventListener('mousemove', this.mouseMoveHandler)
     this.currentLine.clearText()
     this.clearRangeBoundary()
+    document.body.style.cursor = "";
 
     if (this.hotbar.animating) {
       setTimeout(() => {
@@ -376,6 +379,7 @@ export class TargetHelper {
 
   removeTarget() {
     if (this.targets.length == 0) {
+      document.body.style.cursor = "";
       this.selectingTargets = false
       document.removeEventListener('mousemove', this.mouseMoveHandler)
       this.rejectTargets(new Error('No targets to remove'))
@@ -407,6 +411,7 @@ export class TargetHelper {
   }
 
   static cancelSelection(event, target) {
+    document.body.style.cursor = "";
     this.targetHelper.rejectTargets(new Error('User canceled Target selection'))
     this.targetHelper.rejectTargets = null
     this.targetHelper.currentLine.clearLines()
