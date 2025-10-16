@@ -29,6 +29,7 @@ export class CombatHandler {
     this.getActorActions()
   }
   setDefaultActions(actor) {
+    if (!actor.inCombat)  return
     this.actions = {
       combatId: this.combat?.id,
       round: this.combat?.round,
