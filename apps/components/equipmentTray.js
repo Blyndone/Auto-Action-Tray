@@ -8,6 +8,7 @@ export class EquipmentTray extends CustomTray {
     this.category = options.category
     this.id = 'equipment'
     this.type = 'custom'
+    this.activeSlot = null
     this.application = options.application
     if (!this.savedData && !this.checkSavedData(this.id)) {
       this.generateTray(cachedAbilities)
@@ -63,6 +64,9 @@ export class EquipmentTray extends CustomTray {
       if (data[this.id] != null) {
         this.meleeWeapon = allItems.find((e) => e.id == JSON.parse(data[this.id].meleeWeapon))
         this.rangedWeapon = allItems.find((e) => e.id == JSON.parse(data[this.id].rangedWeapon))
+        if (data[this.id]?.activeSlot) { 
+ this.activeSlot = JSON.parse(data[this.id].activeSlot)
+        }
 
         this.savedData = true
       }
@@ -76,6 +80,7 @@ export class EquipmentTray extends CustomTray {
         [this.id]: {
           meleeWeapon: JSON.stringify(this.meleeWeapon?.id ? this.meleeWeapon.id : null),
           rangedWeapon: JSON.stringify(this.rangedWeapon?.id ? this.rangedWeapon.id : null),
+          activeSlot: JSON.stringify(this.activeSlot),
         },
       })
       this.savedData = true
@@ -88,6 +93,9 @@ export class EquipmentTray extends CustomTray {
   getRangedWeapon() {
     return this.rangedWeapon
   }
+  getActiveSlot() {
+    return this.activeSlot
+  }
 
   setMeleeWeapon(weapon) {
     this.meleeWeapon = weapon
@@ -95,6 +103,10 @@ export class EquipmentTray extends CustomTray {
   }
   setRangedWeapon(weapon) {
     this.rangedWeapon = weapon
+    this.setSavedData()
+  }
+  setActiveSlot(slot) {
+    this.activeSlot = slot
     this.setSavedData()
   }
 }

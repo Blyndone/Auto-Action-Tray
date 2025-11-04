@@ -38,6 +38,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.pendingRender = false
 
     this.throttledRender = foundry.utils.throttle(async () => await this.completeRender(), 500)
+    this.throttledHover = foundry.utils.throttle((...args) => this.handleHoverToken(...args), 100)
 
     this.#dragDrop = this.#createDragDropHandlers()
     this.isEditable = true
@@ -773,6 +774,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onHoverToken(token, hovered) {
+    this.throttledHover(token, hovered)
+  }
+
+  handleHoverToken(token, hovered) {
     if (this.targetHelper.active && hovered) {
       this.targetHelper.hovering = true
     } else {
@@ -781,20 +786,31 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     // console.log(token, hovered, this.actor)
     // console.log("actor", this.actor?.token?.disposition || this.actor?.prototypeToken?.disposition)
     // console.log("token", token?.document?.disposition)
-    
-    let dis1 = this.actor?.token?.disposition || this.actor?.prototypeToken?.disposition
-    let dis2 = token?.document?.disposition
-    if (dis1 != dis2) { 
+    if (!this.quickActionHelper.attacking) {
+      const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
+      const dis2 = token?.document?.disposition
 
-      if (this.actor != null && this.combatHandler.inCombat && this.combatHandler.isTurn) {
+      const canQuickAct =
+        dis1 !== dis2 && this.actor && this.combatHandler.inCombat && this.combatHandler.isTurn
+      // console.log('beginning', this.quickActionHelper.hovered, hovered, canQuickAct)
+      if (canQuickAct) {
         if (hovered) {
+          this.targetHelper.setActive()
+          this.quickActionHelper.incHover()
           this.quickActionHelper.startQuickAction()
+          if (this.quickActionHelper.activeSlot) {
+            this.quickActionHelper.displayTokenGhost(token)
+          }
         } else {
+          this.targetHelper.setInactive()
+          this.quickActionHelper.decHover()
           this.quickActionHelper.cancelQuickAction()
+          this.quickActionHelper.removeTokenGhost()
         }
       }
-      
+      // console.log('ending', this.quickActionHelper.hovered, hovered, canQuickAct)
     }
+
     if (this.targetHelper.active || !this.actor) return
 
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
@@ -1021,6 +1037,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       onOpen: EffectTray.removeEffect.bind(this),
       jQuery: true,
     })
+
     // new ContextMenu(this.element, '.concentration-item', [], {
     //   onOpen: EffectTray.removeEffect.bind(this),
     //   jQuery: true,
@@ -1032,6 +1049,25 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       {},
       {
         onOpen: Actions.changeDice.bind(this),
+        jQuery: true,
+      },
+    )
+
+    new ContextMenu(
+      this.element,
+      '.quick-slot-1',
+      {},
+      {
+        onOpen: () => this.quickActionHelper.toggleSlot(1),
+        jQuery: true,
+      },
+    )
+    new ContextMenu(
+      this.element,
+      '.quick-slot-2',
+      {},
+      {
+        onOpen: () => this.quickActionHelper.toggleSlot(2),
         jQuery: true,
       },
     )

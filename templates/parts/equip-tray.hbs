@@ -26,7 +26,7 @@
 
 {{#if equipmentTray.meleeWeapon}}
   <img
-    class='{{equipmentTray.meleeWeapon.rarity}}-item  action-hover'
+    class='{{equipmentTray.meleeWeapon.rarity}}-item  action-hover quick-slot-1 {{#if (eq equipmentTray.activeSlot 1)}} multi-additional  {{/if}}'
     data-item-id='{{equipmentTray.meleeWeapon.id}}'
     data-drag='true'
     data-action='useItem'
@@ -46,7 +46,7 @@
 
 {{#if equipmentTray.rangedWeapon}}
   <img
-    class='{{equipmentTray.rangedWeapon.rarity}}-item  action-hover'
+    class='{{equipmentTray.rangedWeapon.rarity}}-item  action-hover quick-slot-2 {{#if (eq equipmentTray.activeSlot 2)}} multi-additional  {{/if}}'
     data-drag='true'
     data-item-id='{{equipmentTray.rangedWeapon.id}}'
     data-action='useItem'

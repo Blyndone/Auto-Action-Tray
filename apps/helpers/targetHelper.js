@@ -420,7 +420,9 @@ export class TargetHelper {
   }
 
   static cancelSelection(event, target, animate = true) {
-    this.targetHelper.rejectTargets(new Error('User canceled Target selection'))
+    if (this.targetHelper.rejectTargets) {
+      this.targetHelper.rejectTargets(new Error('User canceled Target selection'))
+    }
     this.targetHelper.rejectTargets = null
     this.targetHelper.currentLine.clearLines()
     this.targetHelper.clearData()
