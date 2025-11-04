@@ -16,6 +16,7 @@ import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
 import { StackedTray } from './components/stackedTray.js'
 import { TargetHelper } from './helpers/targetHelper.js'
+import { QuickActionHelper } from './helpers/quickActionHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
 import { AATItem } from './items/item.js'
 import { ItemConfig } from './dialogs/itemConfig.js'
@@ -76,6 +77,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.combatHandler = new CombatHandler({
       hotbar: this,
     })
+    this.quickActionHelper = new QuickActionHelper({
+      app: this,
+      targetHelper: this.targetHelper,
+      combatHandler: this.combatHandler,
+    })
+
     this.conditionTray = new ConditionTray({ application: this })
 
     this.itemSelectorEnabled = false
@@ -543,6 +550,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
     this.setActor(actor)
+    this.quickActionHelper.setData(actor)
     if (currentTrayId) {
       this.currentTray.setInactive()
       let tray = this.getTray(currentTrayId)
@@ -633,6 +641,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })
     this.meleeWeapon = this.equipmentTray.getMeleeWeapon()
     this.rangedWeapon = this.equipmentTray.getRangedWeapon()
+    this.quickActionHelper.setEquipmentTray(this.equipmentTray)
     this.skillTray = SkillTray.generateCustomTrays(actor)
     this.stackedTray.setInactive()
     const favoriteTray = this.customTrays.find((e) => e.id === 'favoriteItems')
@@ -769,7 +778,23 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else {
       this.targetHelper.hovering = false
     }
+    // console.log(token, hovered, this.actor)
+    // console.log("actor", this.actor?.token?.disposition || this.actor?.prototypeToken?.disposition)
+    // console.log("token", token?.document?.disposition)
+    
+    let dis1 = this.actor?.token?.disposition || this.actor?.prototypeToken?.disposition
+    let dis2 = token?.document?.disposition
+    if (dis1 != dis2) { 
 
+      if (this.actor != null && this.combatHandler.inCombat && this.combatHandler.isTurn) {
+        if (hovered) {
+          this.quickActionHelper.startQuickAction()
+        } else {
+          this.quickActionHelper.cancelQuickAction()
+        }
+      }
+      
+    }
     if (this.targetHelper.active || !this.actor) return
 
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')

@@ -232,8 +232,15 @@ export class TargetHelper {
     } catch (error) {}
   }
 
-  async requestTargets(item, activity, actor, targetCount, singleRoll, selectedSpellLevel) {
-
+  async requestTargets(
+    item,
+    activity,
+    actor,
+    targetCount,
+    singleRoll,
+    selectedSpellLevel,
+    animate = true,
+  ) {
     this.useSlot = false
     this.selectingTargets = true
     this.clearData()
@@ -248,7 +255,9 @@ export class TargetHelper {
 
     let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
     this.label = `${prefix} ${item.name}...   `
-    this.hotbar.animationHandler.pushTray('target-helper')
+    if (animate) {
+      this.hotbar.animationHandler.pushTray('target-helper')
+    }
 
     game.user.updateTokenTargets([])
     this.currentLine = new TargetLineCombo({
@@ -333,7 +342,7 @@ export class TargetHelper {
     document.removeEventListener('mousemove', this.mouseMoveHandler)
     this.currentLine.clearText()
     this.clearRangeBoundary()
-    document.body.style.cursor = "";
+    document.body.style.cursor = ''
 
     if (this.hotbar.animating) {
       setTimeout(() => {
@@ -379,7 +388,7 @@ export class TargetHelper {
 
   removeTarget() {
     if (this.targets.length == 0) {
-      document.body.style.cursor = "";
+      document.body.style.cursor = ''
       this.selectingTargets = false
       document.removeEventListener('mousemove', this.mouseMoveHandler)
       this.rejectTargets(new Error('No targets to remove'))
@@ -410,13 +419,15 @@ export class TargetHelper {
     this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
   }
 
-  static cancelSelection(event, target) {
-    document.body.style.cursor = "";
+  static cancelSelection(event, target, animate = true) {
     this.targetHelper.rejectTargets(new Error('User canceled Target selection'))
     this.targetHelper.rejectTargets = null
     this.targetHelper.currentLine.clearLines()
     this.targetHelper.clearData()
-    this.animationHandler.popTray()
+
+    if (animate) {
+      this.animationHandler.popTray()
+    }
   }
 
   clearTargetLines() {
@@ -511,7 +522,6 @@ export class TargetHelper {
       )
       this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)
     }
-
   }
 
   static async getCursorCoordinates(onClickEvent) {
@@ -574,11 +584,11 @@ export class TargetHelper {
         spellLevel = item.pactLevel
       }
 
-      let act = item.activities
-        .find((e) => e.id == activity.id)
-      
-      targetCount = act.tooltips?.find((e) => e.spellLevel == spellLevel).targetCount || act.tooltip?.targetCount
-    
+      let act = item.activities.find((e) => e.id == activity.id)
+
+      targetCount =
+        act.tooltips?.find((e) => e.spellLevel == spellLevel).targetCount ||
+        act.tooltip?.targetCount
     }
     return targetCount
   }
@@ -587,14 +597,14 @@ export class TargetHelper {
     this.templateBoundaryUuid = activity.uuid
 
     const options = {
-      color: this.color ||themeColor || game.user.color.css,
+      color: this.color || themeColor || game.user.color.css,
       activityUuid: activity.uuid,
       document: created[0].document,
     }
-    if (!this.createTemplateBoundary.bind(this)(options)) { 
+    if (!this.createTemplateBoundary.bind(this)(options)) {
       return
     }
-    
+
     if (this.sendTargetLines) {
       this.socket.executeForOthers('createTemplateBoundary', { ...options, phantom: true })
     }
@@ -619,7 +629,7 @@ export class TargetHelper {
       document: template.document,
     }
     this.updateTemplateBoundary.bind(this)(options)
-    if (this.sendTargetLines) { 
+    if (this.sendTargetLines) {
       this.socket.executeForOthers('updateTemplateBoundary', { ...options, phantom: true })
     }
   }
