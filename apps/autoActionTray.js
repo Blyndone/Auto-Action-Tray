@@ -759,6 +759,37 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+      if (event.target.actor == hotbar.actor) {
+        return wrapped(...args)
+      }
+      let token = event.currentTarget
+
+      hotbar.targetHelper.selectTarget(token)
+      return event.stopPropagation()
+    } else {
+      if (event.target.actor == hotbar.actor) {
+        let currentTrayId = hotbar.currentTray.id
+
+        hotbar.initialTraySetup(hotbar.actor, event.target, currentTrayId)
+      }
+      return wrapped(...args)
+    }
+  }
+
+  static _canControl(hotbar, wrapped, ...args) {
+    if (hotbar.quickActionHelper.controllable) { 
+      return wrapped(...args)
+    }
+    const [, event] = args
+
+    if (!event) {
+      return wrapped(...args)
+    }
+
+    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+      if (event.target.actor == hotbar.actor) {
+        return wrapped(...args)
+      }
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)

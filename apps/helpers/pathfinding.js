@@ -1,69 +1,86 @@
 export class Pathfinding {
   constructor(options) {
     //constants
-    this.maxDepth = 100;
+    this.active = true;
+    this.maxDepth = 6;
 
+    this.tokens = null;
+    this.gridSize = canvas.grid.size;
+    this.sourceToken = null;
+    this.targetPosition = null;
+    // this.targetToken = { x: 2500, y: 2500 }; // Temporary hardcoded target for testing
+
+    this.occupiedSquares = null;
+
+    // const t0 = performance.now();
+
+    this.path = null;
+
+    // const t1 = performance.now();
+    // const duration = (t1 - t0).toFixed(2);
+  }
+
+  setActive() {
+    this.active = true;
+  }
+  setInactive() {
+    this.active = false;
+    this.clearRuler();
+  }
+
+  setMaxDepth(depth) {
+    this.maxDepth = depth;
+  }
+
+  getPath() {
+    return this.path;
+  }
+
+  setData(options) {
+    //options = {sourceToken: token, targetPosition: {x:1000, y:1000}}
+    this.ruler = canvas.controls.getRulerForUser(game.user.id);
     this.tokens = canvas.tokens.placeables;
     this.gridSize = canvas.grid.size;
     this.sourceToken = options.sourceToken;
-    this.targetToken = options.targetToken;
-    // this.targetToken = { x: 2500, y: 2500 }; // Temporary hardcoded target for testing
-
+    this.targetPosition = options.targetPosition;
+    this.setMaxDepth(options.speed / 5);
     this.occupiedSquares = this.generateOccupiedSquares();
+  }
 
-    //debug Calls
-    // this.occupiedSquares.forEach(sq => {
-    //   this.debugDisplayValue(sq.name, {
-    //     x: sq.x + this.gridSize / 2,
-    //     y: sq.y + this.gridSize / 2
-    //   });
-    // });
-    // this.debugDisplayValue("START", {
-    //   x: this.sourceToken.x + this.gridSize / 2,
-    //   y: this.sourceToken.y + this.gridSize / 2
-    // });
-    // this.debugDisplayValue("END", {
-    //   x: this.targetToken.x + this.gridSize / 2,
-    //   y: this.targetToken.y + this.gridSize / 2
-    // });
+  updateTargetPosition(newTarget) {
+    this.targetPosition = newTarget;
+  }
 
-    // this.adjacentSquares({
-    //   x: this.sourceToken.x,
-    //   y: this.sourceToken.y
-    // }).forEach(sq => {
-    //   this.debugDisplayValue("ADJ", {
-    //     x: sq.x + this.gridSize / 2,
-    //     y: sq.y + this.gridSize / 2
-    //   });
-    // });
+  clearData() {
+    this.tokens = null;
+    this.sourceToken = null;
+    this.targetPosition = null;
+    this.occupiedSquares = null;
+    this.path = null;
+    this.clearRuler();
+  }
 
-    const t0 = performance.now();
-
+  newPathfinding(options) {
+    if (options.sourceToken == this.sourceToken) {
+      this.updatePathfinding(options.targetPosition);
+      return;
+    }
+    this.setData(options);
     this.path = this.findPath(
       { x: this.sourceToken.x, y: this.sourceToken.y },
-      { x: this.targetToken.x, y: this.targetToken.y }
+      { x: this.targetPosition.x, y: this.targetPosition.y }
     );
-
-    const t1 = performance.now();
-    const duration = (t1 - t0).toFixed(2);
-
-    // if (this.path?.length) {
-    //   console.log(`✅ Path found in ${duration} ms`);
-    //   console.log(`🧩 Path length: ${this.path.length}`);
-    //   console.log("📍 Path nodes:", this.path);
-    // } else {
-    //   console.warn(`⚠️ No path found (took ${duration} ms)`);
-    // }
-    // console.log(this.sourceToken);
     this.setRuler(this.path);
+  }
 
-    // this.path.forEach(sq => {
-    //   this.debugDisplayValue("PATH", {
-    //     x: sq.x + this.gridSize / 2,
-    //     y: sq.y + this.gridSize / 2
-    //   });
-    // });
-    // console.log(this.occupiedSquares);
+  updatePathfinding(targetPosition) {
+    this.clearRuler();
+    this.updateTargetPosition(targetPosition);
+    this.path = this.findPath(
+      { x: this.sourceToken.x, y: this.sourceToken.y },
+      { x: this.targetPosition.x, y: this.targetPosition.y }
+    );
+    this.setRuler(this.path);
   }
 
   heuristic(a, b) {
@@ -156,12 +173,13 @@ export class Pathfinding {
     const gScore = new Map([[this.key(start), 0]]);
     const fScore = new Map([[this.key(start), this.heuristic(start, goal)]]);
 
-    let depth = 0;
     while (openSet.length > 0) {
-      depth++;
-      if (depth > this.maxDepth) break;
       openSet.sort((a, b) => fScore.get(this.key(a)) - fScore.get(this.key(b)));
       const current = openSet.shift();
+      const currentDepth = gScore.get(this.key(current)) / this.gridSize;
+
+      // Limit search by number of squares added (depth)
+      if (currentDepth > this.maxDepth) continue;
 
       if (current.x === goal.x && current.y === goal.y) {
         return this.reconstructPath(cameFrom, current);
@@ -177,13 +195,14 @@ export class Pathfinding {
           cameFrom.set(keyN, current);
           gScore.set(keyN, tentative_g);
           fScore.set(keyN, tentative_g + this.heuristic(neighbor, goal));
+
           if (!openSet.find(n => n.x === neighbor.x && n.y === neighbor.y))
             openSet.push(neighbor);
         }
       }
     }
 
-    return []; // no path
+    return []; // no path found
   }
 
   key(sq) {
@@ -232,7 +251,7 @@ export class Pathfinding {
     ruler._startMeasurement(path[0]);
     for (let i = 1; i < path.length; i++) {
       ruler._addWaypoint(path[i]);
-      console.log("Added waypoint:", path[i]);
+      // console.log("Added waypoint:", path[i]);
     }
     ruler.measure(path[path.length - 1]);
   }

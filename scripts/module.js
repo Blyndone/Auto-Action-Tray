@@ -65,7 +65,7 @@ Hooks.once('init', async function () {
     'Token.prototype._canControl',
     function (wrapped, ...args) {
       if (hotbar) {
-        return AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
+        return AutoActionTray._canControl(hotbar, wrapped, ...args)
       } else return wrapped(...args)
     },
     'MIXED',

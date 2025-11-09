@@ -29,6 +29,17 @@ export class QuickActionHelper {
 
     this.throttleSpeed = 100 //ms
     this.deadZonePercent = 0.25
+    this.pathfinding = new Pathfinding()
+
+    this.STATES = {
+      INACTIVE: 0,
+      ACTIVE: 1,
+      TARGETTING: 2,
+      MOVING: 3,
+      ATTACKING: 4,
+    }
+
+    this.state = this.STATES.INACTIVE
   }
   //Move Token
   //await game.actors.getName("Balon").getActiveTokens()[0].document.update({x: 2500, y: 0})
@@ -41,6 +52,19 @@ export class QuickActionHelper {
   }
   checkHover() {
     return this.hovered > 0
+  }
+
+  getState() {
+    return this.state
+  }
+
+  // Set the current state
+  // 0,1,2,3,4 or 'INACTIVE','ACTIVE','TARGETTING','MOVING','ATTACKING'
+  setState(newState) {
+    if (typeof newState === 'string') {
+      newState = this.STATES[newState.toUpperCase()]
+    }
+    this.state = newState
   }
 
   setData(actor) {
@@ -78,6 +102,9 @@ export class QuickActionHelper {
       default:
         this.activeItem = null
     }
+    if (this.activeItem == null) {
+      this.setState(this.STATES.INACTIVE)
+    } 
   }
 
   clearData() {
@@ -94,8 +121,8 @@ export class QuickActionHelper {
   }
 
   async startQuickAction() {
-    if (this.activeSlot == null || !this.active) return
-    this.active = false
+    if (this.activeSlot == null || this.getState() !== this.STATES.ACTIVE) return
+    this.setState(this.STATES.TARGETTING)
     this.setItem()
 
     this.mouseMoveHandler = foundry.utils.throttle(
@@ -134,12 +161,16 @@ export class QuickActionHelper {
   }
 
   async _onMouseMove(event) {
+    if (this.getState() != this.STATES.TARGETTING) {
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      return
+    }
     let pos = this.getCursorCoordinates(event)
 
     let tarToken = canvas.tokens.placeables.filter((t) => {
       return pos.x >= t.x && pos.x <= t.x + t.w && pos.y >= t.y && pos.y <= t.y + t.h
     })[0]
-    if (!tarToken) {
+    if (!tarToken || tarToken == this.token) {
       return
     }
 
@@ -156,11 +187,14 @@ export class QuickActionHelper {
       tarTokenSize,
       actorSize,
     )
-    console.log('Cursor Position:', pos)
-    console.log('Transformed Position:', transformedPos)
+    // console.log('Cursor Position:', pos)
+    // console.log('Transformed Position:', transformedPos)
     // console.log('Hovered Token:', tarToken)
 
-    console.log(this.availablePositions)
+    // console.log(this.availablePositions)
+    if (this.availablePositions.length == 0) {
+      this.availablePositions = this.setAvailablePositions(tarToken)
+    }
     let availableCenters = this.availablePositions.map((position) => {
       return {
         x: position.x,
@@ -196,8 +230,8 @@ export class QuickActionHelper {
 
     const newY = Math.abs(dy) < deadZoneH / 2 ? pos.y : pos.y + (targetSize.h / 2) * Math.sign(dy)
 
-    console.debug('Expanded Position:', { x: newX, y: newY })
-    console.debug('Original Position:', pos)
+    // console.debug('Expanded Position:', { x: newX, y: newY })
+    // console.debug('Original Position:', pos)
 
     return { x: newX, y: newY }
   }
@@ -214,6 +248,7 @@ export class QuickActionHelper {
 
   cancelQuickAction() {
     document.removeEventListener('mousemove', this.mouseMoveHandler)
+    this.setState(this.STATES.ACTIVE)
     this.removeTokenGhost()
     if (this.activeSlot == null) return
     TargetHelper.cancelSelection.bind(this.app)(null, null, false)
@@ -287,6 +322,7 @@ export class QuickActionHelper {
 
   async quickItemUse() {
     this.removeTokenGhost()
+    this.setState(this.STATES.ATTACKING)
     let item = this.activeItem
     let activity = this.activeActivity
     let selectedSpellLevel = this.activeSpellLevel
@@ -328,14 +364,14 @@ export class QuickActionHelper {
       )
 
     const [result] = await Promise.all([usePromise, delay])
-
+    this.setState(this.STATES.ACTIVE)
     if (useNotification) {
       this.targetHelper.clearUseNotification()
     }
   }
 
   async displayTokenGhost(token) {
-    if (!this.actor) return
+    if (!this.actor || this.state != this.STATES.TARGETTING) return
     if (this.ghostToken) {
       this.removeTokenGhost()
     }
@@ -386,9 +422,10 @@ export class QuickActionHelper {
     // 5. Add it to the stage
     canvas.app.stage.addChild(sprite)
 
-    let p = new Pathfinding({
+    this.pathfinding.newPathfinding({
       sourceToken: actorTok,
-      targetToken: { x: pos.x, y: pos.y },
+      speed: actorTok.actor.system.attributes.movement.walk || 30,
+      targetPosition: { x: pos.x, y: pos.y },
     })
   }
 
@@ -397,22 +434,67 @@ export class QuickActionHelper {
       canvas.app.stage.removeChild(this.ghostToken)
       this.ghostToken.destroy()
       this.ghostToken = null
-      // this.pathfinding.clearRuler()
+      this.pathfinding.setInactive()
     }
   }
 
-  async moveActor(source, newX, newY) {
-    this.attacking = true
+  async moveActor(source) {
+    this.setState(this.STATES.MOVING)
     // Apply the position update
     this.targetHelper.clearTargetLines()
     this.targetHelper.clearRangeBoundary()
 
-    await source.document.update({ x: newX, y: newY })
+    // await source.document.update({ x: newX, y: newY })
+
+    if (this.pathfinding.ruler.token == null) {
+      // Ensure we're on the token layer
+      if (canvas.activeLayer !== canvas.tokens) {
+        console.log('Activating token layer...')
+        canvas.tokens.activate()
+        await new Promise((r) => setTimeout(r, 50))
+      }
+
+      // Check if user can control
+      // if (!source.can(game.user, 'control')) {
+
+      //   console.warn(`User ${game.user.name} cannot control token ${source.name}.`)
+      //   this.attacking = false
+      //   this.active = true
+      //   this.pathfinding.setActive()
+
+      //   return
+      // }
+
+      // Ensure it's controlled
+      if (!source.controlled) {
+        this.pathfinding.setInactive()
+        canvas.tokens.releaseAll()
+        let controlled = source.control({ releaseOthers: true })
+        console.log(`Control result for ${source.name}:`, controlled)
+
+        if (!controlled) {
+          console.warn('Failed to control token for movement.')
+          this.attacking = false
+          this.active = true
+          this.pathfinding.setActive()
+
+          return
+        }
+      }
+    }
+
+    if (!this.pathfinding.active) {
+      this.pathfinding.setActive()
+      this.pathfinding.setRuler(this.pathfinding.getPath())
+    }
+
+    await this.pathfinding.ruler?.moveToken()
     await CanvasAnimation.getAnimation(source.document.object.animationName)?.promise
     await new Promise((resolve) => setTimeout(resolve, this.useItemDelay))
     await this.quickItemUse()
-    this.active = true
-    this.attacking = false
+    this.setState(this.STATES.ACTIVE)
+    this.pathfinding.setActive()
+
     // console.log(`Source moved to new position: (${newX}, ${newY})`)
   }
 
