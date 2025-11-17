@@ -27,8 +27,7 @@ export class QuickActionHelper {
 
     this.mouseMoveHandler = null
 
-    this.throttleSpeed = 100 //ms
-    this.deadZonePercent = 0.25
+    this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate') || 50
     this.pathfinding = new Pathfinding()
 
     this.STATES = {
@@ -104,7 +103,7 @@ export class QuickActionHelper {
     }
     if (this.activeItem == null) {
       this.setState(this.STATES.INACTIVE)
-    } 
+    }
   }
 
   clearData() {
@@ -174,9 +173,6 @@ export class QuickActionHelper {
       return
     }
 
-    //pos - {x: number, y: number}
-    //tarTokenCenter - {x: number, y: number}
-
     let transformedPos = pos
     let tarTokenCenter = tarToken.center
     let tarTokenSize = { w: tarToken.w, h: tarToken.h }
@@ -187,11 +183,7 @@ export class QuickActionHelper {
       tarTokenSize,
       actorSize,
     )
-    // console.log('Cursor Position:', pos)
-    // console.log('Transformed Position:', transformedPos)
-    // console.log('Hovered Token:', tarToken)
 
-    // console.log(this.availablePositions)
     if (this.availablePositions.length == 0) {
       this.availablePositions = this.setAvailablePositions(tarToken)
     }
@@ -218,20 +210,15 @@ export class QuickActionHelper {
     const gridW = targetSize.w / this.gridSize
     const gridH = targetSize.h / this.gridSize
 
-    // Define “dead zone” where movement doesn’t expand outward
     const deadZoneW = targetSize.w * (gridW / (gridW + 2))
     const deadZoneH = targetSize.h * (gridH / (gridH + 2))
 
-    // Adjust position relative to the target center
     const dx = pos.x - targetCenter.x
     const dy = pos.y - targetCenter.y
 
     const newX = Math.abs(dx) < deadZoneW / 2 ? pos.x : pos.x + (targetSize.w / 2) * Math.sign(dx)
 
     const newY = Math.abs(dy) < deadZoneH / 2 ? pos.y : pos.y + (targetSize.h / 2) * Math.sign(dy)
-
-    // console.debug('Expanded Position:', { x: newX, y: newY })
-    // console.debug('Original Position:', pos)
 
     return { x: newX, y: newY }
   }
@@ -287,13 +274,6 @@ export class QuickActionHelper {
   }
 
   findAdjacentSquare(source, target) {
-    // console.log(
-    //   `Finding adjacent square from (${source.x}, ${source.y}) to (${target.x}, ${target.y})`,
-    // )
-    // console.log(`Source size: [${source.w}, ${source.h}] | Target size: [${target.w}, ${target.h}]`)
-    // console.log(`Δx: ${target.x - source.x}, Δy: ${target.y - source.y}`)
-
-    // Calculate the bounding box around the target based on the source size
     const targetBounds = {
       minX: target.x - source.w,
       maxX: target.x + target.w,
@@ -301,7 +281,6 @@ export class QuickActionHelper {
       maxY: target.y + target.h,
     }
 
-    // Determine the new position for the source
     const newX =
       source.x < targetBounds.minX
         ? targetBounds.minX
@@ -335,7 +314,7 @@ export class QuickActionHelper {
       game.settings.get('auto-action-tray', 'enableUseItemIcon')
 
     if (useNotification) {
-      this.targetHelper.createUseNotification(item, activity, this.actor, selectedSpellLevel)
+      this.targetHelper.createUseNotification(item, activity, this.actor, selectedSpellLevel, false)
     }
 
     const minimumTime = 2000
@@ -391,23 +370,27 @@ export class QuickActionHelper {
       return
     }
 
-    const texture = await PIXI.Assets.load(actorTok.document.texture.src)
+    let path = this.pathfinding.newPathfinding({
+      sourceToken: actorTok,
+      speed: actorTok.actor.system.attributes.movement.walk || 30,
+      targetPosition: { x: pos.x, y: pos.y },
+    })
 
-    // 3. Create a sprite using the texture
+    if (path.length == 0) {
+      return
+    }
+
+    const texture = await PIXI.Assets.load(actorTok.document.texture.src)
     const sprite = new PIXI.Sprite(texture)
 
-    // 4. Position the sprite
+    sprite.eventMode = 'none' 
+    sprite.interactiveChildren = false
+
     sprite.x = pos.x
     sprite.y = pos.y
     sprite.height = actorTok.h
     sprite.width = actorTok.w
-    // sprite.anchor.set(0.5)
-    // console.log('Target Position', token.x, token.y)
-    // console.log('Displaying ghost at', pos)
-    // console.log('Actor position', actorTok.x, actorTok.y)
-    // console.log('Token size', actorTok.w, actorTok.h)
 
-    // Set transparency
     sprite.alpha = 0.7
 
     const colorMatrix = new PIXI.filters.ColorMatrixFilter()
@@ -419,14 +402,7 @@ export class QuickActionHelper {
     sprite.filters = [colorMatrix]
 
     this.ghostToken = sprite
-    // 5. Add it to the stage
     canvas.app.stage.addChild(sprite)
-
-    this.pathfinding.newPathfinding({
-      sourceToken: actorTok,
-      speed: actorTok.actor.system.attributes.movement.walk || 30,
-      targetPosition: { x: pos.x, y: pos.y },
-    })
   }
 
   removeTokenGhost() {

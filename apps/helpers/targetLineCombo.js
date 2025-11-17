@@ -453,9 +453,7 @@ class TargettingText extends protoText {
     }
   }
   setTargetingText(pos, itemType, itemName, spellLevel) {
-    let offset = !this.useIcon 
-      ? 0
-      : game.settings.get('auto-action-tray', 'useItemIconSize') || 45
+    let offset = !this.useIcon ? 0 : game.settings.get('auto-action-tray', 'useItemIconSize') || 45
     let anchor =
       (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 20 + offset
     let suffix = ''
@@ -502,7 +500,7 @@ class TargetText extends protoText {
   }
   moveText(endPos) {
     if (this.text) {
-      this.text.position.set(endPos.x + 5, endPos.y - this.fontSize -5)
+      this.text.position.set(endPos.x + 5, endPos.y - this.fontSize - 5)
     }
   }
 }

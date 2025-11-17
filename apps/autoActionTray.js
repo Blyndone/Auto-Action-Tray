@@ -758,7 +758,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+    if (
+      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.selectingTargets
+    ) {
       if (event.target.actor == hotbar.actor) {
         return wrapped(...args)
       }
@@ -777,7 +780,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static _canControl(hotbar, wrapped, ...args) {
-    if (hotbar.quickActionHelper.controllable) { 
+    if (hotbar.quickActionHelper.controllable) {
       return wrapped(...args)
     }
     const [, event] = args
@@ -786,7 +789,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+    if (
+      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.selectingTargets
+    ) {
       if (event.target.actor == hotbar.actor) {
         return wrapped(...args)
       }
@@ -805,19 +811,25 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onHoverToken(token, hovered) {
+    
+    console.log('hovered token', token, hovered)
+
     this.throttledHover(token, hovered)
   }
 
   handleHoverToken(token, hovered) {
-    if (this.targetHelper.active && hovered) {
-      this.targetHelper.hovering = true
+    if (hovered == false) { 
+
+    }
+    if (this.targetHelper.getState() === this.targetHelper.STATES.ACTIVE && hovered) {
+      this.targetHelper.setState('HOVERING')
     } else {
-      this.targetHelper.hovering = false
+      this.targetHelper.setState('ACTIVE')
     }
     // console.log(token, hovered, this.actor)
     // console.log("actor", this.actor?.token?.disposition || this.actor?.prototypeToken?.disposition)
     // console.log("token", token?.document?.disposition)
-    if (!this.quickActionHelper.attacking) {
+    if (this.quickActionHelper.getState() !== this.quickActionHelper.STATES.ATTACKING) {
       const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
       const dis2 = token?.document?.disposition
 
@@ -842,7 +854,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       // console.log('ending', this.quickActionHelper.hovered, hovered, canQuickAct)
     }
 
-    if (this.targetHelper.active || !this.actor) return
+    if (this.targetHelper.getState() === this.targetHelper.STATES.ACTIVE || !this.actor) return
 
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
@@ -878,7 +890,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+    if (hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE && hotbar.targetHelper.selectingTargets) {
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
@@ -886,7 +898,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else return wrapped(...args)
   }
   static _onCursorChange(hotbar, wrapped, ...args) {
-    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+
+    if (
+      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.selectingTargets
+    ) {
       if (hotbar.targetHelper.hovering) {
         return wrapped("url('modules/auto-action-tray/icons/cursors/Sword.cur'), auto")
       } else {
@@ -898,7 +914,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
-    if (hotbar.targetHelper.active && hotbar.targetHelper.selectingTargets) {
+    if (
+      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.selectingTargets
+    ) {
       let token = event.interactionData.object
       hotbar.targetHelper.removeTarget(token)
       return event.stopPropagation()

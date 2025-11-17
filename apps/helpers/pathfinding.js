@@ -62,8 +62,7 @@ export class Pathfinding {
 
   newPathfinding(options) {
     if (options.sourceToken == this.sourceToken) {
-      this.updatePathfinding(options.targetPosition);
-      return;
+      return this.updatePathfinding(options.targetPosition);
     }
     this.setData(options);
     this.path = this.findPath(
@@ -71,6 +70,8 @@ export class Pathfinding {
       { x: this.targetPosition.x, y: this.targetPosition.y }
     );
     this.setRuler(this.path);
+
+    return this.path ? this.path : null;
   }
 
   updatePathfinding(targetPosition) {
@@ -81,6 +82,7 @@ export class Pathfinding {
       { x: this.targetPosition.x, y: this.targetPosition.y }
     );
     this.setRuler(this.path);
+    return this.path ? this.path : null;
   }
 
   heuristic(a, b) {

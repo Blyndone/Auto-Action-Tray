@@ -38,7 +38,6 @@ export class TargetHelper {
     this.templateBoundaryUuid = null
     this.startPos
     this.startLinePos
-    this.active = false
     this.hovering = false
     this.selectingTargets = false
     this.item = null
@@ -46,18 +45,24 @@ export class TargetHelper {
     this.mouseMoveHandler = null
     this.selectedTargets = null
     this.rejectTargets = null
-
+    
     this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate')
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
     this.recieveTargetLines = game.settings.get('auto-action-tray', 'recieveTargetLines')
     this.gridSize = game.canvas.scene.grid.size
-
+    
     Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
       if (!(activity.actor.id == this.actor.id)) return
       this._HookCreateMeasuredTemplate(activity, created)
     })
     this.refreshHook = null
     this.destroyHook = null
+    this.STATES = {
+      INACTIVE: 0,
+      ACTIVE: 1,
+      HOVERING: 2,
+    }
+    this.state = this.STATES.INACTIVE
   }
 
   setActor(actor) {
@@ -86,10 +91,20 @@ export class TargetHelper {
   }
 
   setActive() {
-    this.active = true
+    this.state = this.STATES.ACTIVE
+
   }
   setInactive() {
-    this.active = false
+    this.state = this.STATES.INACTIVE
+  }
+  setState(state) {
+    if(typeof state == 'string') {
+      state = this.STATES[state.toUpperCase()]
+    }
+    this.state = state
+  }
+  getState() { 
+    return this.state
   }
 
   setSingleRoll(singleRoll) {
@@ -140,14 +155,14 @@ export class TargetHelper {
     })
   }
 
-  createUseNotification(item, activity, actor, selectedSpellLevel) {
+  createUseNotification(item, activity, actor, selectedSpellLevel, useRangeBoundary = true) {
     this.selectingTargets = true
     this.clearData()
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
     }
     this.setData(actor, activity)
-    this.activityRange = this.getActivityRange(item, activity)
+    this.activityRange = useRangeBoundary ? this.getActivityRange(item, activity) : 0
 
     // let suffix = ''
     // if (selectedSpellLevel?.slot && selectedSpellLevel.slot !== 'spell0') {
@@ -156,7 +171,7 @@ export class TargetHelper {
     // let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
     // this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
 
-    this.currentLine = new TargetLineCombo({
+    this.currentLine = new TargetLineCombo({ 
       useLines: false,
       startPos: this.startPos,
       startLinePos: this.startLinePos,
@@ -360,7 +375,7 @@ export class TargetHelper {
     }
 
     setTimeout(() => {
-      if (this.active) return
+      if (this.state === this.STATES.ACTIVE) return
       this.currentLine.destroyLines()
       if (this.sendTargetLines) {
         this.socket.executeForOthers('destroyPhantomLine', this.currentLine.id)
@@ -420,15 +435,26 @@ export class TargetHelper {
   }
 
   static cancelSelection(event, target, animate = true) {
-    if (this.targetHelper.rejectTargets) {
-      this.targetHelper.rejectTargets(new Error('User canceled Target selection'))
+    const helper = this?.targetHelper
+    const animation = this?.animationHandler
+
+    try {
+      helper?.rejectTargets?.(new Error('User canceled Target selection'))
+    } catch {}
+    if (helper) {
+      helper.rejectTargets = null
+      try {
+        helper.currentLine?.clearLines?.()
+      } catch {}
+      try {
+        helper.clearData?.()
+      } catch {}
     }
-    this.targetHelper.rejectTargets = null
-    this.targetHelper.currentLine.clearLines()
-    this.targetHelper.clearData()
 
     if (animate) {
-      this.animationHandler.popTray()
+      try {
+        animation?.popTray?.()
+      } catch {}
     }
   }
 
@@ -507,7 +533,7 @@ export class TargetHelper {
 
   async _onMouseMove(event) {
     if (
-      !this.active ||
+      this.state === this.STATES.INACTIVE ||
       (event.target.closest('#auto-action-tray') &&
         !event.target.closest('.effect-tray-container') &&
         event.target.checkVisibility())
