@@ -3,6 +3,7 @@ import { AATActivity } from '../items/activity.js'
 import { TemplateBoundary } from './templateBoundary.js'
 
 export class TargetHelper {
+  #state
   constructor(options) {
     this.id = 'target-helper'
     this.label = ''
@@ -38,31 +39,32 @@ export class TargetHelper {
     this.templateBoundaryUuid = null
     this.startPos
     this.startLinePos
-    this.hovering = false
-    this.selectingTargets = false
+    // this.hovering = false
+    // this.selectingTargets = false
     this.item = null
     this.useSlot = false
     this.mouseMoveHandler = null
     this.selectedTargets = null
     this.rejectTargets = null
-    
+
     this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate')
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
     this.recieveTargetLines = game.settings.get('auto-action-tray', 'recieveTargetLines')
     this.gridSize = game.canvas.scene.grid.size
-    
+
     Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
       if (!(activity.actor.id == this.actor.id)) return
       this._HookCreateMeasuredTemplate(activity, created)
     })
     this.refreshHook = null
     this.destroyHook = null
+    this.active = false
     this.STATES = {
-      INACTIVE: 0,
-      ACTIVE: 1,
+      IDLE: 0,
+      TARGETING: 1,
       HOVERING: 2,
     }
-    this.state = this.STATES.INACTIVE
+    this.#state = this.STATES.IDLE
   }
 
   setActor(actor) {
@@ -91,20 +93,20 @@ export class TargetHelper {
   }
 
   setActive() {
-    this.state = this.STATES.ACTIVE
-
+    this.active = true
   }
   setInactive() {
-    this.state = this.STATES.INACTIVE
+    this.active = false
   }
   setState(state) {
-    if(typeof state == 'string') {
+    // console.log('AAT - TargetHelper State Change:', state)
+    if (typeof state == 'string') {
       state = this.STATES[state.toUpperCase()]
     }
-    this.state = state
+    this.#state = state
   }
-  getState() { 
-    return this.state
+  getState() {
+    return this.#state
   }
 
   setSingleRoll(singleRoll) {
@@ -156,7 +158,8 @@ export class TargetHelper {
   }
 
   createUseNotification(item, activity, actor, selectedSpellLevel, useRangeBoundary = true) {
-    this.selectingTargets = true
+    // this.selectingTargets = true
+    this.state = this.setState("TARGETTING")
     this.clearData()
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
@@ -171,7 +174,7 @@ export class TargetHelper {
     // let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
     // this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
 
-    this.currentLine = new TargetLineCombo({ 
+    this.currentLine = new TargetLineCombo({
       useLines: false,
       startPos: this.startPos,
       startLinePos: this.startLinePos,
@@ -203,7 +206,8 @@ export class TargetHelper {
     }
   }
   clearUseNotification() {
-    this.selectingTargets = false
+    // this.selectingTargets = false
+    this.setState("IDLE")
     this.clearData()
   }
   createRangeBoundary(range, actor) {
@@ -230,6 +234,10 @@ export class TargetHelper {
   }
 
   clearData() {
+    // this.state = this.enabled
+    //   ? this.setState(this.STATES.ACTIVE)
+    //   : this.setState(this.STATES.INACTIVE)
+    this.setState("IDLE")
     this.actor = null
     this.item = null
     this.singleRoll = false
@@ -257,8 +265,8 @@ export class TargetHelper {
     animate = true,
   ) {
     this.useSlot = false
-    this.selectingTargets = true
     this.clearData()
+    this.state = this.setState("TARGETING")
     this.setSingleRoll(singleRoll)
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
@@ -319,7 +327,7 @@ export class TargetHelper {
       })
     } catch (error) {
       // console.log('AAT - Target selection canceled')
-      this.selectingTargets = false
+      this.setState("IDLE")
       targets = null
     }
   }
@@ -353,7 +361,8 @@ export class TargetHelper {
   }
 
   confirmTargets() {
-    this.selectingTargets = false
+    // this.selectingTargets = false
+    this.setState("IDLE")
     document.removeEventListener('mousemove', this.mouseMoveHandler)
     this.currentLine.clearText()
     this.clearRangeBoundary()
@@ -375,7 +384,7 @@ export class TargetHelper {
     }
 
     setTimeout(() => {
-      if (this.state === this.STATES.ACTIVE) return
+      if (this.state >= this.STATES.TARGETING) return
       this.currentLine.destroyLines()
       if (this.sendTargetLines) {
         this.socket.executeForOthers('destroyPhantomLine', this.currentLine.id)
@@ -404,7 +413,8 @@ export class TargetHelper {
   removeTarget() {
     if (this.targets.length == 0) {
       document.body.style.cursor = ''
-      this.selectingTargets = false
+      // this.selectingTargets = false
+      this.setState("IDLE")
       document.removeEventListener('mousemove', this.mouseMoveHandler)
       this.rejectTargets(new Error('No targets to remove'))
       // this.currentLine.clearLines()
@@ -437,7 +447,8 @@ export class TargetHelper {
   static cancelSelection(event, target, animate = true) {
     const helper = this?.targetHelper
     const animation = this?.animationHandler
-
+    helper?.setState("IDLE")
+    document.removeEventListener('mousemove', this.mouseMoveHandler)
     try {
       helper?.rejectTargets?.(new Error('User canceled Target selection'))
     } catch {}
@@ -533,12 +544,14 @@ export class TargetHelper {
 
   async _onMouseMove(event) {
     if (
-      this.state === this.STATES.INACTIVE ||
-      (event.target.closest('#auto-action-tray') &&
-        !event.target.closest('.effect-tray-container') &&
-        event.target.checkVisibility())
+      event.target.closest('#auto-action-tray') &&
+      !event.target.closest('.effect-tray-container') &&
+      event.target.checkVisibility()
     )
-      return
+      if (this.getState() <= this.STATES.IDLE) {
+        document.removeEventListener('mousemove', this.mouseMoveHandler)
+        return
+      }
     let endPos = await TargetHelper.getCursorCoordinates(event)
     this.currentLine.setInRange(this.checkInRange(this.actor, endPos, this.activityRange))
     this.currentLine.drawLines(endPos)

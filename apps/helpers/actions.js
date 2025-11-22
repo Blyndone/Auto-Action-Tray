@@ -117,7 +117,8 @@ export class Actions {
     if (
       this.animating == true ||
       this.selectingActivity == true ||
-      this.targetHelper.selectingTargets == true
+      this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING
+      // this.targetHelper.selectingTargets == true
     )
       return
     // let trayIn = this.getTray(target.dataset.id)
@@ -393,7 +394,7 @@ export class Actions {
   static async useItem(event, target) {
     this.targetHelper.destroyRangeBoundary()
     this.useSlot = true
-    if (this.targetHelper.active) {
+    if (this.targetHelper.getState() > this.targetHelper.STATES.IDLE) {
       return
     }
     let altDown = this.altDown
@@ -416,21 +417,6 @@ export class Actions {
         return
       }
     }
-    // if (ritualCast) {
-    //   let activity = item.defaultActivity.activity
-    //   let options = await Actions.selectActivityWorkflow.bind(this)(item)
-    //   if (options) {
-    //     activity = options.activity.activity
-    //   }
-    //   if (!activity) return
-    //   await activity.use(
-    //     {
-    //       consume: { spellSlot: false },
-    //     },
-    //     { configure: false },
-    //   )
-    //   return
-    // }
 
     let options = await Actions.selectActivityWorkflow.bind(this)(item, activityId)
 

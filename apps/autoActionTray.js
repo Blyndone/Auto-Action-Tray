@@ -312,7 +312,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   //#region Hooks
   _onControlToken = (event, controlled) => {
     if (event?.actor.type == 'vehicle' || event?.actor.type == 'group') return
-    if (this.targetHelper.selectingTargets) return
+    if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING) return
     this.hpTextActive = false
     switch (true) {
       case event == null || controlled == false || this.actor == event.actor:
@@ -759,8 +759,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (
-      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
-      hotbar.targetHelper.selectingTargets
+      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
       if (event.target.actor == hotbar.actor) {
         return wrapped(...args)
@@ -790,8 +790,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (
-      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
-      hotbar.targetHelper.selectingTargets
+      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
       if (event.target.actor == hotbar.actor) {
         return wrapped(...args)
@@ -811,20 +811,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onHoverToken(token, hovered) {
-    
-    console.log('hovered token', token, hovered)
-
     this.throttledHover(token, hovered)
   }
 
   handleHoverToken(token, hovered) {
-    if (hovered == false) { 
-
+    if (hovered == false) {
     }
-    if (this.targetHelper.getState() === this.targetHelper.STATES.ACTIVE && hovered) {
+    if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING && hovered) {
       this.targetHelper.setState('HOVERING')
-    } else {
-      this.targetHelper.setState('ACTIVE')
+    } else if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING && !hovered) {
+      this.targetHelper.setState('TARGETING')
     }
     // console.log(token, hovered, this.actor)
     // console.log("actor", this.actor?.token?.disposition || this.actor?.prototypeToken?.disposition)
@@ -854,19 +850,20 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       // console.log('ending', this.quickActionHelper.hovered, hovered, canQuickAct)
     }
 
-    if (this.targetHelper.getState() === this.targetHelper.STATES.ACTIVE || !this.actor) return
+    if (this.targetHelper.getState() === this.targetHelper.STATES.IDLE || !this.actor) return
 
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
     if (!hovered) {
       const allItems = document.querySelectorAll('.in-range')
       // gsap.killTweensOf(allItems)
-
-      gsap.to(allItems, {
-        opacity: 0,
-        duration: 0.2,
-        overwrite: true,
-      })
+      if (allItems.length > 0) {
+        gsap.to(allItems, {
+          opacity: 0,
+          duration: 0.2,
+          overwrite: true,
+        })
+      }
       return
     }
 
@@ -880,7 +877,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return range != 0 && !isNaN(range) && range >= distance
     })
     const targetElements = filteredItems.map((el) => el.querySelector('.in-range')).filter(Boolean)
-    gsap.to(targetElements, { opacity: 0.9, overwrite: true })
+    if (targetElements.length != 0) {
+      gsap.to(targetElements, { opacity: 0.9, overwrite: true })
+    }
   }
 
   static _onTokenSelect2(hotbar, wrapped, ...args) {
@@ -890,7 +889,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE && hotbar.targetHelper.selectingTargets) {
+    if (
+      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
+    ) {
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
@@ -898,10 +900,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else return wrapped(...args)
   }
   static _onCursorChange(hotbar, wrapped, ...args) {
-
     if (
-      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
-      hotbar.targetHelper.selectingTargets
+      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
       if (hotbar.targetHelper.hovering) {
         return wrapped("url('modules/auto-action-tray/icons/cursors/Sword.cur'), auto")
@@ -915,8 +916,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
     if (
-      hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
-      hotbar.targetHelper.selectingTargets
+      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
       let token = event.interactionData.object
       hotbar.targetHelper.removeTarget(token)
@@ -1274,7 +1275,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static toggleConditionTray(event, target) {
-    if (this.animating || this.selectingActivity || this.targetHelper.selectingTargets) return
+    if (
+      this.animating ||
+      this.selectingActivity ||
+      this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING
+    )
+      return
     if (this.conditionTray.active) {
       this.animationHandler.popTray()
     } else {

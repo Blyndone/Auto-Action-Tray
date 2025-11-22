@@ -255,6 +255,8 @@ export class Pathfinding {
       ruler._addWaypoint(path[i]);
       // console.log("Added waypoint:", path[i]);
     }
+    ruler.color = Color.fromString("#FF00FF");
+    // console.log(ruler.totalDistance);
     ruler.measure(path[path.length - 1]);
   }
 
