@@ -76,6 +76,7 @@ export class DraggableTrayContainer {
       inertia: true,
       zIndexBoost: false,
       maxDuration: 0.1,
+
       onDrag: function () {
         tray.setClipPath.bind(container)(tray, this.x)
       },
@@ -122,8 +123,19 @@ class DraggableTray {
     this.xMin = options?.xMin || 0
     this.draggable = null
     this.tray = options.tray || null
+    this.element = null
   }
-  applyBounds(bounds) {
+
+  getElement() {
+    if (!this.element) {
+      this.element = document.querySelector(`.container-${this.id}`)
+    }
+    return this.element
+  }
+
+
+
+   applyBounds(bounds) {
     let oldMin = this.draggable[0].minX
     let oldMax = this.draggable[0].maxX
     bounds = {
@@ -137,18 +149,19 @@ class DraggableTray {
       this.draggable[0].applyBounds(bounds)
     }
   }
+
   setClipPath(tray, pos, duration = null, selfOnly = false) {
 
-    function setClip(identifier, pos, duration = 0) {
-      const selector = `.container-${identifier}`
-      const element = document.querySelector(selector)
+    function setClip(currentTray, pos, duration = 0) {
+      // const selector = `.container-${identifier}`
+      const element = currentTray.getElement()
       const newClipPath = `inset(0px ${pos}px 0px 0px)`
       if (!element) return
     
-      const currentClip = getComputedStyle(element).clipPath
-      if (currentClip === newClipPath) return
+      // const currentClip = getComputedStyle(element).clipPath
+      // if (currentClip === newClipPath) return
     
-      gsap.to(`.container-${identifier}`, {
+      gsap.to(`.container-${currentTray.id}`, {
         duration: duration,
         // ease: 'power3.out',
         clipPath: `inset(0px ${pos}px 0px 0px)`,
@@ -161,7 +174,7 @@ class DraggableTray {
     if (this.draggableTrays.length - 1 > tray.index) {
       let nextTray = this.draggableTrays[tray.index + 1]
       clipPos = this.trayMax + pos - nextTray.position + this.padding + this.spacerSize * 2
-      setClip(tray.id, clipPos, duration)
+      setClip(tray, clipPos, duration)
     }
 
     //setprevious Clippath
@@ -174,9 +187,10 @@ class DraggableTray {
         previousTray.position +
         this.padding +
         this.spacerSize * (tray.index > 1 ? 2 : 1)
-      setClip(this.draggableTrays[tray.index - 1].id, clipPos, duration)
+      setClip(this.draggableTrays[tray.index - 1], clipPos, duration)
     }
   }
+
   setMin(xMin) {
     this.xMin = xMin
   }
