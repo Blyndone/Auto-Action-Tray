@@ -43,18 +43,16 @@ export class QuickActionHelper {
   //Move Token
   //await game.actors.getName("Balon").getActiveTokens()[0].document.update({x: 2500, y: 0})
 
-  incHover() {
-    this.hovered += 1
-  }
-  decHover() {
-    this.hovered -= 1
-  }
   checkHover() {
     return this.hovered > 0
   }
 
   getState() {
     return this.state
+  }
+
+  hasActiveSlot() {
+    return this.activeSlot != null
   }
 
   // Set the current state
@@ -73,7 +71,7 @@ export class QuickActionHelper {
 
     this.tokenSize = { w: this.token.w, h: this.token.h }
     this.activeSlot = this.equipmentTray.getActiveSlot()
-    this.active = true
+    this.active = this.setState("ACTIVE")
     this.hovered = 0
     this.setItem()
 
@@ -92,11 +90,13 @@ export class QuickActionHelper {
         this.activeItem = this.equipmentTray.getMeleeWeapon()
         this.activeActivity = this.activeItem?.defaultActivity
         this.activeSpellLevel = this.activeItem?.spellLevel || null
+        this.activeItemRange = this.activeItem?.tooltip?.range || 0
         break
       case 2:
         this.activeItem = this.equipmentTray.getRangedWeapon()
         this.activeActivity = this.activeItem?.defaultActivity
         this.activeSpellLevel = this.activeItem?.spellLevel || null
+        this.activeItemRange = this.activeItem?.tooltip?.range || 0
         break
       default:
         this.activeItem = null
@@ -120,7 +120,7 @@ export class QuickActionHelper {
   }
 
   async startQuickAction() {
-    if (this.activeSlot == null || this.getState() !== this.STATES.ACTIVE) return
+    if (this.hasActiveSlot() == false || this.getState() !== this.STATES.ACTIVE || !canvas.tokens.controlled.some(t => t.id === this.token.id)) return
     this.setState(this.STATES.TARGETTING)
     this.setItem()
 
@@ -239,7 +239,7 @@ export class QuickActionHelper {
     this.removeTokenGhost()
     if (this.activeSlot == null) return
     TargetHelper.cancelSelection.bind(this.app)(null, null, false)
-    this.active = true
+    // this.active = true
   }
 
   setEquipmentTray(tray) {
@@ -354,6 +354,12 @@ export class QuickActionHelper {
     if (this.ghostToken) {
       this.removeTokenGhost()
     }
+    if (this.token.document.disposition == token.document.disposition || this.token.document.id == token.document.id) {
+      this.cancelQuickAction()
+      this.removeTokenGhost()
+      return
+    }
+
     this.targetToken = token
     this.availablePositions = this.setAvailablePositions(token)
     let actorTok = this.token
@@ -373,6 +379,7 @@ export class QuickActionHelper {
     let path = this.pathfinding.newPathfinding({
       sourceToken: actorTok,
       speed: actorTok.actor.system.attributes.movement.walk || 30,
+      range: this.activeItemRange,
       targetPosition: { x: pos.x, y: pos.y },
     })
 

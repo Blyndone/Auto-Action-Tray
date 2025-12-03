@@ -822,32 +822,27 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING && !hovered) {
       this.targetHelper.setState('TARGETING')
     }
-    // console.log(token, hovered, this.actor)
-    // console.log("actor", this.actor?.token?.disposition || this.actor?.prototypeToken?.disposition)
-    // console.log("token", token?.document?.disposition)
+
     if (this.quickActionHelper.getState() !== this.quickActionHelper.STATES.ATTACKING) {
       const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
       const dis2 = token?.document?.disposition
 
       const canQuickAct =
-        dis1 !== dis2 && this.actor && this.combatHandler.inCombat && this.combatHandler.isTurn
-      // console.log('beginning', this.quickActionHelper.hovered, hovered, canQuickAct)
+        this.quickActionHelper.hasActiveSlot() &&
+        dis1 !== dis2 &&
+        (this.quickActionHelper.getState() === this.quickActionHelper.STATES.ACTIVE ||
+          this.quickActionHelper.getState() === this.quickActionHelper.STATES.TARGETTING) &&
+        this.combatHandler.inCombat &&
+        this.combatHandler.isTurn
       if (canQuickAct) {
         if (hovered) {
-          this.targetHelper.setActive()
-          this.quickActionHelper.incHover()
           this.quickActionHelper.startQuickAction()
-          if (this.quickActionHelper.activeSlot) {
-            this.quickActionHelper.displayTokenGhost(token)
-          }
+          this.quickActionHelper.displayTokenGhost(token)
         } else {
-          this.targetHelper.setInactive()
-          this.quickActionHelper.decHover()
           this.quickActionHelper.cancelQuickAction()
           this.quickActionHelper.removeTokenGhost()
         }
       }
-      // console.log('ending', this.quickActionHelper.hovered, hovered, canQuickAct)
     }
 
     if (this.targetHelper.getState() === this.targetHelper.STATES.IDLE || !this.actor) return

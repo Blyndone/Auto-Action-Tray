@@ -60,58 +60,145 @@ export class DraggableTrayContainer {
     const index = tray.index
     const application = this.application
     const container = this
+
+    // ------------------------------
+    // Math Helpers
+    // ------------------------------
+
+    const getLeftNeighbor = () => container.draggableTrays[index - 1]?.tray
+    const getRightNeighbor = () => container.draggableTrays[index + 1]?.tray
+
+    const computeMinX = () => {
+      if (index === 1) return 0
+      const left = getLeftNeighbor()
+      return Math.max((left?.xPos || 0) + container.spacerSize)
+    }
+
+    const computeMaxX = () => {
+      const right = getRightNeighbor()
+      return Math.min((right?.xPos || container.trayMax) - container.spacerSize)
+    }
+
+    const computeGridSnapX = (x) => {
+      return (
+        Math.floor(x / container.iconSize) * container.iconSize +
+        container.padding +
+        (index - 1) * (container.handleSize + container.padding)
+      )
+    }
+
+    const applyNeighborBounds = (min) => {
+      const left = container.draggableTrays[index - 1]
+      const right = container.draggableTrays[index + 1]
+
+      if (left) {
+        left.applyBounds({
+          maxX: min - container.spacerSize,
+        })
+      }
+
+      if (right) {
+        right.applyBounds({
+          minX: min + container.spacerSize,
+        })
+      }
+    }
+
+    // ------------------------------
+    // Draggable
+    // ------------------------------
+
     tray.draggable = Draggable.create(`.container-${tray.id}`, {
       type: 'x',
-      bounds: {
-        minX:
-          index != 1
-            ? Math.max(this.draggableTrays[index - 1]?.tray.xPos + container.spacerSize || 0)
-            : 0,
-        maxX: Math.min(
-          this.draggableTrays[index + 1]?.tray.xPos - container.spacerSize || this.trayMax,
-        ),
-      },
-      force3D: false,
+      bounds: { minX: computeMinX(), maxX: computeMaxX() },
       handle: `.handle-${tray.id}`,
       inertia: true,
+      force3D: false,
       zIndexBoost: false,
       maxDuration: 0.1,
 
       onDrag: function () {
-        tray.setClipPath.bind(container)(tray, this.x)
+        tray.setClipPath.call(container, tray, this.x)
       },
+
       snap: {
         duration: 0.1,
-        x: function (value) {
-          let min =
-            Math.floor(value / container.iconSize) * container.iconSize +
-            container.padding +
-            (index - 1) * (container.handleSize + container.padding)
-          tray.setClipPath.bind(container)(tray, min, 0.1)
-          return min
+        x: (value) => {
+          const snapped = computeGridSnapX(value)
+          tray.setClipPath.call(container, tray, snapped, 0.1)
+          return snapped
         },
       },
+
       onThrowComplete: function () {
-        let min =
-          Math.floor(this.endX / container.iconSize) * container.iconSize +
-          container.padding +
-          (index - 1) * (container.handleSize + container.padding)
-        application.stackedTray.setTrayPosition(tray.id, min)
-        tray.setMin(min)
-        tray.setPos(min)
-        if (index - 1 != 0) {
-          container.draggableTrays[index - 1].applyBounds({
-            maxX: tray.xMin - container.spacerSize,
-          })
-        }
-        if (index + 1 < container.trayCount) {
-          container.draggableTrays[index + 1].applyBounds({
-            minX: tray.xMin + container.spacerSize,
-          })
-        }
+        const snapped = computeGridSnapX(this.endX)
+
+        application.stackedTray.setTrayPosition(tray.id, snapped)
+        tray.setMin(snapped)
+        tray.setPos(snapped)
+
+        applyNeighborBounds(snapped)
       },
     })
   }
+
+  //   createDraggable(tray) {
+  //   const index = tray.index
+  //   const application = this.application
+  //   const container = this
+
+  //   tray.draggable = Draggable.create(`.container-${tray.id}`, {
+  //     type: 'x',
+  //     bounds: {
+  //       minX:
+  //         index != 1
+  //           ? Math.max(this.draggableTrays[index - 1]?.tray.xPos + container.spacerSize || 0)
+  //           : 0,
+  //       maxX: Math.min(
+  //         this.draggableTrays[index + 1]?.tray.xPos - container.spacerSize || this.trayMax,
+  //       ),
+  //     },
+  //     force3D: false,
+  //     handle: `.handle-${tray.id}`,
+  //     inertia: true,
+  //     zIndexBoost: false,
+  //     maxDuration: 0.1,
+
+  //     onDrag: function () {
+  //       tray.setClipPath.bind(container)(tray, this.x)
+  //     },
+  //     snap: {
+  //       duration: 0.1,
+  //       x: function (value) {
+  //         let min =
+  //           Math.floor(value / container.iconSize) * container.iconSize +
+  //           container.padding +
+  //           (index - 1) * (container.handleSize + container.padding)
+  //         tray.setClipPath.bind(container)(tray, min, 0.1)
+  //         return min
+  //       },
+  //     },
+  //     onThrowComplete: function () {
+  //       let min =
+  //         Math.floor(this.endX / container.iconSize) * container.iconSize +
+  //         container.padding +
+  //         (index - 1) * (container.handleSize + container.padding)
+  //       application.stackedTray.setTrayPosition(tray.id, min)
+  //       tray.setMin(min)
+  //       tray.setPos(min)
+  //       if (index - 1 != 0) {
+  //         container.draggableTrays[index - 1].applyBounds({
+  //           maxX: tray.xMin - container.spacerSize,
+  //         })
+  //       }
+  //       if (index + 1 < container.trayCount) {
+  //         container.draggableTrays[index + 1].applyBounds({
+  //           minX: tray.xMin + container.spacerSize,
+  //         })
+  //       }
+  //     },
+  //   })
+  // }
 }
 
 class DraggableTray {
@@ -133,9 +220,7 @@ class DraggableTray {
     return this.element
   }
 
-
-
-   applyBounds(bounds) {
+  applyBounds(bounds) {
     let oldMin = this.draggable[0].minX
     let oldMax = this.draggable[0].maxX
     bounds = {
@@ -151,16 +236,15 @@ class DraggableTray {
   }
 
   setClipPath(tray, pos, duration = null, selfOnly = false) {
-
     function setClip(currentTray, pos, duration = 0) {
       // const selector = `.container-${identifier}`
       const element = currentTray.getElement()
       const newClipPath = `inset(0px ${pos}px 0px 0px)`
       if (!element) return
-    
+
       // const currentClip = getComputedStyle(element).clipPath
       // if (currentClip === newClipPath) return
-    
+
       gsap.to(`.container-${currentTray.id}`, {
         duration: duration,
         // ease: 'power3.out',
@@ -178,8 +262,8 @@ class DraggableTray {
     }
 
     //setprevious Clippath
-  
-    if (tray.index == 1 || !selfOnly && tray.index > 0) {
+
+    if (tray.index == 1 || (!selfOnly && tray.index > 0)) {
       let previousTray = this.draggableTrays[tray.index - 1]
       clipPos =
         this.trayMax -

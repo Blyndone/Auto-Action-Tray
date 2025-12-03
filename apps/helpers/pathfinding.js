@@ -8,6 +8,7 @@ export class Pathfinding {
     this.gridSize = canvas.grid.size;
     this.sourceToken = null;
     this.targetPosition = null;
+    this.activeItemRange = null;
     // this.targetToken = { x: 2500, y: 2500 }; // Temporary hardcoded target for testing
 
     this.occupiedSquares = null;
@@ -43,6 +44,8 @@ export class Pathfinding {
     this.gridSize = canvas.grid.size;
     this.sourceToken = options.sourceToken;
     this.targetPosition = options.targetPosition;
+    this.activeItemRange = options.range;
+    console.log("Setting active item range to:", this.activeItemRange);
     this.setMaxDepth(options.speed / 5);
     this.occupiedSquares = this.generateOccupiedSquares();
   }
@@ -55,6 +58,7 @@ export class Pathfinding {
     this.tokens = null;
     this.sourceToken = null;
     this.targetPosition = null;
+    this.activeItemRange = null;
     this.occupiedSquares = null;
     this.path = null;
     this.clearRuler();
