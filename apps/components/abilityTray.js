@@ -1,5 +1,6 @@
 import { AATItem } from '../items/item.js'
 import { AATMacro } from '../items/macro.js'
+import { CustomTray } from './customTray.js'
 export class AbilityTray {
   constructor(options = {}) {
     this.id = null
@@ -64,13 +65,13 @@ export class AbilityTray {
         case item.type == 'container':
           return
         case item.system.activities?.size == 0:
-          tray = this.customTrays.find((e) => e.id == 'passive')
+          tray = this.customTrays.find((e) => e.id == 'passiveItems')
           if (tray) {
             AbilityTray.addToTray(new AATItem(item), tray)
           } else {
             let passiveTray = new CustomTray({
               category: 'passive',
-              id: 'passive',
+              id: 'passiveItems',
               actorUuid: this.actor.uuid,
             })
             this.customTrays.push(passiveTray)
