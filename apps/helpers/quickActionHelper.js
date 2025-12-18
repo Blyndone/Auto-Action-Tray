@@ -71,7 +71,7 @@ export class QuickActionHelper {
 
     this.tokenSize = { w: this.token.w, h: this.token.h }
     this.activeSlot = this.equipmentTray.getActiveSlot()
-    this.active = this.setState("ACTIVE")
+    this.active = this.setState('ACTIVE')
     this.hovered = 0
     this.setItem()
 
@@ -120,7 +120,12 @@ export class QuickActionHelper {
   }
 
   async startQuickAction() {
-    if (this.hasActiveSlot() == false || this.getState() !== this.STATES.ACTIVE || !canvas.tokens.controlled.some(t => t.id === this.token.id)) return
+    if (
+      this.hasActiveSlot() == false ||
+      this.getState() !== this.STATES.ACTIVE ||
+      !canvas.tokens.controlled.some((t) => t.id === this.token.id)
+    )
+      return
     this.setState(this.STATES.TARGETTING)
     this.setItem()
 
@@ -354,7 +359,10 @@ export class QuickActionHelper {
     if (this.ghostToken) {
       this.removeTokenGhost()
     }
-    if (this.token.document.disposition == token.document.disposition || this.token.document.id == token.document.id) {
+    if (
+      this.token.document.disposition == token.document.disposition ||
+      this.token.document.id == token.document.id
+    ) {
       this.cancelQuickAction()
       this.removeTokenGhost()
       return
@@ -376,21 +384,23 @@ export class QuickActionHelper {
       return
     }
 
-    let path = this.pathfinding.newPathfinding({
+    let { path, endPos } = this.pathfinding.newPathfinding({
       sourceToken: actorTok,
       speed: actorTok.actor.system.attributes.movement.walk || 30,
       range: this.activeItemRange,
       targetPosition: { x: pos.x, y: pos.y },
     })
-
-    if (path.length == 0) {
+    if (endPos) {
+      pos = endPos
+    }
+    if (path?.length == 0 || !path) {
       return
     }
 
     const texture = await PIXI.Assets.load(actorTok.document.texture.src)
     const sprite = new PIXI.Sprite(texture)
 
-    sprite.eventMode = 'none' 
+    sprite.eventMode = 'none'
     sprite.interactiveChildren = false
 
     sprite.x = pos.x

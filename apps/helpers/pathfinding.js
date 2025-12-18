@@ -16,6 +16,7 @@ export class Pathfinding {
     // const t0 = performance.now();
 
     this.path = null;
+    this.endPos = null;
 
     // const t1 = performance.now();
     // const duration = (t1 - t0).toFixed(2);
@@ -75,7 +76,7 @@ export class Pathfinding {
     );
     this.setRuler(this.path);
 
-    return this.path ? this.path : null;
+    return this.path ? { path: this.path, endPos: this.endPos } : null;
   }
 
   updatePathfinding(targetPosition) {
@@ -86,7 +87,7 @@ export class Pathfinding {
       { x: this.targetPosition.x, y: this.targetPosition.y }
     );
     this.setRuler(this.path);
-    return this.path ? this.path : null;
+    return this.path ? { path: this.path, endPos: this.endPos } : null;
   }
 
   heuristic(a, b) {
@@ -173,6 +174,16 @@ export class Pathfinding {
     return results;
   }
 
+  checkRange(current, goal) {
+    if (this.activeItemRange === null || this.activeItemRange === 5)
+      return false;
+    // Calculate distance non euclidean
+    const dx = Math.abs(current.x - goal.x);
+    const dy = Math.abs(current.y - goal.y);
+    const distance = Math.max(dx, dy) / this.gridSize * 5;
+    return distance > this.activeItemRange;
+  }
+
   findPath(start, goal) {
     const openSet = [start];
     const cameFrom = new Map();
@@ -187,7 +198,11 @@ export class Pathfinding {
       // Limit search by number of squares added (depth)
       if (currentDepth > this.maxDepth) continue;
 
-      if (current.x === goal.x && current.y === goal.y) {
+      if (
+        (current.x === goal.x && current.y === goal.y) ||
+        !this.checkRange(current, goal)
+      ) {
+        this.endPos = current;
         return this.reconstructPath(cameFrom, current);
       }
 
