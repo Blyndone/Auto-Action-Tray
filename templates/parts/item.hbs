@@ -18,6 +18,7 @@
         class="ability-button action-hover"
       {{/if}}
     >
+ 
 
 
       {{#if (eq isActive false)}}
@@ -58,6 +59,13 @@
                 <div class="in-range-icon in-range">
            {{!-- <i class="fa-regular fa-crosshairs-simple"></i> --}}
           </div>
+          
+              {{#if (eq item.subtype "scroll")}}
+      <div class="scroll-icon">
+            <i class="fa-solid fa-scroll-old"></i>
+          </div>
+     {{/if}}
+
         {{#if item.wildcard}}
           <div class="wildcard-icon">
             <i class="fa-solid fa-asterisk"></i>

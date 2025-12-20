@@ -104,6 +104,20 @@ img.item-equipped {
   margin: 6.4px;
 }
 
+.scroll-icon {
+  position: absolute;
+  top: calc(var(--aat-item-size) * -1);
+  left: 0;
+  color: #f1f1f1;
+  font-size: 22px;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: left;
+  height: 0;
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+  margin: 6.4px;
+}
+
 .in-range-icon {
   position: absolute;
   bottom: 5px;
