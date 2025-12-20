@@ -827,13 +827,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
       const dis2 = token?.document?.disposition
 
+      const { currentTray, quickActionHelper, combatHandler } = this
+
+      const invalidTrays = new Set(['target-helper', 'activity', 'spellLevel'])
+      const trayId = currentTray?.id
+
+      const quickState = quickActionHelper.getState()
+      const isValidQuickState =
+        quickState === quickActionHelper.STATES.ACTIVE ||
+        quickState === quickActionHelper.STATES.TARGETTING
+
       const canQuickAct =
-        this.quickActionHelper.hasActiveSlot() &&
+        !invalidTrays.has(trayId) &&
+        quickActionHelper.hasActiveSlot() &&
         dis1 !== dis2 &&
-        (this.quickActionHelper.getState() === this.quickActionHelper.STATES.ACTIVE ||
-          this.quickActionHelper.getState() === this.quickActionHelper.STATES.TARGETTING) &&
-        this.combatHandler.inCombat &&
-        this.combatHandler.isTurn
+        isValidQuickState &&
+        combatHandler.inCombat &&
+        combatHandler.isTurn
+
       if (canQuickAct) {
         if (hovered) {
           this.quickActionHelper.startQuickAction()

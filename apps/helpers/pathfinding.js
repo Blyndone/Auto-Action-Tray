@@ -48,7 +48,7 @@ export class Pathfinding {
     this.targetPosition = options.targetPosition;
     this.actualTargetPosition = options.actualTarget;
     this.activeItemRange = options.range;
-    console.log("Setting active item range to:", this.activeItemRange);
+    // console.log("Setting active item range to:", this.activeItemRange);
     this.setMaxDepth(options.speed / 5);
     this.occupiedSquares = this.generateOccupiedSquares();
   }
@@ -85,7 +85,7 @@ export class Pathfinding {
   updatePathfinding(options) {
     this.clearRuler();
     this.activeItemRange = options.range;
-    console.log("Setting active item range to:", this.activeItemRange);
+    // console.log("Setting active item range to:", this.activeItemRange);
     this.updateTargetPosition(options);
 
     this.path = this.findPath(
@@ -181,7 +181,7 @@ export class Pathfinding {
   }
 
   checkInRange(current, goal) {
-    console.log("Checking range. Active item range:", this.activeItemRange);
+    // console.log("Checking range. Active item range:", this.activeItemRange);
     if (this.activeItemRange == null) return false;
 
     const dx = Math.abs(current.x - goal.x);
