@@ -8,6 +8,7 @@ export class Pathfinding {
     this.gridSize = canvas.grid.size;
     this.sourceToken = null;
     this.targetPosition = null;
+    this.actualTargetPosition = null;
     this.activeItemRange = null;
     // this.targetToken = { x: 2500, y: 2500 }; // Temporary hardcoded target for testing
 
@@ -45,14 +46,16 @@ export class Pathfinding {
     this.gridSize = canvas.grid.size;
     this.sourceToken = options.sourceToken;
     this.targetPosition = options.targetPosition;
+    this.actualTargetPosition = options.actualTarget;
     this.activeItemRange = options.range;
     console.log("Setting active item range to:", this.activeItemRange);
     this.setMaxDepth(options.speed / 5);
     this.occupiedSquares = this.generateOccupiedSquares();
   }
 
-  updateTargetPosition(newTarget) {
-    this.targetPosition = newTarget;
+  updateTargetPosition(options) {
+    this.targetPosition = options.targetPosition;
+    this.actualTargetPosition = options.actualTarget;
   }
 
   clearData() {
@@ -67,7 +70,7 @@ export class Pathfinding {
 
   newPathfinding(options) {
     if (options.sourceToken == this.sourceToken) {
-      return this.updatePathfinding(options.targetPosition);
+      return this.updatePathfinding(options);
     }
     this.setData(options);
     this.path = this.findPath(
@@ -79,9 +82,12 @@ export class Pathfinding {
     return this.path ? { path: this.path, endPos: this.endPos } : null;
   }
 
-  updatePathfinding(targetPosition) {
+  updatePathfinding(options) {
     this.clearRuler();
-    this.updateTargetPosition(targetPosition);
+    this.activeItemRange = options.range;
+    console.log("Setting active item range to:", this.activeItemRange);
+    this.updateTargetPosition(options);
+
     this.path = this.findPath(
       { x: this.sourceToken.x, y: this.sourceToken.y },
       { x: this.targetPosition.x, y: this.targetPosition.y }
@@ -174,14 +180,35 @@ export class Pathfinding {
     return results;
   }
 
-  checkRange(current, goal) {
-    if (this.activeItemRange === null || this.activeItemRange === 5)
-      return false;
-    // Calculate distance non euclidean
+  checkInRange(current, goal) {
+    console.log("Checking range. Active item range:", this.activeItemRange);
+    if (this.activeItemRange == null) return false;
+
     const dx = Math.abs(current.x - goal.x);
     const dy = Math.abs(current.y - goal.y);
-    const distance = Math.max(dx, dy) / this.gridSize * 5;
-    return distance > this.activeItemRange;
+
+    const dxActual = Math.abs(current.x - this.actualTargetPosition.x);
+    const dyActual = Math.abs(current.y - this.actualTargetPosition.y);
+
+    const distanceGoal = Math.max(dx, dy) / this.gridSize;
+    const distanceActual = Math.max(dxActual, dyActual) / this.gridSize;
+
+    const range = this.activeItemRange / 5;
+    // this.debugDisplayValue(
+    //   `DG:${distanceGoal} DA:${distanceActual} R:${range}`,
+    //   {
+    //     x: current.x + this.gridSize / 2,
+    //     y: current.y + this.gridSize / 2
+    //   }
+    // );
+    // this.debugDisplayValue(`G:${goal.x},${goal.y}`, {
+    //   x: goal.x + this.gridSize / 2,
+    //   y: goal.y + this.gridSize / 2
+    // });
+    if (this.activeItemRange > 5) {
+      return distanceActual <= range;
+    }
+    return distanceGoal <= 0 && distanceActual <= range;
   }
 
   findPath(start, goal) {
@@ -199,8 +226,8 @@ export class Pathfinding {
       if (currentDepth > this.maxDepth) continue;
 
       if (
-        (current.x === goal.x && current.y === goal.y) ||
-        !this.checkRange(current, goal)
+        // (current.x === goal.x && current.y === goal.y) ||
+        this.checkInRange(current, goal)
       ) {
         this.endPos = current;
         return this.reconstructPath(cameFrom, current);

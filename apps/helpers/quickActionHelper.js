@@ -257,6 +257,7 @@ export class QuickActionHelper {
       ? (this.activeSlot = null)
       : (this.activeSlot = slot)
     this.equipmentTray.setActiveSlot(this.activeSlot)
+    this.setData(this.actor)
     // console.log('Quick Action Slot: ', this.activeSlot)
     this.app.requestRender('equipmentMiscTray')
   }
@@ -389,6 +390,7 @@ export class QuickActionHelper {
       speed: actorTok.actor.system.attributes.movement.walk || 30,
       range: this.activeItemRange,
       targetPosition: { x: pos.x, y: pos.y },
+      actualTarget: {x: token.x, y: token.y}
     })
     if (endPos) {
       pos = endPos
