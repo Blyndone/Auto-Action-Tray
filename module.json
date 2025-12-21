@@ -3,9 +3,9 @@
   "id": "auto-action-tray",
   "version": "#{VERSION}#",
   "compatibility": {
-    "minimum": "11.302",
-    "verified": "12.999",
-    "maximum": "12.999"
+    "minimum": "13.302",
+    "verified": "13.000",
+    "maximum": "13.999"
   },
   "relationships": {
     "requires": [
