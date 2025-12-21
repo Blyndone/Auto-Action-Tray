@@ -15,6 +15,10 @@ export class EquipmentTray extends CustomTray {
     } else {
       this.getSavedData(options.cachedAbilities)
     }
+
+    if (!this.application.quickActionHelperEnabled) { 
+      this.activeSlot = null
+    }
   }
 
   generateTray(cachedAbilities) {

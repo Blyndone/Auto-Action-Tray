@@ -129,7 +129,7 @@ Hooks.once('ready', async function () {
     config: true,
 
     type: Boolean,
-    default: false,
+    default: true,
 
     requiresReload: true,
   })
@@ -481,6 +481,18 @@ Hooks.once('ready', async function () {
 
     type: Boolean,
     default: true,
+
+    requiresReload: true,
+  })
+
+    game.settings.register('auto-action-tray', 'quickActionHelper', {
+    name: '(Experimental) Quick Attack Automation',
+    hint: 'Enable Quick Attack Automation for Melee and Ranged Attacks',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: false,
 
     requiresReload: true,
   })

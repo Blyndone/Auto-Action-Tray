@@ -143,6 +143,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         document.documentElement.style.setProperty('--aat-background-color', `#${baseColor}${hex}`)
       }
 
+      this.quickActionHelperEnabled = game.settings.get('auto-action-tray', 'quickActionHelper')
+
       this.totalabilities = rowCount * columnCount
       this.rowCount = rowCount
       this.columnCount = columnCount
@@ -551,7 +553,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     await this.generateActorItems(actor, token)
     this.generateTrays(this.actor)
     this.setActor(actor)
-    this.quickActionHelper.setData(actor)
+    if (this.quickActionHelperEnabled) {
+      this.quickActionHelper.setData(actor)
+    }
     if (currentTrayId) {
       this.currentTray.setInactive()
       let tray = this.getTray(currentTrayId)
@@ -815,48 +819,48 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   handleHoverToken(token, hovered) {
-    if (hovered == false) {
-    }
+    if (!this.actor) return
     if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING && hovered) {
       this.targetHelper.setState('HOVERING')
     } else if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING && !hovered) {
       this.targetHelper.setState('TARGETING')
     }
 
-    if (this.quickActionHelper.getState() !== this.quickActionHelper.STATES.ATTACKING) {
-      const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
-      const dis2 = token?.document?.disposition
+    if (this.quickActionHelperEnabled) {
+      if (this.quickActionHelper.getState() !== this.quickActionHelper.STATES.ATTACKING) {
+        const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
+        const dis2 = token?.document?.disposition
 
-      const { currentTray, quickActionHelper, combatHandler } = this
+        const { currentTray, quickActionHelper, combatHandler } = this
 
-      const invalidTrays = new Set(['target-helper', 'activity', 'spellLevel'])
-      const trayId = currentTray?.id
+        const invalidTrays = new Set(['target-helper', 'activity', 'spellLevel'])
+        const trayId = currentTray?.id
 
-      const quickState = quickActionHelper.getState()
-      const isValidQuickState =
-        quickState === quickActionHelper.STATES.ACTIVE ||
-        quickState === quickActionHelper.STATES.TARGETTING
+        const quickState = quickActionHelper.getState()
+        const isValidQuickState =
+          quickState === quickActionHelper.STATES.ACTIVE ||
+          quickState === quickActionHelper.STATES.TARGETTING
 
-      const canQuickAct =
-        !invalidTrays.has(trayId) &&
-        quickActionHelper.hasActiveSlot() &&
-        dis1 !== dis2 &&
-        isValidQuickState &&
-        combatHandler.inCombat &&
-        combatHandler.isTurn
+        const canQuickAct =
+          !invalidTrays.has(trayId) &&
+          quickActionHelper.hasActiveSlot() &&
+          dis1 !== dis2 &&
+          isValidQuickState &&
+          combatHandler.inCombat &&
+          combatHandler.isTurn
 
-      if (canQuickAct) {
-        if (hovered) {
-          this.quickActionHelper.startQuickAction()
-          this.quickActionHelper.displayTokenGhost(token)
-        } else {
-          this.quickActionHelper.cancelQuickAction()
-          this.quickActionHelper.removeTokenGhost()
+        if (canQuickAct) {
+          if (hovered) {
+            this.quickActionHelper.startQuickAction()
+            this.quickActionHelper.displayTokenGhost(token)
+          } else {
+            this.quickActionHelper.cancelQuickAction()
+            this.quickActionHelper.removeTokenGhost()
+          }
         }
       }
     }
 
-    if (this.targetHelper.getState() === this.targetHelper.STATES.IDLE || !this.actor) return
 
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
@@ -1110,24 +1114,26 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       },
     )
 
-    new ContextMenu(
-      this.element,
-      '.quick-slot-1',
-      {},
-      {
-        onOpen: () => this.quickActionHelper.toggleSlot(1),
-        jQuery: true,
-      },
-    )
-    new ContextMenu(
-      this.element,
-      '.quick-slot-2',
-      {},
-      {
-        onOpen: () => this.quickActionHelper.toggleSlot(2),
-        jQuery: true,
-      },
-    )
+    if (this.quickActionHelperEnabled) {
+      new ContextMenu(
+        this.element,
+        '.quick-slot-1',
+        {},
+        {
+          onOpen: () => this.quickActionHelper.toggleSlot(1),
+          jQuery: true,
+        },
+      )
+      new ContextMenu(
+        this.element,
+        '.quick-slot-2',
+        {},
+        {
+          onOpen: () => this.quickActionHelper.toggleSlot(2),
+          jQuery: true,
+        },
+      )
+    }
   }
 
   _onOpenContextMenu(target) {
