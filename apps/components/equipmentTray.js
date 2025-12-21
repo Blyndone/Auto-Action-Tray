@@ -8,7 +8,7 @@ export class EquipmentTray extends CustomTray {
     this.category = options.category
     this.id = 'equipment'
     this.type = 'custom'
-    this.activeSlot = null
+    this.activeSlot = 1
     this.application = options.application
     if (!this.savedData && !this.checkSavedData(this.id)) {
       this.generateTray(cachedAbilities)
@@ -16,9 +16,9 @@ export class EquipmentTray extends CustomTray {
       this.getSavedData(options.cachedAbilities)
     }
 
-    if (!this.application.quickActionHelperEnabled) { 
+    if (!this.application.quickActionHelperEnabled) {
       this.activeSlot = null
-    }
+    } 
   }
 
   generateTray(cachedAbilities) {

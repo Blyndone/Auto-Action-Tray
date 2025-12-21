@@ -2,7 +2,8 @@ export class Pathfinding {
   constructor(options) {
     //constants
     this.active = true;
-    this.maxDepth = 6;
+    this.maxDepth =
+      game.settings.get("auto-action-tray", "quickActionDepth") || 6;
 
     this.tokens = null;
     this.gridSize = canvas.grid.size;
@@ -32,7 +33,11 @@ export class Pathfinding {
   }
 
   setMaxDepth(depth) {
-    this.maxDepth = depth;
+    if (game.settings.get("auto-action-tray", "unboundPathfindingDepth")) {
+      this.maxDepth = game.settings.get("auto-action-tray", "quickActionDepth");
+    } else {
+      this.maxDepth = depth;
+    }
   }
 
   getPath() {

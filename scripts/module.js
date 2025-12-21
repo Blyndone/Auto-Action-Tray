@@ -495,7 +495,38 @@ Hooks.once('ready', async function () {
     default: false,
 
     requiresReload: true,
+    })
+    
+  game.settings.register('auto-action-tray', 'unboundPathfindingDepth', {
+    name: '(Experimental) Unbounded Pathfinding Depth',
+    hint: 'Enable Unbounded Pathfinding Depth for Quick Actions.  May impact performance.  Bound Depth is determined by Actor Speed.',
+    scope: 'client',
+    config: true,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: true,
+    })
+  
+    game.settings.register('auto-action-tray', 'quickActionDepth', {
+    name: '(Experimental) Quick Action Depth',
+    hint: 'Maximum Distance for Quick Action Pathfinding.  Larger distances may impact performance.',
+    scope: 'client',
+    config: true,
+
+    type: Number,
+    default: 6,
+
+    range: {
+      min: 1,
+      step: 1,
+      max: 50,
+    },
+
+    requiresReload: true,
   })
+  
 
   if (game.settings.get('auto-action-tray', 'customConditionIcons')) {
     ConditionTray.setCustomIcons()
