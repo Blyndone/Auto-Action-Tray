@@ -32,7 +32,7 @@ export async function preloadHandlebarsTemplates() {
     paths[`AAT.${path.split('/').pop().replace('.hbs', '')}`] = path
   }
 
-  return loadTemplates(paths)
+  return foundry.applications.handlebars.loadTemplates(paths)
 }
 
 ;(() => {})()
@@ -40,7 +40,7 @@ export async function preloadHandlebarsTemplates() {
 Hooks.once('init', async function () {
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._onClickLeft',
+    'foundry.canvas.placeables.Token.prototype._onClickLeft',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
@@ -51,7 +51,7 @@ Hooks.once('init', async function () {
 
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._onClickLeft2',
+    'foundry.canvas.placeables.Token.prototype._onClickLeft2',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenSelect2(hotbar, wrapped, ...args)
@@ -62,7 +62,7 @@ Hooks.once('init', async function () {
 
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._canControl',
+    'foundry.canvas.placeables.Token.prototype._canControl',
     function (wrapped, ...args) {
       if (hotbar) {
         return AutoActionTray._canControl(hotbar, wrapped, ...args)
@@ -72,7 +72,7 @@ Hooks.once('init', async function () {
   )
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._onClickRight',
+    'foundry.canvas.placeables.Token.prototype._onClickRight',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
@@ -82,7 +82,7 @@ Hooks.once('init', async function () {
   )
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'TokenLayer.prototype._onClickRight',
+    'foundry.canvas.layers.TokenLayer.prototype._onClickRight',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)

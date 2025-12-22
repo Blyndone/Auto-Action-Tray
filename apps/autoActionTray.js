@@ -215,7 +215,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       })
     })
 
-    ui.hotbar.collapse()
+    const defaultHotbar = document.querySelector('#hotbar')
+
+    if (defaultHotbar) {
+      defaultHotbar.style.visibility = 'hidden'
+    }
 
     registerHandlebarsHelpers()
     if (!game.user.isGM) {
@@ -861,7 +865,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
     }
 
-
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
     if (!hovered) {
@@ -1076,7 +1079,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         },
       },
     ]
-    new ContextMenu(this.element, '.character-image', characterContextMenu, {
+    new foundry.applications.ux.ContextMenu(this.element, '.character-image', characterContextMenu, {
       onOpen: this._onOpenContextMenu(),
       jQuery: true,
       _expandUp: true,
@@ -1094,7 +1097,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       },
       'auto-action-tray',
     )
-    new ContextMenu(this.element, '.effect-tray-icon', [], {
+    new foundry.applications.ux.ContextMenu(this.element, '.effect-tray-icon', [], {
       onOpen: EffectTray.removeEffect.bind(this),
       jQuery: true,
     })
@@ -1104,7 +1107,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     //   jQuery: true,
     // })
 
-    new ContextMenu(
+    new foundry.applications.ux.ContextMenu(
       this.element,
       '.end-turn-btn-dice',
       {},
@@ -1115,7 +1118,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     )
 
     if (this.quickActionHelperEnabled) {
-      new ContextMenu(
+      new foundry.applications.ux.ContextMenu(
         this.element,
         '.quick-slot-1',
         {},
@@ -1124,7 +1127,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           jQuery: true,
         },
       )
-      new ContextMenu(
+      new foundry.applications.ux.ContextMenu(
         this.element,
         '.quick-slot-2',
         {},
@@ -1314,7 +1317,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         dragover: this._onDragOver.bind(this),
         drop: this._onDrop.bind(this),
       }
-      return new DragDrop(d)
+      return new  foundry.applications.ux.DragDrop.implementation(d)
     })
   }
 
@@ -1422,7 +1425,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     DragDropHandler._onDropCanvas(data, this)
   }
 }
-class AltContextMenu extends ContextMenu {
+class AltContextMenu extends foundry.applications.ux.ContextMenu {
   constructor(element, selector, menuItems, options, parentSelector) {
     super(element, selector, menuItems, options)
     this.parentSelector = parentSelector

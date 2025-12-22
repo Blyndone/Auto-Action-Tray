@@ -76,7 +76,7 @@ export class ConditionTray {
     )
     if (concentration) {
       this.conditions.find((c) => c.id === 'concentrating').description =
-        await TextEditor.enrichHTML(concentration.description)
+        await foundry.applications.ux.TextEditor.implementation.enrichHTML(concentration.description)
     } else {
       this.conditions.find((c) => c.id === 'concentrating').description =
         ConditionTray.dndConditions.coreConditions.find((c) => c.id === 'concentrating').description
@@ -167,7 +167,7 @@ export class ConditionTray {
       )
 
     const document = await fromUuid(effect.reference)
-    return TextEditor.enrichHTML(document?.text?.content || 'No content available.')
+    return foundry.applications.ux.TextEditor.implementation.enrichHTML(document?.text?.content || 'No content available.')
   }
 
   checkConcentration() {

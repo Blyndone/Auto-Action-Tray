@@ -16,7 +16,7 @@ export class AATItem {
     this.isRitual = item.system?.properties?.has('ritual') ?? false
     this.concentration = item.requiresConcentration
     this.isScaledSpell = false
-    this.preparationMode = this.item.system?.preparation?.mode
+    this.preparationMode = this.item.system?.method
 
     this.description = item.system.description.value
     this.name = this.item.name
@@ -85,14 +85,14 @@ export class AATItem {
 
     this.isRitual = this.item.type == 'spell' && this.item.system.properties.has('ritual')
     this.spellLevel = this.item.system?.level ?? null
-    this.isPrepared = this.item.system?.preparation?.prepared
+    this.isPrepared = this.item.system?.prepared > 0
 
     this.fastForward = this.itemConfig?.fastForward ?? null
     this.useTargetHelper = this.itemConfig?.useTargetHelper ?? null
   }
 
   async setDescription() {
-    this.description = await TextEditor.enrichHTML(this.item.system.description.value, {relativeTo: this.item})
+    this.description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(this.item.system.description.value, {relativeTo: this.item})
     
     this.activities.forEach(async (activity) => {
       activity.setAllDescriptions()

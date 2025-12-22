@@ -282,7 +282,8 @@ export class TargetHelper {
       this.hotbar.animationHandler.pushTray('target-helper')
     }
 
-    game.user.updateTokenTargets([])
+    canvas.tokens.setTargets([])
+    
     this.currentLine = new TargetLineCombo({
       startPos: this.startPos,
       startLinePos: this.startLinePos,
@@ -538,7 +539,7 @@ export class TargetHelper {
     const pos = token.getCenterPoint()
     return {
       x: pos.x,
-      y: pos.y - token.shape.height / 4,
+      y: pos.y - token.h / 4,
     }
   }
 

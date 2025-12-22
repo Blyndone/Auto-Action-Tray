@@ -87,7 +87,7 @@ export class EffectTray {
 
   async getDescription(effect) {
     let desc = effect.description
-    desc = await TextEditor.enrichHTML(desc)
+    desc = await foundry.applications.ux.TextEditor.implementation.enrichHTML(desc)
 
     return '<div>' + desc + '</div>'
   }

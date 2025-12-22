@@ -10,7 +10,7 @@ export class StaticTray extends AbilityTray {
     this.totalSlots = options.totalSlots
     this.availableSlots = options.availableSlots
     this.type = 'static'
-    
+
     this.setInactive()
     this.generateTray(options.cachedAbilities)
   }
@@ -119,9 +119,7 @@ export class StaticTray extends AbilityTray {
 
         break
       case 'bonusSpell':
-        this.abilities = allItems
-          .filter((e) => e.type === 'spell' && !e.isScaledSpell)
-
+        this.abilities = allItems.filter((e) => e.type === 'spell' && !e.isScaledSpell)
 
         this.id = 'bonusSpell'
         break
@@ -133,33 +131,25 @@ export class StaticTray extends AbilityTray {
           break
         }
 
-        this.abilities = allItems
-          .filter(
-            (e) =>
-              e.spellLevel <= this.spellLevel &&
+        this.abilities = allItems.filter(
+          (e) =>
+            (e.spellLevel <= this.spellLevel &&
               e.spellLevel != 0 &&
               e.isScaledSpell &&
               e.preparationMode != 'pact' &&
               (e.item.system.uses?.max == '' ||
                 (ActivityTray.checkSpellConfigurable(e.item) &&
                   e.item.system.level == this.spellLevel)) &&
-              (e.isPrepared == true ||
-                e.item.system.preparation?.mode == 'innate' ||
-                e.item.system.preparation?.mode == 'always' ||
-                e.item.system.preparation?.mode == 'atwill') ||
-                actor?.system?.spells['spell' + this.spellLevel]?.max == 0,
-          )
-
-          
+              e.isPrepared == true) ||
+            actor?.system?.spells['spell' + this.spellLevel]?.max == 0,
+        )
 
         this.id = 'spell-' + this.spellLevel
         this.category = 'leveledSpell'
         break
 
       case 'pact':
-        this.abilities = allItems
-          .filter((e) => e.item.system.preparation?.mode == 'pact')
-
+        this.abilities = allItems.filter((e) => e.item.system?.method == 'pact')
 
         this.id = 'pact'
         break
@@ -169,8 +159,10 @@ export class StaticTray extends AbilityTray {
         this.id = 'ritual'
         break
     }
-    this.abilities.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity)).sort((a, b) => b?.spellLevel - a?.spellLevel)
-    this.abilities = this.abilities.filter((e) => e!= null)
+    this.abilities
+      .sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
+      .sort((a, b) => b?.spellLevel - a?.spellLevel)
+    this.abilities = this.abilities.filter((e) => e != null)
   }
 
   static generateStaticTrays(actor, options = {}) {
@@ -179,7 +171,7 @@ export class StaticTray extends AbilityTray {
       label: 'Action',
       actorUuid: actor.uuid,
       application: options.application,
-      cachedAbilities:  options.cachedAbilities,
+      cachedAbilities: options.cachedAbilities,
     })
     let bonusTray = new StaticTray({
       category: 'bonus',
@@ -192,10 +184,8 @@ export class StaticTray extends AbilityTray {
     let customStaticTraysUuids = new Set([
       ...CustomStaticTray.getCustomStaticTrays(actor),
       ...actor.items.filter(CustomStaticTray.checkOverride).map((e) => e.id),
-      
     ])
 
-    
     let customStaticTrays = Array.from(
       customStaticTraysUuids,
       (e) =>
@@ -205,11 +195,11 @@ export class StaticTray extends AbilityTray {
           label: actor.items.get(e).name,
           keyItemId: e,
           application: options.application,
-          cachedAbilities:  options.cachedAbilities,
+          cachedAbilities: options.cachedAbilities,
         }),
-      )
-   
-    if (actor.system?.resources?.legact?.max > 0) { 
+    )
+
+    if (actor.system?.resources?.legact?.max > 0) {
       customStaticTrays.push(
         new CustomStaticTray({
           category: 'customStaticTray',
@@ -217,12 +207,11 @@ export class StaticTray extends AbilityTray {
           label: 'Legendary Actions',
           keyItemId: null,
           application: options.application,
-          cachedAbilities:  options.cachedAbilities,
+          cachedAbilities: options.cachedAbilities,
         }),
       )
-  
-      }
-      
+    }
+
     let spellTray = []
 
     let slots = actor.system.spells

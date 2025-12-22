@@ -158,7 +158,7 @@ export class Actions {
   }
   static minimizeTray() {
     this.close({ animate: false })
-    const bottomUi = document.getElementById('hotbar')
+    const bottomUi = document.getElementById('players-active')
 
     if (!bottomUi) {
       console.error("Element with ID 'hotbar' not found.")
@@ -166,11 +166,13 @@ export class Actions {
     }
 
     let wrapper = document.createElement('div')
-    wrapper.classList.add('bar-controls', 'minimize-button')
+    // wrapper.classList.add('bar-controls', 'minimize-button')
+    wrapper.style.position = 'relative'
     wrapper.id = 'aat-maximize-button'
 
     let link = document.createElement('a')
     link.id = 'aat-maximize'
+    link.classList.add('bar-controls', 'minimize-button')
     link.setAttribute('role', 'button')
     link.setAttribute('data-tooltip', 'Restore Auto Action Tray')
     link.setAttribute('data-action', 'openSheet')
@@ -186,7 +188,7 @@ export class Actions {
       wrapper.remove()
     }
 
-    bottomUi.prepend(wrapper)
+    bottomUi.append(wrapper)
   }
 
   static toggleHpText() {
@@ -482,7 +484,8 @@ export class Actions {
               consume: { spellSlot: slotUse == 1 ? true : false },
             },
             { configure: false },
-            target,
+            {},
+            target
           )
         slotUse = 0
         await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
@@ -519,6 +522,7 @@ export class Actions {
             consume: { spellSlot: useSlot },
           },
           { configure: false },
+          {}
         )
 
       const [result] = await Promise.all([usePromise, delay])

@@ -354,7 +354,7 @@ export class AbilityTray {
   }
 
   async enrichDescription(item) {
-    item['enrichedDescription'] = await TextEditor.enrichHTML(item.description, {})
+    item['enrichedDescription'] = await foundry.applications.ux.TextEditor.implementation.enrichHTML(item.description, {})
     return item
   }
   async generateTooltip(item) {
