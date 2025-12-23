@@ -390,7 +390,7 @@ export class QuickActionHelper {
       speed: actorTok.actor.system.attributes.movement.walk || 30,
       range: this.activeItemRange,
       targetPosition: { x: pos.x, y: pos.y },
-      actualTarget: {x: token.x, y: token.y}
+      actualTarget: { x: token.x, y: token.y },
     })
     if (endPos) {
       pos = endPos
@@ -483,8 +483,33 @@ export class QuickActionHelper {
       this.pathfinding.setRuler(this.pathfinding.getPath())
     }
 
-    await this.pathfinding.ruler?.moveToken()
-    await CanvasAnimation.getAnimation(source.document.object.animationName)?.promise
+    let op = {
+      autoRotate: false,
+      constrainOptions: {
+        history: false,
+        ignoreCost: true,
+        ignoreWalls: true,
+        preview: true,
+      },
+      method: 'api',
+      showRuler: true,
+    }
+    // await this.pathfinding.ruler?.moveToken()
+    await this.pathfinding.sourceToken.document.move(
+      this.pathfinding.sourceToken.findMovementPath(this.pathfinding.path, {}).result,
+      op,
+    )
+
+    async function waitForFullAnimation(animationName) {
+      let animation
+      do {
+        animation = foundry.canvas.animation.CanvasAnimation.getAnimation(animationName)
+        if (animation) await animation.promise // wait for this segment
+      } while (animation) // keep looping if a new segment appears
+    }
+
+    await waitForFullAnimation(source.document.object.movementAnimationName)
+
     await new Promise((resolve) => setTimeout(resolve, this.useItemDelay))
     await this.quickItemUse()
     this.setState(this.STATES.ACTIVE)

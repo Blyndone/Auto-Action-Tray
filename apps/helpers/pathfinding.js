@@ -299,16 +299,48 @@ export class Pathfinding {
   setRuler(path) {
     //canvas.controls.getRulerForUser(game.user.id)._addWaypoint({x:1000, y:1000})
     if (!path || path.length === 0) return;
-    const ruler = canvas.controls.getRulerForUser(game.user.id);
+    const ruler = this.sourceToken.ruler;
+    path = this.sourceToken.findMovementPath(path, {});
+    const mappedPath = path.result;
+    //   .map((point, index) => ({
+    //   action: "walk",
+    //   checkpoint: true,
+    //   cost: 5,
+    //   elevation: 0,
+    //   explicit: index === 0,
+    //   height: 1,
+    //   intermediate: index > 0 && index < path.length - 1,
+    //   shape: 4,
+    //   snapped: true,
+    //   terrain: null,
+    //   width: 1,
+    //   x: point.x,
+    //   y: point.y
+    // }));
+
+    let planned = {
+      foundPath: mappedPath,
+      unreachableWaypoints: [],
+      history: [],
+      hidden: false,
+      searching: false
+    };
+    let plannedMovement = {};
+    plannedMovement[game.user.id] = planned;
     ruler.clear();
-    ruler._startMeasurement(path[0]);
-    for (let i = 1; i < path.length; i++) {
-      ruler._addWaypoint(path[i]);
-      // console.log("Added waypoint:", path[i]);
-    }
+    ruler.refresh({
+      passedWaypoints: [],
+      pendingWaypoints: [],
+      plannedMovement: plannedMovement
+    });
+    ruler.visible = true;
+    // for (let i = 1; i < path.length; i++) {
+    //   ruler._addWaypoint(path[i]);
+    //   // console.log("Added waypoint:", path[i]);
+    // }
     ruler.color = Color.fromString("#FF00FF");
     // console.log(ruler.totalDistance);
-    ruler.measure(path[path.length - 1]);
+    // ruler.measure(path[path.length - 1]);
   }
 
   clearRuler() {
