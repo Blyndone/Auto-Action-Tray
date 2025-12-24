@@ -385,7 +385,7 @@ export class QuickActionHelper {
       return
     }
 
-    let { path, endPos } = this.pathfinding.newPathfinding({
+    let { path, endPos } = await this.pathfinding.newPathfinding({
       sourceToken: actorTok,
       speed: actorTok.actor.system.attributes.movement.walk || 30,
       range: this.activeItemRange,

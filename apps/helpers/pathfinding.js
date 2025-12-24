@@ -20,6 +20,15 @@ export class Pathfinding {
     this.path = null;
     this.endPos = null;
 
+    this._pathfindingResolve = null;
+
+    this.debouncedPathfinding = foundry.utils.debounce(async (start, goal) => {
+      const result = await this.throttledFindPath(start, goal);
+      if (this._pathfindingResolve) {
+        this._pathfindingResolve(result);
+        this._pathfindingResolve = null;
+      }
+    }, 50);
     // const t1 = performance.now();
     // const duration = (t1 - t0).toFixed(2);
   }
@@ -73,12 +82,12 @@ export class Pathfinding {
     this.clearRuler();
   }
 
-  newPathfinding(options) {
+  async newPathfinding(options) {
     if (options.sourceToken == this.sourceToken) {
-      return this.updatePathfinding(options);
+      return await this.updatePathfinding(options);
     }
     this.setData(options);
-    this.path = this.findPath(
+    this.path = await this.findPath(
       { x: this.sourceToken.x, y: this.sourceToken.y },
       { x: this.targetPosition.x, y: this.targetPosition.y }
     );
@@ -87,13 +96,13 @@ export class Pathfinding {
     return this.path ? { path: this.path, endPos: this.endPos } : null;
   }
 
-  updatePathfinding(options) {
+  async updatePathfinding(options) {
     this.clearRuler();
     this.activeItemRange = options.range;
     // console.log("Setting active item range to:", this.activeItemRange);
     this.updateTargetPosition(options);
 
-    this.path = this.findPath(
+    this.path = await this.findPath(
       { x: this.sourceToken.x, y: this.sourceToken.y },
       { x: this.targetPosition.x, y: this.targetPosition.y }
     );
@@ -216,7 +225,14 @@ export class Pathfinding {
     return distanceGoal <= 0 && distanceActual <= range;
   }
 
-  findPath(start, goal) {
+  async findPath(start, goal) {
+    return new Promise(resolve => {
+      this._pathfindingResolve = resolve;
+      this.debouncedPathfinding(start, goal);
+    });
+  }
+
+  throttledFindPath(start, goal) {
     const openSet = [start];
     const cameFrom = new Map();
     const gScore = new Map([[this.key(start), 0]]);
