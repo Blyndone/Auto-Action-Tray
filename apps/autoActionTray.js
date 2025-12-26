@@ -1430,7 +1430,9 @@ class AltContextMenu extends foundry.applications.ux.ContextMenu {
     super(element, selector, menuItems, options)
     this.parentSelector = parentSelector
   }
-  async _animateOpen(menu) {
+  async _animate(open = true) {
+    const menu = this.menu
+    console.log('AltContextMenu animate open')
     const newParent = document.getElementById(this.parentSelector)
     const scale = 1 / game.settings.get('auto-action-tray', 'scale')
     const menuEl = menu[0]
@@ -1462,6 +1464,6 @@ class AltContextMenu extends foundry.applications.ux.ContextMenu {
     menuEl.style.left = `${left}px`
     menuEl.style.transformOrigin = 'top left'
 
-    await super._animateOpen(menu)
+    await super._animate(open = true)
   }
 }
