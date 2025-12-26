@@ -1110,7 +1110,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     new foundry.applications.ux.ContextMenu(
       this.element,
       '.end-turn-btn-dice',
-      {},
+      [],
       {
         onOpen: Actions.changeDice.bind(this),
         jQuery: true,
@@ -1121,7 +1121,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       new foundry.applications.ux.ContextMenu(
         this.element,
         '.quick-slot-1',
-        {},
+        [],
         {
           onOpen: () => this.quickActionHelper.toggleSlot(1),
           jQuery: true,
@@ -1130,7 +1130,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       new foundry.applications.ux.ContextMenu(
         this.element,
         '.quick-slot-2',
-        {},
+        [],
         {
           onOpen: () => this.quickActionHelper.toggleSlot(2),
           jQuery: true,
