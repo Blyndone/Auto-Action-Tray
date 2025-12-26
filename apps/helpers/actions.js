@@ -340,7 +340,7 @@ export class Actions {
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
       ui.controls.initialize({ control: 'token', tool: 'select' })
-      canvas.tokens.activate({tool: "select"});
+      canvas.tokens.activate({ tool: 'select' })
 
       targets = await this.targetHelper.requestTargets(
         item,
@@ -465,7 +465,7 @@ export class Actions {
 
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
-        await item.item.system.activities
+        const workflow = await item.item.system.activities
           .get(
             activity?.activityId ||
               activity?.itemId ||
@@ -485,8 +485,67 @@ export class Actions {
             },
             { configure: false },
             {},
-            target
+            target,
           )
+
+        let workflowComplete = game.modules.get('midi-qol')?.active ? false : true
+        let aaAnimationComplete = game.modules.get('autoanimations')?.active ? false : true
+        let sequencerComplete = game.modules.get('sequencer')?.active ? false : true
+
+        let midiHookId = null
+        let aaHookId = null
+        let sequencerHookId = null
+
+        // Midi-QOL workflow completion
+        if (!workflowComplete) {
+          midiHookId = Hooks.on('midi-qol.RollComplete', (workflow) => {
+            if (workflow.itemId === itemId) {
+              workflowComplete = true
+              if (midiHookId) Hooks.off('midi-qol.RollComplete', midiHookId)
+            }
+          })
+        }
+
+        // Automated Animations completion
+        if (!aaAnimationComplete) {
+          aaHookId = Hooks.on('aa.animationEnd', (tok) => {
+            if (item.actor.getActiveTokens()[0]?.id === tok.id) {
+              aaAnimationComplete = true
+              if (aaHookId) Hooks.off('aa.animationEnd', aaHookId)
+            }
+          })
+        }
+
+        // Sequencer effect completion (only effects created by this user)
+        if (!sequencerComplete) {
+          sequencerHookId = Hooks.on('endedSequencerEffect', (sequence) => {
+            if (sequence?.data?.creatorUserId === game.user.id) {
+              sequencerComplete = true
+              if (sequencerHookId) Hooks.off('endedSequencerEffect', sequencerHookId)
+            }
+          })
+        }
+
+        // Safety timeout (10 seconds total)
+        let timeout = 100
+        while ((!workflowComplete || !aaAnimationComplete || !sequencerComplete) && timeout > 0) {
+          await wait(100)
+          timeout -= 1
+
+          if (workflowComplete && midiHookId) {
+            Hooks.off('midi-qol.RollComplete', midiHookId)
+            midiHookId = null
+          }
+          if (aaAnimationComplete && aaHookId) {
+            Hooks.off('aa.animationEnd', aaHookId)
+            aaHookId = null
+          }
+          if (sequencerComplete && sequencerHookId) {
+            Hooks.off('endedSequencerEffect', sequencerHookId)
+            sequencerHookId = null
+          }
+        }
+
         slotUse = 0
         await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
       }
@@ -522,7 +581,7 @@ export class Actions {
             consume: { spellSlot: useSlot },
           },
           { configure: false },
-          {}
+          {},
         )
 
       const [result] = await Promise.all([usePromise, delay])
