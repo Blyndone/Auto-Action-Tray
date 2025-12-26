@@ -1059,7 +1059,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         name: 'Macro Directory',
         icon: '<i class="fas fa-folder-open"></i>',
         callback: () => {
-          game.macros.directory.render(true)
+          game.macros.directory.activate()
         },
       },
 
@@ -1463,7 +1463,7 @@ class AltContextMenu extends foundry.applications.ux.ContextMenu {
     menuEl.style.top = `${top}px`
     menuEl.style.left = `${left}px`
     menuEl.style.transformOrigin = 'top left'
-
     await super._animate(open = true)
+
   }
 }
