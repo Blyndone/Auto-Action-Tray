@@ -40,8 +40,6 @@ export class QuickActionHelper {
 
     this.state = this.STATES.INACTIVE
   }
-  //Move Token
-  //await game.actors.getName("Balon").getActiveTokens()[0].document.update({x: 2500, y: 0})
 
   checkHover() {
     return this.hovered > 0
@@ -75,14 +73,11 @@ export class QuickActionHelper {
     this.hovered = 0
     this.setItem()
 
-    // this.Pathfinding = new Pathfinding({
-    //   sourceToken: this.token,
-    //   targetToken: this.targetToken
-    // })
+
   }
 
   setItem() {
-    // console.log('Range', this.activeItem?.tooltip?.range)
+
     switch (this.activeSlot) {
       case 0:
         return
@@ -147,11 +142,11 @@ export class QuickActionHelper {
         false,
       )
       .then((targets) => {
-        // Handle the selected targets
+
         if (targets == undefined || targets.length == 0) {
           return Promise.reject('No Targets Selected')
         }
-        // console.log('Selected targets:', targets)
+
         this.submitQuickAction(this.token, targets.targets[0])
       })
       .then(() => {
@@ -160,8 +155,24 @@ export class QuickActionHelper {
       .catch((err) => {
         this.cancelQuickAction()
 
-        // console.log('Chain stopped:', err)
+
       })
+  }
+
+  cancelQuickAction() {
+    document.removeEventListener('mousemove', this.mouseMoveHandler)
+    this.token.ruler.visible = false
+    this.token.document.clearMovementHistory()
+        this.token.ruler.refresh({
+      passedWaypoints: [],
+      pendingWaypoints: [],
+      plannedMovement: [],
+    });
+    this.setState(this.STATES.ACTIVE)
+    this.removeTokenGhost()
+    if (this.activeSlot == null) return
+    TargetHelper.cancelSelection.bind(this.app)(null, null, false)
+
   }
 
   async _onMouseMove(event) {
@@ -175,6 +186,7 @@ export class QuickActionHelper {
       return pos.x >= t.x && pos.x <= t.x + t.w && pos.y >= t.y && pos.y <= t.y + t.h
     })[0]
     if (!tarToken || tarToken == this.token) {
+      this.cancelQuickAction()
       return
     }
 
@@ -205,10 +217,13 @@ export class QuickActionHelper {
     })
     availableCenters.sort((a, b) => a.distance - b.distance)
     let closest = availableCenters[0]
-    // console.log('Closest Available Position:', closest)
     this.currentAvailablePosition = { x: closest.x, y: closest.y }
-    // console.log('Current Available Position:', this.currentAvailablePosition)
-    this.displayTokenGhost(tarToken)
+    if (this.getState() === this.STATES.TARGETTING) {
+      this.displayTokenGhost(tarToken)
+      return
+    } else {
+      this.cancelQuickAction()
+    }
   }
 
   expandPosFromCenter(pos, targetCenter, targetSize, actorSize) {
@@ -238,15 +253,6 @@ export class QuickActionHelper {
     }
   }
 
-  cancelQuickAction() {
-    document.removeEventListener('mousemove', this.mouseMoveHandler)
-    this.setState(this.STATES.ACTIVE)
-    this.removeTokenGhost()
-    if (this.activeSlot == null) return
-    TargetHelper.cancelSelection.bind(this.app)(null, null, false)
-    // this.active = true
-  }
-
   setEquipmentTray(tray) {
     this.equipmentTray = tray
   }
@@ -258,7 +264,6 @@ export class QuickActionHelper {
       : (this.activeSlot = slot)
     this.equipmentTray.setActiveSlot(this.activeSlot)
     this.setData(this.actor)
-    // console.log('Quick Action Slot: ', this.activeSlot)
     this.app.requestRender('equipmentMiscTray')
   }
 
@@ -357,9 +362,7 @@ export class QuickActionHelper {
 
   async displayTokenGhost(token) {
     if (!this.actor || this.state != this.STATES.TARGETTING) return
-    if (this.ghostToken) {
-      this.removeTokenGhost()
-    }
+
     if (
       this.token.document.disposition == token.document.disposition ||
       this.token.document.id == token.document.id
@@ -372,8 +375,7 @@ export class QuickActionHelper {
     this.targetToken = token
     this.availablePositions = this.setAvailablePositions(token)
     let actorTok = this.token
-    // let pos = this.findAdjacentSquare(actorTok, token)
-    // let pos = this.findClosestAvailablePosition()
+
     let pos = null
     if (this.currentAvailablePosition) {
       pos = this.currentAvailablePosition
@@ -395,33 +397,39 @@ export class QuickActionHelper {
     if (endPos) {
       pos = endPos
     }
-    if (path?.length == 0 || !path) {
+    if (path?.length == 0 || !path || this.getState() != this.STATES.TARGETTING) {
+      this.cancelQuickAction()
       return
     }
 
-    const texture = await PIXI.Assets.load(actorTok.document.texture.src)
-    const sprite = new PIXI.Sprite(texture)
+    if (this.ghostToken) {
+      this.ghostToken.x = pos.x
+      this.ghostToken.y = pos.y
+    } else {
+      const texture = await PIXI.Assets.load(actorTok.document.texture.src)
+      const sprite = new PIXI.Sprite(texture)
 
-    sprite.eventMode = 'none'
-    sprite.interactiveChildren = false
+      sprite.eventMode = 'none'
+      sprite.interactiveChildren = false
 
-    sprite.x = pos.x
-    sprite.y = pos.y
-    sprite.height = actorTok.h
-    sprite.width = actorTok.w
+      sprite.x = pos.x
+      sprite.y = pos.y
+      sprite.height = actorTok.h
+      sprite.width = actorTok.w
 
-    sprite.alpha = 0.7
+      sprite.alpha = 0.7
 
-    const colorMatrix = new PIXI.filters.ColorMatrixFilter()
+      const colorMatrix = new PIXI.filters.ColorMatrixFilter()
 
-    colorMatrix.sepia(true)
+      colorMatrix.sepia(true)
 
-    colorMatrix.saturate(-0.3, true)
+      colorMatrix.saturate(-0.3, true)
 
-    sprite.filters = [colorMatrix]
+      sprite.filters = [colorMatrix]
 
-    this.ghostToken = sprite
-    canvas.app.stage.addChild(sprite)
+      this.ghostToken = sprite
+      canvas.app.stage.addChild(sprite)
+    }
   }
 
   removeTokenGhost() {
@@ -435,32 +443,19 @@ export class QuickActionHelper {
 
   async moveActor(source) {
     this.setState(this.STATES.MOVING)
-    // Apply the position update
     this.targetHelper.clearTargetLines()
     this.targetHelper.clearRangeBoundary()
 
-    // await source.document.update({ x: newX, y: newY })
 
     if (this.pathfinding.ruler.token == null) {
-      // Ensure we're on the token layer
+
       if (canvas.activeLayer !== canvas.tokens) {
         console.log('Activating token layer...')
         canvas.tokens.activate()
         await new Promise((r) => setTimeout(r, 50))
       }
 
-      // Check if user can control
-      // if (!source.can(game.user, 'control')) {
-
-      //   console.warn(`User ${game.user.name} cannot control token ${source.name}.`)
-      //   this.attacking = false
-      //   this.active = true
-      //   this.pathfinding.setActive()
-
-      //   return
-      // }
-
-      // Ensure it's controlled
+     
       if (!source.controlled) {
         this.pathfinding.setInactive()
         canvas.tokens.releaseAll()
@@ -494,7 +489,6 @@ export class QuickActionHelper {
       method: 'api',
       showRuler: true,
     }
-    // await this.pathfinding.ruler?.moveToken()
     await this.pathfinding.sourceToken.document.move(
       this.pathfinding.sourceToken.findMovementPath(this.pathfinding.path, {}).result,
       op,
@@ -504,8 +498,8 @@ export class QuickActionHelper {
       let animation
       do {
         animation = foundry.canvas.animation.CanvasAnimation.getAnimation(animationName)
-        if (animation) await animation.promise // wait for this segment
-      } while (animation) // keep looping if a new segment appears
+        if (animation) await animation.promise 
+      } while (animation) 
     }
 
     await waitForFullAnimation(source.document.object.movementAnimationName)
@@ -515,24 +509,22 @@ export class QuickActionHelper {
     this.setState(this.STATES.ACTIVE)
     this.pathfinding.setActive()
 
-    // console.log(`Source moved to new position: (${newX}, ${newY})`)
   }
 
   setAvailablePositions(target) {
-    // console.log('Setting available positions around target', target)
-    // console.log('Token position', target.x, target.y)
+
     let bounds = {
       tarMinX: target.x - this.tokenSize.w,
       tarMaxX: target.x + target.w,
       tarMinY: target.y - this.tokenSize.h,
       tarMaxY: target.y + target.h,
     }
-    // console.log('Target Bounds', bounds)
+
 
     let positions = []
     for (let x = bounds.tarMinX; x <= bounds.tarMaxX; x += this.gridSize) {
       for (let y = bounds.tarMinY; y <= bounds.tarMaxY; y += this.gridSize) {
-        // Exclude positions that would overlap the target
+ 
         if (x < target.x || x >= target.x + target.w || y < target.y || y >= target.y + target.h) {
           positions.push({
             x: x,
@@ -543,9 +535,7 @@ export class QuickActionHelper {
       }
     }
 
-    // console.log('Available Positions (pre-filter):', positions);
 
-    // Filter out occupied positions
     const placeables = canvas.tokens.placeables
     const occupied = placeables.map((t) => ({ x: t.x, y: t.y }))
     let largeTokens = placeables.filter((t) => t.w > this.gridSize || t.h > this.gridSize)
@@ -565,7 +555,6 @@ export class QuickActionHelper {
         (pos.x == this.token.x && pos.y == this.token.y),
     )
 
-    // console.log('Filtered Available Positions:', positions);
     return positions
   }
 
