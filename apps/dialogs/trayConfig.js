@@ -215,7 +215,7 @@ export class TrayConfig {
       render: (event, dialogEl) => {
         dialogElement = dialogEl
 
-        const form = dialogEl.querySelector('form')
+        const form = dialogEl.element.querySelector('form')
         const elements = form.elements
 
         handlers.imageScale = (e) => {
@@ -263,7 +263,7 @@ export class TrayConfig {
         },
       ],
     }).then((result) => {
-      const form = dialogElement?.querySelector('form')
+      const form = dialogElement?.element?.querySelector('form')
       if (form) {
         const elements = form.elements
         elements.imageScale?.removeEventListener('input', handlers.imageScale)

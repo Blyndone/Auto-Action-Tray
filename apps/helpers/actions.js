@@ -339,7 +339,7 @@ export class Actions {
       targetCount > 0 &&
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
-      ui.controls.initialize({ control: 'token', tool: 'select' })
+      ui.controls.render({ control: 'token', tool: 'select' })
       canvas.tokens.activate({ tool: 'select' })
 
       targets = await this.targetHelper.requestTargets(
