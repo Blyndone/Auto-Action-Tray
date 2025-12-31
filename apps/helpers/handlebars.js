@@ -105,7 +105,7 @@ export function registerHandlebarsHelpers() {
       pactSpent: `<i class="fa-solid fa-square icon-pact-spent"></i>`,
       ritual: `<i class="fa-solid fa-square icon-ritual"></i>`,
       customStaticTray: `<i class="fa-solid fa-swords icon-custom"></i>`,
-      bonusSpell: '<i class="fa-solid fa-square-plus icon-default"></i>',
+      extraSpells: '<i class="fa-solid fa-square-plus icon-default"></i>',
       spellUseSpentSlot: `<i class="fa-solid  fa-square icon-slot icon-depleted "></i>`,
       spellUseSpentSlotSpent: `<i class="fa-solid  fa-square icon-slot-spent icon-depleted "></i>`,
       spellUseSpentPact: `<i class="fa-solid  fa-square icon-pact icon-depleted"></i>`,
@@ -123,7 +123,7 @@ export function registerHandlebarsHelpers() {
     switch (trayIcon) {
       case 'slot':
         if (tray.totalSlots == 0) {
-          return icons.bonusSpell
+          return icons.extraSpells
         }
         if (this.application.combatHandler.actions.spellSlot == 0) {
           return (
@@ -135,8 +135,8 @@ export function registerHandlebarsHelpers() {
         return this.application.combatHandler.actions.action == 0 ? icons.actionSpent : icons.action
       case 'bonus':
         return this.application.combatHandler.actions.bonus == 0 ? icons.bonusSpent : icons.bonus
-      case 'bonusSpell':
-        return icons.bonusSpell
+      case 'extraSpells':
+        return icons.extraSpells
       case 'cantrip':
         return icons.cantrip
       case 'customStaticTray':

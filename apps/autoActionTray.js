@@ -801,9 +801,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
       hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
-      if (event.target.actor == hotbar.actor) {
-        return wrapped(...args)
-      }
+      // if (event.target.actor == hotbar.actor) {
+      //   return wrapped(...args)
+      // }
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)

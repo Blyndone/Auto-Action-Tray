@@ -118,10 +118,10 @@ export class StaticTray extends AbilityTray {
         }
 
         break
-      case 'bonusSpell':
+      case 'extraSpells':
         this.abilities = allItems.filter((e) => e.type === 'spell' && !e.isScaledSpell)
 
-        this.id = 'bonusSpell'
+        this.id = 'extraSpells'
         break
 
       case 'spell':
@@ -242,9 +242,9 @@ export class StaticTray extends AbilityTray {
       )
     })
 
-    let bonusSpells = new StaticTray({
-      category: 'bonusSpell',
-      label: 'Bonus Spells',
+    let extraSpells = new StaticTray({
+      category: 'extraSpells',
+      label: 'Extra Spells',
       actorUuid: actor.uuid,
       application: options.application,
       cachedAbilities: options.cachedAbilities,
@@ -273,7 +273,7 @@ export class StaticTray extends AbilityTray {
       actionTray,
       bonusTray,
       ...customStaticTrays,
-      bonusSpells,
+      extraSpells,
       ...spellTray,
       pactTray,
       ritualTray,
