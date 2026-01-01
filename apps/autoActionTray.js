@@ -917,11 +917,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
       hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
-      if (hotbar.targetHelper.hovering) {
-        return wrapped("url('modules/auto-action-tray/icons/cursors/Sword.cur'), auto")
-      } else {
-        return wrapped("url('modules/auto-action-tray/icons/cursors/Crosshair.cur') 16 16, auto")
-      }
+      const canvas = document.getElementById('board')
+      canvas.style.cursor =
+        "url('modules/auto-action-tray/icons/cursors/Crosshair.cur') 16 16, auto"
+      return wrapped("url('modules/auto-action-tray/icons/cursors/Crosshair.cur') 16 16, auto")
     } else {
       return wrapped(...args)
     }
@@ -1079,11 +1078,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         },
       },
     ]
-    new foundry.applications.ux.ContextMenu(this.element, '.character-image', characterContextMenu, {
-      onOpen: this._onOpenContextMenu(),
-      jQuery: true,
-      _expandUp: true,
-    })
+    new foundry.applications.ux.ContextMenu(
+      this.element,
+      '.character-image',
+      characterContextMenu,
+      {
+        onOpen: this._onOpenContextMenu(),
+        jQuery: true,
+        _expandUp: true,
+      },
+    )
 
     new AltContextMenu(
       this.element,
@@ -1107,35 +1111,20 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     //   jQuery: true,
     // })
 
-    new foundry.applications.ux.ContextMenu(
-      this.element,
-      '.end-turn-btn-dice',
-      [],
-      {
-        onOpen: Actions.changeDice.bind(this),
-        jQuery: true,
-      },
-    )
+    new foundry.applications.ux.ContextMenu(this.element, '.end-turn-btn-dice', [], {
+      onOpen: Actions.changeDice.bind(this),
+      jQuery: true,
+    })
 
     if (this.quickActionHelperEnabled) {
-      new foundry.applications.ux.ContextMenu(
-        this.element,
-        '.quick-slot-1',
-        [],
-        {
-          onOpen: () => this.quickActionHelper.toggleSlot(1),
-          jQuery: true,
-        },
-      )
-      new foundry.applications.ux.ContextMenu(
-        this.element,
-        '.quick-slot-2',
-        [],
-        {
-          onOpen: () => this.quickActionHelper.toggleSlot(2),
-          jQuery: true,
-        },
-      )
+      new foundry.applications.ux.ContextMenu(this.element, '.quick-slot-1', [], {
+        onOpen: () => this.quickActionHelper.toggleSlot(1),
+        jQuery: true,
+      })
+      new foundry.applications.ux.ContextMenu(this.element, '.quick-slot-2', [], {
+        onOpen: () => this.quickActionHelper.toggleSlot(2),
+        jQuery: true,
+      })
     }
   }
 
@@ -1317,7 +1306,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         dragover: this._onDragOver.bind(this),
         drop: this._onDrop.bind(this),
       }
-      return new  foundry.applications.ux.DragDrop.implementation(d)
+      return new foundry.applications.ux.DragDrop.implementation(d)
     })
   }
 
@@ -1463,7 +1452,6 @@ class AltContextMenu extends foundry.applications.ux.ContextMenu {
     menuEl.style.top = `${top}px`
     menuEl.style.left = `${left}px`
     menuEl.style.transformOrigin = 'top left'
-    await super._animate(open = true)
-
+    await super._animate((open = true))
   }
 }

@@ -159,7 +159,7 @@ export class TargetHelper {
 
   createUseNotification(item, activity, actor, selectedSpellLevel, useRangeBoundary = true) {
     // this.selectingTargets = true
-    this.state = this.setState("TARGETTING")
+    this.state = this.setState('TARGETTING')
     this.clearData()
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
@@ -207,7 +207,7 @@ export class TargetHelper {
   }
   clearUseNotification() {
     // this.selectingTargets = false
-    this.setState("IDLE")
+    this.setState('IDLE')
     this.clearData()
   }
   createRangeBoundary(range, actor) {
@@ -237,7 +237,7 @@ export class TargetHelper {
     // this.state = this.enabled
     //   ? this.setState(this.STATES.ACTIVE)
     //   : this.setState(this.STATES.INACTIVE)
-    this.setState("IDLE")
+    this.setState('IDLE')
     this.actor = null
     this.item = null
     this.singleRoll = false
@@ -266,7 +266,7 @@ export class TargetHelper {
   ) {
     this.useSlot = false
     this.clearData()
-    this.state = this.setState("TARGETING")
+    this.state = this.setState('TARGETING')
     this.setSingleRoll(singleRoll)
     if (this.sendTargetLines) {
       this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
@@ -283,7 +283,7 @@ export class TargetHelper {
     }
 
     canvas.tokens.setTargets([])
-    
+
     this.currentLine = new TargetLineCombo({
       startPos: this.startPos,
       startLinePos: this.startLinePos,
@@ -328,7 +328,7 @@ export class TargetHelper {
       })
     } catch (error) {
       // console.log('AAT - Target selection canceled')
-      this.setState("IDLE")
+      this.setState('IDLE')
       targets = null
     }
   }
@@ -363,11 +363,13 @@ export class TargetHelper {
 
   confirmTargets() {
     // this.selectingTargets = false
-    this.setState("IDLE")
+    this.setState('IDLE')
     document.removeEventListener('mousemove', this.mouseMoveHandler)
     this.currentLine.clearText()
     this.clearRangeBoundary()
-    document.body.style.cursor = ''
+    const canvas = document.getElementById('board')
+
+    canvas.style.cursor = ''
 
     if (this.hotbar.animating) {
       setTimeout(() => {
@@ -413,9 +415,10 @@ export class TargetHelper {
 
   removeTarget() {
     if (this.targets.length == 0) {
-      document.body.style.cursor = ''
+      const canvas = document.getElementById('board')
+      canvas.style.cursor = ''
       // this.selectingTargets = false
-      this.setState("IDLE")
+      this.setState('IDLE')
       document.removeEventListener('mousemove', this.mouseMoveHandler)
       this.rejectTargets(new Error('No targets to remove'))
       // this.currentLine.clearLines()
@@ -448,7 +451,7 @@ export class TargetHelper {
   static cancelSelection(event, target, animate = true) {
     const helper = this?.targetHelper
     const animation = this?.animationHandler
-    helper?.setState("IDLE")
+    helper?.setState('IDLE')
     document.removeEventListener('mousemove', this.mouseMoveHandler)
     try {
       helper?.rejectTargets?.(new Error('User canceled Target selection'))

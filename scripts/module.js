@@ -287,7 +287,7 @@ Hooks.once('ready', async function () {
     config: true,
 
     type: Boolean,
-    default: true,
+    default: false,
 
     requiresReload: false,
   })
