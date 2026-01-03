@@ -63,7 +63,8 @@ export class ItemConfig {
 
     const numTargets = fields.createNumberInput({
       name: "numTargets",
-      value: flags ? flags["numTargets"] : null
+      value: flags ? flags["numTargets"] : null,
+      step: 1
     });
     const numTargetsOptions = fields.createFormGroup({
       input: numTargets,
@@ -130,7 +131,7 @@ export class ItemConfig {
 
     itemblock.append(img, description);
 
-    const content = `${header.outerHTML} ${itemblock.outerHTML} ${useTargetHelperGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${rollIndividualGroup.outerHTML} ${fastForwardGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
+    const content = `${header.outerHTML} ${itemblock.outerHTML} ${useTargetHelperGroup.outerHTML}  ${rollIndividualGroup.outerHTML} ${fastForwardGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
 
     await foundry.applications.api.DialogV2
       .wait({

@@ -221,18 +221,20 @@ class DraggableTray {
   }
 
   applyBounds(bounds) {
-    let oldMin = this.draggable[0].minX
-    let oldMax = this.draggable[0].maxX
+    const draggable = this.draggable?.[0]
+
+    const oldMin = draggable?.minX
+    const oldMax = draggable?.maxX
+
     bounds = {
       minX: bounds.minX !== undefined ? bounds.minX : oldMin,
       maxX: bounds.maxX !== undefined ? bounds.maxX : oldMax,
     }
-    this.setMin(bounds.minX)
-    this.setMax(bounds.maxX)
 
-    if (this.draggable) {
-      this.draggable[0].applyBounds(bounds)
-    }
+    if (bounds.minX !== undefined) this.setMin(bounds.minX)
+    if (bounds.maxX !== undefined) this.setMax(bounds.maxX)
+
+    draggable?.applyBounds(bounds)
   }
 
   setClipPath(tray, pos, duration = null, selfOnly = false) {

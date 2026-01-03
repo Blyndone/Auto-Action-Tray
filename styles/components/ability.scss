@@ -67,29 +67,41 @@
   .use-slot-checkbox {
     @include inset-tray;
 
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    width: 20px;
+    height: 20px;
+    margin: 20px;
+
     border: 2px solid #f1f1f1;
     border-radius: 4px;
     background-color: #0d0d12;
+    outline: 0px;
 
-    &:not(:checked) {
-      scale: 2;
-      margin: 20px;
-    }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    scale: 2;
 
     &:checked {
       background-color: var(--aat-hover-color);
       border-color: var(--aat-hover-color-light);
-      scale: 2;
-      margin: 20px;
+    }
 
-      &:hover {
-        border: 2px solid var(--aat-hover-color-light);
-        box-shadow: 0 0 5px var(--aat-hover-color-dim);
-      }
+    &:checked:hover {
+      border-color: var(--aat-hover-color-light);
+      box-shadow: 0 0 5px var(--aat-hover-color-dim);
+    }
 
-      &::before {
-        background-color: #0d0d12;
-      }
+    &:checked::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      // background-color: #0d0d12;
+      border-radius: 2px;
     }
   }
 

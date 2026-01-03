@@ -18,7 +18,7 @@
   --aat-custom-tray-size: 60px;
   --aat-character-health-percent: 100;
   --aat-stacked-spacer-width: 33px;
-  --aat-modifier-highlight-color: '';
+  --aat-modifier-highlight-color: "";
   --aat-main-color: #1e3a5f;
   --aat-main-color-light: #355c7d;
   --aat-accent-color: #0f5753;
@@ -125,7 +125,7 @@
   }
 }
 @property --angle {
-  syntax: '<angle>';
+  syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
 }
@@ -145,10 +145,7 @@
   border-radius: 15px;
   height: var(--aat-main-tray-total-height);
   padding: var(--aat-main-tray-padding);
-  width: calc(
-    (var(--aat-item-size) + var(--aat-main-tray-gap)) * var(--aat-item-tray-item-width-count) +
-      var(--aat-main-tray-padding) * 4
-  );
+  width: calc((var(--aat-item-size) + var(--aat-main-tray-gap)) * var(--aat-item-tray-item-width-count) + var(--aat-main-tray-padding) * 4);
   display: flex;
   overflow: hidden;
   align-items: center;
@@ -186,26 +183,35 @@
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 20px;
   border: 2px solid #f1f1f1;
   border-radius: 4px;
   background-color: #0d0d12;
-}
-.ability-tray-container .use-slot-checkbox:not(:checked) {
+  outline: 0px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   scale: 2;
-  margin: 20px;
 }
 .ability-tray-container .use-slot-checkbox:checked {
   background-color: var(--aat-hover-color);
   border-color: var(--aat-hover-color-light);
-  scale: 2;
-  margin: 20px;
 }
 .ability-tray-container .use-slot-checkbox:checked:hover {
-  border: 2px solid var(--aat-hover-color-light);
+  border-color: var(--aat-hover-color-light);
   box-shadow: 0 0 5px var(--aat-hover-color-dim);
 }
 .ability-tray-container .use-slot-checkbox:checked::before {
-  background-color: #0d0d12;
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
 }
 .ability-tray-container img {
   background: #333;
@@ -227,8 +233,7 @@
 }
 .ability-tray-container img.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #333, var(--aat-hover-color), #333 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #333, var(--aat-hover-color), #333 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 .ability-tray-container .ability-button-passive img {
@@ -245,8 +250,7 @@
 }
 .ability-tray-container .ability-button-passive img.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #2c2d2e, var(--aat-hover-color), #2c2d2e 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #2c2d2e, var(--aat-hover-color), #2c2d2e 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 .ability-tray-container .item-type-container img {
@@ -255,10 +259,7 @@
 }
 .ability-tray-container .ability-ol {
   width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
-  height: calc(
-    var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 +
-      var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1)
-  );
+  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 + var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1));
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -281,10 +282,7 @@
 }
 .ability-tray-container .activity-ol {
   width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
-  height: calc(
-    var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 +
-      var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1)
-  );
+  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 + var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1));
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -303,10 +301,7 @@
 }
 .ability-tray-container .condition-ol {
   width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
-  height: calc(
-    var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 +
-      var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1)
-  );
+  height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 + var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1));
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -394,14 +389,7 @@
 }
 .condition-button.condition-button-active.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(
-        from var(--angle),
-        var(--aat-hover-color-dim),
-        var(--aat-hover-color),
-        var(--aat-hover-color-dim) 50%
-      )
-      border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), var(--aat-hover-color-dim), var(--aat-hover-color), var(--aat-hover-color-dim) 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 .condition-button.condition-button-inactive {
@@ -629,8 +617,7 @@
   border: 0 solid #2f2f2f;
   border-radius: 0 0 19px 19px;
   outline: 2px solid var(--aat-border-color);
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
-    inset 0 -4.8px 6.6px var(--aat-hover-color-light);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), inset 0 -4.8px 6.6px var(--aat-hover-color-light);
   margin: 10px;
   padding: 10px 35px 10px 35px;
   transition: all 0.3s ease;
@@ -657,11 +644,7 @@
   box-shadow: inset 0 0 10px 3px #000000;
 }
 .drag-handle:hover {
-  background: linear-gradient(
-    180deg,
-    var(--aat-drag-handle-hover),
-    var(--aat-drag-handle-hover-light)
-  );
+  background: linear-gradient(180deg, var(--aat-drag-handle-hover), var(--aat-drag-handle-hover-light));
 }
 
 .drag-spacer {
@@ -683,9 +666,7 @@
 .stacked-tray-spacer-container {
   position: relative;
   height: 100%;
-  width: calc(
-    100% - var(--aat-stacked-spacer-width) + var(--aat-main-tray-padding) - var(--aat-main-tray-gap)
-  );
+  width: calc(100% - var(--aat-stacked-spacer-width) + var(--aat-main-tray-padding) - var(--aat-main-tray-gap));
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -918,8 +899,7 @@ img.common-item:hover {
 }
 img.common-item.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #333, var(--aat-hover-color), #333 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #333, var(--aat-hover-color), #333 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 
@@ -932,8 +912,7 @@ img.uncommon-item:hover {
 }
 img.uncommon-item.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #11cf00, var(--aat-hover-color), #11cf00 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #11cf00, var(--aat-hover-color), #11cf00 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 
@@ -946,8 +925,7 @@ img.rare-item:hover {
 }
 img.rare-item.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #164cfc, var(--aat-hover-color), #164cfc 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #164cfc, var(--aat-hover-color), #164cfc 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 
@@ -960,8 +938,7 @@ img.veryRare-item:hover {
 }
 img.veryRare-item.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #a665e4, var(--aat-hover-color), #a665e4 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #a665e4, var(--aat-hover-color), #a665e4 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 
@@ -974,8 +951,7 @@ img.legendary-item:hover {
 }
 img.legendary-item.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #e29404, var(--aat-hover-color), #e29404 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #e29404, var(--aat-hover-color), #e29404 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 
@@ -988,8 +964,7 @@ img.artifact-item:hover {
 }
 img.artifact-item.animated-border {
   border: 4px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(from var(--angle), #c00505, var(--aat-hover-color), #c00505 50%) border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), #c00505, var(--aat-hover-color), #c00505 50%) border-box;
   animation: 2s rotate linear infinite;
 }
 
@@ -1093,7 +1068,7 @@ img.item-equipped {
 }
 
 .spell-item-container-text {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   position: absolute;
   bottom: 0;
   right: 0;
@@ -1105,7 +1080,7 @@ img.item-equipped {
 }
 
 .spell-item-container-text-upcast {
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: bold;
   position: absolute;
   transform: translateY(-5%);
@@ -1134,17 +1109,9 @@ img.item-equipped {
 }
 .concentration-item.animated-border {
   border: 6px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(
-        from var(--angle),
-        var(--aat-border-color),
-        var(--aat-hover-color),
-        var(--aat-border-color) 50%
-      )
-      border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), var(--aat-border-color), var(--aat-hover-color), var(--aat-border-color) 50%) border-box;
   animation: 2s rotate linear infinite;
-  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light),
-    0px 0px 11px 5px black;
+  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light), 0px 0px 11px 5px black;
 }
 .concentration-item img {
   height: 90px;
@@ -1163,8 +1130,7 @@ img.item-equipped {
   align-items: center;
   font-size: 28px;
   color: #f1f1f1;
-  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light),
-    0px 0px 11px 5px black;
+  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light), 0px 0px 11px 5px black;
   outline: 6px solid var(--aat-border-color);
   transition: all 0.3s ease-in-out;
 }
@@ -1271,14 +1237,11 @@ img.item-equipped {
   outline: 8px solid rgb(39, 39, 39);
 }
 .character-image-container #health-percent {
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
-    inset 0 0 calc(100px - var(--aat-character-health-percent) * 1px)
-      rgba(225, 0, 0, calc(1 - var(--aat-character-health-percent) / 100));
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), inset 0 0 calc(100px - var(--aat-character-health-percent) * 1px) rgba(225, 0, 0, calc(1 - var(--aat-character-health-percent) / 100));
   z-index: 1;
 }
 .character-image-container .concentrating {
-  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8),
-    0 0 10px 15px var(--aat-hover-color-light);
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.8), inset -3px -3px 5px rgba(0, 0, 0, 0.8), 0 0 10px 15px var(--aat-hover-color-light);
   outline: 8px solid var(--aat-hover-color);
 }
 .character-image-container img {
@@ -1353,8 +1316,7 @@ img.item-equipped {
 }
 .arc-container .active-full {
   color: var(--aat-hover-color-light);
-  filter: brightness(1.5) saturate(1.5) drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.5))
-    drop-shadow(0px 0px 6px var(--aat-hover-color-light));
+  filter: brightness(1.5) saturate(1.5) drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.5)) drop-shadow(0px 0px 6px var(--aat-hover-color-light));
 }
 .arc-container .inactive {
   color: var(--aat-hover-color);
@@ -1363,14 +1325,12 @@ img.item-equipped {
 .arc-container .dice {
   font-size: 60px;
   color: var(--aat-hover-color);
-  filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.5))
-    drop-shadow(0px 0px 6px var(--aat-hover-color-light));
+  filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.5)) drop-shadow(0px 0px 6px var(--aat-hover-color-light));
   transition: color 0.3s ease-in-out;
 }
 .arc-container .dice:hover {
   color: var(--aat-hover-color);
-  filter: brightness(1.2) saturate(1.2) drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.5))
-    drop-shadow(0px 0px 6px var(--aat-hover-color-light));
+  filter: brightness(1.2) saturate(1.2) drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.5)) drop-shadow(0px 0px 6px var(--aat-hover-color-light));
 }
 .arc-container .dice:active {
   font-size: 65px;
@@ -1383,8 +1343,7 @@ img.item-equipped {
   top: 50%;
   left: 50%;
   transform-origin: center;
-  transform: translate(-50%, -50%) rotate(calc(var(--i) * 20deg)) translateY(-215px)
-    rotate(calc(-270deg - var(--i) * 20deg));
+  transform: translate(-50%, -50%) rotate(calc(var(--i) * 20deg)) translateY(-215px) rotate(calc(-270deg - var(--i) * 20deg));
   font-size: 40px;
 }
 
@@ -1479,7 +1438,7 @@ img.item-equipped {
   left: 50%;
   transform: translateX(-50%) translateY(-20%);
   padding: 5px 10px;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   color: #f1f1f1;
   pointer-events: none;
   text-shadow: 0 0 6px rgb(0, 0, 0), 0 0 6px rgb(0, 0, 0);
@@ -1541,17 +1500,9 @@ img.item-equipped {
 }
 .tooltip-concentration div.animated-border {
   border: 2px solid rgba(0, 0, 0, 0);
-  background: linear-gradient(#333, #333) padding-box,
-    conic-gradient(
-        from var(--angle),
-        var(--aat-border-color),
-        var(--aat-hover-color),
-        var(--aat-border-color) 50%
-      )
-      border-box;
+  background: linear-gradient(#333, #333) padding-box, conic-gradient(from var(--angle), var(--aat-border-color), var(--aat-hover-color), var(--aat-border-color) 50%) border-box;
   animation: 2s rotate linear infinite;
-  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light),
-    0px 0px 11px 5px black;
+  box-shadow: 0px 0px 7px 6px var(--aat-main-color), 0px 0px 3px 3px var(--aat-main-color-light), 0px 0px 11px 5px black;
 }
 .tooltip-concentration i {
   padding: 0 4px;
@@ -1821,8 +1772,7 @@ img.item-equipped {
 }
 .end-turn-btn-dice:hover {
   background: radial-gradient(var(--aat-main-color-light) 35%, var(--aat-main-color) 65%);
-  box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5),
-    0 0 15px 10px var(--aat-hover-accent-color);
+  box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5), 0 0 15px 10px var(--aat-hover-accent-color);
 }
 .end-turn-btn-dice .end-turn-btn-dice-icon {
   font-size: min(var(--aat-item-size) * 1.9, var(--aat-main-tray-total-height) * 0.6);
@@ -1855,31 +1805,16 @@ img.item-equipped {
 }
 
 .minimize-button {
-  position: absolute;
-  right: -45px;
-  bottom: 0;
-
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-
-  width: 32px;
-  height: 32px;
-
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-
-  background: rgba(11, 10, 19, 0.75);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-
-  cursor: pointer;
   pointer-events: all;
 }
-
 .minimize-button i {
   font-size: 18px;
-  color: #fff;
 }
+
 .misc-tray-container {
   background: var(--aat-background-color, rgba(85, 85, 85, 0.6784313725));
   box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
