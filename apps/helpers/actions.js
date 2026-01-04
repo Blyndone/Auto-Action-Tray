@@ -527,7 +527,7 @@ export class Actions {
         }
 
         // Safety timeout (10 seconds total)
-        let timeout = 100
+        let timeout = item?.itemConfig?.animationWaitTime != null ? item.itemConfig.animationWaitTime / 100 : 100
         while ((!workflowComplete || !aaAnimationComplete || !sequencerComplete) && timeout > 0) {
           await wait(100)
           timeout -= 1

@@ -72,6 +72,17 @@ export class ItemConfig {
       hint: "Override the Number of Targets for this item."
     });
 
+    const animationWaitTime = fields.createNumberInput({
+      name: "animationWaitTime",
+      value: flags ? flags["animationWaitTime"] : true
+    });
+    const animationWaitTimeGroup = fields.createFormGroup({
+      input: animationWaitTime,
+      label: "Multiple Use Animation Wait Time",
+      hint:
+        "Set a maximum time to wait for animations for this item in milliseconds."
+    });
+
     const createEl = (tag, props = {}, styles = {}) => {
       const el = document.createElement(tag);
       Object.assign(el, props);
@@ -131,7 +142,7 @@ export class ItemConfig {
 
     itemblock.append(img, description);
 
-    const content = `${header.outerHTML} ${itemblock.outerHTML} ${useTargetHelperGroup.outerHTML}  ${rollIndividualGroup.outerHTML} ${fastForwardGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${numTargetsOptions.outerHTML} `;
+    const content = `${header.outerHTML} ${itemblock.outerHTML} ${useTargetHelperGroup.outerHTML}  ${rollIndividualGroup.outerHTML} ${fastForwardGroup.outerHTML} ${useDefaultTargetCountGroup.outerHTML} ${numTargetsOptions.outerHTML} ${animationWaitTimeGroup.outerHTML} `;
 
     await foundry.applications.api.DialogV2
       .wait({
