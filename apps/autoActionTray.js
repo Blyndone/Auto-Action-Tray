@@ -33,6 +33,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.socket = options.socket
 
     this.animating = false
+    this.tokenDeleted = false
     this.completeAnimation = null
     this.renderQueue = []
     this.pendingRender = false
@@ -156,6 +157,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })
 
     Hooks.on('controlToken', this._onControlToken.bind(this))
+    Hooks.on('deleteToken', this._onDeleteToken.bind(this))
     Hooks.on('updateActor', this._onUpdateActor.bind(this))
     Hooks.on('updateItem', this._onUpdateItem.bind(this))
     Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
@@ -317,6 +319,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   //#region Hooks
   _onControlToken = (event, controlled) => {
+    if (this.tokenDeleted) { 
+      Actions.minimizeTray.bind(this)()
+      this.tokenDeleted = false
+    }
     if (event?.actor.type == 'vehicle' || event?.actor.type == 'group') return
     if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING) return
     this.hpTextActive = false
@@ -328,6 +334,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         this.token = event
         this.initialTraySetup(this.actor, event)
     }
+  }
+
+  _onDeleteToken = (event) => {
+    // console.log('AAT - OnTokenDelete', event)
+    if (event.id == this.actor.token?.id) { 
+      console.log('AAT - Token deleted, resetting tray')
+      this.tokenDeleted = true
+      Actions.minimizeTray.bind(this)()
+    }
+
   }
 
   startAnimation() {
@@ -477,57 +493,27 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
     } else {
       let creatureType = actor.system.details.type.value
-      let theme = ''
-      switch (creatureType) {
-        case 'aberration':
-          theme = 'theme-warlock'
-          break
-        case 'beast':
-          theme = 'theme-ranger'
-          break
-        case 'celestial':
-          theme = 'theme-cleric'
-          break
-        case 'construct':
-          theme = 'theme-fighter'
-          break
-        case 'dragon':
-          theme = 'theme-barbarian'
-          break
-        case 'elemental':
-          theme = 'theme-bard'
-          break
-        case 'fey':
-          theme = 'theme-sorcerer'
-          break
-        case 'fiend':
-          theme = 'theme-ember'
-          break
-        case 'giant':
-          theme = 'theme-titan'
-          break
-        case 'humanoid':
-          if (actor.system.details.type.subtype == 'Goblinoid') {
-            theme = 'theme-monk'
-          } else {
-            theme = 'theme-slate'
-          }
-          break
-        case 'monstrosity':
-          theme = 'theme-rogue'
-          break
-        case 'ooze':
-          theme = 'theme-artificer'
-          break
-        case 'plant':
-          theme = 'theme-druid'
-          break
-        case 'undead':
-          theme = 'theme-subterfuge'
-          break
-        default:
-          theme = 'theme-slate'
-          break
+      const themeMap = {
+        aberration: 'theme-warlock',
+        beast: 'theme-ranger',
+        celestial: 'theme-cleric',
+        construct: 'theme-fighter',
+        dragon: 'theme-barbarian',
+        elemental: 'theme-bard',
+        fey: 'theme-sorcerer',
+        fiend: 'theme-ember',
+        giant: 'theme-titan',
+        humanoid: 'theme-slate',
+        monstrosity: 'theme-rogue',
+        ooze: 'theme-artificer',
+        plant: 'theme-druid',
+        undead: 'theme-subterfuge',
+      }
+
+      let theme = themeMap[creatureType] ?? 'theme-slate'
+
+      if (creatureType === 'humanoid') {
+        theme = actor.system.details.type.subtype === 'Goblinoid' ? 'theme-monk' : 'theme-slate'
       }
 
       game.settings.set('auto-action-tray', 'tempTheme', theme)
@@ -1320,7 +1306,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
-    
+
     if (options.parts.includes('characterImage')) {
       if (this.hpTextActive) {
         setTimeout(() => {
@@ -1430,7 +1416,7 @@ class AltContextMenu extends foundry.applications.ux.ContextMenu {
   }
   async _animate(open = true) {
     const menu = this.menu
-    console.log('AltContextMenu animate open')
+    // console.log('AltContextMenu animate open')
     const newParent = document.getElementById(this.parentSelector)
     const scale = 1 / game.settings.get('auto-action-tray', 'scale')
     const menuEl = menu[0]

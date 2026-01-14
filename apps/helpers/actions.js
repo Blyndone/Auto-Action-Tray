@@ -157,6 +157,13 @@ export class Actions {
     this.requestRender(['equipmentMiscTray', 'centerTray'])
   }
   static minimizeTray() {
+    let wrap = document.getElementById('aat-maximize-button')
+    if (wrap) { 
+      this.render(true)
+      wrap.remove()
+      return
+    }
+
     this.close({ animate: false })
     const bottomUi = document.getElementById('players-active')
 
@@ -186,6 +193,7 @@ export class Actions {
     wrapper.onclick = () => {
       this.render(true)
       wrapper.remove()
+      this.tokenDeleted = false
     }
 
     bottomUi.append(wrapper)
