@@ -1320,6 +1320,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
+    
+    if (options.parts.includes('characterImage')) {
+      if (this.hpTextActive) {
+        setTimeout(() => {
+          const inputField = document.querySelector('.hpinput')
+          inputField.focus()
+        }, 100)
+      }
+    }
 
     if (options.parts.includes('centerTray')) {
       if (this.trayOptions['rangeBoundaryEnabled']) {

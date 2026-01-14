@@ -194,14 +194,8 @@ export class Actions {
   static toggleHpText() {
     this.hpTextActive = !this.hpTextActive
 
-    this.requestRender('characterImage').then(() => {
-      if (this.hpTextActive) {
-        setTimeout(() => {
-          const inputField = document.querySelector('.hpinput');
-          inputField.focus()
-        }, 100)
-      }
-    })
+    this.requestRender('characterImage')
+
   }
 
   static async updateHp(data) {

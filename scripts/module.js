@@ -105,6 +105,25 @@ Hooks.once('init', async function () {
 
 
   preloadHandlebarsTemplates()
+
+    //Game Controls
+  game.keybindings.register("auto-action-tray", "toggleHpText", {
+  name: "Toggle HP Text Input",
+  hint: "Toggle the HP Text Input in the Character Tray",
+
+  editable: [
+    {
+      key: "NumpadEnter",
+    }
+  ],
+  onDown: () => { AutoActionTray.toggleHpText.bind(hotbar)() },
+  onUp: () => {},
+  restricted: false,            
+  reservedModifiers: [],  
+  precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
+});
+
+  
 })
 
 Hooks.once('socketlib.ready', () => {
@@ -539,4 +558,7 @@ Hooks.once('ready', async function () {
     })
 
   }
+
+
+  
 })
