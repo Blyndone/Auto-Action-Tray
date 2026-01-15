@@ -179,7 +179,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
-    Hooks.on('renderHotbar', () => {})
 
     if (!game.settings.get('auto-action-tray', 'customTargettingCursors')) {
       const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
@@ -337,9 +336,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onDeleteToken = (event) => {
-    // console.log('AAT - OnTokenDelete', event)
     if (event.id == this.actor.token?.id) { 
-      console.log('AAT - Token deleted, resetting tray')
       this.tokenDeleted = true
       Actions.minimizeTray.bind(this)()
     }
@@ -612,6 +609,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
+    
   }
 
   generateTrays(actor) {
@@ -1383,6 +1381,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         .getElementById('auto-action-tray')
         ?.style.setProperty('--aat-stacked-spacer-width', '0px')
     }
+    Hooks.call('AAT-RenderComplete', options)
     return
   }
 

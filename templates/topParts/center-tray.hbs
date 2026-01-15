@@ -1,12 +1,12 @@
 <div class="center-tray-container {{getTooltipTheme}}">
 
   {{#if staticTrays}}
-    <div class='static-tray-container'>
+    <div id="aat-static-tray-container" class='static-tray-container'>
       {{> "AAT.static-tray" }}
     </div>
   {{/if}}
 
-  <div class='ability-tray-container modifier-highlight'>
+  <div id="aat-ability-tray-container" class='ability-tray-container modifier-highlight'>
     <div class="stacked-tray-spacer-container ">
       {{#if conditionTray.active}}
         <div class="abilities-tray activity-tray condition">
@@ -56,7 +56,7 @@
   </div>
 
   {{#if customTrays}}
-    <div class='custom-tray-container'>
+    <div id="aat-custom-tray-container" class='custom-tray-container'>
       {{> "AAT.custom-tray" customTrays=customTrays }}
     </div>
   {{/if}}

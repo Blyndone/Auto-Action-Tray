@@ -36,6 +36,24 @@ export async function preloadHandlebarsTemplates() {
 }
 
 ;(() => {})()
+//Tours
+
+async function registerMyTours() {
+  try {
+    game.tours.register(AUTOACTIONTRAY_MODULE_NAME, 'Auto Action Tray User Guide', await Tour.fromJSON('/modules/'+AUTOACTIONTRAY_MODULE_NAME+'/apps/tours/tour.json'));
+    // if(game.user.isGM) {
+    //   game.tours.register(AUTOACTIONTRAY_MODULE_NAME, 'settings', await MyTour.fromJSON('/modules/'+AUTOACTIONTRAY_MODULE_NAME+'/tours/settings.json'));
+    // }
+  } catch (error) {
+    console.error("MyTour | Error registering tours: ",error);
+  }
+}
+
+Hooks.once("setup", async function () {
+  registerMyTours();
+});
+
+
 
 Hooks.once('init', async function () {
   libWrapper.register(
