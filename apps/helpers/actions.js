@@ -156,14 +156,15 @@ export class Actions {
     this.setTrayConfig({ rangeBoundaryEnabled: this.trayOptions['rangeBoundaryEnabled'] })
     this.requestRender(['equipmentMiscTray', 'centerTray'])
   }
-  static minimizeTray() {
+  static async minimizeTray() {
     let wrap = document.getElementById('aat-maximize-button')
-    if (wrap) { 
-      this.render(true)
+    if (wrap) {
+      await this.render(true)
+      this.animationHandler.animateAATHidden.bind(this)(true)
       wrap.remove()
       return
     }
-
+    await this.animationHandler.animateAATHidden.bind(this)(false)
     this.close({ animate: false })
     const bottomUi = document.getElementById('players-active')
 
@@ -190,8 +191,9 @@ export class Actions {
     link.appendChild(icon)
     wrapper.appendChild(link)
 
-    wrapper.onclick = () => {
-      this.render(true)
+    wrapper.onclick = async () => {
+      await this.render(true)
+      this.animationHandler.animateAATHidden.bind(this)(true)
       wrapper.remove()
       this.tokenDeleted = false
     }
@@ -203,7 +205,6 @@ export class Actions {
     this.hpTextActive = !this.hpTextActive
 
     this.requestRender('characterImage')
-
   }
 
   static async updateHp(data) {

@@ -58,6 +58,37 @@ export class AnimationHandler {
     }
   }
 
+  async animateAATHidden(visible) {
+    if (this.element) {
+      if (visible) {
+        gsap.fromTo(
+          '#auto-action-tray',
+          {
+            y: this.element.getBoundingClientRect().height,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.5,
+          },
+        )
+        return new Promise((resolve) => {
+          setTimeout(resolve, 0)
+        })
+      }
+
+      gsap.to('#auto-action-tray', {
+        y: visible ? 0 : this.element.getBoundingClientRect().height,
+        opacity: visible ? 1 : 0,
+        duration: 0.5,
+      })
+      return new Promise((resolve) => {
+        setTimeout(resolve, 500)
+      })
+    }
+  }
+
   async animateTrays(trayInId, trayOutId, hotbar) {
     if (trayInId == trayOutId) return
 
@@ -78,7 +109,6 @@ export class AnimationHandler {
     await hotbar.requestRender('centerTray', true)
 
     if (trayIn.id == 'stacked') {
-
       this.hotbar.draggableTrays.setAllClipPaths(0.5)
     }
 
@@ -255,33 +285,41 @@ export class AnimationHandler {
     return new Promise(async (resolve) => {
       let animationComplete = trayOut.trays.length
       this.animateSpacer(0)
-      const tl = gsap.timeline()  
+      const tl = gsap.timeline()
       trayOut.trays.forEach((tray) => {
         let xOffset = 0
         if (tray == trayIn) {
           if (tray.id != 'common') xOffset = -33
           this.setStackedTrayPos(tray)
-          tl.to(`#auto-action-tray .container-${tray.id}`, {
-            force3D: false,
-            opacity: 1,
-            x: xOffset,
-            duration: AnimationHandler.getAnimationDuration(tray.id),
-            onComplete: () => {
-              animationComplete > 0 ? resolve() : animationComplete--
-              return
+          tl.to(
+            `#auto-action-tray .container-${tray.id}`,
+            {
+              force3D: false,
+              opacity: 1,
+              x: xOffset,
+              duration: AnimationHandler.getAnimationDuration(tray.id),
+              onComplete: () => {
+                animationComplete > 0 ? resolve() : animationComplete--
+                return
+              },
             },
-          }, 0)
+            0,
+          )
         } else {
-          tl.to(`#auto-action-tray .container-${tray.id}`, {
-            force3D: false,
-            opacity: 0,
-            x: this.horizontalBounds,
-            duration: AnimationHandler.getAnimationDuration(tray.id),
-            onComplete: () => {
-              animationComplete > 0 ? resolve() : animationComplete--
-              return
+          tl.to(
+            `#auto-action-tray .container-${tray.id}`,
+            {
+              force3D: false,
+              opacity: 0,
+              x: this.horizontalBounds,
+              duration: AnimationHandler.getAnimationDuration(tray.id),
+              onComplete: () => {
+                animationComplete > 0 ? resolve() : animationComplete--
+                return
+              },
             },
-          }, 0)
+            0,
+          )
         }
       })
     })
@@ -302,16 +340,20 @@ export class AnimationHandler {
         //     opacity: 0,
         //   })
         // }
-        tl.to(`#auto-action-tray .container-${tray.id}`, {
-          force3D: false,
-          opacity: 1,
-          x: tray.xPos,
-          duration: AnimationHandler.getAnimationDuration(tray.id),
-          onComplete: () => {
-            animationComplete > 0 ? resolve() : animationComplete--
-            return
+        tl.to(
+          `#auto-action-tray .container-${tray.id}`,
+          {
+            force3D: false,
+            opacity: 1,
+            x: tray.xPos,
+            duration: AnimationHandler.getAnimationDuration(tray.id),
+            onComplete: () => {
+              animationComplete > 0 ? resolve() : animationComplete--
+              return
+            },
           },
-        },0)
+          0,
+        )
       })
     })
   }
@@ -320,11 +362,15 @@ export class AnimationHandler {
     if (!this.hotbar.rendered) return
     const tl = gsap.timeline()
     stackedTray.forEach((tray) => {
-      tl.set(`#auto-action-tray .container-${tray.id}`, {
-        // force3D: false,
-        opacity: 1,
-        x: tray.tray.xPos,
-      }, 0)
+      tl.set(
+        `#auto-action-tray .container-${tray.id}`,
+        {
+          // force3D: false,
+          opacity: 1,
+          x: tray.tray.xPos,
+        },
+        0,
+      )
     })
   }
   setStackedTrayPos(tray) {

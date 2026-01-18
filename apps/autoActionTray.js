@@ -602,13 +602,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
-
+    const firstsetup = (this.element == null)
     document
       .getElementById('auto-action-tray')
       ?.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
-    this.render({
+    await this.render({
       parts: ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray'],
     })
+    if (firstsetup) {
+      this.animationHandler.animateAATHidden.bind(this)(true)
+    }
     
   }
 
