@@ -162,6 +162,7 @@ export class Actions {
       await this.render(true)
       this.animationHandler.animateAATHidden.bind(this)(true)
       wrap.remove()
+      this.trayMinimized = false
       return
     }
     await this.animationHandler.animateAATHidden.bind(this)(false)
@@ -190,12 +191,14 @@ export class Actions {
 
     link.appendChild(icon)
     wrapper.appendChild(link)
-
+    this.trayMinimized = true
+    
     wrapper.onclick = async () => {
       await this.render(true)
       this.animationHandler.animateAATHidden.bind(this)(true)
       wrapper.remove()
       this.tokenDeleted = false
+      this.trayMinimized = false
     }
 
     bottomUi.append(wrapper)
@@ -255,8 +258,8 @@ export class Actions {
       itemConfig?.fastForward == 'always'
         ? true
         : itemConfig?.fastForward == 'never'
-        ? false
-        : this.trayOptions['fastForward']
+          ? false
+          : this.trayOptions['fastForward']
 
     if (activityId) {
       activity = item.activities.find((e) => e.activityId == activityId)
@@ -305,8 +308,8 @@ export class Actions {
             slot: selectedSpellLevel
               ? 'spell' + selectedSpellLevel
               : item.spellLevel == 0
-              ? 'spell0'
-              : null,
+                ? 'spell0'
+                : null,
           }
 
     return {

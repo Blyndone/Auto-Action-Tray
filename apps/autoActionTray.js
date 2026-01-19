@@ -34,6 +34,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this.animating = false
     this.tokenDeleted = false
+    this.trayMinimized = false  
     this.completeAnimation = null
     this.renderQueue = []
     this.pendingRender = false
@@ -336,7 +337,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onDeleteToken = (event) => {
-    if (event.id == this.actor.token?.id) { 
+    if (event.id == this.actor.token?.id && this.trayMinimized == false) { 
       this.tokenDeleted = true
       Actions.minimizeTray.bind(this)()
     }
