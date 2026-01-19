@@ -92,10 +92,6 @@ export class AnimationHandler {
   async animateTrays(trayInId, trayOutId, hotbar) {
     if (trayInId == trayOutId) return
 
-    // if (trayOutId == 'target-helper' && trayInId == 'activity') {
-    //   trayInId = 'stacked'
-    // }
-
     let trayIn = this.findTray(trayInId, hotbar)
     let trayOut = this.findTray(trayOutId, hotbar)
     hotbar.trayInformation = trayIn.label
@@ -335,11 +331,6 @@ export class AnimationHandler {
       this.animateSpacer(width == 0 ? 0 : width + 14)
       const tl = gsap.timeline()
       trayIn.trays.forEach((tray) => {
-        // if (tray != trayOut) {
-        //   gsap.set(`#auto-action-tray .container-${tray.id}`, {
-        //     opacity: 0,
-        //   })
-        // }
         tl.to(
           `#auto-action-tray .container-${tray.id}`,
           {
@@ -375,7 +366,6 @@ export class AnimationHandler {
   }
   setStackedTrayPos(tray) {
     gsap.set(`#auto-action-tray .container-${tray.id}`, {
-      // force3D: false,
       opacity: 1,
       x: tray.xPos,
     })
@@ -383,7 +373,6 @@ export class AnimationHandler {
 
   setPreStackedTrayPos(tray, trayOut) {
     gsap.set(`#auto-action-tray .container-${tray.id}`, {
-      // force3D: false,
       opacity: 1,
       x: tray == trayOut ? 0 : 1500,
     })

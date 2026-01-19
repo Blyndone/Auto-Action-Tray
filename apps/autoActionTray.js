@@ -786,12 +786,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (
-      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
       hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
-      // if (event.target.actor == hotbar.actor) {
-      //   return wrapped(...args)
-      // }
+
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
@@ -857,7 +854,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (!hoverEnabled || !token || token == this.token || !this.token) return
     if (!hovered) {
       const allItems = document.querySelectorAll('.in-range')
-      // gsap.killTweensOf(allItems)
       if (allItems.length > 0) {
         gsap.to(allItems, {
           opacity: 0,
@@ -891,7 +887,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (
-      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
+
       hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
       let token = event.currentTarget
@@ -902,7 +898,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   static _onCursorChange(hotbar, wrapped, ...args) {
     if (
-      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
       hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
       const canvas = document.getElementById('board')
@@ -916,7 +911,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
     if (
-      // hotbar.targetHelper.getState() === hotbar.targetHelper.STATES.ACTIVE &&
       hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
     ) {
       let token = event.interactionData.object
@@ -1094,10 +1088,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       jQuery: true,
     })
 
-    // new ContextMenu(this.element, '.concentration-item', [], {
-    //   onOpen: EffectTray.removeEffect.bind(this),
-    //   jQuery: true,
-    // })
 
     new foundry.applications.ux.ContextMenu(this.element, '.end-turn-btn-dice', [], {
       onOpen: Actions.changeDice.bind(this),
@@ -1419,7 +1409,6 @@ class AltContextMenu extends foundry.applications.ux.ContextMenu {
   }
   async _animate(open = true) {
     const menu = this.menu
-    // console.log('AltContextMenu animate open')
     const newParent = document.getElementById(this.parentSelector)
     const scale = 1 / game.settings.get('auto-action-tray', 'scale')
     const menuEl = menu[0]

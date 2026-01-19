@@ -21,7 +21,6 @@ export class Actions {
       this.animationHandler.clearStack()
       this.currentTray.setActive()
     }
-    // this.render({ parts: ['centerTray'] });
   }
 
   static async setTrayConfig(config) {
@@ -118,10 +117,9 @@ export class Actions {
       this.animating == true ||
       this.selectingActivity == true ||
       this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING
-      // this.targetHelper.selectingTargets == true
+
     )
       return
-    // let trayIn = this.getTray(target.dataset.id)
 
     this.animationHandler.setTray(target.dataset.id)
   }
@@ -165,6 +163,7 @@ export class Actions {
       this.trayMinimized = false
       return
     }
+
     await this.animationHandler.animateAATHidden.bind(this)(false)
     this.close({ animate: false })
     const bottomUi = document.getElementById('players-active')
@@ -175,7 +174,6 @@ export class Actions {
     }
 
     let wrapper = document.createElement('div')
-    // wrapper.classList.add('bar-controls', 'minimize-button')
     wrapper.style.position = 'relative'
     wrapper.id = 'aat-maximize-button'
 
@@ -192,7 +190,7 @@ export class Actions {
     link.appendChild(icon)
     wrapper.appendChild(link)
     this.trayMinimized = true
-    
+
     wrapper.onclick = async () => {
       await this.render(true)
       this.animationHandler.animateAATHidden.bind(this)(true)

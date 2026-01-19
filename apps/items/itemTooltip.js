@@ -416,7 +416,6 @@ export class AATItemTooltip {
         rollConfig.rolls = rollConfig.rolls.concat(config.rolls)
       }
     } else {
-      // console.warn('Activity processed for rolls but has no damage or healing parts:', activity)
       rollConfig.rolls = config.rolls ?? []
     }
 
