@@ -46,9 +46,8 @@ export class EffectTray {
       this.hotbar.concentrationItem = null
     }
 
-    // if (!this.hotbar.animating) {
     this.hotbar.requestRender(['effectsTray', 'centerTray', 'characterImage'])
-    // }
+
   }
   static async removeEffect(event, element) {
     if (event?.dataset?.concentration =="true") { 

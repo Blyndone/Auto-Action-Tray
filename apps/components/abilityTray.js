@@ -225,7 +225,6 @@ export class AbilityTray {
         }))
         this.addMacrosToTray()
       }
-      // this.setSavedData()
       this.savedData = true
     }
 

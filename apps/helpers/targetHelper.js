@@ -39,8 +39,6 @@ export class TargetHelper {
     this.templateBoundaryUuid = null
     this.startPos
     this.startLinePos
-    // this.hovering = false
-    // this.selectingTargets = false
     this.item = null
     this.useSlot = false
     this.mouseMoveHandler = null
@@ -99,7 +97,6 @@ export class TargetHelper {
     this.active = false
   }
   setState(state) {
-    // console.log('AAT - TargetHelper State Change:', state)
     if (typeof state == 'string') {
       state = this.STATES[state.toUpperCase()]
     }
@@ -158,7 +155,7 @@ export class TargetHelper {
   }
 
   createUseNotification(item, activity, actor, selectedSpellLevel, useRangeBoundary = true) {
-    // this.selectingTargets = true
+
     this.state = this.setState('TARGETTING')
     this.clearData()
     if (this.sendTargetLines) {
@@ -167,12 +164,6 @@ export class TargetHelper {
     this.setData(actor, activity)
     this.activityRange = useRangeBoundary ? this.getActivityRange(item, activity) : 0
 
-    // let suffix = ''
-    // if (selectedSpellLevel?.slot && selectedSpellLevel.slot !== 'spell0') {
-    //   suffix = ` (Level ${selectedSpellLevel.slot.replace(/[a-zA-z]/g, '')})`
-    // }
-    // let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
-    // this.hotbar.trayInformation = `${prefix} ${item.name}${suffix}...   `
 
     this.currentLine = new TargetLineCombo({
       useLines: false,
@@ -206,7 +197,6 @@ export class TargetHelper {
     }
   }
   clearUseNotification() {
-    // this.selectingTargets = false
     this.setState('IDLE')
     this.clearData()
   }
@@ -234,9 +224,6 @@ export class TargetHelper {
   }
 
   clearData() {
-    // this.state = this.enabled
-    //   ? this.setState(this.STATES.ACTIVE)
-    //   : this.setState(this.STATES.INACTIVE)
     this.setState('IDLE')
     this.actor = null
     this.item = null
@@ -327,7 +314,6 @@ export class TargetHelper {
         this.rejectTargets = reject
       })
     } catch (error) {
-      // console.log('AAT - Target selection canceled')
       this.setState('IDLE')
       targets = null
     }
@@ -362,7 +348,6 @@ export class TargetHelper {
   }
 
   confirmTargets() {
-    // this.selectingTargets = false
     this.setState('IDLE')
     document.removeEventListener('mousemove', this.mouseMoveHandler)
     this.currentLine.clearText()
@@ -417,11 +402,9 @@ export class TargetHelper {
     if (this.targets.length == 0) {
       const canvas = document.getElementById('board')
       canvas.style.cursor = ''
-      // this.selectingTargets = false
       this.setState('IDLE')
       document.removeEventListener('mousemove', this.mouseMoveHandler)
       this.rejectTargets(new Error('No targets to remove'))
-      // this.currentLine.clearLines()
       this.clearData()
       this.hotbar.animationHandler.popTray()
 

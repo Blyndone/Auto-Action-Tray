@@ -1,5 +1,5 @@
 export class TemplateBoundary {
-  //options: { activity, template, color, phantom  }
+
   constructor(options) {
     this.boundaries = []
   }
@@ -87,7 +87,7 @@ class CircleBoundary extends protoBoundary {
 
     this.boundary
     this.boundary.lineStyle(5, this.color, 1)
-    this.boundary.drawCircle(this.x, this.y, (this.distance * this.gridsize) / 5) // x, y, radius
+    this.boundary.drawCircle(this.x, this.y, (this.distance * this.gridsize) / 5) 
     canvas.app.stage.addChild(this.boundary)
   }
   updateBoundary(options) {
@@ -97,7 +97,7 @@ class CircleBoundary extends protoBoundary {
       this.distance === options.distance &&
       this.direction === options.direction
     ) {
-      return // No changes, no need to update
+      return 
     }
     this.x = options.x || 0
     this.y = options.y || 0
@@ -105,7 +105,7 @@ class CircleBoundary extends protoBoundary {
     this.direction = options.direction || 0
     this.boundary.clear()
     this.boundary.lineStyle(5, this.color, 1)
-    this.boundary.drawCircle(this.x, this.y, (this.distance * this.gridSize) / 5) // x, y, radius
+    this.boundary.drawCircle(this.x, this.y, (this.distance * this.gridSize) / 5) 
 
     gsap.set(this.boundary, {
       pixi: {
@@ -127,7 +127,7 @@ class CircleBoundary extends protoBoundary {
       yoyo: true,
     })
 
-    // console.log("Circle boundary updated:", this);
+ 
   }
 }
 class RayBoundary extends protoBoundary {
@@ -141,11 +141,11 @@ class RayBoundary extends protoBoundary {
       this.y + this.width / 2,
       (this.distance * this.gridSize) / 5,
       (this.width * this.gridSize) / 5,
-    ) // x, y, width, height
+    )
     canvas.app.stage.addChild(this.boundary)
   }
   updateBoundary(options) {
-    //check if different
+    
     if (
       this.x === options.x &&
       this.y === options.y &&
@@ -153,7 +153,7 @@ class RayBoundary extends protoBoundary {
       this.direction === options.direction &&
       this.width === options.width
     ) {
-      return // No changes, no need to update
+      return 
     }
     this.x = options.x || 0
     this.y = options.y || 0
@@ -206,11 +206,10 @@ class RectangleBoundary extends protoBoundary {
       this.y + this.width / 2,
       (this.distance * this.gridSize) / 5,
       (this.width * this.gridSize) / 5,
-    ) // x, y, width, height
+    ) 
     canvas.app.stage.addChild(this.boundary)
   }
   updateBoundary(options) {
-    //check if different
     if (
       this.x === options.x &&
       this.y === options.y &&
@@ -218,7 +217,7 @@ class RectangleBoundary extends protoBoundary {
       this.direction === options.direction &&
       this.width === options.width
     ) {
-      return // No changes, no need to update
+      return 
     }
     this.x = options.x || 0
     this.y = options.y || 0
@@ -276,7 +275,7 @@ class RectangleBoundary extends protoBoundary {
 class ConeBoundary extends protoBoundary {
   constructor(options) {
     super(options)
-    this.angle = options.document.angle || 45 // Default angle
+    this.angle = options.document.angle || 45 
     this.boundary.lineStyle(5, this.color, 1)
     this.boundary.drawRect(
       this.x,

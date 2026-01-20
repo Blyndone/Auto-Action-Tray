@@ -89,9 +89,7 @@ export class CustomNpcTray extends AbilityTray {
       (e) => e.name === 'Multiattack' || e.name.startsWith('Multiattack'),
     )
     if (multiattack && this.category === 'common') {
-      // let foundItem = await fromUuid(".mmRend0000000000", { relative: multiattack.item })
-      // console.log(foundItem)
-
+ 
       let multigroupIndex = 0
       let desc = multiattack.description
       let options = {
@@ -103,12 +101,9 @@ export class CustomNpcTray extends AbilityTray {
       }
 
       desc = this.cleanDesc(desc, allItems)
-      // console.log(desc)
 
       let itemNames = allItems.map((e) => e.name.toLowerCase())
-      // itemNames.push('melee')
-      // itemNames.push('ranged')
-      // itemNames.push('spell')
+
 
       let regex
       let basicAttackPattern

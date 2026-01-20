@@ -1,7 +1,7 @@
 export class TargetLineCombo {
   constructor(options) {
-    this.useName = options.sendName ?? game.settings.get('auto-action-tray', 'enableUseItemName') // sendName
-    this.useIcon = options.sendIcon ?? game.settings.get('auto-action-tray', 'enableUseItemIcon') // sendIcon
+    this.useName = options.sendName ?? game.settings.get('auto-action-tray', 'enableUseItemName') 
+    this.useIcon = options.sendIcon ?? game.settings.get('auto-action-tray', 'enableUseItemIcon') 
     this.useLines = options.useLines || true
     this.yOffset = options.yOffset || 0
     this.phantom = options.phantom || false
@@ -352,9 +352,6 @@ class ItemImage {
   clear() {
     this.active = false
     gsap.killTweensOf(this.composite)
-    // gsap.set(this.composite, {
-    //   pixi: { blur: 0, alpha: 0 },
-    // })
 
     gsap.to(this.composite, {
       pixi: { alpha: 0 },

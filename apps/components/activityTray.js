@@ -91,7 +91,7 @@ export class ActivityTray extends AbilityTray {
   }
 
   static useActivity(event, target) {
-    //This can be an Activity or a Spell Level Selection
+
     let selectedSpellLevel = target.dataset.selectedspelllevel
     let useSlot = this.useSlot
     if (useSlot && !ActivityTray.checkSlotAvailable.bind(this)(selectedSpellLevel)) {

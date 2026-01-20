@@ -167,7 +167,6 @@ export class AnimationHandler {
       this.hotbar.startAnimation()
       this.hotbar.targetTray = tray
 
-      // tray.setActive()
       let xOffset = 0
       let yOffset = 0
       let initialOpacity = 1
@@ -193,7 +192,7 @@ export class AnimationHandler {
       initialOpacity = 0
 
       gsap.set(`#auto-action-tray .${tray.id}`, {
-        // force3D: false,
+
         opacity: initialOpacity,
         y: yOffset,
         x: xOffset,
@@ -216,7 +215,7 @@ export class AnimationHandler {
   async animateTrayOut(tray) {
     if (tray?.x) {
       gsap.set(`#auto-action-tray .${tray.id}`, {
-        // force3D: false,
+
         x: tray.x,
       })
     }
@@ -224,7 +223,7 @@ export class AnimationHandler {
       this.hotbar.startAnimation()
       this.hotbar.currentTray = tray
 
-      // tray.setActive()
+
       let xOffset = 0
       let yOffset = 0
       let endOpactiy = 1
@@ -356,7 +355,7 @@ export class AnimationHandler {
       tl.set(
         `#auto-action-tray .container-${tray.id}`,
         {
-          // force3D: false,
+
           opacity: 1,
           x: tray.tray.xPos,
         },

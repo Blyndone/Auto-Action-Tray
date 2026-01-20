@@ -168,7 +168,6 @@ export class Pathfinding {
     for (const dir of directions) {
       const next = { x: square.x + dir.x, y: square.y + dir.y };
 
-      // Skip if occupied
       if (this.isOccupied(next)) continue;
 
       // For diagonals, prevent cutting corners

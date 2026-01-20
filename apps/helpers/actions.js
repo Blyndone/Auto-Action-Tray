@@ -522,7 +522,7 @@ export class Actions {
           })
         }
 
-        // Sequencer effect completion (only effects created by this user)
+        // Sequencer effect completion 
         if (!sequencerComplete) {
           sequencerHookId = Hooks.on('endedSequencerEffect', (sequence) => {
             if (sequence?.data?.creatorUserId === game.user.id) {

@@ -61,9 +61,6 @@ export class DraggableTrayContainer {
     const application = this.application
     const container = this
 
-    // ------------------------------
-    // Math Helpers
-    // ------------------------------
 
     const getLeftNeighbor = () => container.draggableTrays[index - 1]?.tray
     const getRightNeighbor = () => container.draggableTrays[index + 1]?.tray
@@ -104,9 +101,6 @@ export class DraggableTrayContainer {
       }
     }
 
-    // ------------------------------
-    // Draggable
-    // ------------------------------
 
     tray.draggable = Draggable.create(`.container-${tray.id}`, {
       type: 'x',
@@ -183,17 +177,15 @@ class DraggableTray {
 
   setClipPath(tray, pos, duration = null, selfOnly = false) {
     function setClip(currentTray, pos, duration = 0) {
-      // const selector = `.container-${identifier}`
+
       const element = currentTray.getElement()
       const newClipPath = `inset(0px ${pos}px 0px 0px)`
       if (!element) return
 
-      // const currentClip = getComputedStyle(element).clipPath
-      // if (currentClip === newClipPath) return
 
       gsap.to(`.container-${currentTray.id}`, {
         duration: duration,
-        // ease: 'power3.out',
+
         clipPath: `inset(0px ${pos}px 0px 0px)`,
       })
     }
