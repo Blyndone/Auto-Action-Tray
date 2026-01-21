@@ -34,7 +34,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this.animating = false
     this.tokenDeleted = false
-    this.trayMinimized = false  
+    this.trayMinimized = false
     this.completeAnimation = null
     this.renderQueue = []
     this.pendingRender = false
@@ -281,8 +281,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       toggleCondition: AutoActionTray.toggleCondition,
       toggleConditionTray: AutoActionTray.toggleConditionTray,
       rollDeathSave: AutoActionTray.rollDeathSave,
-      increaseRowCount: AutoActionTray.increaseRowCount,
-      decreaseRowCount: AutoActionTray.decreaseRowCount,
+      increaseButtonAction: AutoActionTray.increaseButtonAction,
+      decreaseButtonAction: AutoActionTray.decreaseButtonAction,
       removeConcentration: AutoActionTray.removeConcentration,
     },
   }
@@ -319,7 +319,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   //#region Hooks
   _onControlToken = (event, controlled) => {
-    if (this.tokenDeleted) { 
+    if (this.tokenDeleted) {
       Actions.minimizeTray.bind(this)()
       this.tokenDeleted = false
     }
@@ -337,11 +337,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _onDeleteToken = (event) => {
-    if (event.id == this.actor.token?.id && this.trayMinimized == false) { 
+    if (event.id == this.actor.token?.id && this.trayMinimized == false) {
       this.tokenDeleted = true
       Actions.minimizeTray.bind(this)()
     }
-
   }
 
   startAnimation() {
@@ -411,10 +410,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     let urls = items.map((e) => e.img)
-    urls.forEach((url) => {
-      const img = new Image()
-      img.src = url
-    })
+
+    function preloadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.src = src
+        img.onload = () => resolve(src)
+        img.onerror = reject
+      })
+    }
+    urls.forEach(async (url) => await preloadImage(url))
 
     this.savedActors.push({
       name: actor.name,
@@ -603,7 +608,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (config) {
       this.trayOptions = Object.assign({}, this.trayOptions, config)
     }
-    const firstsetup = (this.element == null)
+    const firstsetup = this.element == null
     document
       .getElementById('auto-action-tray')
       ?.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
@@ -613,7 +618,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (firstsetup) {
       this.animationHandler.animateAATHidden.bind(this)(true)
     }
-    
   }
 
   generateTrays(actor) {
@@ -754,9 +758,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (
-      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
-    ) {
+    if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
       if (event.target.actor == hotbar.actor) {
         return wrapped(...args)
       }
@@ -784,10 +786,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (
-      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
-    ) {
-
+    if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
@@ -885,10 +884,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
 
-    if (
-
-      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
-    ) {
+    if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
       let token = event.currentTarget
 
       hotbar.targetHelper.selectTarget(token)
@@ -896,9 +892,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else return wrapped(...args)
   }
   static _onCursorChange(hotbar, wrapped, ...args) {
-    if (
-      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
-    ) {
+    if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
       const canvas = document.getElementById('board')
       canvas.style.cursor =
         "url('modules/auto-action-tray/icons/cursors/Crosshair.cur') 16 16, auto"
@@ -909,9 +903,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
-    if (
-      hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING
-    ) {
+    if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
       let token = event.interactionData.object
       hotbar.targetHelper.removeTarget(token)
       return event.stopPropagation()
@@ -1087,7 +1079,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       jQuery: true,
     })
 
-
     new foundry.applications.ux.ContextMenu(this.element, '.end-turn-btn-dice', [], {
       onOpen: Actions.changeDice.bind(this),
       jQuery: true,
@@ -1223,12 +1214,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   static async rollDeathSave() {
     Actions.rollDeathSave.bind(this)()
   }
-  static async increaseRowCount() {
-    Actions.increaseRowCount.bind(this)()
+
+
+  static async increaseButtonAction() {
+    Actions.increaseButtonAction.bind(this)()
   }
-  static async decreaseRowCount() {
-    Actions.decreaseRowCount.bind(this)()
+  static async decreaseButtonAction() {
+    Actions.decreaseButtonAction.bind(this)()
   }
+
+
+
   static changeDice() {
     Actions.changeDice.bind(this)()
   }

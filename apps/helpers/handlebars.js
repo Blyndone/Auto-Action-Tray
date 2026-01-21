@@ -175,6 +175,13 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('formatLink', function (link) {
     return link.replace(/ /g, '%20')
   })
+  Handlebars.registerHelper('IncDecTooltip', function (plusOrMinus) {
+    const useQuickElevation = game.settings.get('auto-action-tray', 'quickElevation')
+    if (useQuickElevation) {
+      return plusOrMinus == 'plus' ? 'Increase Elevation by 5' : 'Decrease Elevation by 5'
+    }
+    return plusOrMinus == 'plus' ? 'Increase Skill Tray Row Count' : 'Decrease Skill Tray Row Count'
+  })
   Handlebars.registerHelper('removeEnrichment', function (text) {})
   //  Handlebars.registerHelper('enrichText', function (text) {
   //   return TextEditor.enrichHTML(text, {

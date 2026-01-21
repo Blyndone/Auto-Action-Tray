@@ -63,8 +63,8 @@
   {{> "AAT.character-hp" actor=actor}}
   <div
     class='increase-row-button '
-    data-action='increaseRowCount'
-    data-tooltip='Increase Skill Tray Row Count'
+    data-action='increaseButtonAction'
+    data-tooltip='{{IncDecTooltip "plus"}}'
     data-tooltip-direction='UP'
   >
     <i class="fa-solid fa-plus"></i>
@@ -72,8 +72,8 @@
 
   <div
     class='decrease-row-button '
-    data-action='decreaseRowCount'
-    data-tooltip='Decrease Skill Tray Row Count'
+    data-action='decreaseButtonAction'
+    data-tooltip='{{IncDecTooltip "minus"}}'
     data-tooltip-direction='UP'
   >
     <i class="fa-solid fa-minus"></i>

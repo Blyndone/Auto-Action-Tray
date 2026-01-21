@@ -117,7 +117,6 @@ export class Actions {
       this.animating == true ||
       this.selectingActivity == true ||
       this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING
-
     )
       return
 
@@ -522,7 +521,7 @@ export class Actions {
           })
         }
 
-        // Sequencer effect completion 
+        // Sequencer effect completion
         if (!sequencerComplete) {
           sequencerHookId = Hooks.on('endedSequencerEffect', (sequence) => {
             if (sequence?.data?.creatorUserId === game.user.id) {
@@ -660,7 +659,15 @@ export class Actions {
     this.requestRender('characterImage')
   }
 
-  static async increaseRowCount() {
+  static async increaseButtonAction() {
+    let useQuickElevation = game.settings.get('auto-action-tray', 'quickElevation')
+    if (useQuickElevation) {
+      let token = this.actor.getActiveTokens()[0]
+      let elevation = token.document.elevation
+      token.document.update({ elevation: elevation + 5 })
+      return
+    }
+    //Increase Row Count
     const root = document.getElementById('auto-action-tray')
     const current = parseInt(
       getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),
@@ -676,7 +683,15 @@ export class Actions {
     this.initialTraySetup(this.actor)
   }
 
-  static async decreaseRowCount() {
+  static async decreaseButtonAction() {
+    let useQuickElevation = game.settings.get('auto-action-tray', 'quickElevation')
+    if (useQuickElevation) {
+      let token = this.actor.getActiveTokens()[0]
+      let elevation = token.document.elevation
+      token.document.update({ elevation: elevation - 5 })
+      return
+    }
+    //Decrease Row Count
     const root = document.getElementById('auto-action-tray')
     const current = parseInt(
       getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),

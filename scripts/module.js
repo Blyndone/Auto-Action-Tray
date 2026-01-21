@@ -40,20 +40,22 @@ export async function preloadHandlebarsTemplates() {
 
 async function registerMyTours() {
   try {
-    game.tours.register(AUTOACTIONTRAY_MODULE_NAME, 'Auto Action Tray User Guide', await Tour.fromJSON('/modules/'+AUTOACTIONTRAY_MODULE_NAME+'/apps/tours/tour.json'));
+    game.tours.register(
+      AUTOACTIONTRAY_MODULE_NAME,
+      'Auto Action Tray User Guide',
+      await Tour.fromJSON('/modules/' + AUTOACTIONTRAY_MODULE_NAME + '/apps/tours/tour.json'),
+    )
     // if(game.user.isGM) {
     //   game.tours.register(AUTOACTIONTRAY_MODULE_NAME, 'settings', await MyTour.fromJSON('/modules/'+AUTOACTIONTRAY_MODULE_NAME+'/tours/settings.json'));
     // }
   } catch (error) {
-    console.error("MyTour | Error registering tours: ",error);
+    console.error('MyTour | Error registering tours: ', error)
   }
 }
 
-Hooks.once("setup", async function () {
-  registerMyTours();
-});
-
-
+Hooks.once('setup', async function () {
+  registerMyTours()
+})
 
 Hooks.once('init', async function () {
   libWrapper.register(
@@ -108,7 +110,7 @@ Hooks.once('init', async function () {
     },
     'MIXED',
   )
-  
+
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'PIXI.EventSystem.prototype.setCursor',
@@ -120,28 +122,26 @@ Hooks.once('init', async function () {
     'MIXED',
   )
 
-
-
   preloadHandlebarsTemplates()
 
-    //Game Controls
-  game.keybindings.register("auto-action-tray", "toggleHpText", {
-  name: "Toggle HP Text Input",
-  hint: "Toggle the HP Text Input in the Character Tray",
+  //Game Controls
+  game.keybindings.register('auto-action-tray', 'toggleHpText', {
+    name: 'Toggle HP Text Input',
+    hint: 'Toggle the HP Text Input in the Character Tray',
 
-  editable: [
-    {
-      key: "NumpadEnter",
-    }
-  ],
-  onDown: () => { AutoActionTray.toggleHpText.bind(hotbar)() },
-  onUp: () => {},
-  restricted: false,            
-  reservedModifiers: [],  
-  precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
-});
-
-  
+    editable: [
+      {
+        key: 'NumpadEnter',
+      },
+    ],
+    onDown: () => {
+      AutoActionTray.toggleHpText.bind(hotbar)()
+    },
+    onUp: () => {},
+    restricted: false,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  })
 })
 
 Hooks.once('socketlib.ready', () => {
@@ -199,12 +199,14 @@ Hooks.once('ready', async function () {
 
     range: {
       min: 0,
-      step: .05,
+      step: 0.05,
       max: 1,
     },
-    onChange: value => { 
+    onChange: (value) => {
       const baseColor = `5b5b5b`
-      const hex = Math.floor(value * 255).toString(16).padStart(2, '0')
+      const hex = Math.floor(value * 255)
+        .toString(16)
+        .padStart(2, '0')
       document.documentElement.style.setProperty('--aat-background-color', `#${baseColor}${hex}`)
     },
 
@@ -233,7 +235,6 @@ Hooks.once('ready', async function () {
 
     requiresReload: false,
   })
-
 
   game.settings.register('auto-action-tray', 'theme', {
     name: 'Color Theme',
@@ -271,9 +272,6 @@ Hooks.once('ready', async function () {
     default: 'theme-classic',
   })
 
-
-
-
   game.settings.register('auto-action-tray', 'tempTheme', {
     name: 'tempTheme',
     scope: 'client',
@@ -281,6 +279,17 @@ Hooks.once('ready', async function () {
   })
 
   game.settings.set('auto-action-tray', 'tempTheme', game.settings.get('auto-action-tray', 'theme'))
+
+  game.settings.register('auto-action-tray', 'quickElevation', {
+    name: 'Quick Elevation Change',
+    hint: 'Replaces the Row Count Buttons with Elevation Change Buttons',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
 
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',
@@ -316,7 +325,6 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-
   game.settings.register('auto-action-tray', 'enableRangeHover', {
     name: 'Enable Range Hover',
     hint: 'Highlights Items that are in range when hovering over a token',
@@ -341,7 +349,6 @@ Hooks.once('ready', async function () {
     requiresReload: false,
   })
 
-
   game.settings.register('auto-action-tray', 'enableRangeBoundary', {
     name: 'Enable Range Boundary',
     hint: 'Enable Range Boundary',
@@ -364,7 +371,6 @@ Hooks.once('ready', async function () {
 
     requiresReload: false,
   })
-
 
   game.settings.register('auto-action-tray', 'enableUseItemIcon', {
     name: 'Enable Use Item Icon',
@@ -437,7 +443,6 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-
   game.settings.register('auto-action-tray', 'targetLinePollRate', {
     name: 'Target Line Poll Rate',
     hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
@@ -474,7 +479,7 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-    game.settings.register('auto-action-tray', 'customTargettingCursors', {
+  game.settings.register('auto-action-tray', 'customTargettingCursors', {
     name: 'Custom Targetting Cursors',
     hint: 'Use Custom Targetting Cursors',
     scope: 'client',
@@ -522,7 +527,7 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-    game.settings.register('auto-action-tray', 'quickActionHelper', {
+  game.settings.register('auto-action-tray', 'quickActionHelper', {
     name: '(Experimental) Quick Attack Automation',
     hint: 'Enable Quick Attack Automation for Melee and Ranged Attacks',
     scope: 'client',
@@ -532,8 +537,8 @@ Hooks.once('ready', async function () {
     default: false,
 
     requiresReload: true,
-    })
-    
+  })
+
   game.settings.register('auto-action-tray', 'unboundPathfindingDepth', {
     name: '(Experimental) Unbounded Pathfinding Depth',
     hint: 'Enable Unbounded Pathfinding Depth for Quick Actions.  May impact performance.  Bound Depth is determined by Actor Speed.',
@@ -544,9 +549,9 @@ Hooks.once('ready', async function () {
     default: false,
 
     requiresReload: true,
-    })
-  
-    game.settings.register('auto-action-tray', 'quickActionDepth', {
+  })
+
+  game.settings.register('auto-action-tray', 'quickActionDepth', {
     name: '(Experimental) Quick Action Depth',
     hint: 'Maximum Distance for Quick Action Pathfinding.  Larger distances may impact performance.',
     scope: 'client',
@@ -563,7 +568,6 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
-  
 
   if (game.settings.get('auto-action-tray', 'customConditionIcons')) {
     ConditionTray.setCustomIcons()
@@ -574,9 +578,5 @@ Hooks.once('ready', async function () {
       id: 'auto-action-tray',
       socket: socket,
     })
-
   }
-
-
-  
 })
