@@ -92,6 +92,7 @@ export class AATItem {
   }
 
   async setDescription() {
+    if(!this.item.system?.description?.value) return
     this.description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(this.item.system.description.value, {relativeTo: this.item})
     
     this.activities.forEach(async (activity) => {

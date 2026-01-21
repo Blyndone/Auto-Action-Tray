@@ -27,6 +27,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     gsap.registerPlugin(DrawSVGPlugin)
     gsap.config({
       force3D: false,
+      nullTargetWarn: false,
     })
 
     super(options)
@@ -1215,15 +1216,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Actions.rollDeathSave.bind(this)()
   }
 
-
   static async increaseButtonAction() {
     Actions.increaseButtonAction.bind(this)()
   }
   static async decreaseButtonAction() {
     Actions.decreaseButtonAction.bind(this)()
   }
-
-
 
   static changeDice() {
     Actions.changeDice.bind(this)()
