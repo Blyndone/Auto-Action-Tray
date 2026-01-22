@@ -1,3 +1,4 @@
+import { SkillTray } from '../components/skillTray.js'
 export class TrayConfig {
   static async trayConfig() {
     let actor = this.actor
@@ -195,8 +196,20 @@ export class TrayConfig {
       label: 'Class Skills',
       hint: 'Display Class Specific Skills in the Tray.',
     })
+    const skills = this.skillTray.getSkills()
 
-    const content = `  ${themeGroup.outerHTML} ${targetColorFieldGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML} ${classSkillsGroup.outerHTML} `
+    const overrideSkills = fields.createMultiSelectInput({
+      options: skills,
+      value: this.trayOptions?.overrideSkills || [],
+      name: 'overrideSkills',
+    })
+    const overrideSkillGroup = fields.createFormGroup({
+      input: overrideSkills,
+      label: 'Override Skills',
+      hint: 'Select skills to override the default set.',
+    })
+
+    const content = `  ${themeGroup.outerHTML} ${targetColorFieldGroup.outerHTML} ${customStaticTrayGroup.outerHTML} ${clearCustomStaticTraysGroup.outerHTML} ${selectGroup.outerHTML} ${imageScaleOptions.outerHTML} ${imageXOptions.outerHTML} ${imageYOptions.outerHTML} ${checkboxGroup.outerHTML} ${autoAddItemsGroup.outerHTML} ${classSkillsGroup.outerHTML} ${overrideSkillGroup.outerHTML} `
     let dialogElement
     let handlers = {}
     let initialValues = {
@@ -205,6 +218,7 @@ export class TrayConfig {
       imageX: this.trayOptions['imageX'],
       imageY: this.trayOptions['imageY'],
     }
+
     const method = await foundry.applications.api.DialogV2.wait({
       position: { width: 600 },
       window: { title: 'Tray Quick Config' },

@@ -112,6 +112,15 @@ export class SkillTray {
     this.generateTray()
   }
 
+  getSkills() {
+    return Object.entries(this.skillAbbr).map(([key, data]) => ({
+      name: key,
+      label: key.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase()),
+      value: data.abbreviation,
+      icon: data.icon,
+    }))
+  }
+
   generateTray() {
     let actor = fromUuidSync(this.actorUuid)
     let highestLevelClass
@@ -133,8 +142,12 @@ export class SkillTray {
     } else {
       this.characterClass = null
     }
-    let { skills, secondarySkills } = this.getSkillSets(actor, this.inCombat, this.characterClass)
-    this.currentSkills = skills
+    let { primarySkills, secondarySkills } = this.getSkillSets(
+      actor,
+      this.inCombat,
+      this.characterClass,
+    )
+    this.currentSkills = primarySkills
     this.secondarySkills = secondarySkills
   }
 
@@ -196,24 +209,43 @@ export class SkillTray {
 
     let skills = []
     let secondarySkills = []
+
+    let overrideSkills = actor.getFlag('auto-action-tray', 'config')?.overrideSkills ?? []
+
+    if (overrideSkills.length > 0) {
+      overrideSkills.forEach((skill) => {
+        skills.push(this.generateSkillData(null, skill, actor))
+      })
+    }
+
     if (
       classSkills?.length > 0 &&
       (actor.getFlag('auto-action-tray', 'config')?.classSkills ?? true)
     ) {
+      classSkills = classSkills.filter((skill) => overrideSkills.includes(skill) === false)
       classSkills.forEach((skill) => skills.push(this.generateSkillData(null, skill, actor)))
     } else {
-      defaultSkills.forEach((skill) => skills.push(this.generateSkillData(null, skill, actor)))
+      defaultClassSkills = defaultClassSkills.filter(
+        (skill) => overrideSkills.includes(skill) === false,
+      )
+      defaultClassSkills.forEach((skill) => skills.push(this.generateSkillData(null, skill, actor)))
     }
 
-    saves.forEach((save) => skills.push(this.generateSavingThrowData(save, actor)))
+    const primarySkills = skills.slice(0, 6)
 
-    let availableSkills = this.getSecondarySkills(skills)
+    saves.forEach((save) => primarySkills.push(this.generateSavingThrowData(save, actor)))
+
+    let availableSkills = this.getSecondarySkills(primarySkills)
+
+    availableSkills.sort((a, b) => {
+      return Number(skills.includes(b)) - Number(skills.includes(a))
+    })
 
     availableSkills.forEach((skill) =>
       secondarySkills.push(this.generateSkillData(null, skill, actor)),
     )
 
-    return { skills, secondarySkills }
+    return { primarySkills, secondarySkills }
   }
 
   getSecondarySkills(skills) {
