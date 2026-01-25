@@ -7,6 +7,34 @@ export class AnimationHandler {
     this.verticalBounds = this.hotbar.iconSize * (this.hotbar.rowCount + 1)
     this.horizontalBounds = this.hotbar.iconSize * (this.hotbar.columnCount + 1)
     this.circleAnimator = null
+    this.hotbarHight = 250
+    this.effectsTrayHeight = 0
+    Hooks.on('AAT-HotbarMaximized', this.setHotbarHeight.bind(this))
+    Hooks.on('AAT-EffectsTrayRendered', () => {
+      this.setHotbarHeight.bind(this)()
+      this.animateSidebarHeight.bind(this)()
+    })
+    Hooks.once('AAT-HotbarMaximized', this.animateSidebarHeight.bind(this))
+    
+  }
+
+  setHotbarHeight(height = null) {
+    if (height == null) {
+      const el = document.getElementById('auto-action-tray-center-tray')
+
+      if (el) {
+        const rect = el.getBoundingClientRect()
+        const distanceFromBottom = window.innerHeight - rect.top
+        this.hotbarHight = distanceFromBottom + 10
+      }
+      const effectElHeight = document.getElementById('aat-effect-tray')
+      if (effectElHeight) {
+        const effectRect = effectElHeight.getBoundingClientRect()
+        this.effectsTrayHeight = effectRect.height
+      }
+    } else {
+      this.hotbarHight = height + 10
+    }
   }
 
   async pushTray(trayId) {
@@ -61,6 +89,7 @@ export class AnimationHandler {
   async animateAATHidden(visible) {
     if (this.element) {
       if (visible) {
+   
         gsap.fromTo(
           '#auto-action-tray',
           {
@@ -71,8 +100,12 @@ export class AnimationHandler {
             y: 0,
             opacity: 1,
             duration: 0.5,
+            onComplete: () => {
+              Hooks.call('AAT-HotbarMaximized')
+            },
           },
         )
+        this.animationHandler.animateSidebarHeight(true)
         return new Promise((resolve) => {
           setTimeout(resolve, 0)
         })
@@ -83,10 +116,67 @@ export class AnimationHandler {
         opacity: visible ? 1 : 0,
         duration: 0.5,
       })
+      this.animationHandler.animateSidebarHeight(false)
       return new Promise((resolve) => {
         setTimeout(resolve, 500)
       })
     }
+  }
+
+  async animateSidebarHeight(raised = null) {
+    let sidebarExpanded = document.getElementById('sidebar-content').classList.contains('expanded')
+    let hotbarVisible =
+      raised == null ? document.getElementById('auto-action-tray') !== null : raised
+    let dockEnabled = document.getElementById('camera-views').classList.length > 0
+
+    this.animateRightSidebarHeight(sidebarExpanded, hotbarVisible)
+    this.animateLeftSidebarHeight(dockEnabled, hotbarVisible)
+  }
+
+  async animateRightSidebarHeight(sidebarExpanded, hotbarVisible) {
+    const topMargin = 25
+    if (sidebarExpanded && hotbarVisible) {
+      gsap.to('#ui-right-column-1', {
+        height: `calc(100% - ${this.hotbarHight}px - ${this.effectsTrayHeight}px + ${topMargin}px)`,
+        duration: 0.2,
+        onComplete: () => {
+          document
+            .getElementById('ui-right-column-1')
+            .style.setProperty('height', `calc(100% - ${this.hotbarHight}px - ${this.effectsTrayHeight}px + ${topMargin}px)`)
+        },
+      })
+      return
+    }
+    gsap.to('#ui-right-column-1', {
+      height: '100%',
+      duration: 0.2,
+      onComplete: () => {
+        document.getElementById('ui-right-column-1').style.setProperty('height', '100%')
+      },
+    })
+  }
+
+  async animateLeftSidebarHeight(dockEnabled, hotbarVisible) {
+    const topMargin = 50
+    if (dockEnabled && hotbarVisible) {
+      gsap.to('#ui-left-column-1', {
+        height: `calc(100% - ${this.hotbarHight}px + ${topMargin}px)`,
+        duration: 0.2,
+        onComplete: () => {
+          document
+            .getElementById('ui-left-column-1')
+            .style.setProperty('height', `calc(100% - ${this.hotbarHight}px + ${topMargin}px)`)
+        },
+      })
+      return
+    }
+    gsap.to('#ui-left-column-1', {
+      height: '100%',
+      duration: 0.2,
+      onComplete: () => {
+        document.getElementById('ui-left-column-1').style.setProperty('height', '100%')
+      },
+    })
   }
 
   async animateTrays(trayInId, trayOutId, hotbar) {
@@ -192,7 +282,6 @@ export class AnimationHandler {
       initialOpacity = 0
 
       gsap.set(`#auto-action-tray .${tray.id}`, {
-
         opacity: initialOpacity,
         y: yOffset,
         x: xOffset,
@@ -215,14 +304,12 @@ export class AnimationHandler {
   async animateTrayOut(tray) {
     if (tray?.x) {
       gsap.set(`#auto-action-tray .${tray.id}`, {
-
         x: tray.x,
       })
     }
     return new Promise((resolve) => {
       this.hotbar.startAnimation()
       this.hotbar.currentTray = tray
-
 
       let xOffset = 0
       let yOffset = 0
@@ -355,7 +442,6 @@ export class AnimationHandler {
       tl.set(
         `#auto-action-tray .container-${tray.id}`,
         {
-
           opacity: 1,
           x: tray.tray.xPos,
         },

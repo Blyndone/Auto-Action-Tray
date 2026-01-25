@@ -154,6 +154,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.iconSize = 100
     }
     this.animationHandler = new AnimationHandler({ hotbar: this, defaultTray: 'stacked' })
+    let initialHeight = this.iconSize * this.rowCount * scale + 50
+    this.animationHandler.setHotbarHeight(initialHeight)
+
     this.draggableTrays = new DraggableTrayContainer({
       application: this,
     })
@@ -181,6 +184,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
+    Hooks.on('collapseSidebar', this._onCollapseSidebar.bind(this))
 
     if (!game.settings.get('auto-action-tray', 'customTargettingCursors')) {
       const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
@@ -344,6 +348,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  _onCollapseSidebar(sidebar, collapsed) {
+    this.animationHandler.animateSidebarHeight()
+  }
+
   startAnimation() {
     this.animating = true
     this.completeAnimation = new Promise((resolve) => {
@@ -375,7 +383,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       await this.completeRender()
       return Promise.resolve()
     } else {
-      this.throttledRender()
+      return await this.throttledRender()
     }
   }
 
@@ -1349,6 +1357,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         }
       })
     }
+    
+    if (options.parts.includes('effectsTray')) { 
+      Hooks.call('AAT-EffectsTrayRendered')
+    }
 
     if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
 
@@ -1368,6 +1380,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         .getElementById('auto-action-tray')
         ?.style.setProperty('--aat-stacked-spacer-width', '0px')
     }
+
     Hooks.call('AAT-RenderComplete', options)
     return
   }

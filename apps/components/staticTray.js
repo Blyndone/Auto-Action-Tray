@@ -130,6 +130,9 @@ export class StaticTray extends AbilityTray {
           this.id = 'spell-' + this.spellLevel
           break
         }
+        if (actor?.system?.spells['spell' + this.spellLevel]?.max == 0) { 
+          return
+        }
 
         this.abilities = allItems.filter(
           (e) =>
@@ -140,8 +143,8 @@ export class StaticTray extends AbilityTray {
               (e.item.system.uses?.max == '' ||
                 (ActivityTray.checkSpellConfigurable(e.item) &&
                   e.item.system.level == this.spellLevel)) &&
-              e.isPrepared == true) ||
-            actor?.system?.spells['spell' + this.spellLevel]?.max == 0,
+              e.isPrepared == true)
+            // || actor?.system?.spells['spell' + this.spellLevel]?.max == 0,
         )
 
         this.id = 'spell-' + this.spellLevel
@@ -226,7 +229,7 @@ export class StaticTray extends AbilityTray {
     if (spells.length > 0) {
       levels = [...new Set([...levels, ...spells.map((x) => x.spellLevel)])].sort((a, b) => a - b)
     }
-
+// filter levels
     levels.forEach((level) => {
       spellTray.push(
         new StaticTray({
