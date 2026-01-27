@@ -709,7 +709,7 @@ export class Actions {
   }
 
   static changeDice() {
-    this.currentDice = this.currentDice < 5 ? this.currentDice + 1 : 0
+    this.currentDice = this.currentDice < 6 ? this.currentDice + 1 : 0
     this.requestRender('endTurn')
   }
 

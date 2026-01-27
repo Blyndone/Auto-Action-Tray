@@ -92,7 +92,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.itemSelectorEnabled = false
     this.rangeBoundaryEnabled = true
     this.currentDice = 0
-    this.dice = ['20', '12', '10', '8', '6', '4']
+    this.dice = ['20', '12', '10', '8', '6', '4', '100']
     this.trayInformation = ''
     this.trayOptions = {
       locked: false,

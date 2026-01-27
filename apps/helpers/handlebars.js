@@ -156,17 +156,53 @@ export function registerHandlebarsHelpers() {
     }
   })
 
-  Handlebars.registerHelper('diceIcon', function (currentDice) {
-    let diceIcons = [
-      '<i class="fa-solid fa-dice-d20"></i>',
-      '<i class="fa-solid fa-dice-d12"></i>',
-      '<i class="fa-solid fa-dice-d10"></i>',
-      '<i class="fa-solid fa-dice-d8"></i>',
-      '<i class="fa-solid fa-dice-d6"></i>',
-      '<i class="fa-solid fa-dice-d4"></i>',
-    ]
-    return diceIcons[currentDice]
-  })
+Handlebars.registerHelper('diceIcon', function (currentDice) {
+  const diceIcons = [
+    '<i class="fa-solid fa-dice-d20"></i>',
+    '<i class="fa-solid fa-dice-d12"></i>',
+    '<i class="fa-solid fa-dice-d10"></i>',
+    '<i class="fa-solid fa-dice-d8"></i>',
+    '<i class="fa-solid fa-dice-d6"></i>',
+    '<i class="fa-solid fa-dice-d4"></i>',
+    `
+    <span style="
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:1.2em;
+      height:1.2em;
+    ">
+      <span style="
+        position:relative;
+        width:100%;
+        height:100%;
+      ">
+        <i class="fa-solid fa-dice-d10"
+           style="
+             position:absolute;
+             left:.08em;
+             top:.12em;
+             font-size:0.85em;
+             opacity:0.7;
+           "></i>
+        <i class="fa-solid fa-dice-d10"
+           style="
+             position:absolute;
+             bottom:0.12em;
+             right:.08em;
+             font-size:0.85em;
+           "></i>
+      </span>
+    </span>
+    `
+  ]
+
+  return new Handlebars.SafeString(diceIcons[currentDice])
+})
+
+
+
+
 
   Handlebars.registerHelper('setConcentrationColor', function (color) {
     document.getElementById('auto-action-tray')?.style.setProperty('--concentration-color', color)
