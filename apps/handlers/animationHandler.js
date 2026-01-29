@@ -7,7 +7,7 @@ export class AnimationHandler {
     this.verticalBounds = this.hotbar.iconSize * (this.hotbar.rowCount + 1)
     this.horizontalBounds = this.hotbar.iconSize * (this.hotbar.columnCount + 1)
     this.circleAnimator = null
-    this.hotbarHight = 250
+    this.hotbarHeight = 250
     this.effectsTrayHeight = 0
     Hooks.on('AAT-HotbarMaximized', this.setHotbarHeight.bind(this))
     Hooks.on('AAT-EffectsTrayRendered', () => {
@@ -15,7 +15,6 @@ export class AnimationHandler {
       this.animateSidebarHeight.bind(this)()
     })
     Hooks.once('AAT-HotbarMaximized', this.animateSidebarHeight.bind(this))
-    
   }
 
   setHotbarHeight(height = null) {
@@ -25,7 +24,8 @@ export class AnimationHandler {
       if (el) {
         const rect = el.getBoundingClientRect()
         const distanceFromBottom = window.innerHeight - rect.top
-        this.hotbarHight = distanceFromBottom + 10
+        this.hotbarHeight = distanceFromBottom + 10
+        this.hotbarHeight = Math.round((distanceFromBottom + 10) * 10) / 10
       }
       const effectElHeight = document.getElementById('aat-effect-tray')
       if (effectElHeight) {
@@ -33,7 +33,7 @@ export class AnimationHandler {
         this.effectsTrayHeight = effectRect.height
       }
     } else {
-      this.hotbarHight = height + 10
+      this.hotbarHeight = height + 10
     }
   }
 
@@ -89,7 +89,6 @@ export class AnimationHandler {
   async animateAATHidden(visible) {
     if (this.element) {
       if (visible) {
-   
         gsap.fromTo(
           '#auto-action-tray',
           {
@@ -130,52 +129,40 @@ export class AnimationHandler {
     let dockEnabled = document.getElementById('camera-views').classList.length > 0
 
     this.animateRightSidebarHeight(sidebarExpanded, hotbarVisible)
-    this.animateLeftSidebarHeight(dockEnabled, hotbarVisible)
+    if (dockEnabled) {
+      this.animateLeftSidebarHeight(hotbarVisible)
+    }
   }
 
   async animateRightSidebarHeight(sidebarExpanded, hotbarVisible) {
+    const el = document.getElementById('ui-right-column-1')
     const topMargin = 25
-    if (sidebarExpanded && hotbarVisible) {
-      gsap.to('#ui-right-column-1', {
-        height: `calc(100% - ${this.hotbarHight}px - ${this.effectsTrayHeight}px + ${topMargin}px)`,
-        duration: 0.2,
-        onComplete: () => {
-          document
-            .getElementById('ui-right-column-1')
-            .style.setProperty('height', `calc(100% - ${this.hotbarHight}px - ${this.effectsTrayHeight}px + ${topMargin}px)`)
-        },
-      })
-      return
-    }
-    gsap.to('#ui-right-column-1', {
-      height: '100%',
-      duration: 0.2,
-      onComplete: () => {
-        document.getElementById('ui-right-column-1').style.setProperty('height', '100%')
-      },
+
+    const targetHeight =
+      sidebarExpanded && hotbarVisible
+        ? `calc(100vh - ${this.hotbarHeight}px - ${this.effectsTrayHeight}px + ${topMargin}px)`
+        : '100%'
+
+    gsap.to(el, {
+      height: targetHeight,
+      duration: sidebarExpanded && hotbarVisible ? 0.2 : 0.2,
+      overwrite: 'auto',
     })
   }
 
-  async animateLeftSidebarHeight(dockEnabled, hotbarVisible) {
-    const topMargin = 50
-    if (dockEnabled && hotbarVisible) {
-      gsap.to('#ui-left-column-1', {
-        height: `calc(100% - ${this.hotbarHight}px + ${topMargin}px)`,
-        duration: 0.2,
-        onComplete: () => {
-          document
-            .getElementById('ui-left-column-1')
-            .style.setProperty('height', `calc(100% - ${this.hotbarHight}px + ${topMargin}px)`)
-        },
-      })
-      return
-    }
-    gsap.to('#ui-left-column-1', {
-      height: '100%',
-      duration: 0.2,
-      onComplete: () => {
-        document.getElementById('ui-left-column-1').style.setProperty('height', '100%')
-      },
+  async animateLeftSidebarHeight(hotbarVisible) {
+    if (!this.hotbar.actor) return
+    const el = document.getElementById('ui-left-column-1')
+    const topMargin = 25
+
+    const targetHeight = hotbarVisible
+      ? `calc(100vh - ${this.hotbarHeight}px + ${topMargin}px)`
+      : '100%'
+
+    gsap.to(el, {
+      height: targetHeight,
+      duration: hotbarVisible ? 0.2 : 0.2,
+      overwrite: 'auto',
     })
   }
 

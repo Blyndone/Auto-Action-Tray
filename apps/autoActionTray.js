@@ -243,6 +243,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         this.render(true)
       })
     }
+    
   }
 
   static DEFAULT_OPTIONS = {
