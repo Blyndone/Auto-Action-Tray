@@ -23,16 +23,67 @@ import { ItemConfig } from './dialogs/itemConfig.js'
 import { DraggableTrayContainer } from './handlers/draggableHandler.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
+//#region Initialization
   constructor(options = {}) {
+    super(options)
+    this.socket = options.socket
+
+    this._configureGsap()
+    this._initializeState()
+    this._initializeTraysAndHelpers()
+
+    const { rowCount, columnCount, scale } = this._applyUiSettings()
+    this.animationHandler = new AnimationHandler({ hotbar: this, defaultTray: 'stacked' })
+    let initialHeight = this.iconSize * this.rowCount * scale + 50
+    this.animationHandler.setHotbarHeight(initialHeight)
+
+    this.draggableTrays = new DraggableTrayContainer({
+      application: this,
+    })
+
+    this._registerHooks()
+
+    if (!game.settings.get('auto-action-tray', 'customTargettingCursors')) {
+      const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
+      libWrapper.unregister(AUTOACTIONTRAY_MODULE_NAME, 'PIXI.EventSystem.prototype.setCursor')
+    }
+
+    this.altDown = false
+    this.ctrlDown = false
+    this._registerModifierListeners()
+
+    const defaultHotbar = document.querySelector('#hotbar')
+
+    if (defaultHotbar) {
+      defaultHotbar.style.visibility = 'hidden'
+    }
+
+    registerHandlebarsHelpers()
+    if (!game.user.isGM) {
+      this.actor = game.user.character
+      let event = null
+      this.generateActorItems(this.actor, event)
+      this.initialTraySetup(this.actor, event)
+      this.render(true)
+    } else {
+      this.render(true)
+      Actions.minimizeTray.bind(this)()
+      Hooks.once('controlToken', () => {
+        document.getElementById('aat-maximize-button').remove()
+        this.render(true)
+      })
+    }
+  }
+
+  _configureGsap() {
     gsap.registerPlugin(DrawSVGPlugin)
     gsap.config({
       force3D: false,
       nullTargetWarn: false,
     })
+  }
 
-    super(options)
-    this.socket = options.socket
-
+  _initializeState() {
     this.animating = false
     this.tokenDeleted = false
     this.trayMinimized = false
@@ -48,7 +99,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this.actor = null
     this.token = null
-    this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
 
     this.meleeWeapon = null
     this.rangedWeapon = null
@@ -67,27 +117,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this.itemConfigItem = null
     this.skillTray = null
-    this.stackedTray = new StackedTray({
-      id: 'stacked',
-      hotbar: this,
-      type: 'stacked',
-      name: 'stacked',
-    })
 
-    this.effectsTray = new EffectTray()
     this.activeEffects = []
     this.concentrationItem = null
-
-    this.combatHandler = new CombatHandler({
-      hotbar: this,
-    })
-    this.quickActionHelper = new QuickActionHelper({
-      app: this,
-      targetHelper: this.targetHelper,
-      combatHandler: this.combatHandler,
-    })
-
-    this.conditionTray = new ConditionTray({ application: this })
 
     this.itemSelectorEnabled = false
     this.rangeBoundaryEnabled = true
@@ -110,57 +142,59 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       concentrationColor: '#9600d1',
       rangeBoundaryEnabled: game.settings.get('auto-action-tray', 'defaultRangeBoundary'),
     }
+  }
 
-    let rowCount = 2
-    let columnCount = 10
-    let scale = 0.6
-    this.styleSheet
-
-    for (let sheet of document.styleSheets) {
-      if (sheet.href && sheet.href.includes('auto-action-tray/styles/styles.css')) {
-        this.styleSheet = sheet
-        break
-      }
-
-      if (game.settings.get('auto-action-tray', 'scale')) {
-        scale = game.settings.get('auto-action-tray', 'scale')
-        document.documentElement.style.setProperty('--aat-scale', scale)
-      }
-      if (game.settings.get('auto-action-tray', 'rowCount')) {
-        rowCount = game.settings.get('auto-action-tray', 'rowCount')
-        document.documentElement.style.setProperty('--aat-item-tray-item-height-count', rowCount)
-      }
-      if (game.settings.get('auto-action-tray', 'columnCount')) {
-        columnCount = game.settings.get('auto-action-tray', 'columnCount')
-        document.documentElement.style.setProperty('--aat-item-tray-item-width-count', columnCount)
-      }
-      if (
-        game.settings.get('auto-action-tray', 'bgOpacity') != null &&
-        game.settings.get('auto-action-tray', 'bgOpacity') != undefined
-      ) {
-        let value = game.settings.get('auto-action-tray', 'bgOpacity')
-        const baseColor = `5b5b5b`
-        const hex = Math.floor(value * 255)
-          .toString(16)
-          .padStart(2, '0')
-        document.documentElement.style.setProperty('--aat-background-color', `#${baseColor}${hex}`)
-      }
-
-      this.quickActionHelperEnabled = game.settings.get('auto-action-tray', 'quickActionHelper')
-
-      this.totalabilities = rowCount * columnCount
-      this.rowCount = rowCount
-      this.columnCount = columnCount
-      this.iconSize = 100
-    }
-    this.animationHandler = new AnimationHandler({ hotbar: this, defaultTray: 'stacked' })
-    let initialHeight = this.iconSize * this.rowCount * scale + 50
-    this.animationHandler.setHotbarHeight(initialHeight)
-
-    this.draggableTrays = new DraggableTrayContainer({
-      application: this,
+  _initializeTraysAndHelpers() {
+    this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
+    this.stackedTray = new StackedTray({
+      id: 'stacked',
+      hotbar: this,
+      type: 'stacked',
+      name: 'stacked',
     })
+    this.effectsTray = new EffectTray()
+    this.combatHandler = new CombatHandler({
+      hotbar: this,
+    })
+    this.quickActionHelper = new QuickActionHelper({
+      app: this,
+      targetHelper: this.targetHelper,
+      combatHandler: this.combatHandler,
+    })
+    this.conditionTray = new ConditionTray({ application: this })
+  }
 
+  _applyUiSettings() {
+    const scale = game.settings.get('auto-action-tray', 'scale') ?? 0.6
+    const rowCount = game.settings.get('auto-action-tray', 'rowCount') ?? 2
+    const columnCount = game.settings.get('auto-action-tray', 'columnCount') ?? 10
+    const bgOpacity = game.settings.get('auto-action-tray', 'bgOpacity')
+
+    this.styleSheet = Array.from(document.styleSheets).find(
+      (sheet) => sheet.href && sheet.href.includes('auto-action-tray/styles/styles.css'),
+    )
+
+    document.documentElement.style.setProperty('--aat-scale', scale)
+    document.documentElement.style.setProperty('--aat-item-tray-item-height-count', rowCount)
+    document.documentElement.style.setProperty('--aat-item-tray-item-width-count', columnCount)
+
+    if (bgOpacity != null) {
+      const hex = Math.floor(bgOpacity * 255)
+        .toString(16)
+        .padStart(2, '0')
+      document.documentElement.style.setProperty('--aat-background-color', `#5b5b5b${hex}`)
+    }
+
+    this.quickActionHelperEnabled = game.settings.get('auto-action-tray', 'quickActionHelper')
+    this.rowCount = rowCount
+    this.columnCount = columnCount
+    this.totalabilities = rowCount * columnCount
+    this.iconSize = 100
+
+    return { rowCount, columnCount, scale }
+  }
+
+  _registerHooks() {
     Hooks.on('controlToken', this._onControlToken.bind(this))
     Hooks.on('deleteToken', this._onDeleteToken.bind(this))
     Hooks.on('updateActor', this._onUpdateActor.bind(this))
@@ -185,21 +219,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
     Hooks.on('collapseSidebar', this._onCollapseSidebar.bind(this))
+  }
 
-    if (!game.settings.get('auto-action-tray', 'customTargettingCursors')) {
-      const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
-      libWrapper.unregister(AUTOACTIONTRAY_MODULE_NAME, 'PIXI.EventSystem.prototype.setCursor')
-    }
-
-    this.altDown = false
-    this.ctrlDown = false
+  _registerModifierListeners() {
     window.addEventListener('keydown', (e) => {
       if (e.altKey) this.altDown = true
       if (e.ctrlKey) this.ctrlDown = true
       if ((this.altDown && this.ctrlDown) || (!this.altDown && !this.ctrlDown)) {
         return
       }
-      let color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
+      const color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
       document
         .getElementById('auto-action-tray')
         ?.style.setProperty('--aat-modifier-highlight-color', color)
@@ -221,31 +250,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         el.classList.remove('modifier-active')
       })
     })
-
-    const defaultHotbar = document.querySelector('#hotbar')
-
-    if (defaultHotbar) {
-      defaultHotbar.style.visibility = 'hidden'
-    }
-
-    registerHandlebarsHelpers()
-    if (!game.user.isGM) {
-      this.actor = game.user.character
-      let event = null
-      this.generateActorItems(this.actor, event)
-      this.initialTraySetup(this.actor, event)
-      this.render(true)
-    } else {
-      this.render(true)
-      Actions.minimizeTray.bind(this)()
-      Hooks.once('controlToken', () => {
-        document.getElementById('aat-maximize-button').remove()
-        this.render(true)
-      })
-    }
-    
   }
 
+  //#region Appv2 Configuration
   static DEFAULT_OPTIONS = {
     tag: 'form',
     dragDrop: [{ dragSelector: '[data-drag]', dropSelector: null }],
@@ -353,48 +360,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.animationHandler.animateSidebarHeight()
   }
 
-  startAnimation() {
-    this.animating = true
-    this.completeAnimation = new Promise((resolve) => {
-      this._resolveAnimation = resolve
-    })
-  }
-
-  endAnimation() {
-    this.animating = false
-    if (this._resolveAnimation) {
-      this._resolveAnimation()
-      this._resolveAnimation = null
-    }
-  }
-
-  async requestRender(partID, force = false) {
-    const arr = Array.isArray(partID) ? partID : [partID]
-    this.renderQueue.push(...arr)
-    this.renderQueue = [...new Set(this.renderQueue)]
-
-    if (this.pendingRender && !force) return
-
-    if (this.animating && !force) {
-      this.pendingRender = true
-      await this.completeAnimation
-    }
-
-    if (force) {
-      await this.completeRender()
-      return Promise.resolve()
-    } else {
-      return await this.throttledRender()
-    }
-  }
-
-  async completeRender() {
-    const tmp = this.renderQueue
-    this.renderQueue = []
-    await this.render({ parts: tmp })
-    this.pendingRender = false
-    return Promise.resolve()
-  }
+  //#region Actor/Item Management
 
   async generateActorItems(actor, event) {
     let token = event == null ? await actor.getTokenDocument() : event.document
@@ -479,6 +445,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  //#region Themes
   setTheme(actor) {
     if (actor.type == 'character') {
       const highestLevelClass = Object.keys(actor.classes).reduce(
@@ -533,6 +500,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  //#region Tray Setup
   async initialTraySetup(actor, token = null, currentTrayId = null) {
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
@@ -671,6 +639,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.stackedTray.setActor(actor)
   }
 
+  checkTrayDiff() {
+    const allItems = this.getActorAbilities(this.actor.uuid)
+    const itemMap = new Map(allItems.map((item) => [item.id, item]))
+    this.stackedTray.checkDiff(itemMap)
+    this.customTrays.forEach((tray) => {
+      tray.checkDiff(itemMap)
+    })
+    this.staticTrays.forEach((tray) => {
+      tray.checkDiff(itemMap)
+    })
+  }
+
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return
 
@@ -694,18 +674,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.requestRender('centerTray')
   }
 
-  checkTrayDiff() {
-    const allItems = this.getActorAbilities(this.actor.uuid)
-    const itemMap = new Map(allItems.map((item) => [item.id, item]))
-    this.stackedTray.checkDiff(itemMap)
-    this.customTrays.forEach((tray) => {
-      tray.checkDiff(itemMap)
-    })
-    this.staticTrays.forEach((tray) => {
-      tray.checkDiff(itemMap)
-    })
-  }
-
+  //#region Hooks Handlers
   async _onUpdateActor(actor, change, options, userId) {
     if (actor != this.actor || Object.keys(change).includes('flags')) return
     this.staticTrays = StaticTray.generateStaticTrays(this.actor, { application: this })
@@ -966,6 +935,138 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     return context
   }
+
+  startAnimation() {
+    this.animating = true
+    this.completeAnimation = new Promise((resolve) => {
+      this._resolveAnimation = resolve
+    })
+  }
+
+  endAnimation() {
+    this.animating = false
+    if (this._resolveAnimation) {
+      this._resolveAnimation()
+      this._resolveAnimation = null
+    }
+  }
+
+  async requestRender(partID, force = false) {
+    const arr = Array.isArray(partID) ? partID : [partID]
+    this.renderQueue.push(...arr)
+    this.renderQueue = [...new Set(this.renderQueue)]
+
+    if (this.pendingRender && !force) return
+
+    if (this.animating && !force) {
+      this.pendingRender = true
+      await this.completeAnimation
+    }
+
+    if (force) {
+      await this.completeRender()
+      return Promise.resolve()
+    } else {
+      return await this.throttledRender()
+    }
+  }
+
+  async completeRender() {
+    const tmp = this.renderQueue
+    this.renderQueue = []
+    await this.render({ parts: tmp })
+    this.pendingRender = false
+    return Promise.resolve()
+  }
+
+  _onRender(context, options) {
+    this.#dragDrop.forEach((d) => d.bind(this.element))
+
+    if (options.parts.includes('characterImage')) {
+      if (this.hpTextActive) {
+        setTimeout(() => {
+          const inputField = document.querySelector('.hpinput')
+          inputField.focus()
+        }, 100)
+      }
+    }
+
+    if (options.parts.includes('centerTray')) {
+      if (this.trayOptions['rangeBoundaryEnabled']) {
+        const rangedItems = document.querySelectorAll('[data-action-range]')
+        const filtered = Array.from(rangedItems).filter(
+          (node) => parseInt(node.dataset.actionRange) > 0,
+        )
+
+        filtered.forEach((node) => {
+          node.addEventListener('mouseenter', () => {
+            const range = node.dataset.actionRange
+            this.targetHelper.createRangeBoundary(range / 5, this.actor)
+          })
+        })
+
+        filtered.forEach((node) => {
+          node.addEventListener('mouseleave', () => {
+            this.targetHelper.destroyRangeBoundary()
+          })
+        })
+      }
+
+      document.querySelectorAll('.action-hover').forEach((source) => {
+        let targetSelector = source.getAttribute('data-action-type')
+        switch (targetSelector) {
+          case 'action':
+            targetSelector = '.icon-action'
+            break
+          case 'bonus':
+            targetSelector = '.icon-bonus'
+            break
+          default:
+            targetSelector = null
+            break
+        }
+
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector)
+
+          source.addEventListener('mouseenter', () => {
+            target?.classList.add('highlight')
+          })
+
+          source.addEventListener('mouseleave', () => {
+            target?.classList.remove('highlight')
+          })
+        }
+      })
+    }
+
+    if (options.parts.includes('effectsTray')) {
+      Hooks.call('AAT-EffectsTrayRendered')
+    }
+
+    if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
+
+    this.draggableTrays.createAllDraggables()
+    this.animationHandler.setAllStackedTrayPos(this.draggableTrays.draggableTrays)
+
+    if (this.currentTray.id == 'stacked') {
+      let spacerWidth =
+        (this.iconSize - (((this.draggableTrays.trayCount - 1) % 3) * this.iconSize) / 3) %
+        this.iconSize
+      spacerWidth = spacerWidth == 0 ? 0 : spacerWidth + 14
+      document
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-stacked-spacer-width', spacerWidth + 'px')
+    } else {
+      document
+        .getElementById('auto-action-tray')
+        ?.style.setProperty('--aat-stacked-spacer-width', '0px')
+    }
+
+    Hooks.call('AAT-RenderComplete', options)
+    return
+  }
+
   //#region Frame Listeners
   _configureRenderOptions(options) {
     super._configureRenderOptions(options)
@@ -1298,94 +1399,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   createDraggable(trayId, index) {}
 
-  _onRender(context, options) {
-    this.#dragDrop.forEach((d) => d.bind(this.element))
-
-    if (options.parts.includes('characterImage')) {
-      if (this.hpTextActive) {
-        setTimeout(() => {
-          const inputField = document.querySelector('.hpinput')
-          inputField.focus()
-        }, 100)
-      }
-    }
-
-    if (options.parts.includes('centerTray')) {
-      if (this.trayOptions['rangeBoundaryEnabled']) {
-        const rangedItems = document.querySelectorAll('[data-action-range]')
-        const filtered = Array.from(rangedItems).filter(
-          (node) => parseInt(node.dataset.actionRange) > 0,
-        )
-
-        filtered.forEach((node) => {
-          node.addEventListener('mouseenter', () => {
-            const range = node.dataset.actionRange
-            this.targetHelper.createRangeBoundary(range / 5, this.actor)
-          })
-        })
-
-        filtered.forEach((node) => {
-          node.addEventListener('mouseleave', () => {
-            this.targetHelper.destroyRangeBoundary()
-          })
-        })
-      }
-
-      document.querySelectorAll('.action-hover').forEach((source) => {
-        let targetSelector = source.getAttribute('data-action-type')
-        switch (targetSelector) {
-          case 'action':
-            targetSelector = '.icon-action'
-            break
-          case 'bonus':
-            targetSelector = '.icon-bonus'
-            break
-          default:
-            targetSelector = null
-            break
-        }
-
-        if (targetSelector) {
-          const target = document.querySelector(targetSelector)
-
-          source.addEventListener('mouseenter', () => {
-            target?.classList.add('highlight')
-          })
-
-          source.addEventListener('mouseleave', () => {
-            target?.classList.remove('highlight')
-          })
-        }
-      })
-    }
-    
-    if (options.parts.includes('effectsTray')) { 
-      Hooks.call('AAT-EffectsTrayRendered')
-    }
-
-    if (this.animating || !this.stackedTray.active || !options.parts.includes('centerTray')) return
-
-    this.draggableTrays.createAllDraggables()
-    this.animationHandler.setAllStackedTrayPos(this.draggableTrays.draggableTrays)
-
-    if (this.currentTray.id == 'stacked') {
-      let spacerWidth =
-        (this.iconSize - (((this.draggableTrays.trayCount - 1) % 3) * this.iconSize) / 3) %
-        this.iconSize
-      spacerWidth = spacerWidth == 0 ? 0 : spacerWidth + 14
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty('--aat-stacked-spacer-width', spacerWidth + 'px')
-    } else {
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty('--aat-stacked-spacer-width', '0px')
-    }
-
-    Hooks.call('AAT-RenderComplete', options)
-    return
-  }
-
   _canDragStart(selector) {
     return this.isEditable && !this.trayOptions['locked']
   }
@@ -1409,13 +1422,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     DragDropHandler._onDropCanvas(data, this)
   }
 }
+
+
 class AltContextMenu extends foundry.applications.ux.ContextMenu {
   constructor(element, selector, menuItems, options, parentSelector) {
     super(element, selector, menuItems, options)
     this.parentSelector = parentSelector
   }
   async _animate(open = true) {
-    if (!open) { 
+    if (!open) {
       await super._animate(open)
       return
     }
@@ -1450,6 +1465,6 @@ class AltContextMenu extends foundry.applications.ux.ContextMenu {
     menuEl.style.top = `${top}px`
     menuEl.style.left = `${left}px`
     menuEl.style.transformOrigin = 'top left'
-    await super._animate((open))
+    await super._animate(open)
   }
 }
