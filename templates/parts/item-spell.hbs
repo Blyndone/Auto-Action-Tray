@@ -2,51 +2,46 @@
   {{#if (eq item.preparationMode 'pact')}}
     {{> AAT.item-spell-pact item=item index=@index tray=tray}}
   {{else}}
-  
-
-      {{#if (eq tray.category 'leveledSpell')}}
-
-        {{#if (eq item.spellLevel tray.spellLevel)}}
-          <img 
-            src='{{item.img}}' 
-            alt='{{item.name}}' 
-            data-item-id='{{item.id}}' 
-            data-index='{{@index}}' 
-            data-trayid='{{tray.id}}'
-            data-action-type='{{item.tooltip.actionType}}'
-            class="action-hover {{getItemActive item.name @root.activeEffects}}"
-          />
-        {{else}}
-          <img 
-            src='{{item.img}}' 
-            alt='{{item.name}}' 
-            data-item-id='{{item.id}}' 
-            data-index='{{@index}}' 
-            data-trayid='{{tray.id}}' 
-             data-action-type='{{item.tooltip.actionType}}'
-            class='spell-item-container-img-upcast action-hover {{getItemActive item.name @root.activeEffects}}' 
-          />
-          <div class='spell-item-container-text-upcast'>+</div>
-        {{/if}}
-      {{else}}
-        <img 
-          src='{{item.img}}' 
-          alt='{{item.name}}' 
-          data-item-id='{{item._id}}' 
-          data-index='{{@index}}' 
+    {{#if (eq tray.category 'leveledSpell')}}
+      {{#if (eq item.spellLevel tray.spellLevel)}}
+        <img
+          src='{{item.img}}'
+          alt='{{item.name}}'
+          data-item-id='{{item.id}}'
+          data-index='{{@index}}'
           data-trayid='{{tray.id}}'
-          class="{{getItemActive item.name @root.activeEffects}}" 
+          data-action-type='{{item.tooltip.actionType}}'
+          class="action-hover {{getItemActive item.name @root.activeEffects}}"
         />
+      {{else}}
+        <img
+          src='{{item.img}}'
+          alt='{{item.name}}'
+          data-item-id='{{item.id}}'
+          data-index='{{@index}}'
+          data-trayid='{{tray.id}}'
+          data-action-type='{{item.tooltip.actionType}}'
+          class='spell-item-container-img-upcast action-hover {{getItemActive item.name @root.activeEffects}}'
+        />
+        <div class='spell-item-container-text-upcast'>+</div>
       {{/if}}
-   
-  
+    {{else}}
+      <img
+        src='{{item.img}}'
+        alt='{{item.name}}'
+        data-item-id='{{item._id}}'
+        data-index='{{@index}}'
+        data-trayid='{{tray.id}}'
+        class="{{getItemActive item.name @root.activeEffects}}"
+      />
+    {{/if}}
+
     {{#if (eq item.uses '')}}
       <div class='spell-item-container-text'>
         {{getRomanNumeral item.spellLevel}}
       </div>
     {{else}}
-      <div class='consumable-count'>
-            </div>
+      <div class='consumable-count'></div>
     {{/if}}
   {{/if}}
 </div>

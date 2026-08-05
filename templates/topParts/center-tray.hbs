@@ -1,5 +1,4 @@
 <div id="aat-center-tray-container" class="center-tray-container {{getTooltipTheme}}">
-
   {{#if staticTrays}}
     <div id="aat-static-tray-container" class='static-tray-container'>
       {{> "AAT.static-tray" }}
@@ -7,13 +6,13 @@
   {{/if}}
 
   <div id="aat-ability-tray-container" class='ability-tray-container modifier-highlight'>
-    <div class="stacked-tray-spacer-container ">
+    <div class="stacked-tray-spacer-container">
       {{#if conditionTray.active}}
         <div class="abilities-tray activity-tray condition">
           {{> "AAT.condition-tray" conditions=conditionTray.conditions }}
         </div>
       {{/if}}
-      
+
       {{#each staticTrays as |tray|}}
         {{#if tray.active}}
           <div class="abilities-tray static-tray {{tray.id}}">
@@ -39,19 +38,17 @@
           {{> "AAT.activity-tray" activities=activityTray.abilities }}
         </div>
       {{/if}}
-         {{#if spellLevelTray.active}}
+      {{#if spellLevelTray.active}}
         <div class="abilities-tray activity-tray spellLevel">
           {{> "AAT.spell-level-tray" activities=spellLevelTray.abilities }}
         </div>
       {{/if}}
-
 
       {{#if targetHelper.active}}
         <div class="abilities-tray target-tray target-helper">
           {{> "AAT.target-tray" item=targetHelper.item }}
         </div>
       {{/if}}
-
     </div>
   </div>
 
@@ -60,5 +57,4 @@
       {{> "AAT.custom-tray" customTrays=customTrays }}
     </div>
   {{/if}}
-
 </div>

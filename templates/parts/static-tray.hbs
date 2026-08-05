@@ -9,10 +9,10 @@
         {{#if (eq tray.keyItemUses 0)}} static-tray-no-slots{{/if}}'
       data-id='{{this.id}}'
       data-action='setTray'
-      data-index={{@index}}
+      data-index='{{@index}}'
       data-type='static'
-      data-tooltip = "{{tray.label}}"
-      data-tooltip-direction = "UP"
+      data-tooltip="{{tray.label}}"
+      data-tooltip-direction="UP"
     >
       <div class="static-tray-button-container">
         {{#if tray.icon}}

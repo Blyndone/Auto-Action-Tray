@@ -1,12 +1,16 @@
 <div class='effect-tray-container {{getTooltipTheme}}'>
   <div id="aat-effect-tray" class='effect-tray'>
-
     {{#each effectsTray.effects as |effect|}}
- {{#if effect.isTemporary}}
-
-      <img class='effect-tray-icon' src='{{effect.img}}'  data-tooltip="{{> 'AAT.effect-tooltip' }}" data-tooltip-direction='UP' data-effect-id ="{{effect.id}}" data-name="{{effect.name}}" />
+      {{#if effect.isTemporary}}
+        <img
+          class='effect-tray-icon'
+          src='{{effect.img}}'
+          data-tooltip="{{> 'AAT.effect-tooltip' }}"
+          data-tooltip-direction='UP'
+          data-effect-id="{{effect.id}}"
+          data-name="{{effect.name}}"
+        />
       {{/if}}
     {{/each}}
   </div>
-
 </div>
