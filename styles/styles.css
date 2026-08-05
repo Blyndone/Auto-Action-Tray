@@ -2827,4 +2827,45 @@ img.item-equipped {
   --aat-action-tag-text: #ffffff;
 }
 
+.aat-tray-config .aat-slider-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.aat-tray-config .aat-slider-field input[type=range] {
+  flex: auto;
+}
+.aat-tray-config .aat-slider-field .value-display {
+  min-width: 3.5em;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--input-background-color);
+  border: 1px solid var(--color-fieldset-border);
+  font-size: 0.9em;
+}
+
+.aat-item-config .aat-item-config-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--color-fieldset-border);
+  border-radius: 6px;
+}
+.aat-item-config .aat-item-config-header img {
+  width: 64px;
+  height: 64px;
+  flex: none;
+  object-fit: contain;
+}
+.aat-item-config .aat-item-config-description {
+  flex: 1;
+  min-width: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
 /*# sourceMappingURL=styles.css.map */

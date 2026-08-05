@@ -351,6 +351,7 @@ export class AnimationHandler {
   }
 
   async animateStackedTrayOut(trayOut, trayIn) {
+    if (!trayOut?.trays?.length) return Promise.resolve()
     return new Promise(async (resolve) => {
       let animationComplete = trayOut.trays.length
       this.animateSpacer(0)
@@ -395,6 +396,7 @@ export class AnimationHandler {
   }
 
   async animateStackedTrayIn(trayIn, trayOut) {
+    if (!trayIn?.trays?.length) return Promise.resolve()
     return new Promise(async (resolve) => {
       let animationComplete = trayIn.trays.length
       const iconSize = this.hotbar.iconSize

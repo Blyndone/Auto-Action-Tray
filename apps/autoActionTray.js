@@ -23,7 +23,7 @@ import { ItemConfig } from './dialogs/itemConfig.js'
 import { DraggableTrayContainer } from './handlers/draggableHandler.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
-//#region Initialization
+  //#region Initialization
   constructor(options = {}) {
     super(options)
     this.socket = options.socket
@@ -345,7 +345,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       case controlled == true && this.actor != event.actor:
         this.actor = event.actor ? event.actor : event
         this.token = event
-        this.initialTraySetup(this.actor, event)
+        this.initialTraySetup(this.actor, event).catch((err) => {
+          console.error('AAT | Failed to set up tray for the selected token.', err)
+          ui.notifications?.error(
+            'Auto Action Tray: failed to load actions for this token — see console (F12).',
+          )
+        })
     }
   }
 
@@ -368,7 +373,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (savedActor) {
       if (actor.items.size != savedActor.abilities.length) {
-        savedActor.abilities = actor.items.map((i) => new AATItem(i))
+        savedActor.abilities = actor.items.map((i) => AATItem.safeCreate(i, actor)).filter(Boolean)
         return
       }
       this.checkTrayDiff()
@@ -402,7 +407,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       id: actor.id,
       tokenId: actor?.token?.id,
       type: actor.type,
-      abilities: items.map((i) => new AATItem(i)),
+      abilities: items.map((i) => AATItem.safeCreate(i, actor)).filter(Boolean),
     })
   }
 
@@ -746,7 +751,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       hotbar.targetHelper.selectTarget(token)
       return event.stopPropagation()
     } else {
-      if (event.target.actor == hotbar.actor) {
+      if (event.target.actor == hotbar.actor && hotbar.currentTray) {
         let currentTrayId = hotbar.currentTray.id
 
         hotbar.initialTraySetup(hotbar.actor, event.target, currentTrayId)
@@ -771,7 +776,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       hotbar.targetHelper.selectTarget(token)
       return event.stopPropagation()
     } else {
-      if (event.target.actor == hotbar.actor) {
+      if (event.target.actor == hotbar.actor && hotbar.currentTray) {
         let currentTrayId = hotbar.currentTray.id
 
         hotbar.initialTraySetup(hotbar.actor, event.target, currentTrayId)
@@ -941,10 +946,21 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.completeAnimation = new Promise((resolve) => {
       this._resolveAnimation = resolve
     })
+    clearTimeout(this._animationSafetyTimer)
+    this._animationSafetyTimer = setTimeout(() => {
+      if (this.animating) {
+        console.warn(
+          'AAT | Animation lock exceeded safety timeout — force-unlocking to avoid a frozen tray. This indicates an animation promise failed to resolve.',
+        )
+        this.endAnimation()
+      }
+    }, 4000)
   }
 
   endAnimation() {
     this.animating = false
+    clearTimeout(this._animationSafetyTimer)
+    this._animationSafetyTimer = null
     if (this._resolveAnimation) {
       this._resolveAnimation()
       this._resolveAnimation = null
@@ -1422,7 +1438,6 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     DragDropHandler._onDropCanvas(data, this)
   }
 }
-
 
 class AltContextMenu extends foundry.applications.ux.ContextMenu {
   constructor(element, selector, menuItems, options, parentSelector) {

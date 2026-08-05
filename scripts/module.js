@@ -574,9 +574,37 @@ Hooks.once('ready', async function () {
   }
 
   if (game.settings.get('auto-action-tray', 'enable')) {
-    hotbar = new AutoActionTray({
-      id: 'auto-action-tray',
-      socket: socket,
-    })
+    try {
+      hotbar = new AutoActionTray({
+        id: 'auto-action-tray',
+        socket: socket,
+      })
+    } catch (error) {
+      console.error(
+        'AAT | Failed to initialize Auto Action Tray (likely no active scene yet).',
+        error,
+      )
+      if (game.user.isGM) {
+        ui.notifications.error(
+          'Auto Action Tray failed to initialize — it will retry automatically once a scene is ready.',
+        )
+      }
+      Hooks.once('canvasReady', () => {
+        if (hotbar) return
+        try {
+          hotbar = new AutoActionTray({
+            id: 'auto-action-tray',
+            socket: socket,
+          })
+        } catch (error2) {
+          console.error('AAT | Retry on canvasReady also failed.', error2)
+          if (game.user.isGM) {
+            ui.notifications.error(
+              'Auto Action Tray failed to initialize a second time. Please reload the client.',
+            )
+          }
+        }
+      })
+    }
   }
 })

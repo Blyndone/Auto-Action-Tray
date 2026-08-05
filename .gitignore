@@ -2,3 +2,5 @@ dep/
 foundry/
 packs/
 .vscode/
+.claude/
+CLAUDE.md

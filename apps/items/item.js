@@ -3,6 +3,18 @@ import { AATActivity } from './activity.js'
 import { AATItemTooltip } from './itemTooltip.js'
 
 export class AATItem {
+  static safeCreate(item, actor) {
+    try {
+      return new AATItem(item)
+    } catch (err) {
+      console.error(
+        `AAT | Failed to build tray item "${item?.name ?? item?.id}" on actor "${actor?.name}" — skipping this item.`,
+        err,
+      )
+      return null
+    }
+  }
+
   constructor(item) {
     this.item = item
     this.actor = this.item.actor
@@ -18,7 +30,7 @@ export class AATItem {
     this.isScaledSpell = false
     this.preparationMode = this.item.system?.method
 
-    this.description = item.system.description.value
+    this.description = item.system?.description?.value ?? ''
     this.name = this.item.name
     this.type = this.item.type
     this.subtype = this.item.system?.type?.value ?? null
@@ -40,25 +52,28 @@ export class AATItem {
         this.item.type == 'consumable'
           ? this.item.system.quantity
           : this.item.system?.uses?.max
-          ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
-          : ''
+            ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
+            : ''
     } else {
       this.tooltip = new AATItemTooltip(this, null)
     }
     if (this.preparationMode == 'pact') {
       this.pactLevel = this.actor.system?.spells?.pact?.level
-      this.defaultActivity = this.activities.find((a) =>
-        a.tooltips.find((e) => e.spellLevel == this.pactLevel),
+      const pactActivity = this.activities.find((a) =>
+        a.tooltips?.find((e) => e.spellLevel == this.pactLevel),
       )
-      this.tooltip = this.defaultActivity.tooltips.find((e) => e.spellLevel == this.pactLevel)
+      if (pactActivity) {
+        this.defaultActivity = pactActivity
+        this.tooltip = pactActivity.tooltips.find((e) => e.spellLevel == this.pactLevel)
+      }
     }
 
     this.checkActivities()
     this.setDescription()
   }
   getActorMaxSpellLevel(actor) {
-    let slots = actor.system.spells
-    let pactLevel = actor.system.spells.pact?.level ?? 0
+    let slots = actor.system?.spells ?? {}
+    let pactLevel = slots.pact?.level ?? 0
     let levels = Object.keys(slots)
       .filter((key) => slots[key].max > 0)
       .map((key) => slots[key].level)
@@ -80,8 +95,8 @@ export class AATItem {
       this.item.type == 'consumable'
         ? this.item.system.quantity
         : this.item.system?.uses?.value
-        ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
-        : ''
+          ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
+          : ''
 
     this.isRitual = this.item.type == 'spell' && this.item.system.properties.has('ritual')
     this.spellLevel = this.item.system?.level ?? null
@@ -92,9 +107,12 @@ export class AATItem {
   }
 
   async setDescription() {
-    if(!this.item.system?.description?.value) return
-    this.description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(this.item.system.description.value, {relativeTo: this.item})
-    
+    if (!this.item.system?.description?.value) return
+    this.description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+      this.item.system.description.value,
+      { relativeTo: this.item },
+    )
+
     this.activities.forEach(async (activity) => {
       activity.setAllDescriptions()
     })
