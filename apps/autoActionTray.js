@@ -18,6 +18,7 @@ import { StackedTray } from './components/stackedTray.js'
 import { TargetHelper } from './helpers/targetHelper.js'
 import { QuickActionHelper } from './helpers/quickActionHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
+import { ReactionPromptTray } from './components/reactionPromptTray.js'
 import { AATItem } from './items/item.js'
 import { ItemConfig } from './dialogs/itemConfig.js'
 import { DraggableTrayContainer } from './handlers/draggableHandler.js'
@@ -162,6 +163,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       combatHandler: this.combatHandler,
     })
     this.conditionTray = new ConditionTray({ application: this })
+    this.reactionPromptTray = new ReactionPromptTray({ application: this })
   }
 
   _applyUiSettings() {
@@ -219,6 +221,84 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
     Hooks.on('collapseSidebar', this._onCollapseSidebar.bind(this))
+
+    if (
+      game.settings.get('auto-action-tray', 'interceptMidiReactions') &&
+      game.modules.get('midi-qol')?.active
+    ) {
+      Hooks.on('renderReactionDialog', this._onRenderReactionDialog.bind(this))
+      Hooks.on('closeReactionDialog', this._onCloseReactionDialog.bind(this))
+    }
+  }
+
+  _onRenderReactionDialog(dialogApp, element) {
+    // ReactionDialog is internal to midi-qol and never exported, so this relies on undocumented
+    // internals. Bail out and let the native popup show if the shape is not what we expect.
+    if (
+      typeof dialogApp?.data?.buttons != 'object' ||
+      typeof dialogApp?.submit != 'function' ||
+      typeof dialogApp?.close != 'function'
+    ) {
+      return
+    }
+    // Only intercept reactions for the actor currently shown in this client's tray.
+    if (dialogApp.data.actor?.uuid !== this.actor?.uuid) return
+
+    // ApplicationV2 windows with position.height: 'auto' (like midi's ReactionDialog) re-render
+    // once to measure/settle their height, firing this hook twice for one logical popup. Without
+    // this guard, intercept()/pushTray() would run twice and stack a second entrance tween on
+    // top of the first mid-flight.
+    if (this.reactionPromptTray.dialogApp === dialogApp) {
+      element.style.display = 'none'
+      return
+    }
+
+    element.style.display = 'none'
+    this.reactionPromptTray.intercept(dialogApp, this)
+    // midi-qol can call dialog.close() almost immediately after the user picks a choice (before
+    // the activity even resolves). Track when the entrance tween genuinely finishes so a close
+    // that lands mid-entrance can wait for it instead of reversing the tween mid-flight.
+    this.reactionPromptTray.enterPromise = (async () => {
+      await this.animationHandler.pushTray('reaction-prompt')
+      await this.completeAnimation
+      this.reactionPromptTray.entered = true
+    })()
+  }
+
+  _onCloseReactionDialog(dialogApp) {
+    // Fallback path only: covers timeouts, GM force-closes and any other close we did not
+    // initiate ourselves. A user click starts the animation directly (see closeReactionPrompt)
+    // because Foundry only fires this hook after ApplicationV2.close() finishes its own window
+    // close-out transition, which added a visible delay before our tray began animating.
+    return this.closeReactionPrompt(dialogApp)
+  }
+
+  async closeReactionPrompt(dialogApp) {
+    if (this.reactionPromptTray.dialogApp !== dialogApp) return
+    // midi-qol's own ReactionDialog.submit() calls dialog.close() twice for a normal selection
+    // (once inside the button callback when the activity starts, again after it resolves) -
+    // without this guard both close events run popTray() concurrently, producing two competing
+    // GSAP tweens on the same element.
+    if (this.reactionPromptTray.closing) return
+    this.reactionPromptTray.closing = true
+
+    this.reactionPromptTray.stopTicking()
+    // Let the entrance tween finish before starting the exit tween, otherwise GSAP has to
+    // reverse/kill it mid-flight, which is a second source of glitchy animation.
+    if (this.reactionPromptTray.enterPromise) await this.reactionPromptTray.enterPromise
+    await this.animationHandler.popTray()
+    // animateTrays() (animationHandler.js) doesn't await its own tween Promise.all before
+    // resolving - it only resolves the tray/animating state once the tweens truly finish via
+    // endAnimation(), which is what this.completeAnimation tracks. Forcing a render before that
+    // resolves rips the DOM out from under the still-running GSAP tween mid-slide.
+    await this.completeAnimation
+    // No render here. animateTrays() already calls trayOut.setInactive() on this tray and renders,
+    // then re-applies the stacked containers' positions via setStackedTrayPos() - every render
+    // replaces the .container-* nodes and wipes their inline GSAP transforms, so a render issued
+    // after that compensation leaves the stacked trays sitting at their default positions with
+    // nothing to restore them. That extra render is what made the stacked tray jump on the way
+    // back in; the activity tray has no equivalent render, which is why it never stuttered.
+    this.reactionPromptTray.reset()
   }
 
   _registerModifierListeners() {
@@ -297,6 +377,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       increaseButtonAction: AutoActionTray.increaseButtonAction,
       decreaseButtonAction: AutoActionTray.decreaseButtonAction,
       removeConcentration: AutoActionTray.removeConcentration,
+      reactionPromptSelect: AutoActionTray.reactionPromptSelect,
+      reactionPromptDecline: AutoActionTray.reactionPromptDecline,
     },
   }
 
@@ -970,6 +1052,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       actions: this.combatHandler.actions,
       activeEffects: this.activeEffects,
       concentrationItem: this.concentrationItem,
+      reactionPromptTray: this.reactionPromptTray,
     }
 
     return context
@@ -1407,6 +1490,14 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   static async toggleCondition(event, target) {
     this.conditionTray.toggleCondition(event, target)
+  }
+
+  static reactionPromptSelect(event, target) {
+    this.reactionPromptTray.selectButton(target.dataset.buttonKey)
+  }
+
+  static reactionPromptDecline(event, target) {
+    this.reactionPromptTray.decline()
   }
 
   static toggleConditionTray(event, target) {

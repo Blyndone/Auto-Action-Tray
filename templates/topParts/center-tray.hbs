@@ -49,6 +49,12 @@
           {{> "AAT.target-tray" item=targetHelper.item }}
         </div>
       {{/if}}
+
+      {{#if reactionPromptTray.active}}
+        <div class="abilities-tray activity-tray reaction-prompt">
+          {{> "AAT.reaction-prompt-tray" reactionPromptTray=reactionPromptTray }}
+        </div>
+      {{/if}}
     </div>
   </div>
 

@@ -40,7 +40,7 @@ export class AnimationHandler {
   async pushTray(trayId) {
     this.animationStack.push(trayId)
     await this.animateTrays(trayId, this.animationStack.at(-2), this.hotbar)
-    const tempTrays = ['target-helper', 'activity', 'spellLevel']
+    const tempTrays = ['target-helper', 'activity', 'spellLevel', 'reaction-prompt']
     this.animationStack = Array.from(
       new Set([...this.animationStack.filter((e) => !tempTrays.includes(e)), trayId]),
     )
@@ -265,6 +265,9 @@ export class AnimationHandler {
           break
         case 'condition':
           yOffset = this.verticalBounds
+          break
+        case 'reaction':
+          yOffset = -1 * this.verticalBounds
       }
       initialOpacity = 0
 
@@ -275,7 +278,10 @@ export class AnimationHandler {
       })
 
       gsap.to(`#auto-action-tray .${tray.id}`, {
-        force3D: false,
+        // The global gsap.config sets force3D: false, which keeps transforms 2D and main-thread
+        // painted. The reaction tray animates while Sequencer is initializing its canvas effects
+        // on that same thread, so it needs the GPU layer a 3D transform gets it.
+        force3D: tray.type == 'reaction',
         opacity: 1,
         y: 0,
         x: 0,
@@ -320,11 +326,14 @@ export class AnimationHandler {
         case 'condition':
           yOffset = this.verticalBounds
           break
+        case 'reaction':
+          yOffset = -1 * this.verticalBounds
+          break
       }
       endOpactiy = 0
 
       gsap.to(`#auto-action-tray .${tray.id}`, {
-        force3D: false,
+        force3D: tray.type == 'reaction',
         opacity: endOpactiy,
         y: yOffset,
         x: xOffset,

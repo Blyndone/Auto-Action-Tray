@@ -168,6 +168,16 @@ export class SettingsConfigApp extends api.HandlebarsApplicationMixin(Applicatio
     return partContext
   }
 
+  _onRender(context, options) {
+    super._onRender(context, options)
+
+    for (const input of this.element.querySelectorAll('.aat-slider-field input[type="range"]')) {
+      input.addEventListener('input', (e) => {
+        e.target.nextElementSibling.textContent = e.target.value
+      })
+    }
+  }
+
   static async onAccept(event, target) {
     const formData = new FormDataExtended(this.element)
     const result = formData.object

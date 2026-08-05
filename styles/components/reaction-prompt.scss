@@ -1,0 +1,115 @@
+@use 'mixins' as *;
+
+// The reaction prompt slides in at the exact moment an attack resolves, which is when Automated
+// Animations/Sequencer is initializing its canvas effects on the main thread. GSAP tweens are
+// rAF-driven on that same thread, so without a dedicated compositor layer the slide drops frames
+// and visibly stutters. Promoting the layer makes each animated frame a cheap GPU composite
+// instead of a full main-thread repaint of the prompt's gradients, glows and icons.
+.abilities-tray.reaction-prompt {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.reaction-prompt-container {
+  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
+  min-height: calc(
+    var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 +
+      var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1)
+  );
+  box-sizing: border-box;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: calc(var(--aat-main-tray-padding) + 22px) var(--aat-main-tray-padding)
+    var(--aat-main-tray-padding);
+}
+
+.reaction-prompt-timer-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  border-radius: 15px 15px 0 0;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.reaction-prompt-timer-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--aat-hover-color-dim), var(--aat-hover-color));
+  transition: width 1s linear;
+}
+
+.reaction-prompt-content {
+  font-family: serif;
+  font-size: 26px;
+  line-height: 1.3;
+  color: #f1f1f1;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  max-width: 90%;
+  text-align: center;
+}
+
+.reaction-prompt-ol {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style-type: none;
+  margin: 0;
+
+  li {
+    margin: 10px;
+  }
+}
+
+.reaction-prompt-button {
+  @include button-style;
+
+  display: block;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 8px 14px;
+
+  // midi-qol builds the label markup itself and hard-codes `display: flex; align-items: center`
+  // inline on the wrapper, plus width/height on the icon. Inline styles beat class rules, so the
+  // column stack needs !important to win; the icon is scaled to match the larger label text.
+  > div {
+    flex-direction: column !important;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 !important;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  img {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 5px;
+  }
+}
+
+.reaction-prompt-decline {
+  @include button-style;
+
+  cursor: pointer;
+  align-self: center;
+  text-align: center;
+  font-size: 26px;
+  padding: 10px 50px;
+  background: linear-gradient(180deg, #3a3a3a, #232323);
+
+  &:hover {
+    border-color: var(--aat-hover-color);
+    box-shadow: 0 0 8px var(--aat-hover-color-light);
+  }
+}

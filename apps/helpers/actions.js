@@ -43,6 +43,7 @@ export class Actions {
       [this.conditionTray].find((tray) => tray.id == trayId) ||
       [this.activityTray].find((tray) => tray.id == trayId) ||
       [this.spellLevelTray].find((tray) => tray.id == trayId) ||
+      [this.reactionPromptTray].find((tray) => tray.id == trayId) ||
       (trayId == 'target-helper' ? this.targetHelper : null)
     )
   }
