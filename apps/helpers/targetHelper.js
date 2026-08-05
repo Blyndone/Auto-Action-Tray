@@ -423,6 +423,7 @@ export class TargetHelper {
         this.currentLine.transferBoundaryAndText(
           this.targetLines.at(-1)?.targettingText,
           this.targetLines.at(-1)?.rangeBoundary,
+          this.targetLines.at(-1)?.itemImg,
         )
       }
       this.targetLines.at(-1)?.destroyLines()
