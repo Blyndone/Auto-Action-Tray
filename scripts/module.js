@@ -443,6 +443,18 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  game.settings.register('auto-action-tray', 'enableTargetingChatMessage', {
+    name: 'Enable Targeting Chat Message',
+    hint: 'Posts a chat message when a player begins targeting with an item, updating it as targets are selected. The message is removed once targeting is confirmed or canceled.',
+    scope: 'world',
+    config: true,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
+
   game.settings.register('auto-action-tray', 'targetLinePollRate', {
     name: 'Target Line Poll Rate',
     hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',

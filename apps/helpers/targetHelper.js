@@ -44,6 +44,8 @@ export class TargetHelper {
     this.mouseMoveHandler = null
     this.selectedTargets = null
     this.rejectTargets = null
+    this.chatMessage = null
+    this.finalTargetPause = 500
 
     this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate')
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
@@ -155,7 +157,6 @@ export class TargetHelper {
   }
 
   createUseNotification(item, activity, actor, selectedSpellLevel, useRangeBoundary = true) {
-
     this.state = this.setState('TARGETTING')
     this.clearData()
     if (this.sendTargetLines) {
@@ -163,7 +164,6 @@ export class TargetHelper {
     }
     this.setData(actor, activity)
     this.activityRange = useRangeBoundary ? this.getActivityRange(item, activity) : 0
-
 
     this.currentLine = new TargetLineCombo({
       useLines: false,
@@ -237,8 +237,71 @@ export class TargetHelper {
     this.targetLines = []
     this.itemRange = 0
     this.itemTargetCount = 0
+    this.deleteTargetingMessage()
     try {
       document.removeEventListener('mousemove', this.mouseMoveHandler)
+    } catch (error) {}
+  }
+
+  targetingChatMessageEnabled() {
+    return game.settings.get('auto-action-tray', 'enableTargetingChatMessage')
+  }
+
+  buildTargetingMessageContent() {
+    const prefix = this.item?.type === 'spell' ? 'casting' : 'using'
+    const progress =
+      this.activityTargetCount > 0 ? (this.targets.length / this.activityTargetCount) * 100 : 0
+    const targetList = this.targets
+      .map((token) => {
+        const name = TargetHelper.escapeHtml(token.name ?? token.actor?.name ?? 'Unknown')
+        const img = token.document?.texture?.src ?? token.actor?.img ?? ''
+        return `<li><img src="${img}" alt="" />${name}</li>`
+      })
+      .join('')
+    return `
+      <div class="aat-targeting-message">
+        <div class="aat-targeting-message-header">
+          <img src="${this.item?.img}" alt="${TargetHelper.escapeHtml(this.item?.name)}" />
+          <div class="aat-targeting-message-text">
+            <strong>${TargetHelper.escapeHtml(this.actor?.name)}</strong> is ${prefix}
+            <strong>${TargetHelper.escapeHtml(this.item?.name)}</strong>
+          </div>
+        </div>
+        <div class="aat-targeting-message-progress">
+          <div class="aat-targeting-message-progress-bar" style="width: ${progress}%"></div>
+        </div>
+        <div class="aat-targeting-message-count">
+          ${this.targets.length} / ${this.activityTargetCount} targets selected
+        </div>
+        ${targetList ? `<ul class="aat-targeting-message-targets">${targetList}</ul>` : ''}
+      </div>
+    `
+  }
+
+  static escapeHtml(value) {
+    const chars = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
+    return String(value ?? '').replace(/[&<>"']/g, (char) => chars[char])
+  }
+
+  async createTargetingMessage() {
+    if (!this.targetingChatMessageEnabled()) return
+    this.chatMessage = await ChatMessage.create({
+      content: this.buildTargetingMessageContent(),
+      speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+    })
+  }
+
+  async updateTargetingMessage() {
+    if (!this.chatMessage || !this.targetingChatMessageEnabled()) return
+    await this.chatMessage.update({ content: this.buildTargetingMessageContent() })
+  }
+
+  async deleteTargetingMessage() {
+    if (!this.chatMessage) return
+    const message = this.chatMessage
+    this.chatMessage = null
+    try {
+      await message.delete()
     } catch (error) {}
   }
 
@@ -268,6 +331,7 @@ export class TargetHelper {
     if (animate) {
       this.hotbar.animationHandler.pushTray('target-helper')
     }
+    this.createTargetingMessage()
 
     canvas.tokens.setTargets([])
 
@@ -342,14 +406,23 @@ export class TargetHelper {
         })
       }
       this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
+      this.updateTargetingMessage()
     } else {
-      this.confirmTargets()
+      this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
+      this.updateTargetingMessage()
+      // Set IDLE and drop the mousemove listener now so the pause below holds the completed
+      // state on screen (line anchored on the last target) instead of it tracking the cursor
+      // or letting another click sneak in a target before confirmTargets() runs.
+      this.setState('IDLE')
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      setTimeout(() => this.confirmTargets(), this.finalTargetPause)
     }
   }
 
   confirmTargets() {
     this.setState('IDLE')
     document.removeEventListener('mousemove', this.mouseMoveHandler)
+    this.deleteTargetingMessage()
     this.currentLine.clearText()
     this.clearRangeBoundary()
     const canvas = document.getElementById('board')
@@ -388,6 +461,7 @@ export class TargetHelper {
     if (this.targets.length >= this.activityTargetCount) return
     this.activityTargetCount++
     this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
+    this.updateTargetingMessage()
   }
   decreaseTargetCount() {
     if (this.activityTargetCount <= 1) return
@@ -395,6 +469,8 @@ export class TargetHelper {
     this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
     if (this.targets.length == this.activityTargetCount) {
       this.confirmTargets()
+    } else {
+      this.updateTargetingMessage()
     }
   }
 
@@ -430,6 +506,7 @@ export class TargetHelper {
       this.targetLines.pop()
     }
     this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
+    this.updateTargetingMessage()
   }
 
   static cancelSelection(event, target, animate = true) {
