@@ -1,19 +1,18 @@
-<div class="center-tray-container {{getTooltipTheme}}">
-
+<div id="aat-center-tray-container" class="center-tray-container {{getTooltipTheme}}">
   {{#if staticTrays}}
-    <div class='static-tray-container'>
+    <div id="aat-static-tray-container" class='static-tray-container'>
       {{> "AAT.static-tray" }}
     </div>
   {{/if}}
 
-  <div class='ability-tray-container modifier-highlight'>
-    <div class="stacked-tray-spacer-container ">
+  <div id="aat-ability-tray-container" class='ability-tray-container modifier-highlight'>
+    <div class="stacked-tray-spacer-container">
       {{#if conditionTray.active}}
         <div class="abilities-tray activity-tray condition">
           {{> "AAT.condition-tray" conditions=conditionTray.conditions }}
         </div>
       {{/if}}
-      
+
       {{#each staticTrays as |tray|}}
         {{#if tray.active}}
           <div class="abilities-tray static-tray {{tray.id}}">
@@ -39,12 +38,11 @@
           {{> "AAT.activity-tray" activities=activityTray.abilities }}
         </div>
       {{/if}}
-         {{#if spellLevelTray.active}}
+      {{#if spellLevelTray.active}}
         <div class="abilities-tray activity-tray spellLevel">
           {{> "AAT.spell-level-tray" activities=spellLevelTray.abilities }}
         </div>
       {{/if}}
-
 
       {{#if targetHelper.active}}
         <div class="abilities-tray target-tray target-helper">
@@ -52,13 +50,17 @@
         </div>
       {{/if}}
 
+      {{#if reactionPromptTray.active}}
+        <div class="abilities-tray activity-tray reaction-prompt">
+          {{> "AAT.reaction-prompt-tray" reactionPromptTray=reactionPromptTray }}
+        </div>
+      {{/if}}
     </div>
   </div>
 
   {{#if customTrays}}
-    <div class='custom-tray-container'>
+    <div id="aat-custom-tray-container" class='custom-tray-container'>
       {{> "AAT.custom-tray" customTrays=customTrays }}
     </div>
   {{/if}}
-
 </div>

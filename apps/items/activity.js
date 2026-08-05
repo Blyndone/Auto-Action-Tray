@@ -1,6 +1,9 @@
 import { AATItemTooltip } from './itemTooltip.js'
 import { AATItem } from './item.js'
 export class AATActivity {
+  #tooltips = null
+  #tooltip = null
+
   constructor(item, activity) {
     if (!activity) {
       return null
@@ -14,13 +17,46 @@ export class AATActivity {
     this.maxSpellLevel = item.maxSpellLevel
     this.isScaledSpell = item.isScaledSpell
     this.useSlot = activity?.consumption?.spellSlot
-    if (item.type == 'spell' && this.isScaledSpell && item.item.system.level !== 0) {
-      this.tooltips = this.generateSpellTooltips(item, this)
-      this.tooltip = this.tooltips[0]
-    } else {
-      this.tooltip = new AATItemTooltip(item, this)
-    }
+    // A scaled spell gets one tooltip per castable level, so a high-level caster pays for up to
+    // nine per spell. Building them is deferred until something actually reads them.
+    this.hasScaledTooltips =
+      item.type == 'spell' && this.isScaledSpell && item.item.system.level !== 0
+    Object.defineProperties(this, {
+      tooltips: {
+        get: () => (this.hasScaledTooltips ? this.#ensureTooltips() : undefined),
+        set: (value) => {
+          this.#tooltips = value
+        },
+        enumerable: true,
+        configurable: true,
+      },
+      tooltip: {
+        get: () => (this.hasScaledTooltips ? this.#ensureTooltips()[0] : this.#ensureTooltip()),
+        set: (value) => {
+          this.#tooltip = value
+        },
+        enumerable: true,
+        configurable: true,
+      },
+    })
     this.name = activity.name ? activity.name : activity.item.name
+  }
+
+  #ensureTooltips() {
+    if (!this.#tooltips) this.#tooltips = this.generateSpellTooltips(this.item, this)
+    return this.#tooltips
+  }
+
+  #ensureTooltip() {
+    if (!this.#tooltip) this.#tooltip = new AATItemTooltip(this.item, this)
+    return this.#tooltip
+  }
+
+  // Whether generateSpellTooltips would produce a tooltip for this spell level, answered from the
+  // level range alone so callers can ask without forcing the tooltips to be built.
+  hasTooltipForLevel(level) {
+    if (!this.hasScaledTooltips || level == null) return false
+    return level >= this.item.item.system.level && level <= this.maxSpellLevel
   }
   static async create(item, activity) {
     if (!activity) return null
@@ -50,11 +86,9 @@ export class AATActivity {
     }
   }
   setAllDescriptions() {
-    this.tooltip.setDescription()
-    if (this.tooltips) {
-      this.tooltips.forEach((tooltip) => {
-        tooltip.setDescription()
-      })
-    }
+    // Only refreshes tooltips that already exist. Any built after this reads the (by then
+    // enriched) item description at construction, so forcing them here would undo the laziness.
+    this.#tooltip?.setDescription()
+    this.#tooltips?.forEach((tooltip) => tooltip.setDescription())
   }
 }

@@ -183,26 +183,35 @@
   outline: 3px solid var(--aat-border-color-light);
   border: 5px solid var(--aat-border-color);
   border-radius: 15px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 20px;
   border: 2px solid #f1f1f1;
   border-radius: 4px;
   background-color: #0d0d12;
-}
-.ability-tray-container .use-slot-checkbox:not(:checked) {
+  outline: 0px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   scale: 2;
-  margin: 20px;
 }
 .ability-tray-container .use-slot-checkbox:checked {
   background-color: var(--aat-hover-color);
   border-color: var(--aat-hover-color-light);
-  scale: 2;
-  margin: 20px;
 }
 .ability-tray-container .use-slot-checkbox:checked:hover {
-  border: 2px solid var(--aat-hover-color-light);
+  border-color: var(--aat-hover-color-light);
   box-shadow: 0 0 5px var(--aat-hover-color-dim);
 }
 .ability-tray-container .use-slot-checkbox:checked::before {
-  background-color: #0d0d12;
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
 }
 .ability-tray-container img {
   background: #333;
@@ -618,6 +627,50 @@
   text-shadow: 0 0 10px black;
 }
 
+.aat-tray-config .aat-slider-field,
+.aat-settings-config .aat-slider-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.aat-tray-config .aat-slider-field input[type=range],
+.aat-settings-config .aat-slider-field input[type=range] {
+  flex: auto;
+}
+.aat-tray-config .aat-slider-field .value-display,
+.aat-settings-config .aat-slider-field .value-display {
+  min-width: 3.5em;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--input-background-color);
+  border: 1px solid var(--color-fieldset-border);
+  font-size: 0.9em;
+}
+
+.aat-item-config .aat-item-config-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--color-fieldset-border);
+  border-radius: 6px;
+}
+.aat-item-config .aat-item-config-header img {
+  width: 64px;
+  height: 64px;
+  flex: none;
+  object-fit: contain;
+}
+.aat-item-config .aat-item-config-description {
+  flex: 1;
+  min-width: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
 .drag-handle-container {
   height: calc(var(--aat-main-tray-total-height) - var(--aat-main-tray-padding) * 5);
   width: calc(var(--aat-item-size) / 3 + 2px);
@@ -678,7 +731,6 @@
   flex-direction: row-reverse;
   align-items: flex-end;
   width: 460px;
-  height: 400px;
   align-content: flex-start;
   flex-wrap: wrap-reverse;
   justify-content: flex-end;
@@ -1274,6 +1326,7 @@ img.item-equipped {
   text-shadow: rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px, rgb(0, 0, 0) 0px 0px 6px;
   height: 50px;
   pointer-events: all;
+  text-align: center;
 }
 
 .hp-text {
@@ -1336,6 +1389,123 @@ img.item-equipped {
   transform-origin: center;
   transform: translate(-50%, -50%) rotate(calc(var(--i) * 20deg)) translateY(-215px) rotate(calc(-270deg - var(--i) * 20deg));
   font-size: 40px;
+}
+
+.abilities-tray.reaction-prompt {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.reaction-prompt-container {
+  width: calc(var(--aat-item-size) * var(--aat-item-tray-item-width-count));
+  min-height: calc(var(--aat-item-size) * var(--aat-item-tray-item-height-count) + var(--aat-main-tray-padding) * 2 + var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1));
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: calc(var(--aat-main-tray-padding) + 22px) var(--aat-main-tray-padding) var(--aat-main-tray-padding);
+}
+
+.reaction-prompt-timer-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  border-radius: 15px 15px 0 0;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.reaction-prompt-timer-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--aat-hover-color-dim), var(--aat-hover-color));
+  transition: width 1s linear;
+}
+
+.reaction-prompt-content {
+  font-family: serif;
+  font-size: 26px;
+  line-height: 1.3;
+  color: #f1f1f1;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  max-width: 90%;
+  text-align: center;
+}
+
+.reaction-prompt-ol {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style-type: none;
+  margin: 0;
+}
+.reaction-prompt-ol li {
+  margin: 10px;
+}
+
+.reaction-prompt-button {
+  text-align: center;
+  color: #f1f1f1;
+  background: linear-gradient(180deg, var(--aat-main-color), var(--aat-main-color-light));
+  border: 4px solid var(--aat-border-color);
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+  font-family: serif;
+  display: block;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 8px 14px;
+}
+.reaction-prompt-button:hover {
+  border-color: var(--aat-hover-color);
+  box-shadow: 0 0 4px var(--aat-hover-color-light);
+}
+.reaction-prompt-button > div {
+  flex-direction: column !important;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 !important;
+  text-align: center;
+  line-height: 1.2;
+}
+.reaction-prompt-button img {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 5px;
+}
+
+.reaction-prompt-decline {
+  text-align: center;
+  color: #f1f1f1;
+  background: linear-gradient(180deg, var(--aat-main-color), var(--aat-main-color-light));
+  border: 4px solid var(--aat-border-color);
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+  font-family: serif;
+  cursor: pointer;
+  align-self: center;
+  text-align: center;
+  font-size: 26px;
+  padding: 10px 50px;
+  background: linear-gradient(180deg, #3a3a3a, #232323);
+}
+.reaction-prompt-decline:hover {
+  border-color: var(--aat-hover-color);
+  box-shadow: 0 0 4px var(--aat-hover-color-light);
+}
+.reaction-prompt-decline:hover {
+  border-color: var(--aat-hover-color);
+  box-shadow: 0 0 8px var(--aat-hover-color-light);
 }
 
 .skill-tray-container {
@@ -1445,6 +1615,74 @@ img.item-equipped {
   bottom: -12px;
   font-size: 30px;
   filter: drop-shadow(0px 0px 5px rgb(0, 0, 0));
+}
+
+.aat-targeting-message {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--aat-border-color, #444);
+  background: rgba(122, 122, 122, 0.6784313725);
+}
+.aat-targeting-message .aat-targeting-message-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.aat-targeting-message .aat-targeting-message-header img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  object-fit: contain;
+  border: 1px solid var(--aat-border-color, #444);
+  flex: none;
+}
+.aat-targeting-message .aat-targeting-message-header .aat-targeting-message-text {
+  flex: 1;
+  line-height: 1.3;
+}
+.aat-targeting-message .aat-targeting-message-progress {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.aat-targeting-message .aat-targeting-message-progress .aat-targeting-message-progress-bar {
+  height: 100%;
+  background: var(--aat-hover-color, #f1f1f1);
+  transition: width 0.2s ease-in-out;
+}
+.aat-targeting-message .aat-targeting-message-count {
+  font-size: 0.85em;
+  text-align: right;
+  opacity: 0.8;
+}
+.aat-targeting-message .aat-targeting-message-targets {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 6px 8px;
+  list-style: none;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.aat-targeting-message .aat-targeting-message-targets li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+.aat-targeting-message .aat-targeting-message-targets li img {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  object-fit: cover;
+  flex: none;
 }
 
 .tooltip-container {
@@ -1796,10 +2034,20 @@ img.item-equipped {
 }
 
 .minimize-button {
+  position: absolute;
+  right: -45px;
+  bottom: 0;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  background: rgba(11, 10, 19, 0.75);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  cursor: pointer;
   pointer-events: all;
 }
 .minimize-button i {

@@ -1,9 +1,7 @@
 <div data-data-id='{{{tray.id}}}'>
-
   <ol class='activity-ol'>
-
     <div class='activity-selection-text'>
-        Select a Spell Slot:
+      Select a Spell Slot:
     </div>
 
     {{#each activities as |activity|}}
@@ -16,7 +14,6 @@
           data-tooltip-direction='UP'
           data-action='useSpellLevel'
           data-tooltip="{{> 'AAT.item-tooltip' activity.tooltip}}"
-        
           {{#if (eq activity.actorSpellData.value 0)}}
             class='ability-button activity-button-inactive'
           {{else}}
@@ -36,31 +33,27 @@
         </div>
 
         <div class="activity-slot-icon-container">
-            {{#if (eq activity.actorSpellData.value 0)}}
-              <i class="fa-solid fa-square icon-slot icon-slot-spent"></i>
-            {{else}}
-              <i class="fa-solid fa-square icon-slot icon-slot"></i>
-            {{/if}}
+          {{#if (eq activity.actorSpellData.value 0)}}
+            <i class="fa-solid fa-square icon-slot icon-slot-spent"></i>
+          {{else}}
+            <i class="fa-solid fa-square icon-slot icon-slot"></i>
+          {{/if}}
         </div>
       </li>
     {{/each}}
-
   </ol>
 
-
-    <div class="use-slot-text-container">
-      Use Slot:
-      <input
-        id='useSlot'
-        name='useSlot'
-        type='checkbox'
-        class='use-slot-checkbox'
-        {{#if @root.useSlot}}
-          checked='checked'
-        {{/if}}
-        data-action='toggleUseSlot'
-      />
-    </div>
-
-
+  <div class="use-slot-text-container">
+    Use Slot:
+    <input
+      id='useSlot'
+      name='useSlot'
+      type='checkbox'
+      class='use-slot-checkbox'
+      {{#if @root.useSlot}}
+        checked='checked'
+      {{/if}}
+      data-action='toggleUseSlot'
+    />
+  </div>
 </div>

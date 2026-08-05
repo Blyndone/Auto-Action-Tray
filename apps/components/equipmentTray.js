@@ -11,14 +11,14 @@ export class EquipmentTray extends CustomTray {
     this.activeSlot = 1
     this.application = options.application
     if (!this.savedData && !this.checkSavedData(this.id)) {
-      this.generateTray(cachedAbilities)
+      this.generateTray(options.cachedAbilities)
     } else {
       this.getSavedData(options.cachedAbilities)
     }
 
     if (!this.application.quickActionHelperEnabled) {
       this.activeSlot = null
-    } 
+    }
   }
 
   generateTray(cachedAbilities) {
@@ -26,7 +26,6 @@ export class EquipmentTray extends CustomTray {
     let actor = fromUuidSync(this.actorUuid)
     tmpActor = actor
     let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
-    allItems.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
     let meleeWeapons
     meleeWeapons = allItems.filter(
       (e) =>
@@ -68,8 +67,8 @@ export class EquipmentTray extends CustomTray {
       if (data[this.id] != null) {
         this.meleeWeapon = allItems.find((e) => e.id == JSON.parse(data[this.id].meleeWeapon))
         this.rangedWeapon = allItems.find((e) => e.id == JSON.parse(data[this.id].rangedWeapon))
-        if (data[this.id]?.activeSlot) { 
- this.activeSlot = JSON.parse(data[this.id].activeSlot)
+        if (data[this.id]?.activeSlot) {
+          this.activeSlot = JSON.parse(data[this.id].activeSlot)
         }
 
         this.savedData = true

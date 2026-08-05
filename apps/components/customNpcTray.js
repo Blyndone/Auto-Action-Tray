@@ -70,7 +70,7 @@ export class CustomNpcTray extends AbilityTray {
 
     desc = desc.replace(itemPattern, (match, idFragment) => {
       let item = allItems.find((i) => i.id === idFragment)
-      return item.name
+      return item ? item.name : match
     })
 
     return desc
@@ -89,136 +89,144 @@ export class CustomNpcTray extends AbilityTray {
       (e) => e.name === 'Multiattack' || e.name.startsWith('Multiattack'),
     )
     if (multiattack && this.category === 'common') {
-      // let foundItem = await fromUuid(".mmRend0000000000", { relative: multiattack.item })
-      // console.log(foundItem)
+      try {
+        let multigroupIndex = 0
+        let desc = multiattack.description
+        let options = {
+          documents: false,
+          links: false,
+          rolls: false,
+          embeds: false,
+          secrets: false,
+        }
 
-      let multigroupIndex = 0
-      let desc = multiattack.description
-      let options = {
-        documents: false,
-        links: false,
-        rolls: false,
-        embeds: false,
-        secrets: false,
-      }
+        desc = this.cleanDesc(desc, allItems)
 
-      desc = this.cleanDesc(desc, allItems)
-      // console.log(desc)
+        const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        let itemNames = allItems.map((e) => escapeRegExp(e.name.toLowerCase()))
 
-      let itemNames = allItems.map((e) => e.name.toLowerCase())
-      // itemNames.push('melee')
-      // itemNames.push('ranged')
-      // itemNames.push('spell')
+        let regex
+        let basicAttackPattern
+        let numberMatches
+        let useMatches
+        let split
 
-      let regex
-      let basicAttackPattern
-      let numberMatches
-      let useMatches
-      let split
+        let num = {
+          one: 1,
+          two: 2,
+          three: 3,
+          four: 4,
+          five: 5,
+          six: 6,
+          seven: 7,
+          eight: 8,
+          nine: 9,
+          ten: 10,
+        }
 
-      let num = {
-        one: 1,
-        two: 2,
-        three: 3,
-        four: 4,
-        five: 5,
-        six: 6,
-        seven: 7,
-        eight: 8,
-        nine: 9,
-        ten: 10,
-      }
+        desc = desc.replaceAll('with its ', '').toLowerCase()
+        desc = desc.replaceAll('its ', '').toLowerCase()
 
-      desc = desc.replaceAll('with its ', '').toLowerCase()
-      desc = desc.replaceAll('its ', '').toLowerCase()
+        let orMatches = this.getMatch(`\\b(or)\\b `, desc)
 
-      let orMatches = this.getMatch(`\\b(or)\\b `, desc)
+        if (orMatches) {
+          split = desc.split(' or ')
+        } else {
+          split = [desc]
+        }
+        basicAttackPattern = `\\b(${Object.keys(num).join('|')})\\b (${itemNames.join('|')})`
+        const combinationAttackPattern = `\\b(${Object.keys(num).join(
+          '|',
+        )})\\s(attack|attacks)\\b.*?(${itemNames.join('|')}).*?(in any combination)`
 
-      if (orMatches) {
-        split = desc.split(' or ')
-      } else {
-        split = [desc]
-      }
-      basicAttackPattern = `\\b(${Object.keys(num).join('|')})\\b (${itemNames.join('|')})`
-      const combinationAttackPattern = `\\b(${Object.keys(num).join(
-        '|',
-      )})\\s(attack|attacks)\\b.*?(${itemNames.join('|')}).*?(in any combination)`
+        let combinationMatches = this.getMatch(combinationAttackPattern, desc)
+        if (combinationMatches.length > 0) {
+          let count =
+            num[
+              this.getMatch(`\\b(${Object.keys(num).join('|')})\\b`, combinationMatches[0].match)[0]
+                .match
+            ]
+          let items = this.getMatch(`(${itemNames.join('|')})`, combinationMatches[0].match).map(
+            (e) => e.match,
+          )
 
-      let combinationMatches = this.getMatch(combinationAttackPattern, desc)
-      if (combinationMatches.length > 0) {
-        let count =
-          num[
-            this.getMatch(`\\b(${Object.keys(num).join('|')})\\b`, combinationMatches[0].match)[0]
-              .match
-          ]
-        let items = this.getMatch(`(${itemNames.join('|')})`, combinationMatches[0].match).map(
-          (e) => e.match,
-        )
-
-        items.forEach((item) => {
-          let tmpIndexes = []
-          let attack = allItems.find((e) => e.name.toLowerCase() === item)
-          for (let i = 0; i < count; i++) {
-            attack['wildcard'] = true
-            attack['multigroup'] = 'multi-group' + multigroupIndex
-            this.abilities.push(attack)
-            tmpIndexes.push(this.abilities.length - 1)
-          }
-          this.multiattackIndexGroups.push(tmpIndexes)
-          multigroupIndex++
-          this.padNewRow()
-        })
-      }
-
-      split.forEach((e) => {
-        let combinedMatches = []
-        combinedMatches.push(...this.getMatch(basicAttackPattern, e))
-        combinedMatches.push(...this.getMatch(`\\b(uses|use)\\b (${itemNames.join('|')})`, e))
-
-        combinedMatches.sort((a, b) => a.index - b.index)
-
-        if (combinedMatches.length > 0) {
-          let tmpIndexes = []
-          combinedMatches.forEach((obj) => {
-            let parts = obj.match.split(' ')
-            if (num[parts[0]] !== undefined) {
-              for (let i = 0; i < num[parts[0]]; i++) {
-                let attack = allItems.find((e) => e.name.toLowerCase() === parts.slice(1).join(' '))
-                attack['multigroup'] = 'multi-group' + multigroupIndex
-                this.abilities.push(attack)
-                tmpIndexes.push(this.abilities.length - 1)
-              }
-            } else {
-              let attack = allItems.find((e) => e.name.toLowerCase() === parts.slice(1).join(' '))
+          items.forEach((item) => {
+            let tmpIndexes = []
+            let attack = allItems.find((e) => e.name.toLowerCase() === item)
+            if (!attack) return
+            for (let i = 0; i < count; i++) {
+              attack['wildcard'] = true
               attack['multigroup'] = 'multi-group' + multigroupIndex
               this.abilities.push(attack)
               tmpIndexes.push(this.abilities.length - 1)
             }
+            this.multiattackIndexGroups.push(tmpIndexes)
+            multigroupIndex++
+            this.padNewRow()
           })
-          multigroupIndex++
-          this.multiattackIndexGroups.push(tmpIndexes)
-          this.padNewRow()
         }
-      })
 
-      let nonMatchedItems = this.getMatch(`(${itemNames.join('|')})`, desc).map((e) => e.match)
-      if (nonMatchedItems.length > 0) {
-        let newItems = nonMatchedItems.filter(
-          (a) => !this.abilities.some((ability) => ability?.name.toLowerCase() === a),
-        )
-        newItems = [...new Set(newItems)].filter((e) => e != 'spellcasting')
-        newItems.forEach((item) => {
-          let attack = allItems.find((e) => e.name.toLowerCase() === item)
-          if (attack) {
-            this.abilities.push(attack)
-            attack['multigroup'] = 'multi-additional'
+        split.forEach((e) => {
+          let combinedMatches = []
+          combinedMatches.push(...this.getMatch(basicAttackPattern, e))
+          combinedMatches.push(...this.getMatch(`\\b(uses|use)\\b (${itemNames.join('|')})`, e))
+
+          combinedMatches.sort((a, b) => a.index - b.index)
+
+          if (combinedMatches.length > 0) {
+            let tmpIndexes = []
+            combinedMatches.forEach((obj) => {
+              let parts = obj.match.split(' ')
+              if (num[parts[0]] !== undefined) {
+                for (let i = 0; i < num[parts[0]]; i++) {
+                  let attack = allItems.find(
+                    (e) => e.name.toLowerCase() === parts.slice(1).join(' '),
+                  )
+                  if (!attack) continue
+                  attack['multigroup'] = 'multi-group' + multigroupIndex
+                  this.abilities.push(attack)
+                  tmpIndexes.push(this.abilities.length - 1)
+                }
+              } else {
+                let attack = allItems.find((e) => e.name.toLowerCase() === parts.slice(1).join(' '))
+                if (!attack) return
+                attack['multigroup'] = 'multi-group' + multigroupIndex
+                this.abilities.push(attack)
+                tmpIndexes.push(this.abilities.length - 1)
+              }
+            })
+            multigroupIndex++
+            this.multiattackIndexGroups.push(tmpIndexes)
             this.padNewRow()
           }
         })
-      }
-      if (this.abilities.length > 0) {
-        this.abilities.push(multiattack)
-        this.padNewRow()
+
+        let nonMatchedItems = this.getMatch(`(${itemNames.join('|')})`, desc).map((e) => e.match)
+        if (nonMatchedItems.length > 0) {
+          let newItems = nonMatchedItems.filter(
+            (a) => !this.abilities.some((ability) => ability?.name.toLowerCase() === a),
+          )
+          newItems = [...new Set(newItems)].filter((e) => e != 'spellcasting')
+          newItems.forEach((item) => {
+            let attack = allItems.find((e) => e.name.toLowerCase() === item)
+            if (attack) {
+              this.abilities.push(attack)
+              attack['multigroup'] = 'multi-additional'
+              this.padNewRow()
+            }
+          })
+        }
+        if (this.abilities.length > 0) {
+          this.abilities.push(multiattack)
+          this.padNewRow()
+        }
+      } catch (err) {
+        console.warn(
+          `AAT | Failed to parse Multiattack description for "${actor?.name}" — falling back without multiattack grouping.`,
+          err,
+        )
+        this.abilities = []
+        this.multiattackIndexGroups = []
       }
     }
 
@@ -345,9 +353,9 @@ export class CustomNpcTray extends AbilityTray {
     })
 
     trays[0].abilities = trays[0].padArray(trays[0].abilities)
-  
-      AbilityTray.onCompleteGeneration.bind(options.application)()
-  
+
+    AbilityTray.onCompleteGeneration.bind(options.application)()
+
     return trays
   }
 }

@@ -21,7 +21,6 @@ export class Actions {
       this.animationHandler.clearStack()
       this.currentTray.setActive()
     }
-    // this.render({ parts: ['centerTray'] });
   }
 
   static async setTrayConfig(config) {
@@ -44,6 +43,7 @@ export class Actions {
       [this.conditionTray].find((tray) => tray.id == trayId) ||
       [this.activityTray].find((tray) => tray.id == trayId) ||
       [this.spellLevelTray].find((tray) => tray.id == trayId) ||
+      [this.reactionPromptTray].find((tray) => tray.id == trayId) ||
       (trayId == 'target-helper' ? this.targetHelper : null)
     )
   }
@@ -118,10 +118,8 @@ export class Actions {
       this.animating == true ||
       this.selectingActivity == true ||
       this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING
-      // this.targetHelper.selectingTargets == true
     )
       return
-    // let trayIn = this.getTray(target.dataset.id)
 
     this.animationHandler.setTray(target.dataset.id)
   }
@@ -156,9 +154,19 @@ export class Actions {
     this.setTrayConfig({ rangeBoundaryEnabled: this.trayOptions['rangeBoundaryEnabled'] })
     this.requestRender(['equipmentMiscTray', 'centerTray'])
   }
-  static minimizeTray() {
+  static async minimizeTray() {
+    let wrap = document.getElementById('aat-maximize-button')
+    if (wrap) {
+      await this.render(true)
+      this.animationHandler.animateAATHidden.bind(this)(true)
+      wrap.remove()
+      this.trayMinimized = false
+      return
+    }
+
+    await this.animationHandler.animateAATHidden.bind(this)(false)
     this.close({ animate: false })
-    const bottomUi = document.getElementById('hotbar')
+    const bottomUi = document.getElementById('players-active')
 
     if (!bottomUi) {
       console.error("Element with ID 'hotbar' not found.")
@@ -166,11 +174,12 @@ export class Actions {
     }
 
     let wrapper = document.createElement('div')
-    wrapper.classList.add('bar-controls', 'minimize-button')
+    wrapper.style.position = 'relative'
     wrapper.id = 'aat-maximize-button'
 
     let link = document.createElement('a')
     link.id = 'aat-maximize'
+    link.classList.add('bar-controls', 'minimize-button')
     link.setAttribute('role', 'button')
     link.setAttribute('data-tooltip', 'Restore Auto Action Tray')
     link.setAttribute('data-action', 'openSheet')
@@ -180,24 +189,23 @@ export class Actions {
 
     link.appendChild(icon)
     wrapper.appendChild(link)
+    this.trayMinimized = true
 
-    wrapper.onclick = () => {
-      this.render(true)
+    wrapper.onclick = async () => {
+      await this.render(true)
+      this.animationHandler.animateAATHidden.bind(this)(true)
       wrapper.remove()
+      this.tokenDeleted = false
+      this.trayMinimized = false
     }
 
-    bottomUi.prepend(wrapper)
+    bottomUi.append(wrapper)
   }
 
   static toggleHpText() {
     this.hpTextActive = !this.hpTextActive
 
-    this.requestRender('characterImage').then(() => {
-      if (this.hpTextActive) {
-        const inputField = document.querySelector('.hpinput')
-        inputField.focus()
-      }
-    })
+    this.requestRender('characterImage')
   }
 
   static async updateHp(data) {
@@ -248,8 +256,8 @@ export class Actions {
       itemConfig?.fastForward == 'always'
         ? true
         : itemConfig?.fastForward == 'never'
-        ? false
-        : this.trayOptions['fastForward']
+          ? false
+          : this.trayOptions['fastForward']
 
     if (activityId) {
       activity = item.activities.find((e) => e.activityId == activityId)
@@ -298,8 +306,8 @@ export class Actions {
             slot: selectedSpellLevel
               ? 'spell' + selectedSpellLevel
               : item.spellLevel == 0
-              ? 'spell0'
-              : null,
+                ? 'spell0'
+                : null,
           }
 
     return {
@@ -337,8 +345,8 @@ export class Actions {
       targetCount > 0 &&
       (itemConfig ? itemConfig['useTargetHelper'] : this.trayOptions['enableTargetHelper'])
     ) {
-      ui.controls.initialize({ control: 'token', tool: 'select' })
-      canvas.tokens.activate({tool: "select"});
+      ui.controls.render({ control: 'token', tool: 'select' })
+      canvas.tokens.activate({ tool: 'select' })
 
       targets = await this.targetHelper.requestTargets(
         item,
@@ -463,7 +471,7 @@ export class Actions {
 
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
-        await item.item.system.activities
+        const workflow = await item.item.system.activities
           .get(
             activity?.activityId ||
               activity?.itemId ||
@@ -482,8 +490,71 @@ export class Actions {
               consume: { spellSlot: slotUse == 1 ? true : false },
             },
             { configure: false },
+            {},
             target,
           )
+
+        let workflowComplete = game.modules.get('midi-qol')?.active ? false : true
+        let aaAnimationComplete = game.modules.get('autoanimations')?.active ? false : true
+        let sequencerComplete = game.modules.get('sequencer')?.active ? false : true
+
+        let midiHookId = null
+        let aaHookId = null
+        let sequencerHookId = null
+
+        // Midi-QOL workflow completion
+        if (!workflowComplete) {
+          midiHookId = Hooks.on('midi-qol.RollComplete', (workflow) => {
+            if (workflow.itemId === itemId) {
+              workflowComplete = true
+              if (midiHookId) Hooks.off('midi-qol.RollComplete', midiHookId)
+            }
+          })
+        }
+
+        // Automated Animations completion
+        if (!aaAnimationComplete) {
+          aaHookId = Hooks.on('aa.animationEnd', (tok) => {
+            if (item.actor.getActiveTokens()[0]?.id === tok.id) {
+              aaAnimationComplete = true
+              if (aaHookId) Hooks.off('aa.animationEnd', aaHookId)
+            }
+          })
+        }
+
+        // Sequencer effect completion
+        if (!sequencerComplete) {
+          sequencerHookId = Hooks.on('endedSequencerEffect', (sequence) => {
+            if (sequence?.data?.creatorUserId === game.user.id) {
+              sequencerComplete = true
+              if (sequencerHookId) Hooks.off('endedSequencerEffect', sequencerHookId)
+            }
+          })
+        }
+
+        // Safety timeout (10 seconds total)
+        let timeout =
+          item?.itemConfig?.animationWaitTime != null
+            ? item.itemConfig.animationWaitTime / 100
+            : 100
+        while ((!workflowComplete || !aaAnimationComplete || !sequencerComplete) && timeout > 0) {
+          await wait(100)
+          timeout -= 1
+
+          if (workflowComplete && midiHookId) {
+            Hooks.off('midi-qol.RollComplete', midiHookId)
+            midiHookId = null
+          }
+          if (aaAnimationComplete && aaHookId) {
+            Hooks.off('aa.animationEnd', aaHookId)
+            aaHookId = null
+          }
+          if (sequencerComplete && sequencerHookId) {
+            Hooks.off('endedSequencerEffect', sequencerHookId)
+            sequencerHookId = null
+          }
+        }
+
         slotUse = 0
         await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
       }
@@ -519,6 +590,7 @@ export class Actions {
             consume: { spellSlot: useSlot },
           },
           { configure: false },
+          {},
         )
 
       const [result] = await Promise.all([usePromise, delay])
@@ -588,7 +660,15 @@ export class Actions {
     this.requestRender('characterImage')
   }
 
-  static async increaseRowCount() {
+  static async increaseButtonAction() {
+    let useQuickElevation = game.settings.get('auto-action-tray', 'quickElevation')
+    if (useQuickElevation) {
+      let token = this.actor.getActiveTokens()[0]
+      let elevation = token.document.elevation
+      token.document.update({ elevation: elevation + 5 })
+      return
+    }
+    //Increase Row Count
     const root = document.getElementById('auto-action-tray')
     const current = parseInt(
       getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),
@@ -604,7 +684,15 @@ export class Actions {
     this.initialTraySetup(this.actor)
   }
 
-  static async decreaseRowCount() {
+  static async decreaseButtonAction() {
+    let useQuickElevation = game.settings.get('auto-action-tray', 'quickElevation')
+    if (useQuickElevation) {
+      let token = this.actor.getActiveTokens()[0]
+      let elevation = token.document.elevation
+      token.document.update({ elevation: elevation - 5 })
+      return
+    }
+    //Decrease Row Count
     const root = document.getElementById('auto-action-tray')
     const current = parseInt(
       getComputedStyle(root).getPropertyValue('--aat-item-tray-item-height-count'),
@@ -622,7 +710,7 @@ export class Actions {
   }
 
   static changeDice() {
-    this.currentDice = this.currentDice < 5 ? this.currentDice + 1 : 0
+    this.currentDice = this.currentDice < 6 ? this.currentDice + 1 : 0
     this.requestRender('endTurn')
   }
 

@@ -154,7 +154,7 @@ export class CombatHandler {
     if (this.previousCircleValue >= 100) {
       await this.hotbar.requestRender('centerTray', true)
     }
-    // this.hotbar.animationHandler.setCircle(start)
+
     this.hotbar.animationHandler.animateCircle(start < 100 ? start : 0, end, this)
     this.previousCircleValue = end >= 100 ? 0 : end
   }

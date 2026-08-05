@@ -1,6 +1,5 @@
 export class Pathfinding {
   constructor(options) {
-    //constants
     this.active = true;
     this.maxDepth =
       game.settings.get("auto-action-tray", "quickActionDepth") || 6;
@@ -11,17 +10,21 @@ export class Pathfinding {
     this.targetPosition = null;
     this.actualTargetPosition = null;
     this.activeItemRange = null;
-    // this.targetToken = { x: 2500, y: 2500 }; // Temporary hardcoded target for testing
 
     this.occupiedSquares = null;
-
-    // const t0 = performance.now();
 
     this.path = null;
     this.endPos = null;
 
-    // const t1 = performance.now();
-    // const duration = (t1 - t0).toFixed(2);
+    this._pathfindingResolve = null;
+
+    this.debouncedPathfinding = foundry.utils.debounce(async (start, goal) => {
+      const result = await this.throttledFindPath(start, goal);
+      if (this._pathfindingResolve) {
+        this._pathfindingResolve(result);
+        this._pathfindingResolve = null;
+      }
+    }, 50);
   }
 
   setActive() {
@@ -45,7 +48,6 @@ export class Pathfinding {
   }
 
   setData(options) {
-    //options = {sourceToken: token, targetPosition: {x:1000, y:1000}}
     this.ruler = canvas.controls.getRulerForUser(game.user.id);
     this.tokens = canvas.tokens.placeables;
     this.gridSize = canvas.grid.size;
@@ -53,7 +55,7 @@ export class Pathfinding {
     this.targetPosition = options.targetPosition;
     this.actualTargetPosition = options.actualTarget;
     this.activeItemRange = options.range;
-    // console.log("Setting active item range to:", this.activeItemRange);
+
     this.setMaxDepth(options.speed / 5);
     this.occupiedSquares = this.generateOccupiedSquares();
   }
@@ -73,12 +75,12 @@ export class Pathfinding {
     this.clearRuler();
   }
 
-  newPathfinding(options) {
+  async newPathfinding(options) {
     if (options.sourceToken == this.sourceToken) {
-      return this.updatePathfinding(options);
+      return await this.updatePathfinding(options);
     }
     this.setData(options);
-    this.path = this.findPath(
+    this.path = await this.findPath(
       { x: this.sourceToken.x, y: this.sourceToken.y },
       { x: this.targetPosition.x, y: this.targetPosition.y }
     );
@@ -87,13 +89,13 @@ export class Pathfinding {
     return this.path ? { path: this.path, endPos: this.endPos } : null;
   }
 
-  updatePathfinding(options) {
+  async updatePathfinding(options) {
     this.clearRuler();
     this.activeItemRange = options.range;
-    // console.log("Setting active item range to:", this.activeItemRange);
+
     this.updateTargetPosition(options);
 
-    this.path = this.findPath(
+    this.path = await this.findPath(
       { x: this.sourceToken.x, y: this.sourceToken.y },
       { x: this.targetPosition.x, y: this.targetPosition.y }
     );
@@ -102,7 +104,6 @@ export class Pathfinding {
   }
 
   heuristic(a, b) {
-    // return Math.min(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
     return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
   }
 
@@ -167,7 +168,6 @@ export class Pathfinding {
     for (const dir of directions) {
       const next = { x: square.x + dir.x, y: square.y + dir.y };
 
-      // Skip if occupied
       if (this.isOccupied(next)) continue;
 
       // For diagonals, prevent cutting corners
@@ -186,7 +186,6 @@ export class Pathfinding {
   }
 
   checkInRange(current, goal) {
-    // console.log("Checking range. Active item range:", this.activeItemRange);
     if (this.activeItemRange == null) return false;
 
     const dx = Math.abs(current.x - goal.x);
@@ -216,7 +215,14 @@ export class Pathfinding {
     return distanceGoal <= 0 && distanceActual <= range;
   }
 
-  findPath(start, goal) {
+  async findPath(start, goal) {
+    return new Promise(resolve => {
+      this._pathfindingResolve = resolve;
+      this.debouncedPathfinding(start, goal);
+    });
+  }
+
+  throttledFindPath(start, goal) {
     const openSet = [start];
     const cameFrom = new Map();
     const gScore = new Map([[this.key(start), 0]]);
@@ -255,7 +261,7 @@ export class Pathfinding {
       }
     }
 
-    return []; // no path found
+    return [];
   }
 
   key(sq) {
@@ -273,9 +279,10 @@ export class Pathfinding {
   }
 
   simplifyPath(path) {
+    return path;
     if (!path || path.length <= 2) return path;
 
-    const simplified = [path[0]]; // always keep the start
+    const simplified = [path[0]];
     let prevDir = null;
 
     for (let i = 1; i < path.length; i++) {
@@ -283,35 +290,49 @@ export class Pathfinding {
       const dy = path[i].y - path[i - 1].y;
       const dir = { x: Math.sign(dx), y: Math.sign(dy) };
 
-      // direction changed?
       if (!prevDir || dir.x !== prevDir.x || dir.y !== prevDir.y) {
         simplified.push(path[i - 1]);
         prevDir = dir;
       }
     }
 
-    // always include final node
     simplified.push(path[path.length - 1]);
 
     return simplified;
   }
 
   setRuler(path) {
-    //canvas.controls.getRulerForUser(game.user.id)._addWaypoint({x:1000, y:1000})
     if (!path || path.length === 0) return;
-    const ruler = canvas.controls.getRulerForUser(game.user.id);
-    ruler.clear();
-    ruler._startMeasurement(path[0]);
-    for (let i = 1; i < path.length; i++) {
-      ruler._addWaypoint(path[i]);
-      // console.log("Added waypoint:", path[i]);
-    }
+
+    const ruler = this.sourceToken.ruler;
+
+    const movement = this.sourceToken.findMovementPath(path, {});
+    const foundPath = movement.result;
+
+    const plannedMovement = {
+      [game.user.id]: {
+        foundPath: foundPath,
+        unreachableWaypoints: [],
+        history: [],
+        hidden: false,
+        searching: false
+      }
+    };
+
+    this.sourceToken.document.clearMovementHistory();
+
+    ruler.refresh({
+      passedWaypoints: [],
+      pendingWaypoints: [],
+      plannedMovement
+    });
+
+    ruler.visible = true;
     ruler.color = Color.fromString("#FF00FF");
-    // console.log(ruler.totalDistance);
-    ruler.measure(path[path.length - 1]);
   }
 
   clearRuler() {
+    this.sourceToken.document.clearMovementHistory();
     const ruler = canvas.controls.getRulerForUser(game.user.id);
     ruler.clear();
   }

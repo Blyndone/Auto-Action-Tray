@@ -41,17 +41,18 @@ export class EffectTray {
       ?.trim()
 
     if (itemName) {
-      this.hotbar.concentrationItem = this.hotbar.getActorAbilities(this.actor.uuid).find(e=> e.name == itemName)
+      this.hotbar.concentrationItem = this.hotbar
+        .getActorAbilities(this.actor.uuid)
+        .find((e) => e.name == itemName)
     } else {
       this.hotbar.concentrationItem = null
     }
 
-    // if (!this.hotbar.animating) {
     this.hotbar.requestRender(['effectsTray', 'centerTray', 'characterImage'])
-    // }
+
   }
   static async removeEffect(event, element) {
-    if (event?.dataset?.concentration =="true") { 
+    if (event?.dataset?.concentration == 'true') {
       EffectTray.removeConcentration.bind(this)()
       return
     }
@@ -69,7 +70,7 @@ export class EffectTray {
     })
   }
 
-  static async removeConcentration() { 
+  static async removeConcentration() {
     let item = this.concentrationItem
     await foundry.applications.api.DialogV2.confirm({
       window: {
@@ -79,7 +80,6 @@ export class EffectTray {
       modal: true,
     }).then((result) => {
       if (result) {
-        
         this.actor.effects.find((e) => e.name.startsWith('Concentrating')).delete()
       }
     })
@@ -87,7 +87,7 @@ export class EffectTray {
 
   async getDescription(effect) {
     let desc = effect.description
-    desc = await TextEditor.enrichHTML(desc)
+    desc = await foundry.applications.ux.TextEditor.implementation.enrichHTML(desc)
 
     return '<div>' + desc + '</div>'
   }

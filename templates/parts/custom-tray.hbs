@@ -1,10 +1,9 @@
 {{#if trayInformation}}
   <div class="tray-information">
-    {{trayInformation}} 
+    {{trayInformation}}
     <i class="fa-solid fa-circle-x icon-cancel" data-action="cancelSelection"></i>
   </div>
 {{else}}
-
   {{#each customTrays as |tray|}}
     <div
       class={{#if (eq @root.currentTray.id tray.id)}}'custom-tray-active'{{else}}'custom-tray-button'{{/if}}
@@ -12,10 +11,9 @@
       data-action='setTray'
       data-type='custom'
     >
-    <div class="button-label">
-
-      {{{tray.trayLabel}}}
-    </div>
+      <div class="button-label">
+        {{{tray.trayLabel}}}
+      </div>
 
       {{#if (eq @root.currentTray.id tray.id)}}
         <div class="selected-tray-indicator">
@@ -24,5 +22,4 @@
       {{/if}}
     </div>
   {{/each}}
-
 {{/if}}

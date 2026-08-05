@@ -1,0 +1,110 @@
+{
+    "title": "Auto Action Tray Tour",
+    "description": "Learn how to use the Auto Action Tray and its controls.",
+    "canBeResumed": false,
+    "display": true,
+    "steps": [
+        {
+            "id": "overview",
+            "selector": "#auto-action-tray",
+            "title": "Auto Action Tray Overview",
+            "content": "<p>The Auto Action Tray is your central hub for quickly accessing abilities, items, spells, skills, and utilities during play.</p><hr><p style='text-align:center;font-weight:bold;'>Features</p><ul style='margin-left:1em;'><li>Displays the character portrait and hit points</li><li>Provides separate trays for static, custom, and ability actions</li><li>Includes buttons for fast forward, target helper, tray configuration, and more</li><li>Supports skill checks, saving throws, conditions, dice rolls, and turn tracking</li><li>Highly customizable per actor for layout, theme, and behavior</li></ul>"
+        },
+        {
+            "id": "characterTray",
+            "selector": "#aat-character-tray",
+            "title": "Character Display",
+            "content": "<p>This area displays your character’s portrait and current hit points.</p><hr><p style='text-align:center;font-weight:bold;'>Controls</p><ul style='margin-left:1em;'><li><strong>Left Click</strong> – Open your Character Sheet</li><li><strong>Right Click</strong> – Open the Macro Directory and reset saved Auto Action Tray data</li></ul>"
+        },
+        {
+            "id": "hpContainer",
+            "selector": "#aat-hp-container",
+            "title": "Hit Points Display",
+            "content": "<p>This area displays the current health of the token.</p><hr><p style='text-align:center;font-weight:bold;'>Controls</p><ul style='margin-left:1em;'><li><strong>Left Click</strong> – Open the health dialog</li><li>Enter a <strong>discrete value</strong> to set current HP</li><li>Enter a <strong>positive or negative value</strong> to heal or damage the token</li></ul>"
+        },
+        {
+            "id": "equipmentTray",
+            "selector": "#aat-equipment-tray-container",
+            "title": "Equipment Tray",
+            "content": "<p>The Equipment Tray shows automatically selected weapons and attacks for the active token, giving you quick access during play.</p><hr><p style='text-align:center;font-weight:bold;'>Customization</p><ul style='margin-left:1em;'><li>Drag any weapon or spell here to replace the selected items</li></ul>"
+        },
+        {
+            "id": "fastForward",
+            "selector": "#aat-fastForward-button",
+            "title": "Fast Forward",
+            "content": "<p>Fast Forward mode streamlines item usage by skipping extra prompts.</p><hr><p style='text-align:center;font-weight:bold;'>Behavior</p><ul style='margin-left:1em;'><li>Uses the default activity when activating an item</li><li>Skips the spell level selection dialog</li></ul>"
+        },
+        {
+            "id": "targetHelper",
+            "selector": "#aat-targetHelper-button",
+            "title": "Target Helper",
+            "content": "<p>The Target Helper assists with selecting valid targets when using items.</p><hr><p style='text-align:center;font-weight:bold;'>Behavior</p><ul style='margin-left:1em;'><li>Displays targeting lines on the canvas</li><li>Allows you to select targets before resolving the item</li></ul>"
+        },
+        {
+            "id": "trayConfig",
+            "selector": "#aat-trayConfig-button",
+            "title": "Tray Configuration",
+            "content": "<p>Open the Tray Configuration dialog to customize the Auto Action Tray for this actor.</p><hr><p style='text-align:center;font-weight:bold;'>What You Can Configure</p><ul style='margin-left:1em;'><li>Select a <strong>tray theme</strong>, including class-based and custom themes</li><li>Adjust <strong>target line and range boundary colors</strong></li><li>Add or clear <strong>custom static trays</strong> tied to item resources</li><li>Choose between <strong>portrait or token</strong> display</li><li>Fine-tune the character image with <strong>scale and position controls</strong></li><li>Enable visual options like the <strong>health indicator</strong></li><li>Automatically add newly created items to the tray</li><li>Show or hide <strong>class-specific skills</strong></li></ul><p><em>All settings are saved per actor.</em></p>"
+        },
+        {
+            "id": "rangeBoundary",
+            "selector": "#aat-rangeBoundary-button",
+            "title": "Range Boundary",
+            "content": "<p>Toggle the Range Boundary to visually display the effective range of actions and abilities on the canvas.</p><hr><p style='text-align:center;font-weight:bold;'>Behavior</p><ul style='margin-left:1em;'><li>Shows a visual boundary for ability range</li><li>Uses the configured targeting color</li></ul>"
+        },
+        {
+            "id": "minimizeTray",
+            "selector": "#aat-minimizeTray-button",
+            "title": "Minimize Tray",
+            "content": "<p>Minimize the Auto Action Tray to reduce on-screen clutter.</p><hr><p style='text-align:center;font-weight:bold;'>Behavior</p><ul style='margin-left:1em;'><li>Hides the tray while keeping it accessible</li><li>Click the maximize button near the Player List to restore it</li></ul>"
+        },
+        {
+            "id": "lockTray",
+            "selector": "#aat-toggleLock-button",
+            "title": "Lock or Unlock Tray",
+            "content": "<p>Lock the Auto Action Tray to prevent accidental movement or layout changes.</p><hr><p style='text-align:center;font-weight:bold;'>Behavior</p><ul style='margin-left:1em;'><li>Prevents dragging or repositioning the tray</li><li>Unlock to move or reconfigure its position</li></ul>"
+        },
+        {
+            "id": "abilityTray",
+            "selector": "#aat-ability-tray-container",
+            "title": "Ability Tray",
+            "content": "<p>The Ability Tray displays items from the current Custom or Static Tray. This area also shows dialogs for targeting, spell level selection, activity selection, and more.</p><hr><p style='text-align:center;font-weight:bold;'>Enhanced Tooltips</p><ul style='margin-left:1em;'><li>All items in the Ability Tray have enhanced tooltips providing additional information</li><li>Tooltips include estimated damage and other relevant details</li></ul><hr><p style='text-align:center;font-weight:bold;'>Item Notation and Visual Indicators</p><ul style='margin-left:1em;'><li><strong>Passive Items</strong> – Circular border</li><li><strong>Container Items</strong> – Rounded square border; contents listed in the tooltip</li><li><strong>Spells</strong> – Level shown in the lower right (Roman numerals); '+' in the upper right if upcast; scroll icon in the upper left if a scroll</li><li><strong>Consumable Charges</strong> – Listed in the lower right</li><li><strong>MultiAttack</strong> – If a monster has a MultiAttack feature, the tray detects included attacks and highlights them; duplicate attacks appear multiple times on the bar</li></ul>"
+        },
+        {
+            "id": "staticTray",
+            "selector": "#aat-static-tray-container",
+            "title": "Static Actions Tray",
+            "content": "<p>Static Trays are automatically populated based on item properties and cannot be modified or rearranged.</p><hr><p style='text-align:center;font-weight:bold;'>Common Static Trays</p><ul style='margin-left:1em;'><li><strong>Action</strong> – Items that cost 1 Action</li><li><strong>Bonus Action</strong> – Items that cost 1 Bonus Action</li><li><strong>Class Specific</strong> – Items that consume a class resource</li><li><strong>Extra Spells</strong> – Spells with limited uses that do not consume spell slots</li><li><strong>Cantrips</strong> – Spells marked as cantrips</li><li><strong>Leveled Spells</strong> – Spells of levels 1–9</li><li><strong>Rituals</strong> – Spells marked as rituals</li></ul><p><em>Items in static trays cannot be dragged or manually edited.</em></p>"
+        },
+        {
+            "id": "customTray",
+            "selector": "#aat-custom-tray-container",
+            "title": "Custom Actions Tray",
+            "content": "<p>The Custom Actions Tray is initially populated automatically when the tray is first created.</p><hr><p style='text-align:center;font-weight:bold;'>Customization</p><ul style='margin-left:1em;'><li>Items can be <strong>moved, rearranged, or removed</strong> after creation</li><li>Drag items from your character sheet or other trays to customize it</li><li>Ideal for frequently used abilities, spells, or macros</li></ul><p><em>Unlike Static Trays, Custom Trays are fully user-editable.</em></p>"
+        },
+        {
+            "id": "skillSaveTray",
+            "selector": "#aat-skill-save-tray",
+            "title": "Skill & Save Tray",
+            "content": "<p>This tray provides quick access to skill checks and saving throws. Hovering over a skill displays its roll bonus.</p><hr><p style='text-align:center;font-weight:bold;'>Pages</p><ul style='margin-left:1em;'><li>The tray has two pages, which can be swapped using the <strong>Swap Skill Tray Page</strong> button</li><li>The main page contains the most common skills for the class, as well as all saving throws</li><li>The secondary page contains the remaining skills</li></ul><hr><p style='text-align:center;font-weight:bold;'>Advanced Usage</p><ul style='margin-left:1em;'><li>Hold <strong>Alt</strong> to gain Advantage while rolling</li><li>Hold <strong>Control</strong> to apply Disadvantage while rolling</li></ul>"
+        },
+        {
+            "id": "swapSkillTray",
+            "selector": "#aat-swap-skill-button",
+            "title": "Swap Skill Tray Page",
+            "content": "<p>This button swaps between different pages of the Skill Tray, giving you access to additional skills or saving throws.</p>"
+        },
+        {
+            "id": "conditionTrayToggle",
+            "selector": "#aat-condition-tray-button",
+            "title": "Condition Tray Toggle",
+            "content": "<p>Use this button to show or hide the Condition Tray, allowing you to quickly apply or remove status effects from your tokens.</p>"
+        },
+        {
+            "id": "diceTurnTray",
+            "selector": "#aat-dice-turn-tray",
+            "title": "Dice & Turn Controls",
+            "content": "<p>The Dice & Turn Tray provides quick access to dice rolls and turn tracking.</p><hr><p style='text-align:center;font-weight:bold;'>Out of Combat</p><ul style='margin-left:1em;'><li><strong>Dice Tray</strong> – Right-click to cycle through dice types, left-click to roll the selected die</li></ul><hr><p style='text-align:center;font-weight:bold;'>In Combat</p><ul style='margin-left:1em;'><li><strong>Turn Marker</strong> – Shows how long until the actor’s turn</li><li>During the actor’s turn, displays an <strong>End Turn</strong> button</li></ul>"
+        }
+    ]
+}

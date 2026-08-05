@@ -57,7 +57,6 @@ export class SpellLevelTray extends ActivityTray {
   }
 
   static useActivity(event, target) {
-    //This can be an Activity or a Spell Level Selection
     let selectedSpellLevel = target.dataset.selectedspelllevel;
     let useSlot = this.useSlot;
     if (

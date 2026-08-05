@@ -1,5 +1,6 @@
-<div class='dice-button-container'>
+<div id='aat-dice-turn-tray' class='dice-button-container'>
   <div
+    id='aat-swap-skill-button'
     class='swap-skill-tray-button'
     data-action='toggleSkillTrayPage'
     data-tooltip='Swap Skill Tray'
@@ -9,6 +10,7 @@
   </div>
 
   <div
+    id='aat-condition-tray-button'
     class='toggle-condition-tray-button'
     data-action='toggleConditionTray'
     data-tooltip='Toggle Condition Tray'
@@ -17,9 +19,8 @@
     <i class='fa-solid fa-flask-round-potion'></i>
   </div>
   <div
-    style='position: relative; pointer-events: none; height: 100%; display: flex; align-items: flex-end; margin : -9px; margin-left: 15px;'
+    style='position: relative; pointer-events: none; height: 100%; display: flex; align-items: flex-end; margin: -9px; margin-left: 15px;'
   >
-
     <svg viewBox='0 0 400 400' class='turn-circle'>
       <circle
         class='circle-svg'
@@ -32,17 +33,13 @@
       />
     </svg>
     {{#if combatHandler.inCombat}}
-
       <div class='combat-inner-container'>
-
         {{#if combatHandler.isTurn}}
           <div class='end-turn-btn' data-action='endTurn'>
-
             <div class='end-turn-btn-text'>
               End Turn<br />
               <i class='fa-solid fa-hourglass-half'></i>
             </div>
-
           </div>
         {{else}}
           <div class='end-turn-btn-not-turn'>
@@ -61,6 +58,5 @@
         </div>
       </div>
     {{/if}}
-
   </div>
 </div>

@@ -1,0 +1,34 @@
+<div class="reaction-prompt-container">
+  <div class="reaction-prompt-timer-bar">
+    <div
+      class="reaction-prompt-timer-bar-fill"
+      style="width: {{reactionPromptTray.percentRemaining}}%"
+    ></div>
+  </div>
+
+  {{#if reactionPromptTray.content}}
+    <div class="reaction-prompt-content">{{{reactionPromptTray.content}}}</div>
+  {{/if}}
+
+  <ol class="reaction-prompt-ol">
+    {{#each reactionPromptTray.buttons as |button|}}
+      <li>
+        <div
+          data-button-key='{{button.key}}'
+          data-action='reactionPromptSelect'
+          data-tooltip-direction='UP'
+          class='ability-button reaction-prompt-button'
+        >
+          {{{button.label}}}
+        </div>
+      </li>
+    {{/each}}
+  </ol>
+
+  <div
+    data-action='reactionPromptDecline'
+    class='reaction-prompt-decline'
+  >
+    Decline
+  </div>
+</div>

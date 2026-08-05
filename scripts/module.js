@@ -1,5 +1,6 @@
 import { AutoActionTray } from '../apps/autoActionTray.js'
 import { ConditionTray } from '../apps/components/conditionsTray.js'
+import { SettingsConfigApp } from '../apps/dialogs/settingsConfig.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -25,6 +26,7 @@ export async function preloadHandlebarsTemplates() {
     'modules/auto-action-tray/templates/parts/spell-level-tray.hbs',
     'modules/auto-action-tray/templates/parts/target-tray.hbs',
     'modules/auto-action-tray/templates/parts/condition-tray.hbs',
+    'modules/auto-action-tray/templates/parts/reaction-prompt-tray.hbs',
   ]
   const paths = {}
   for (const path of partials) {
@@ -32,15 +34,35 @@ export async function preloadHandlebarsTemplates() {
     paths[`AAT.${path.split('/').pop().replace('.hbs', '')}`] = path
   }
 
-  return loadTemplates(paths)
+  return foundry.applications.handlebars.loadTemplates(paths)
 }
 
 ;(() => {})()
+//Tours
+
+async function registerMyTours() {
+  try {
+    game.tours.register(
+      AUTOACTIONTRAY_MODULE_NAME,
+      'Auto Action Tray User Guide',
+      await Tour.fromJSON('/modules/' + AUTOACTIONTRAY_MODULE_NAME + '/apps/tours/tour.json'),
+    )
+    // if(game.user.isGM) {
+    //   game.tours.register(AUTOACTIONTRAY_MODULE_NAME, 'settings', await MyTour.fromJSON('/modules/'+AUTOACTIONTRAY_MODULE_NAME+'/tours/settings.json'));
+    // }
+  } catch (error) {
+    console.error('MyTour | Error registering tours: ', error)
+  }
+}
+
+Hooks.once('setup', async function () {
+  registerMyTours()
+})
 
 Hooks.once('init', async function () {
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._onClickLeft',
+    'foundry.canvas.placeables.Token.prototype._onClickLeft',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenSelect(hotbar, wrapped, ...args)
@@ -51,7 +73,7 @@ Hooks.once('init', async function () {
 
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._onClickLeft2',
+    'foundry.canvas.placeables.Token.prototype._onClickLeft2',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenSelect2(hotbar, wrapped, ...args)
@@ -62,7 +84,7 @@ Hooks.once('init', async function () {
 
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._canControl',
+    'foundry.canvas.placeables.Token.prototype._canControl',
     function (wrapped, ...args) {
       if (hotbar) {
         return AutoActionTray._canControl(hotbar, wrapped, ...args)
@@ -72,7 +94,7 @@ Hooks.once('init', async function () {
   )
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'Token.prototype._onClickRight',
+    'foundry.canvas.placeables.Token.prototype._onClickRight',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
@@ -82,7 +104,7 @@ Hooks.once('init', async function () {
   )
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
-    'TokenLayer.prototype._onClickRight',
+    'foundry.canvas.layers.TokenLayer.prototype._onClickRight',
     function (wrapped, ...args) {
       if (hotbar) {
         AutoActionTray._onTokenCancel(hotbar, wrapped, ...args)
@@ -90,7 +112,7 @@ Hooks.once('init', async function () {
     },
     'MIXED',
   )
-  
+
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'PIXI.EventSystem.prototype.setCursor',
@@ -102,9 +124,26 @@ Hooks.once('init', async function () {
     'MIXED',
   )
 
-
-
   preloadHandlebarsTemplates()
+
+  //Game Controls
+  game.keybindings.register('auto-action-tray', 'toggleHpText', {
+    name: 'Toggle HP Text Input',
+    hint: 'Toggle the HP Text Input in the Character Tray',
+
+    editable: [
+      {
+        key: 'NumpadEnter',
+      },
+    ],
+    onDown: () => {
+      AutoActionTray.toggleHpText.bind(hotbar)()
+    },
+    onUp: () => {},
+    restricted: false,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  })
 })
 
 Hooks.once('socketlib.ready', () => {
@@ -122,11 +161,20 @@ Hooks.once('ready', async function () {
       "Auto Action Tray requires the 'socketlib' module. Please install and activate it.",
     )
 
+  game.settings.registerMenu('auto-action-tray', 'settingsMenu', {
+    name: 'Configure Settings',
+    label: 'Configure Settings',
+    hint: 'Configure Auto Action Tray settings, grouped by category.',
+    icon: 'fa-solid fa-sliders',
+    type: SettingsConfigApp,
+    restricted: false,
+  })
+
   game.settings.register('auto-action-tray', 'enable', {
     name: 'Enabled',
     hint: 'Enable or Disable the Hotbar',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -137,7 +185,7 @@ Hooks.once('ready', async function () {
     name: 'Scale',
     hint: 'Set the Scale of the Hotbar',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 0.6,
@@ -155,19 +203,21 @@ Hooks.once('ready', async function () {
     name: 'Background Opacity',
     hint: 'Set the Opacity of the Tray Background',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 0.85,
 
     range: {
       min: 0,
-      step: .05,
+      step: 0.05,
       max: 1,
     },
-    onChange: value => { 
+    onChange: (value) => {
       const baseColor = `5b5b5b`
-      const hex = Math.floor(value * 255).toString(16).padStart(2, '0')
+      const hex = Math.floor(value * 255)
+        .toString(16)
+        .padStart(2, '0')
       document.documentElement.style.setProperty('--aat-background-color', `#${baseColor}${hex}`)
     },
 
@@ -178,7 +228,7 @@ Hooks.once('ready', async function () {
     name: 'Auto Theme',
     hint: 'Will automatically set the theme based on the selected actors class',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -189,7 +239,7 @@ Hooks.once('ready', async function () {
     name: 'Auto Theme Targeting Color ',
     hint: 'Changes the Targeting Color based on the selected Actor',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -197,11 +247,10 @@ Hooks.once('ready', async function () {
     requiresReload: false,
   })
 
-
   game.settings.register('auto-action-tray', 'theme', {
     name: 'Color Theme',
     hint: 'Default Theme if Auto Theme is disabled or not available',
-    config: true,
+    config: false,
     scope: 'client',
     type: new foundry.data.fields.StringField({
       choices: {
@@ -234,9 +283,6 @@ Hooks.once('ready', async function () {
     default: 'theme-classic',
   })
 
-
-
-
   game.settings.register('auto-action-tray', 'tempTheme', {
     name: 'tempTheme',
     scope: 'client',
@@ -245,11 +291,22 @@ Hooks.once('ready', async function () {
 
   game.settings.set('auto-action-tray', 'tempTheme', game.settings.get('auto-action-tray', 'theme'))
 
+  game.settings.register('auto-action-tray', 'quickElevation', {
+    name: 'Quick Elevation Change',
+    hint: 'Replaces the Row Count Buttons with Elevation Change Buttons',
+    scope: 'client',
+    config: false,
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
+
   game.settings.register('auto-action-tray', 'rowCount', {
     name: 'Number of Rows',
     hint: 'Default Number of Rows',
     scope: 'client',
-    config: true,
+    config: false,
     type: Number,
     default: 3,
 
@@ -266,7 +323,7 @@ Hooks.once('ready', async function () {
     name: 'Number of Columns',
     hint: 'Select Number of Columns',
     scope: 'client',
-    config: true,
+    config: false,
     type: Number,
     default: 15,
 
@@ -279,15 +336,14 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-
   game.settings.register('auto-action-tray', 'enableRangeHover', {
     name: 'Enable Range Hover',
     hint: 'Highlights Items that are in range when hovering over a token',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
-    default: true,
+    default: false,
 
     requiresReload: false,
   })
@@ -296,7 +352,7 @@ Hooks.once('ready', async function () {
     name: 'Default Range Boundary',
     hint: 'Deafault Tray Range Boundaryy for Hovering Items',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -304,12 +360,11 @@ Hooks.once('ready', async function () {
     requiresReload: false,
   })
 
-
   game.settings.register('auto-action-tray', 'enableRangeBoundary', {
     name: 'Enable Range Boundary',
     hint: 'Enable Range Boundary',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -320,7 +375,7 @@ Hooks.once('ready', async function () {
     name: 'Enable Use Item Name',
     hint: 'Shows the Item Name above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -328,12 +383,11 @@ Hooks.once('ready', async function () {
     requiresReload: false,
   })
 
-
   game.settings.register('auto-action-tray', 'enableUseItemIcon', {
     name: 'Enable Use Item Icon',
     hint: 'Shows the Item Icon above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -345,7 +399,7 @@ Hooks.once('ready', async function () {
     name: 'Use Item Icon Size',
     hint: 'Size of the Item Icon above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 45,
@@ -362,7 +416,7 @@ Hooks.once('ready', async function () {
     name: 'Use Item Text Size',
     hint: 'Size of the Item Text above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 19,
@@ -380,7 +434,7 @@ Hooks.once('ready', async function () {
     name: 'Recieve Target Lines',
     hint: 'Recieve Target Lines from other players',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -392,7 +446,7 @@ Hooks.once('ready', async function () {
     name: 'Send Target Lines',
     hint: 'Send Target Lines from other players',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -400,12 +454,23 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  game.settings.register('auto-action-tray', 'enableTargetingChatMessage', {
+    name: 'Enable Targeting Chat Message',
+    hint: 'Posts a chat message when a player begins targeting with an item, updating it as targets are selected. The message is removed once targeting is confirmed or canceled.',
+    scope: 'world',
+    config: false,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: false,
+  })
 
   game.settings.register('auto-action-tray', 'targetLinePollRate', {
     name: 'Target Line Poll Rate',
     hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
     scope: 'world',
-    config: true,
+    config: false,
 
     type: Number,
     default: 50,
@@ -423,7 +488,7 @@ Hooks.once('ready', async function () {
     name: 'Multi Item Use Delay',
     hint: 'Delay in miliseconds between using multiple items.',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 1000,
@@ -437,11 +502,11 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-    game.settings.register('auto-action-tray', 'customTargettingCursors', {
+  game.settings.register('auto-action-tray', 'customTargettingCursors', {
     name: 'Custom Targetting Cursors',
     hint: 'Use Custom Targetting Cursors',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -453,7 +518,7 @@ Hooks.once('ready', async function () {
     name: 'Custom Condition Icons',
     hint: 'Use Custom Condition Icons',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -465,7 +530,7 @@ Hooks.once('ready', async function () {
     name: 'Prompt Concentration Overwrite',
     hint: 'Prompt to overwrite Concentration when using a new spell',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -477,7 +542,7 @@ Hooks.once('ready', async function () {
     name: 'Save Npc Data',
     hint: 'Save Confioguration for Npc Tokens',
     scope: 'world',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -485,35 +550,47 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-    game.settings.register('auto-action-tray', 'quickActionHelper', {
+  game.settings.register('auto-action-tray', 'quickActionHelper', {
     name: '(Experimental) Quick Attack Automation',
     hint: 'Enable Quick Attack Automation for Melee and Ranged Attacks',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: false,
 
     requiresReload: true,
-    })
-    
+  })
+
+  game.settings.register('auto-action-tray', 'interceptMidiReactions', {
+    name: '(Experimental) Intercept Midi-QOL Reaction Prompts',
+    hint: 'Replaces the Midi-QOL reaction popup with a prompt on the tray, but only when the reaction is for the actor currently shown in your tray. Requires the Midi-QOL module.',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: true,
+  })
+
   game.settings.register('auto-action-tray', 'unboundPathfindingDepth', {
     name: '(Experimental) Unbounded Pathfinding Depth',
     hint: 'Enable Unbounded Pathfinding Depth for Quick Actions.  May impact performance.  Bound Depth is determined by Actor Speed.',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: false,
 
     requiresReload: true,
-    })
-  
-    game.settings.register('auto-action-tray', 'quickActionDepth', {
+  })
+
+  game.settings.register('auto-action-tray', 'quickActionDepth', {
     name: '(Experimental) Quick Action Depth',
     hint: 'Maximum Distance for Quick Action Pathfinding.  Larger distances may impact performance.',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 6,
@@ -526,17 +603,43 @@ Hooks.once('ready', async function () {
 
     requiresReload: true,
   })
-  
 
   if (game.settings.get('auto-action-tray', 'customConditionIcons')) {
     ConditionTray.setCustomIcons()
   }
 
   if (game.settings.get('auto-action-tray', 'enable')) {
-    hotbar = new AutoActionTray({
-      id: 'auto-action-tray',
-      socket: socket,
-    })
-
+    try {
+      hotbar = new AutoActionTray({
+        id: 'auto-action-tray',
+        socket: socket,
+      })
+    } catch (error) {
+      console.error(
+        'AAT | Failed to initialize Auto Action Tray (likely no active scene yet).',
+        error,
+      )
+      if (game.user.isGM) {
+        ui.notifications.error(
+          'Auto Action Tray failed to initialize — it will retry automatically once a scene is ready.',
+        )
+      }
+      Hooks.once('canvasReady', () => {
+        if (hotbar) return
+        try {
+          hotbar = new AutoActionTray({
+            id: 'auto-action-tray',
+            socket: socket,
+          })
+        } catch (error2) {
+          console.error('AAT | Retry on canvasReady also failed.', error2)
+          if (game.user.isGM) {
+            ui.notifications.error(
+              'Auto Action Tray failed to initialize a second time. Please reload the client.',
+            )
+          }
+        }
+      })
+    }
   }
 })

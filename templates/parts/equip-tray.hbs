@@ -1,41 +1,15 @@
-{{!-- {{#if itemSelectorEnabled}}
-  {{#if itemConfigItem}}
-    <div class='transparent-box ability-selection-input' style='position: absolute;'>
-
-      <img
-        class='{{itemConfigItem.rarity}}-item'
-        data-drag='true'
-        data-item-id='{{equipmentTray.rangedWeapon.id}}'
-        data-index='itemConfigItem'
-        src='{{itemConfigItem.img}}'
-        alt='{{itemConfigItem.name}}'
-        data-tooltip="{{> 'AAT.item-tooltip' itemConfigItem.tooltip}}"
-        data-tooltip-direction='UP'
-      />
-    </div>
-  {{else}}
-    <div
-      class='transparent-box ability-selection-input'
-      style='position: absolute; text-align: center;'
-      data-drag='true'
-      data-index='itemConfig'
-    >
-   <div style="pointer-events: none; font-size: 25px;"> Item Config</div></div>
-  {{/if}}
-{{/if}} --}}
-
 {{#if equipmentTray.meleeWeapon}}
   <img
-    class='{{equipmentTray.meleeWeapon.rarity}}-item  action-hover quick-slot-1 {{#if (eq equipmentTray.activeSlot 1)}} multi-additional  {{/if}}'
+    class='{{equipmentTray.meleeWeapon.rarity}}-item action-hover quick-slot-1 {{#if (eq equipmentTray.activeSlot 1)}}multi-additional{{/if}}'
     data-item-id='{{equipmentTray.meleeWeapon.id}}'
     data-drag='true'
     data-action='useItem'
     data-index='meleeWeapon'
-     data-action-type='{{equipmentTray.meleeWeapon.tooltip.actionType}}'
-     data-action-range = "{{equipmentTray.meleeWeapon.tooltip.range}}"
+    data-action-type='{{equipmentTray.meleeWeapon.tooltip.actionType}}'
+    data-action-range='{{equipmentTray.meleeWeapon.tooltip.range}}'
     src='{{equipmentTray.meleeWeapon.img}}'
     alt='{{equipmentTray.meleeWeapon.name}}'
-    {{#with equipmentTray.meleeWeapon}}a
+    {{#with equipmentTray.meleeWeapon}}
       data-tooltip="{{> 'AAT.item-tooltip' this.tooltip}}"
     {{/with}}
     data-tooltip-direction='UP'
@@ -46,13 +20,13 @@
 
 {{#if equipmentTray.rangedWeapon}}
   <img
-    class='{{equipmentTray.rangedWeapon.rarity}}-item  action-hover quick-slot-2 {{#if (eq equipmentTray.activeSlot 2)}} multi-additional  {{/if}}'
+    class='{{equipmentTray.rangedWeapon.rarity}}-item action-hover quick-slot-2 {{#if (eq equipmentTray.activeSlot 2)}}multi-additional{{/if}}'
     data-drag='true'
     data-item-id='{{equipmentTray.rangedWeapon.id}}'
     data-action='useItem'
     data-index='rangedWeapon'
-         data-action-type='{{equipmentTray.rangedWeapon.tooltip.actionType}}'
-     data-action-range = "{{equipmentTray.rangedWeapon.tooltip.range}}"
+    data-action-type='{{equipmentTray.rangedWeapon.tooltip.actionType}}'
+    data-action-range='{{equipmentTray.rangedWeapon.tooltip.range}}'
     src='{{equipmentTray.rangedWeapon.img}}'
     alt='{{equipmentTray.rangedWeapon.name}}'
     {{#with equipmentTray.rangedWeapon}}

@@ -44,6 +44,36 @@ export class CustomStaticTray extends AbilityTray {
     this.generateTray()
   }
 
+  
+  generateTray() {
+    let actor = fromUuidSync(this.actorUuid)
+    if (this.label == 'Legendary Actions') {
+      this.generateLegendaryTray(actor)
+      return
+    }
+    let allItems = this.application.getActorAbilities(this.actorUuid)
+    if (this.keyItemId && allItems.length > 0) {
+      this.keyItem = allItems.find((e) => e.id == this.keyItemId)
+      this.abilities.push(this.keyItem)
+      this.keyItemUses = this.keyItem.item.system?.uses?.value
+      this.keyItemUsesMax = this.keyItem.item.system?.uses?.max
+      this.abilities.push(
+        ...allItems.filter((e) =>
+          e.activities?.some((activity) =>
+            activity.activity.consumption?.targets?.some(
+              (target) => target.target === this.keyItemId,
+            ),
+          ),
+        ),
+      )
+      
+      this.id = 'customStaticTray' + '-' + this.keyItemId
+      
+      this.icon = this.getIcon(this.keyItem, actor)
+      AbilityTray.onCompleteGeneration.bind(this.application)()
+    }
+  }
+  
   generateLegendaryTray(actor) {
     this.keyItemUsesMax = actor.system.resources?.legact?.max
     this.keyItemUses = actor.system.resources?.legact?.value
@@ -67,36 +97,7 @@ export class CustomStaticTray extends AbilityTray {
     this.icon = '<i class="fa-solid fa-crown icon-custom"></i>'
     AbilityTray.onCompleteGeneration.bind(this.application)()
   }
-
-  generateTray() {
-    let actor = fromUuidSync(this.actorUuid)
-    if (this.label == 'Legendary Actions') {
-      this.generateLegendaryTray(actor)
-      return
-    }
-    let allItems = this.application.getActorAbilities(this.actorUuid)
-    if (this.keyItemId && allItems.length > 0) {
-      this.keyItem = allItems.find((e) => e.id == this.keyItemId)
-      this.abilities.push(this.keyItem)
-      this.keyItemUses = this.keyItem.item.system?.uses?.value
-      this.keyItemUsesMax = this.keyItem.item.system?.uses?.max
-      this.abilities.push(
-        ...allItems.filter((e) =>
-          e.activities?.some((activity) =>
-            activity.activity.consumption?.targets?.some(
-              (target) => target.target === this.keyItemId,
-            ),
-          ),
-        ),
-      )
-
-      this.id = 'customStaticTray' + '-' + this.keyItemId
-
-      this.icon = this.getIcon(this.keyItem, actor)
-      AbilityTray.onCompleteGeneration.bind(this.application)()
-    }
-  }
-
+  
   static setCustomStaticTray(itemUuid, actor) {
     if (actor != null) {
       let data = actor.getFlag('auto-action-tray', 'data')
@@ -108,7 +109,7 @@ export class CustomStaticTray extends AbilityTray {
         }
       }
 
-      let temparr = [...new Set([...data, itemId])]
+      let temparr = [...new Set([...data, itemUuid])]
       actor.setFlag('auto-action-tray', 'data', {
         customStaticTrays: { trays: JSON.stringify(temparr) },
       })
@@ -132,10 +133,6 @@ export class CustomStaticTray extends AbilityTray {
       return CustomStaticTray.classIcons[ret]
     }
 
-    // let requirements = keyItem.item?.system?.requirements
-    // let parse = Object.keys(CustomStaticTray.classIcons).filter((e) =>
-    //   keyItem?.requirements?.toLocaleLowerCase().includes(e),
-    // )[0]
     let actorClasses = actor._classes
     let classarr = Object.keys(actor._classes)
     classarr = classarr.sort(
@@ -144,7 +141,6 @@ export class CustomStaticTray extends AbilityTray {
     let primaryclass = classarr[0]
     return CustomStaticTray.classIcons[primaryclass]
 
-    return '<i class="fa-solid fa-flask"></i>'
   }
 
   static checkOverride(keyItem) {

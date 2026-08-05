@@ -1,11 +1,7 @@
 <div data-data-id='{{{tray.id}}}'>
-
   <ol class='activity-ol'>
-
     <div class='activity-selection-text'>
-
-        Select an Activity
-
+      Select an Activity
     </div>
 
     {{#each activities as |activity|}}
@@ -19,7 +15,6 @@
           data-action='useActivity'
           data-tooltip="{{> 'AAT.item-tooltip' activity.tooltip}}"
           class='ability-button activity-button'
-
         >
           <img
             src='{{activity.img}}'
@@ -32,13 +27,7 @@
             {{getRomanNumeral activity.actorSpellData.level}}
           </div>
         </div>
-
-
       </li>
     {{/each}}
-
   </ol>
-
-
-
 </div>

@@ -3,36 +3,33 @@
     <div
       data-drag="true"
       data-item-id="{{item.id}}"
-      data-activity-id = "{{item.activityId}}"
+      data-activity-id="{{item.activityId}}"
       data-index="{{@index}}"
       data-trayid="{{tray.id}}"
       data-tooltip="{{> 'AAT.item-tooltip' (selectItemTooltip item tray)}}"
       data-tooltip-direction="UP"
-      data-action-range = "{{item.tooltip.range}}"
+      data-action-range="{{item.tooltip.range}}"
       {{#if (eq isActive false)}}
         data-action="viewItem"
-        class="ability-button ability-button-passive "
+        class="ability-button ability-button-passive"
       {{else}}
-      data-action-type='{{item.tooltip.actionType}}'
+        data-action-type='{{item.tooltip.actionType}}'
         data-action="useItem"
         class="ability-button action-hover"
       {{/if}}
     >
- 
-
-
       {{#if (eq isActive false)}}
-      {{#if (eq item.type 'container')}}
-        <div class="transparent-box-passive item-type-container" data-index="{{@index}}">
-      {{else}}
-        <div class="transparent-box-passive " data-index="{{@index}}">
-      {{/if}}
+        {{#if (eq item.type 'container')}}
+          <div class="transparent-box-passive item-type-container" data-index="{{@index}}">
+        {{else}}
+          <div class="transparent-box-passive" data-index="{{@index}}">
+        {{/if}}
           <img
-              class="{{item.rarity}}-item {{getItemActive item.name @root.activeEffects}}"
+            class="{{item.rarity}}-item {{getItemActive item.name @root.activeEffects}}"
             src="{{item.img}}"
             alt="{{item.name}}"
             data-item-id="{{item.id}}"
-            data-activity-id = "{{item.activityId}}"
+            data-activity-id="{{item.activityId}}"
             data-trayid="{{tray.id}}"
             data-index="{{@index}}"
           />
@@ -42,10 +39,7 @@
           {{> AAT.item-spell item=item index=@index tray=tray}}
         {{else}}
           <img
-            {{#if item.equipped}}
-              class="{{item.rarity}}-item item-equipped {{getItemActive item.name @root.activeEffects}}"
-            {{/if}}
-            class="{{item.rarity}}-item {{getItemActive item.name @root.activeEffects}}"
+            class="{{item.rarity}}-item{{#if item.equipped}} item-equipped{{/if}} {{getItemActive item.name @root.activeEffects}}"
             src="{{item.img}}"
             alt="{{item.name}}"
             data-item-id="{{item._id}}"
@@ -56,15 +50,13 @@
       {{/if}}
 
       <div style="position: relative">
-                <div class="in-range-icon in-range">
-           {{!-- <i class="fa-regular fa-crosshairs-simple"></i> --}}
-          </div>
-          
-              {{#if (eq item.subtype "scroll")}}
-      <div class="scroll-icon">
+        <div class="in-range-icon in-range"></div>
+
+        {{#if (eq item.subtype "scroll")}}
+          <div class="scroll-icon">
             <i class="fa-solid fa-scroll-old"></i>
           </div>
-     {{/if}}
+        {{/if}}
 
         {{#if item.wildcard}}
           <div class="wildcard-icon">
@@ -80,7 +72,6 @@
           {{item.uses}}
         </div>
       </div>
-      
     </div>
   {{else}}
     <div

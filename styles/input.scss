@@ -2,14 +2,17 @@
 @use 'components/ability';
 @use 'components/buttons';
 @use 'components/custom';
+@use 'components/dialogs';
 @use 'components/drag';
 @use 'components/effect';
 @use 'components/equipment';
 @use 'components/icons';
 @use 'components/item';
 @use 'components/portrait';
+@use 'components/reaction-prompt';
 @use 'components/skill';
 @use 'components/static';
+@use 'components/targeting';
 @use 'components/tooltip';
 @use 'components/turn';
 @use 'components/utility';

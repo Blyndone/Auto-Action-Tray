@@ -61,9 +61,6 @@ export class DraggableTrayContainer {
     const application = this.application
     const container = this
 
-    // ------------------------------
-    // Math Helpers
-    // ------------------------------
 
     const getLeftNeighbor = () => container.draggableTrays[index - 1]?.tray
     const getRightNeighbor = () => container.draggableTrays[index + 1]?.tray
@@ -104,9 +101,6 @@ export class DraggableTrayContainer {
       }
     }
 
-    // ------------------------------
-    // Draggable
-    // ------------------------------
 
     tray.draggable = Draggable.create(`.container-${tray.id}`, {
       type: 'x',
@@ -142,63 +136,7 @@ export class DraggableTrayContainer {
     })
   }
 
-  //   createDraggable(tray) {
-  //   const index = tray.index
-  //   const application = this.application
-  //   const container = this
 
-  //   tray.draggable = Draggable.create(`.container-${tray.id}`, {
-  //     type: 'x',
-  //     bounds: {
-  //       minX:
-  //         index != 1
-  //           ? Math.max(this.draggableTrays[index - 1]?.tray.xPos + container.spacerSize || 0)
-  //           : 0,
-  //       maxX: Math.min(
-  //         this.draggableTrays[index + 1]?.tray.xPos - container.spacerSize || this.trayMax,
-  //       ),
-  //     },
-  //     force3D: false,
-  //     handle: `.handle-${tray.id}`,
-  //     inertia: true,
-  //     zIndexBoost: false,
-  //     maxDuration: 0.1,
-
-  //     onDrag: function () {
-  //       tray.setClipPath.bind(container)(tray, this.x)
-  //     },
-  //     snap: {
-  //       duration: 0.1,
-  //       x: function (value) {
-  //         let min =
-  //           Math.floor(value / container.iconSize) * container.iconSize +
-  //           container.padding +
-  //           (index - 1) * (container.handleSize + container.padding)
-  //         tray.setClipPath.bind(container)(tray, min, 0.1)
-  //         return min
-  //       },
-  //     },
-  //     onThrowComplete: function () {
-  //       let min =
-  //         Math.floor(this.endX / container.iconSize) * container.iconSize +
-  //         container.padding +
-  //         (index - 1) * (container.handleSize + container.padding)
-  //       application.stackedTray.setTrayPosition(tray.id, min)
-  //       tray.setMin(min)
-  //       tray.setPos(min)
-  //       if (index - 1 != 0) {
-  //         container.draggableTrays[index - 1].applyBounds({
-  //           maxX: tray.xMin - container.spacerSize,
-  //         })
-  //       }
-  //       if (index + 1 < container.trayCount) {
-  //         container.draggableTrays[index + 1].applyBounds({
-  //           minX: tray.xMin + container.spacerSize,
-  //         })
-  //       }
-  //     },
-  //   })
-  // }
 }
 
 class DraggableTray {
@@ -221,33 +159,33 @@ class DraggableTray {
   }
 
   applyBounds(bounds) {
-    let oldMin = this.draggable[0].minX
-    let oldMax = this.draggable[0].maxX
+    const draggable = this.draggable?.[0]
+
+    const oldMin = draggable?.minX
+    const oldMax = draggable?.maxX
+
     bounds = {
       minX: bounds.minX !== undefined ? bounds.minX : oldMin,
       maxX: bounds.maxX !== undefined ? bounds.maxX : oldMax,
     }
-    this.setMin(bounds.minX)
-    this.setMax(bounds.maxX)
 
-    if (this.draggable) {
-      this.draggable[0].applyBounds(bounds)
-    }
+    if (bounds.minX !== undefined) this.setMin(bounds.minX)
+    if (bounds.maxX !== undefined) this.setMax(bounds.maxX)
+
+    draggable?.applyBounds(bounds)
   }
 
   setClipPath(tray, pos, duration = null, selfOnly = false) {
     function setClip(currentTray, pos, duration = 0) {
-      // const selector = `.container-${identifier}`
+
       const element = currentTray.getElement()
       const newClipPath = `inset(0px ${pos}px 0px 0px)`
       if (!element) return
 
-      // const currentClip = getComputedStyle(element).clipPath
-      // if (currentClip === newClipPath) return
 
       gsap.to(`.container-${currentTray.id}`, {
         duration: duration,
-        // ease: 'power3.out',
+
         clipPath: `inset(0px ${pos}px 0px 0px)`,
       })
     }

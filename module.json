@@ -3,9 +3,9 @@
   "id": "auto-action-tray",
   "version": "#{VERSION}#",
   "compatibility": {
-    "minimum": "11.302",
-    "verified": "12.999",
-    "maximum": "12.999"
+    "minimum": "13.302",
+    "verified": "13.000",
+    "maximum": "13.999"
   },
   "relationships": {
     "requires": [
@@ -29,7 +29,7 @@
         "type": "system",
         "compatibility": {
           "minimum": "3.3.0",
-          "maximum": "4.99.99"
+          "maximum": "5.99.99"
         }
       }
     ]
@@ -54,30 +54,6 @@
       "type": "icon",
       "loop": false,
       "flags": {}
-    }
-  ],
-  "packs": [
-    {
-      "name": "aat-default-actions",
-      "label": "AAT - Default Actions",
-      "path": "packs/aat-default-actions",
-      "type": "Item",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "dnd5e"
-    },
-    {
-      "name": "aat-action-override",
-      "label": "AAT - Action Override",
-      "path": "packs/aat-action-override",
-      "type": "Item",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "dnd5e"
     }
   ]
 }
