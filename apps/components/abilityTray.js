@@ -308,7 +308,12 @@ export class AbilityTray {
 
   checkDiff(itemMap) {
     if (this.id == 'favoriteItems') {
+      // regenerateTray already rebuilds this.abilities from the live actor/activity data,
+      // including activity-specific favorites. The itemMap remap below keys off e.id, but
+      // AATActivity.id is the parent item's id (not the activity's), so it would replace a
+      // favorited activity with the item's default activity — skip it here.
       this.regenerateTray(this)
+      return
     }
     this.abilities = this.abilities.map((e) => itemMap.get(e?.id) || e)
   }
