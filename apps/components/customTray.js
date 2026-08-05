@@ -21,7 +21,6 @@ export class CustomTray extends AbilityTray {
   generateTray(cachedAbilities) {
     const actor = fromUuidSync(this.actorUuid)
     let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
-    allItems.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
     switch (this.category) {
       case 'common':
         this.abilities = allItems
@@ -181,7 +180,6 @@ export class CustomTray extends AbilityTray {
 
         let favorites = actor.system.favorites.map((e) => e.id.split('.').pop())
         this.abilities = matchingItems
-
 
         this.id = 'favoriteItems'
         break

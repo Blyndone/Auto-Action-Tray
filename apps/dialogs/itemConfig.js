@@ -193,10 +193,16 @@ export class ItemConfig {
   }
 
   static getItemConfig(item) {
-    let flags = null
+    // Accepts either a raw Item document or an AATItem wrapper (which holds the document on `.item`).
+    const doc = item?.item ?? item
+    // Most items have no saved config. Checking the flag first avoids throwing and swallowing a
+    // SyntaxError once per item on every tray build.
+    const flag = doc.getFlag('auto-action-tray', 'itemConfig')
+    if (typeof flag !== 'string') return null
     try {
-      flags = JSON.parse(item.getFlag('auto-action-tray', 'itemConfig'))
-    } catch (e) {}
-    return flags
+      return JSON.parse(flag)
+    } catch (e) {
+      return null
+    }
   }
 }

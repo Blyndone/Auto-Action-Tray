@@ -20,24 +20,13 @@ export class AbilityTray {
   }
 
   padArray(arr, filler = null) {
-    let rowCount = 2
-    let columnCount = 10
-    if (game.settings.get('auto-action-tray', 'rowCount')) {
-      rowCount = this.rowCount =
-        this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty('--item-tray-item-height-count', rowCount)
-    }
-
-    if (game.settings.get('auto-action-tray', 'columnCount')) {
-      columnCount = game.settings.get('auto-action-tray', 'columnCount')
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty(' --item-tray-item-width-count', columnCount)
-    }
-
-    let totalabilities = (rowCount + 1) * columnCount
+    // Counts are resolved once by the application in _applyUiSettings, which also writes the
+    // --aat-item-tray-item-*-count custom properties the stylesheets actually read. This used to
+    // re-read both settings and write un-prefixed --item-tray-item-*-count properties on every
+    // tray built; no stylesheet references those, so the writes were dead.
+    const rowCount = this.rowCount || 2
+    const columnCount = this.application?.columnCount || 10
+    const totalabilities = (rowCount + 1) * columnCount
 
     if (arr == null) return new Array(totalabilities).fill(filler)
     return [...arr, ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)]
@@ -197,7 +186,6 @@ export class AbilityTray {
   }
 
   getSavedData(cachedAbilities) {
-
     let actor = fromUuidSync(this.actorUuid)
     let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     if (!this.saveNpcData() && actor.type == 'npc') {
@@ -227,7 +215,6 @@ export class AbilityTray {
       }
       this.savedData = true
     }
-
   }
 
   static setDelayedData(item, actor) {
@@ -247,7 +234,6 @@ export class AbilityTray {
   }
 
   setSavedData() {
-
     let actor = fromUuidSync(this.actorUuid)
     if (!this.saveNpcData() && actor.type == 'npc') {
       return
@@ -274,7 +260,6 @@ export class AbilityTray {
       }
     }
     this.savedData = true
-
   }
 
   setAbility(index, ability) {
@@ -353,7 +338,8 @@ export class AbilityTray {
   }
 
   async enrichDescription(item) {
-    item['enrichedDescription'] = await foundry.applications.ux.TextEditor.implementation.enrichHTML(item.description, {})
+    item['enrichedDescription'] =
+      await foundry.applications.ux.TextEditor.implementation.enrichHTML(item.description, {})
     return item
   }
   async generateTooltip(item) {

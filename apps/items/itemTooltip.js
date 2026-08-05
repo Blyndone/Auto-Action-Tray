@@ -1,12 +1,17 @@
 export class AATItemTooltip {
+  // Damage labels are the only expensive part of a tooltip (Roll.parse + term.evaluate +
+  // simplifyRollFormula). They are read solely by templates/parts/item-tooltip.hbs, so they
+  // are computed on first access instead of for every item at tray-build time.
+  #damageComputed = false
+  #damageLabel = ''
+  #diceLabel = ''
+
   constructor(item, activity, options = {}) {
     this.spellLevel = options.spellLevel ?? item.item.system.level ?? null
     this.name = this.setName(item, activity)
     this.item = item
     this.type = this.setType()
     this.activity = activity ? activity : item.defaultActivity
-    this.damageLabel = ''
-    this.damageFormulaLabel = ''
     this.description = ''
     this.activationTimeLabel = ''
     this.actionType = ''
@@ -16,6 +21,28 @@ export class AATItemTooltip {
     this.targetCount = options.targetCount ?? null
     this.saveLabel = ''
     this.concentrationLabel = ''
+    // Defined as own accessors rather than on the prototype so they survive any context that
+    // gets flattened into a plain object (Handlebars flattens a partial's context when the
+    // partial is invoked with hash arguments, and a spread would drop prototype getters).
+    // Do not pass hash arguments to the AAT.item-tooltip partial.
+    Object.defineProperties(this, {
+      damageLabel: {
+        get: () => {
+          this.#ensureDamage()
+          return this.#damageLabel
+        },
+        enumerable: true,
+        configurable: true,
+      },
+      diceLabel: {
+        get: () => {
+          this.#ensureDamage()
+          return this.#diceLabel
+        },
+        enumerable: true,
+        configurable: true,
+      },
+    })
     this.setValues()
   }
 
@@ -44,7 +71,9 @@ export class AATItemTooltip {
     ) {
       itemName = `${itemName} (Level ${this.spellLevel})`
     }
-    return duplicateName || activityName == '' ? itemName : `${itemName} <br> <span class='activity-name'>${activityName}</span>` 
+    return duplicateName || activityName == ''
+      ? itemName
+      : `${itemName} <br> <span class='activity-name'>${activityName}</span>`
   }
 
   setType() {
@@ -82,11 +111,28 @@ export class AATItemTooltip {
       this.setSaveLabel()
       this.setConcentrationLabel()
       this.setRangeLabel()
-      this.setDamageLabel(this.item, this.activity)
       this.setTargetCount(this.item, this.activity, this.spellLevel)
     }
   }
-  setDamageLabel(item, activity) {
+
+  // Mirrors the `this.item.isActive` guard that used to wrap setDamageLabel in setValues().
+  // Failures degrade to an empty damage label: this now runs during template rendering, where
+  // an uncaught throw would take out the whole center tray rather than one tooltip.
+  #ensureDamage() {
+    if (this.#damageComputed) return
+    try {
+      if (this.item.isActive) this.#computeDamageLabels(this.item, this.activity)
+    } catch (err) {
+      console.error(
+        `AAT | Failed to compute damage labels for "${this.item?.name}" — showing no damage.`,
+        err,
+      )
+    } finally {
+      this.#damageComputed = true
+    }
+  }
+
+  #computeDamageLabels(item, activity) {
     if (activity.type == 'cast') return
     let scaling = this.getScaling(item.item, activity.activity, this.spellLevel)
     if (scaling['scaling'] == undefined || isNaN(scaling['scaling'])) {
@@ -112,14 +158,14 @@ export class AATItemTooltip {
     }
     if (data == '' || !data) return
 
-    this.diceLabel =
+    this.#diceLabel =
       dice + data.map((x) => x.formula).join(' <br><i class="fa-solid fa-dice-d6"></i> ')
 
     const minDamage = data.reduce((sum, x) => sum + Number(x.min), 0)
     const maxDamage = data.reduce((sum, x) => sum + Number(x.max), 0)
     const damageType = data[0].damageTypes !== 'Healing' ? ' Damage' : ' Healing'
 
-    this.damageLabel = `${minDamage} ~ ${maxDamage}${damageType}`
+    this.#damageLabel = `${minDamage} ~ ${maxDamage}${damageType}`
   }
 
   setDescription() {
@@ -170,7 +216,7 @@ export class AATItemTooltip {
   setRangeLabel() {
     const activity = this.activity.activity
     if (!activity) return
-    let range = 0;
+    let range = 0
     const icon = (type) => (type === 'spell' ? 'fa-wand-sparkles' : 'fa-bow-arrow')
 
     let label = ''

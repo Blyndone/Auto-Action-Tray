@@ -54,6 +54,15 @@ export class ConditionTray {
         }
       }),
     )
+
+    // The tray is not in the DOM until it is first opened, so without this the browser fetches
+    // every condition icon during the open animation and the first click feels slow. Covers
+    // marker conditions and the customConditionIcons-off case, which setCustomIcons misses.
+    this.conditions.forEach((condition) => {
+      if (!condition.img) return
+      const img = new Image()
+      img.src = condition.img
+    })
   }
 
   setActive() {
@@ -76,7 +85,9 @@ export class ConditionTray {
     )
     if (concentration) {
       this.conditions.find((c) => c.id === 'concentrating').description =
-        await foundry.applications.ux.TextEditor.implementation.enrichHTML(concentration.description)
+        await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+          concentration.description,
+        )
     } else {
       this.conditions.find((c) => c.id === 'concentrating').description =
         ConditionTray.dndConditions.coreConditions.find((c) => c.id === 'concentrating').description
@@ -167,7 +178,9 @@ export class ConditionTray {
       )
 
     const document = await fromUuid(effect.reference)
-    return foundry.applications.ux.TextEditor.implementation.enrichHTML(document?.text?.content || 'No content available.')
+    return foundry.applications.ux.TextEditor.implementation.enrichHTML(
+      document?.text?.content || 'No content available.',
+    )
   }
 
   checkConcentration() {

@@ -372,10 +372,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     let savedActor = this.getSavedActor(actor, token)
 
     if (savedActor) {
-      if (actor.items.size != savedActor.abilities.length) {
-        savedActor.abilities = actor.items.map((i) => AATItem.safeCreate(i, actor)).filter(Boolean)
-        return
-      }
+      this.syncSavedAbilities(savedActor, actor)
       this.checkTrayDiff()
       return
     }
@@ -400,15 +397,45 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         img.onerror = reject
       })
     }
-    urls.forEach(async (url) => await preloadImage(url))
+    // allSettled rather than a bare forEach: preloadImage rejects on a missing icon, which would
+    // otherwise surface as an unhandled promise rejection per broken image.
+    Promise.allSettled(urls.map((url) => preloadImage(url)))
 
     this.savedActors.push({
       name: actor.name,
       id: actor.id,
       tokenId: actor?.token?.id,
       type: actor.type,
-      abilities: items.map((i) => AATItem.safeCreate(i, actor)).filter(Boolean),
+      abilities: AutoActionTray.sortAbilities(
+        items.map((i) => AATItem.safeCreate(i, actor)).filter(Boolean),
+      ),
     })
+  }
+
+  // The cached ability list is shared by reference with every tray, so it is sorted once here
+  // instead of being re-sorted in place by each tray's generateTray.
+  static sortAbilities(abilities) {
+    return abilities.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
+  }
+
+  /**
+   * Reconcile a cached actor's AATItem wrappers against the actor's current items. Wrappers for
+   * items that still exist are reused, so only genuinely new items pay construction cost and
+   * trays keep their existing object references.
+   */
+  syncSavedAbilities(savedActor, actor) {
+    const existing = new Map(savedActor.abilities.map((a) => [a?.id, a]))
+    const abilities = []
+    for (const item of actor.items) {
+      const cached = existing.get(item.id)
+      if (cached) {
+        abilities.push(cached)
+        continue
+      }
+      const created = AATItem.safeCreate(item, actor)
+      if (created) abilities.push(created)
+    }
+    savedActor.abilities = AutoActionTray.sortAbilities(abilities)
   }
 
   getSavedActor(actor, token) {
@@ -526,8 +553,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.totalabilities = this.rowCount * this.columnCount
     }
 
+    // TEMPORARY setup profiling — remove once the numbers have been captured.
+    const _t0 = performance.now()
     await this.generateActorItems(actor, token)
+    const _t1 = performance.now()
     this.generateTrays(this.actor)
+    const _t2 = performance.now()
+    console.log(
+      `AAT | setup "${actor.name}" (${actor.items.size} items): items ${(_t1 - _t0).toFixed(1)}ms, trays ${(_t2 - _t1).toFixed(1)}ms, total ${(_t2 - _t0).toFixed(1)}ms`,
+    )
     this.setActor(actor)
     if (this.quickActionHelperEnabled) {
       this.quickActionHelper.setData(actor)

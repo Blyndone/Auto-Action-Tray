@@ -3,6 +3,9 @@ import { AATActivity } from './activity.js'
 import { AATItemTooltip } from './itemTooltip.js'
 
 export class AATItem {
+  #tooltip = null
+  #tooltipResolved = false
+
   static safeCreate(item, actor) {
     try {
       return new AATItem(item)
@@ -43,25 +46,45 @@ export class AATItem {
       }) ?? []
     this.defaultActivity = this.activities[0] ?? null
 
+    // Reading this used to build the default activity's tooltips during construction, which
+    // defeats the deferral in AATActivity. Resolved on first read instead; the setter keeps the
+    // pact override below (and any external assignment) working.
+    Object.defineProperties(this, {
+      tooltip: {
+        get: () => {
+          if (!this.#tooltipResolved) {
+            this.#tooltipResolved = true
+            this.#tooltip = this.activities.length
+              ? (this.defaultActivity?.tooltip ?? null)
+              : new AATItemTooltip(this, null)
+          }
+          return this.#tooltip
+        },
+        set: (value) => {
+          this.#tooltipResolved = true
+          this.#tooltip = value
+        },
+        enumerable: true,
+        configurable: true,
+      },
+    })
+
     if (this.item.system?.activities?.contents.length > 0) {
       this.fastForward = null
       this.useTargetHelper = null
       this.targetCount = null
-      this.tooltip = this.defaultActivity.tooltip
       this.uses =
         this.item.type == 'consumable'
           ? this.item.system.quantity
           : this.item.system?.uses?.max
             ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
             : ''
-    } else {
-      this.tooltip = new AATItemTooltip(this, null)
     }
     if (this.preparationMode == 'pact') {
       this.pactLevel = this.actor.system?.spells?.pact?.level
-      const pactActivity = this.activities.find((a) =>
-        a.tooltips?.find((e) => e.spellLevel == this.pactLevel),
-      )
+      // hasTooltipForLevel answers from the level range, so this no longer builds every
+      // activity's tooltips just to find the pact one.
+      const pactActivity = this.activities.find((a) => a.hasTooltipForLevel(this.pactLevel))
       if (pactActivity) {
         this.defaultActivity = pactActivity
         this.tooltip = pactActivity.tooltips.find((e) => e.spellLevel == this.pactLevel)
@@ -106,17 +129,21 @@ export class AATItem {
     this.useTargetHelper = this.itemConfig?.useTargetHelper ?? null
   }
 
-  async setDescription() {
+  setDescription() {
     if (!this.item.system?.description?.value) return
-    this.description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-      this.item.system.description.value,
-      { relativeTo: this.item },
-    )
-
-    this.activities.forEach(async (activity) => {
-      activity.setAllDescriptions()
-    })
-    this.defaultActivity = this.activities[0]
+    // enrichHTML is slow and one call fires per item, so the batch is pushed off the setup
+    // critical path instead of competing with the first render. It was already un-awaited, so
+    // tooltips picked up enriched text on a later render before this change too.
+    const enrich = async () => {
+      this.description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+        this.item.system.description.value,
+        { relativeTo: this.item },
+      )
+      this.activities.forEach((activity) => activity.setAllDescriptions())
+      this.defaultActivity = this.activities[0]
+    }
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(() => enrich())
+    else setTimeout(enrich, 0)
   }
   async checkActivities() {
     for (const activity of this.activities) {
