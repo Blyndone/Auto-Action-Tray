@@ -1,5 +1,6 @@
 import { AutoActionTray } from '../apps/autoActionTray.js'
 import { ConditionTray } from '../apps/components/conditionsTray.js'
+import { SettingsConfigApp } from '../apps/dialogs/settingsConfig.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -25,6 +26,7 @@ export async function preloadHandlebarsTemplates() {
     'modules/auto-action-tray/templates/parts/spell-level-tray.hbs',
     'modules/auto-action-tray/templates/parts/target-tray.hbs',
     'modules/auto-action-tray/templates/parts/condition-tray.hbs',
+    'modules/auto-action-tray/templates/parts/reaction-prompt-tray.hbs',
   ]
   const paths = {}
   for (const path of partials) {
@@ -159,11 +161,20 @@ Hooks.once('ready', async function () {
       "Auto Action Tray requires the 'socketlib' module. Please install and activate it.",
     )
 
+  game.settings.registerMenu('auto-action-tray', 'settingsMenu', {
+    name: 'Configure Settings',
+    label: 'Configure Settings',
+    hint: 'Configure Auto Action Tray settings, grouped by category.',
+    icon: 'fa-solid fa-sliders',
+    type: SettingsConfigApp,
+    restricted: false,
+  })
+
   game.settings.register('auto-action-tray', 'enable', {
     name: 'Enabled',
     hint: 'Enable or Disable the Hotbar',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -174,7 +185,7 @@ Hooks.once('ready', async function () {
     name: 'Scale',
     hint: 'Set the Scale of the Hotbar',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 0.6,
@@ -192,7 +203,7 @@ Hooks.once('ready', async function () {
     name: 'Background Opacity',
     hint: 'Set the Opacity of the Tray Background',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 0.85,
@@ -217,7 +228,7 @@ Hooks.once('ready', async function () {
     name: 'Auto Theme',
     hint: 'Will automatically set the theme based on the selected actors class',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -228,7 +239,7 @@ Hooks.once('ready', async function () {
     name: 'Auto Theme Targeting Color ',
     hint: 'Changes the Targeting Color based on the selected Actor',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -239,7 +250,7 @@ Hooks.once('ready', async function () {
   game.settings.register('auto-action-tray', 'theme', {
     name: 'Color Theme',
     hint: 'Default Theme if Auto Theme is disabled or not available',
-    config: true,
+    config: false,
     scope: 'client',
     type: new foundry.data.fields.StringField({
       choices: {
@@ -284,7 +295,7 @@ Hooks.once('ready', async function () {
     name: 'Quick Elevation Change',
     hint: 'Replaces the Row Count Buttons with Elevation Change Buttons',
     scope: 'client',
-    config: true,
+    config: false,
     type: Boolean,
     default: true,
 
@@ -295,7 +306,7 @@ Hooks.once('ready', async function () {
     name: 'Number of Rows',
     hint: 'Default Number of Rows',
     scope: 'client',
-    config: true,
+    config: false,
     type: Number,
     default: 3,
 
@@ -312,7 +323,7 @@ Hooks.once('ready', async function () {
     name: 'Number of Columns',
     hint: 'Select Number of Columns',
     scope: 'client',
-    config: true,
+    config: false,
     type: Number,
     default: 15,
 
@@ -329,7 +340,7 @@ Hooks.once('ready', async function () {
     name: 'Enable Range Hover',
     hint: 'Highlights Items that are in range when hovering over a token',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: false,
@@ -341,7 +352,7 @@ Hooks.once('ready', async function () {
     name: 'Default Range Boundary',
     hint: 'Deafault Tray Range Boundaryy for Hovering Items',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -353,7 +364,7 @@ Hooks.once('ready', async function () {
     name: 'Enable Range Boundary',
     hint: 'Enable Range Boundary',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -364,7 +375,7 @@ Hooks.once('ready', async function () {
     name: 'Enable Use Item Name',
     hint: 'Shows the Item Name above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -376,7 +387,7 @@ Hooks.once('ready', async function () {
     name: 'Enable Use Item Icon',
     hint: 'Shows the Item Icon above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -388,7 +399,7 @@ Hooks.once('ready', async function () {
     name: 'Use Item Icon Size',
     hint: 'Size of the Item Icon above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 45,
@@ -405,7 +416,7 @@ Hooks.once('ready', async function () {
     name: 'Use Item Text Size',
     hint: 'Size of the Item Text above the token when using an item',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 19,
@@ -423,7 +434,7 @@ Hooks.once('ready', async function () {
     name: 'Recieve Target Lines',
     hint: 'Recieve Target Lines from other players',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -435,7 +446,7 @@ Hooks.once('ready', async function () {
     name: 'Send Target Lines',
     hint: 'Send Target Lines from other players',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -447,7 +458,7 @@ Hooks.once('ready', async function () {
     name: 'Enable Targeting Chat Message',
     hint: 'Posts a chat message when a player begins targeting with an item, updating it as targets are selected. The message is removed once targeting is confirmed or canceled.',
     scope: 'world',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -459,7 +470,7 @@ Hooks.once('ready', async function () {
     name: 'Target Line Poll Rate',
     hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
     scope: 'world',
-    config: true,
+    config: false,
 
     type: Number,
     default: 50,
@@ -477,7 +488,7 @@ Hooks.once('ready', async function () {
     name: 'Multi Item Use Delay',
     hint: 'Delay in miliseconds between using multiple items.',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 1000,
@@ -495,7 +506,7 @@ Hooks.once('ready', async function () {
     name: 'Custom Targetting Cursors',
     hint: 'Use Custom Targetting Cursors',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -507,7 +518,7 @@ Hooks.once('ready', async function () {
     name: 'Custom Condition Icons',
     hint: 'Use Custom Condition Icons',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -519,7 +530,7 @@ Hooks.once('ready', async function () {
     name: 'Prompt Concentration Overwrite',
     hint: 'Prompt to overwrite Concentration when using a new spell',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -531,7 +542,7 @@ Hooks.once('ready', async function () {
     name: 'Save Npc Data',
     hint: 'Save Confioguration for Npc Tokens',
     scope: 'world',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: true,
@@ -543,10 +554,22 @@ Hooks.once('ready', async function () {
     name: '(Experimental) Quick Attack Automation',
     hint: 'Enable Quick Attack Automation for Melee and Ranged Attacks',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: false,
+
+    requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'interceptMidiReactions', {
+    name: '(Experimental) Intercept Midi-QOL Reaction Prompts',
+    hint: 'Replaces the Midi-QOL reaction popup with a prompt on the tray, but only when the reaction is for the actor currently shown in your tray. Requires the Midi-QOL module.',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: true,
 
     requiresReload: true,
   })
@@ -555,7 +578,7 @@ Hooks.once('ready', async function () {
     name: '(Experimental) Unbounded Pathfinding Depth',
     hint: 'Enable Unbounded Pathfinding Depth for Quick Actions.  May impact performance.  Bound Depth is determined by Actor Speed.',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Boolean,
     default: false,
@@ -567,7 +590,7 @@ Hooks.once('ready', async function () {
     name: '(Experimental) Quick Action Depth',
     hint: 'Maximum Distance for Quick Action Pathfinding.  Larger distances may impact performance.',
     scope: 'client',
-    config: true,
+    config: false,
 
     type: Number,
     default: 6,
