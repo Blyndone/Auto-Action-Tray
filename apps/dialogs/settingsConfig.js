@@ -13,14 +13,14 @@ const SETTING_GROUPS = {
   ],
   appearance: [
     { legend: 'Theme', keys: ['autoTheme', 'autoThemeTargetingColor', 'theme'] },
-    { legend: 'Icons & Cursors', keys: ['customConditionIcons', 'customTargettingCursors'] },
+    { legend: 'Icons & Cursors', keys: ['customConditionIcons', 'customTargetingCursors'] },
   ],
   targeting: [
     { legend: 'Range', keys: ['enableRangeHover', 'defaultRangeBoundary', 'enableRangeBoundary'] },
     {
       legend: 'Target Lines',
       keys: [
-        'recieveTargetLines',
+        'receiveTargetLines',
         'sendTargetLines',
         'enableTargetingChatMessage',
         'targetLinePollRate',
@@ -34,7 +34,7 @@ const SETTING_GROUPS = {
     },
     {
       legend: 'Behavior',
-      keys: ['muliItemUseDelay', 'promptConcentrationOverwrite', 'saveNpcData'],
+      keys: ['multiItemUseDelay', 'promptConcentrationOverwrite', 'saveNpcData'],
     },
   ],
   experimental: [

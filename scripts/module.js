@@ -350,7 +350,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'defaultRangeBoundary', {
     name: 'Default Range Boundary',
-    hint: 'Deafault Tray Range Boundaryy for Hovering Items',
+    hint: 'Default Tray Range Boundary for Hovering Items',
     scope: 'client',
     config: false,
 
@@ -430,9 +430,9 @@ Hooks.once('ready', async function () {
     requiresReload: false,
   })
 
-  game.settings.register('auto-action-tray', 'recieveTargetLines', {
-    name: 'Recieve Target Lines',
-    hint: 'Recieve Target Lines from other players',
+  game.settings.register('auto-action-tray', 'receiveTargetLines', {
+    name: 'Receive Target Lines',
+    hint: 'Receive Target Lines from other players',
     scope: 'client',
     config: false,
 
@@ -444,7 +444,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'sendTargetLines', {
     name: 'Send Target Lines',
-    hint: 'Send Target Lines from other players',
+    hint: 'Send your Target Lines to other players',
     scope: 'client',
     config: false,
 
@@ -468,7 +468,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'targetLinePollRate', {
     name: 'Target Line Poll Rate',
-    hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
+    hint: 'Number of Milliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
     scope: 'world',
     config: false,
 
@@ -484,9 +484,9 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-  game.settings.register('auto-action-tray', 'muliItemUseDelay', {
+  game.settings.register('auto-action-tray', 'multiItemUseDelay', {
     name: 'Multi Item Use Delay',
-    hint: 'Delay in miliseconds between using multiple items.',
+    hint: 'Delay in milliseconds between using multiple items.',
     scope: 'client',
     config: false,
 
@@ -502,9 +502,9 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-  game.settings.register('auto-action-tray', 'customTargettingCursors', {
-    name: 'Custom Targetting Cursors',
-    hint: 'Use Custom Targetting Cursors',
+  game.settings.register('auto-action-tray', 'customTargetingCursors', {
+    name: 'Custom Targeting Cursors',
+    hint: 'Use Custom Targeting Cursors',
     scope: 'client',
     config: false,
 
@@ -540,7 +540,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'saveNpcData', {
     name: 'Save Npc Data',
-    hint: 'Save Confioguration for Npc Tokens',
+    hint: 'Save Configuration for Npc Tokens',
     scope: 'world',
     config: false,
 

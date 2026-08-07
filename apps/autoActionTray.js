@@ -44,7 +44,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     this._registerHooks()
 
-    if (!game.settings.get('auto-action-tray', 'customTargettingCursors')) {
+    if (!game.settings.get('auto-action-tray', 'customTargetingCursors')) {
       const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
       libWrapper.unregister(AUTOACTIONTRAY_MODULE_NAME, 'PIXI.EventSystem.prototype.setCursor')
     }

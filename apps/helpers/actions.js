@@ -556,7 +556,7 @@ export class Actions {
         }
 
         slotUse = 0
-        await wait(game.settings.get('auto-action-tray', 'muliItemUseDelay'))
+        await wait(game.settings.get('auto-action-tray', 'multiItemUseDelay'))
       }
     } else {
       let useNotification =

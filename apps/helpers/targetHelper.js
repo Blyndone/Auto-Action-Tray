@@ -49,7 +49,7 @@ export class TargetHelper {
 
     this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate')
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
-    this.recieveTargetLines = game.settings.get('auto-action-tray', 'recieveTargetLines')
+    this.receiveTargetLines = game.settings.get('auto-action-tray', 'receiveTargetLines')
     this.gridSize = game.canvas.scene.grid.size
 
     Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
@@ -113,40 +113,40 @@ export class TargetHelper {
   }
 
   newPhantomLine(options) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     let line = new TargetLineCombo(options)
     this.phantomLines.push(line)
     return line
   }
   drawPhantomLine(id, endPos) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     let line = this.phantomLines.find((line) => line.id == id)
     line.drawLines(endPos)
   }
   setPhantomInRange(id, inRange) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     let line = this.phantomLines.find((line) => line.id == id)
     line.setInRange(inRange)
   }
 
   setPhantomYOffset(id, yOffset) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     let line = this.phantomLines.find((line) => line.id == id)
     line.setYOffset(yOffset)
   }
 
   clearPhantomLine(id) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     let line = this.phantomLines.find((line) => line.id == id)
     line.clearLines()
   }
   destroyPhantomLine(id) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     let line = this.phantomLines.find((line) => line.id == id)
     line.destroyLines()
   }
   clearAllPhantomLines(actorId) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     this.phantomLines = this.phantomLines.filter((line) => {
       if (line.actorId === actorId) {
         line.destroyLines()
@@ -760,7 +760,7 @@ export class TargetHelper {
   }
 
   createTemplateBoundary(options) {
-    if (!this.recieveTargetLines && options.phantom) return
+    if (!this.receiveTargetLines && options.phantom) return
     return this.templateBoundary?.createBoundary(options)
   }
 
