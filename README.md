@@ -235,7 +235,7 @@ Open **Game Settings → Configure Settings → Auto Action Tray → Configure S
 
 | Setting | Scope | Default | Reload | Description |
 | --- | --- | --- | --- | --- |
-| Enable Range Hover | Client | On | | Highlight in-range items when hovering a token |
+| Enable Range Hover | Client | Off | | Highlight in-range items when hovering a token |
 | Default Range Boundary | Client | On | | Whether the overlay starts enabled on each tray |
 | Enable Range Boundary | Client | On | ✔ | Enable the range boundary overlay feature |
 | Receive Target Lines | Client | On | ✔ | Show other players' target lines |
