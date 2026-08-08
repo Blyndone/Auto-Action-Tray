@@ -435,6 +435,23 @@ export function saturateColor(color, amount) {
   }
 }
 
+// Drains the colour for an out-of-range line.
+//
+// Returns a CSS string, which matters more than it looks: this used to be
+// `Color.fromString(color).multiply(0.5)`, and a Foundry Color is a boxed Number, so `typeof` is
+// 'object'. PIXI's colour normalisation tests `typeof value === 'number'`, misses, and falls
+// through to its generic {r, g, b} branch — where it reads Foundry's 0-1 channels as 0-255 and
+// lands on near-black. Out-of-range lines were drawn black rather than dimmed; the old BlurFilter
+// smeared that enough to pass for an effect.
+export function drainColor(color, saturation = 0.25, luminance = 0.7) {
+  try {
+    const [h, s, l] = Color.fromString(color).hsl
+    return Color.fromHSL([h, s * saturation, l * luminance]).css
+  } catch (error) {
+    return color
+  }
+}
+
 class TargetLine extends protoLine {
   constructor(options) {
     super(options)
@@ -444,7 +461,7 @@ class TargetLine extends protoLine {
     this.blur = options.blur || 1
     this.saturation = options.saturation || 1
     this.color = saturateColor(this.color, this.saturation)
-    this.outOfRangeColor = Color.fromString(this.color).multiply(0.5) || 0xff0000
+    this.outOfRangeColor = drainColor(this.color)
     this.width = options.width || 2
     this.alpha = options.alpha || 1
     this.attach()
@@ -457,7 +474,7 @@ class GlowLine extends protoLine {
     this.blur = options.blur || 10
     this.saturation = options.saturation || 3
     this.color = saturateColor(options.color || game.user.color.css || 0xff0000, this.saturation)
-    this.outOfRangeColor = Color.fromString(this.color).multiply(0.5) || 0xff0000
+    this.outOfRangeColor = drainColor(this.color)
     this.width = options.width || 3
     this.alpha = options.alpha || 0.8
     this.attach()
