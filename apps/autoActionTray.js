@@ -1136,27 +1136,27 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       }
     }
 
+    // Deliberately outside the centerTray gate. Ranged items live in two different parts —
+    // item.hbs renders under centerTray, equip-tray.hbs under equipmentMiscTray — so binding only
+    // on a centerTray render left the equipment tray unbound whenever it re-rendered on its own,
+    // and gave it a *second* listener pair on every centerTray render (its DOM survives those).
+    // Duplicates were visible: one hover fired createRangeBoundary N times, and each call faded
+    // out the box the previous call had just made, flashing once at hover start. The marker keeps
+    // already-bound nodes from binding again; freshly rendered DOM never carries it.
+    if (this.trayOptions['rangeBoundaryEnabled']) {
+      document.querySelectorAll('[data-action-range]').forEach((node) => {
+        if (node.dataset.aatRangeBound || !(parseInt(node.dataset.actionRange) > 0)) return
+        node.dataset.aatRangeBound = '1'
+        node.addEventListener('mouseenter', () => {
+          this.targetHelper.createRangeBoundary(node.dataset.actionRange / 5, this.actor)
+        })
+        node.addEventListener('mouseleave', () => {
+          this.targetHelper.destroyRangeBoundary()
+        })
+      })
+    }
+
     if (options.parts.includes('centerTray')) {
-      if (this.trayOptions['rangeBoundaryEnabled']) {
-        const rangedItems = document.querySelectorAll('[data-action-range]')
-        const filtered = Array.from(rangedItems).filter(
-          (node) => parseInt(node.dataset.actionRange) > 0,
-        )
-
-        filtered.forEach((node) => {
-          node.addEventListener('mouseenter', () => {
-            const range = node.dataset.actionRange
-            this.targetHelper.createRangeBoundary(range / 5, this.actor)
-          })
-        })
-
-        filtered.forEach((node) => {
-          node.addEventListener('mouseleave', () => {
-            this.targetHelper.destroyRangeBoundary()
-          })
-        })
-      }
-
       document.querySelectorAll('.action-hover').forEach((source) => {
         let targetSelector = source.getAttribute('data-action-type')
         switch (targetSelector) {

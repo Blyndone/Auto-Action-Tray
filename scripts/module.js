@@ -402,7 +402,7 @@ Hooks.once('ready', async function () {
     config: false,
 
     type: Number,
-    default: 45,
+    default: 30,
 
     range: {
       min: 20,

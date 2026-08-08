@@ -2,9 +2,11 @@ import { gsap } from '/scripts/greensock/esm/all.js'
 
 export class TargetLineCombo {
   constructor(options) {
-    this.useName = options.sendName ?? game.settings.get('auto-action-tray', 'enableUseItemName') 
-    this.useIcon = options.sendIcon ?? game.settings.get('auto-action-tray', 'enableUseItemIcon') 
-    this.useLines = options.useLines || true
+    this.useName = options.sendName ?? game.settings.get('auto-action-tray', 'enableUseItemName')
+    this.useIcon = options.sendIcon ?? game.settings.get('auto-action-tray', 'enableUseItemIcon')
+    // `??`, not `||` — `useLines: false` callers (use notifications, range boundaries) want no
+    // line/text objects at all, and `false || true` silently built them anyway.
+    this.useLines = options.useLines ?? true
     this.yOffset = options.yOffset || 0
     this.phantom = options.phantom || false
     this.id = options.id || foundry.utils.randomID()
@@ -42,12 +44,7 @@ export class TargetLineCombo {
   clearLines() {
     this.line?.clear()
     this.glowLine?.clear()
-    this.firstLine ? this.targettingText?.clear() : null
-    this.firstLine ? this.rangeBoundary?.clear() : null
-    this.firstLine ? this.itemImg?.clear() : null
-    if (!this.phantom) {
-      this.clearText()
-    }
+    this.#clearDecorations()
   }
   clearRangeBoundary() {
     this.rangeBoundary?.clear()
@@ -55,38 +52,36 @@ export class TargetLineCombo {
   destroyLines() {
     this.line?.destroy()
     this.glowLine?.destroy()
-    this.firstLine ? this.targettingText?.clear() : null
-    this.firstLine ? this.rangeBoundary?.clear() : null
-    this.firstLine ? this.itemImg?.clear() : null
-    if (!this.phantom) {
-      this.clearText()
-    }
+    this.#clearDecorations()
   }
   forceDestroyLines() {
     this.line?.forceDestroy()
     this.glowLine?.forceDestroy()
-    this.firstLine ? this.targettingText?.clear() : null
-    this.firstLine ? this.rangeBoundary?.clear() : null
-    this.firstLine ? this.itemImg?.clear() : null
-    if (!this.phantom) {
-      this.clearText()
+    this.#clearDecorations()
+  }
+
+  // The name/icon/boundary trio only ever belongs to the first line of a combo chain, and is
+  // handed off by transferBoundaryAndText() when that line is removed.
+  #clearDecorations() {
+    if (this.firstLine) {
+      this.targettingText?.clear()
+      this.rangeBoundary?.clear()
+      this.itemImg?.clear()
     }
+    this.clearText()
   }
 
   drawLines(endPos) {
-    this.line.drawLine(endPos)
-    this.glowLine.drawLine(endPos)
-    if (!this.phantom) {
-      this.text.moveText(endPos)
-    }
+    this.line?.drawLine(endPos)
+    this.glowLine?.drawLine(endPos)
+    this.text?.moveText(endPos)
     this.lastPos = endPos
   }
   setText(newText) {
-    if (this.phantom) return
-    this.text.setText(newText)
+    this.text?.setText(newText)
   }
   setTargetingText(pos, itemType, itemName) {
-    this.targettingText.setTargetingText(pos, itemType, itemName)
+    this.targettingText?.setTargetingText(pos, itemType, itemName)
   }
   setFirstLine(firstLine) {
     this.firstLine = firstLine
@@ -97,22 +92,21 @@ export class TargetLineCombo {
     this.itemImg = itemImg
   }
   moveText(endPos) {
-    if (this.phantom) return
-    this.text.moveText(endPos)
+    this.text?.moveText(endPos)
   }
   clearText() {
-    if (this.phantom) return
-    this.text.clear()
+    this.text?.clear()
+    this.text = null
   }
   setInRange(inRange) {
     this.inRange = inRange
-    this.line.inRange = inRange
-    this.glowLine.inRange = inRange
+    if (this.line) this.line.inRange = inRange
+    if (this.glowLine) this.glowLine.inRange = inRange
   }
   setYOffset(yOffset) {
     this.yOffset = yOffset
-    this.line.yOffset = yOffset
-    this.glowLine.yOffset = yOffset
+    if (this.line) this.line.yOffset = yOffset
+    if (this.glowLine) this.glowLine.yOffset = yOffset
   }
 }
 class protoLine {
@@ -121,27 +115,60 @@ class protoLine {
     this.yOffset = options.yOffset || 0
     this.startPos = options.startPos
     this.startLinePos = options.startLinePos
+    this.line = new PIXI.Graphics()
+    this.line.eventMode = 'none'
   }
+
+  // Called at the end of each subclass constructor, once color/width/blur/alpha are known.
+  //
+  // Two things happen here that used to happen on every single redraw. The Graphics is parented
+  // once instead of per-frame: canvas.stage has sortableChildren enabled, so each addChild set
+  // sortDirty and forced a re-sort of the whole stage. And the glow is precomputed as a stack of
+  // strokes rather than left to a BlurFilter + ColorMatrixFilter — PIXI re-renders a filtered
+  // object into its own render texture every frame whether or not it changed, and a target line's
+  // bounds span from the token to the cursor, so each filtered line cost a near-fullscreen pass
+  // at 60fps for its entire lifetime. Baked strokes cost tessellation only when the line moves.
+  attach() {
+    this.strokes = this.#buildStrokes()
+    this.line.alpha = this.alpha
+    canvas.app.stage.addChild(this.line)
+  }
+
+  // Widest/faintest first so the crisp core paints last, approximating a gaussian falloff of
+  // radius `blur`. A blur under 2px is imperceptible once baked, so those lines stay single-pass.
+  #buildStrokes() {
+    const core = { width: this.width, alpha: this.alpha }
+    if (!(this.blur >= 2)) return [core]
+    const spread = this.blur * 2
+    const halo = [0.06, 0.12, 0.22].map((alpha, i, arr) => ({
+      width: this.width + spread * (1 - i / arr.length),
+      alpha: alpha * this.alpha,
+    }))
+    return [...halo, core]
+  }
+
   destroy() {
-    let tween = gsap.to(this.line, {
-      pixi: { blur: 0, alpha: 0 },
+    const line = this.line
+    if (!line) return
+    this.line = null
+    gsap.to(line, {
+      alpha: 0,
       duration: 0.5,
-      onComplete: function () {
-        canvas.app.stage.removeChild(this.line)
-        tween.kill()
-      }.bind(this),
+      onComplete: () => line.destroy(),
     })
   }
   forceDestroy() {
-    if (this.line) {
-      canvas.app.stage.removeChild(this.line)
-    }
+    // destroy() detaches from the parent for us; skipping it left the geometry's GPU buffers
+    // allocated for the life of the WebGL context.
+    this.line?.destroy()
+    this.line = null
   }
   clear() {
-    this.line.clear()
+    this.line?.clear()
   }
   drawLine(endPos) {
-    this.clear()
+    if (!this.line) return
+    this.line.clear()
 
     let dx = endPos.x - this.startLinePos.x
     let dy = endPos.y - this.startLinePos.y
@@ -160,16 +187,19 @@ class protoLine {
       y: apexY,
     }
 
-    this.line.lineStyle(this.width, this.inRange ? this.color : this.outOfRangeColor, this.alpha)
-
-    this.line.moveTo(this.startLinePos.x, this.startLinePos.y)
-    this.line.bezierCurveTo(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y, endPos.x, endPos.y)
-
-    gsap.set(this.line, {
-      pixi: { blur: this.blur, alpha: this.alpha, saturation: this.saturation },
-    })
-
-    canvas.app.stage.addChild(this.line)
+    const color = this.inRange ? this.color : this.outOfRangeColor
+    for (const stroke of this.strokes) {
+      this.line.lineStyle(stroke.width, color, stroke.alpha)
+      this.line.moveTo(this.startLinePos.x, this.startLinePos.y)
+      this.line.bezierCurveTo(
+        midpoint1.x,
+        midpoint1.y,
+        midpoint2.x,
+        midpoint2.y,
+        endPos.x,
+        endPos.y,
+      )
+    }
   }
 }
 
@@ -182,7 +212,11 @@ class protoText {
     this.text.zIndex = 1
 
     this.alpha = options.alpha || 1
-    canvas.app.stage.addChild(this.text)
+  }
+  // Deliberately not called from the constructor: subclasses that bail out on incomplete options
+  // must be able to do so without ever having parented a PIXI.Text to the stage.
+  attach() {
+    if (this.text && !this.text.parent) canvas.app.stage.addChild(this.text)
   }
   clear() {
     if (this.text) {
@@ -204,7 +238,7 @@ class ItemImage {
     this.color = this.getRarityColor(options.itemRarity, options.itemSpellLevel)
     this.pos = options.startPos || { x: 0, y: 0 }
     this.alpha = options.alpha || 1
-    this.size = options.size || game.settings.get('auto-action-tray', 'useItemIconSize') || 45
+    this.size = options.size || game.settings.get('auto-action-tray', 'useItemIconSize') || 30
     this.animation
     const actor = game.actors.get(this.actorId)
     this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + this.size / 2 + 5
@@ -228,11 +262,22 @@ class ItemImage {
     this.border.endFill()
     this.border.zIndex = 1
 
+    // Baked halo instead of a BlurFilter, which cost a render-texture pass every frame for as
+    // long as the icon was on screen. A stroke extends half its width past the circle, so
+    // `spread` is how far the halo reaches beyond the icon's edge — tuned to sit tighter than the
+    // old BlurFilter(8), which bled about 16px and read as more glow than icon.
     this.shadow = new PIXI.Graphics()
-    this.shadow.lineStyle(4, this.color)
-    this.shadow.drawCircle(this.pos.x, this.pos.y - this.anchor, this.size / 2)
+    const spread = 12
+    for (const [width, alpha] of [
+      [4 + spread * 2, 0.05],
+      [4 + spread * 1.4, 0.09],
+      [4 + spread * 0.75, 0.16],
+      [4 + spread * 0.25, 0.28],
+    ]) {
+      this.shadow.lineStyle(width, this.color, alpha)
+      this.shadow.drawCircle(this.pos.x, this.pos.y - this.anchor, this.size / 2)
+    }
     this.shadow.endFill()
-    this.shadow.filters = [new PIXI.filters.BlurFilter(8)]
     this.shadow.zIndex = 0
 
     canvas.app.stage.addChild(this.img)
@@ -245,17 +290,23 @@ class ItemImage {
     this.composite.forEach((item) => {
       item.eventMode = 'static'
     })
+    // `targettingText` is absent whenever the item-name setting is off, and its `.text` is nulled
+    // once cleared, so every fade has to tolerate both.
+    const fade = (alpha) => {
+      this.composite.forEach((i) => gsap.to(i, { alpha, duration: 0.3 }))
+      if (this.targettingText?.text) {
+        gsap.to(this.targettingText.text, { alpha, duration: 0.3 })
+      }
+    }
+
     this.composite.forEach((item) => {
       item.on('pointerover', () => {
         if (!this.active) return
-
-        this.composite.forEach((i) => gsap.to(i, { alpha: 0.0, duration: 0.3 }))
-        gsap.to(this.targettingText.text, { alpha: 0.0, duration: 0.3 })
+        fade(0)
       })
       item.on('pointerout', () => {
         if (!this.active) return
-        this.composite.forEach((i) => gsap.to(i, { alpha: 1, duration: 0.3 }))
-        gsap.to(this.targettingText.text, { alpha: 1, duration: 0.3 })
+        fade(1)
       })
       item.on('pointerdown', (event) => {
         if (!this.active) return
@@ -268,26 +319,26 @@ class ItemImage {
       })
     })
 
-    if (this.targettingText) {
-      this.targettingText.text.eventMode = 'static'
+    if (this.targettingText?.text) {
+      const label = this.targettingText.text
+      label.eventMode = 'static'
       this.targettingText.text.on('pointerover', () => {
         if (!this.active) return
-        this.composite.forEach((i) => gsap.to(i, { alpha: 0.0, duration: 0.3 }))
-        gsap.to(this.targettingText.text, { alpha: 0.0, duration: 0.3 })
+        fade(0)
       })
       this.targettingText.text.on('pointerout', () => {
         if (!this.active) return
-        this.composite.forEach((i) => gsap.to(i, { alpha: 1, duration: 0.3 }))
-        gsap.to(this.targettingText.text, { alpha: 1, duration: 0.3 })
+        fade(1)
       })
       this.targettingText.text.on('pointerdown', (event) => {
         if (!this.active) return
-        this.targettingText.text.eventMode = 'none'
+        label.eventMode = 'none'
         let overevent = new MouseEvent('pointerover', event)
         event = new MouseEvent('pointerdown', event)
         game.canvas.app.view.dispatchEvent(overevent)
         game.canvas.app.view.dispatchEvent(event)
-        setTimeout(() => (this.targettingText.text.eventMode = 'static'), 0)
+        // Captured, not re-read: the label can be cleared before this fires.
+        setTimeout(() => (label.destroyed ? null : (label.eventMode = 'static')), 0)
       })
     }
 
@@ -353,54 +404,80 @@ class ItemImage {
   }
 
   clear() {
+    if (!this.active) return
     this.active = false
-    gsap.killTweensOf(this.composite)
+    const composite = this.composite
+    this.composite = []
+    gsap.killTweensOf(composite)
 
-    gsap.to(this.composite, {
-      pixi: { alpha: 0 },
+    gsap.to(composite, {
+      alpha: 0,
       duration: 0.3,
-      onComplete: function () {
-        this.animation.kill()
-        if (this.img || this.mask || this.border || this.shadow) {
-          this.img.destroy()
-          this.img = null
-          this.mask.destroy()
-          this.mask = null
-          this.border.destroy()
-          this.border = null
-          this.shadow.destroy()
-          this.shadow = null
-        }
-      }.bind(this),
+      onComplete: () => {
+        this.animation?.kill()
+        // destroy() unparents as well, so the sprites leave canvas.stage with their textures.
+        composite.forEach((part) => part.destroy())
+        this.img = this.mask = this.border = this.shadow = null
+      },
     })
+  }
+}
+
+// The saturation boost the ColorMatrixFilter used to apply every frame, resolved once into the
+// stroke color instead.
+export function saturateColor(color, amount) {
+  if (!(amount > 1)) return color
+  try {
+    const [h, s, l] = Color.fromString(color).hsl
+    return Color.fromHSL([h, Math.clamp(s * amount, 0, 1), l]).css
+  } catch (error) {
+    return color
+  }
+}
+
+// Drains the colour for an out-of-range line.
+//
+// Returns a CSS string, which matters more than it looks: this used to be
+// `Color.fromString(color).multiply(0.5)`, and a Foundry Color is a boxed Number, so `typeof` is
+// 'object'. PIXI's colour normalisation tests `typeof value === 'number'`, misses, and falls
+// through to its generic {r, g, b} branch — where it reads Foundry's 0-1 channels as 0-255 and
+// lands on near-black. Out-of-range lines were drawn black rather than dimmed; the old BlurFilter
+// smeared that enough to pass for an effect.
+export function drainColor(color, saturation = 0.25, luminance = 0.7) {
+  try {
+    const [h, s, l] = Color.fromString(color).hsl
+    return Color.fromHSL([h, s * saturation, l * luminance]).css
+  } catch (error) {
+    return color
   }
 }
 
 class TargetLine extends protoLine {
   constructor(options) {
     super(options)
-    this.line = new PIXI.Graphics()
     this.color = options.color
       ? Color.fromString(options.color).add(Color.fromString('#333333')).css
       : game.user.color.add(Color.fromString('#333333')).css || 0xffff00
-    this.outOfRangeColor = Color.fromString(this.color).multiply(0.5) || 0xff0000
     this.blur = options.blur || 1
     this.saturation = options.saturation || 1
+    this.color = saturateColor(this.color, this.saturation)
+    this.outOfRangeColor = drainColor(this.color)
     this.width = options.width || 2
     this.alpha = options.alpha || 1
+    this.attach()
   }
 }
 
 class GlowLine extends protoLine {
   constructor(options) {
     super(options)
-    this.line = new PIXI.Graphics()
-    this.color = options.color || game.user.color.css || 0xff0000
-    this.outOfRangeColor = Color.fromString(this.color).multiply(0.5) || 0xff0000
     this.blur = options.blur || 10
     this.saturation = options.saturation || 3
+    this.color = saturateColor(options.color || game.user.color.css || 0xff0000, this.saturation)
+    this.outOfRangeColor = drainColor(this.color)
     this.width = options.width || 3
     this.alpha = options.alpha || 0.8
+    this.attach()
   }
 }
 class TargettingText extends protoText {
@@ -408,6 +485,9 @@ class TargettingText extends protoText {
     super(options)
     this.useIcon = options.sendIcon ?? game.settings.get('auto-action-tray', 'enableUseItemIcon')
     if (!options.itemName || !options.itemType) {
+      // Nothing to label. Drop the text rather than leaving an orphan on the stage — every
+      // range-boundary hover took this path, and none of them were ever cleaned up.
+      this.clear()
       return
     }
     this.itemName = options.itemName || 'itemName'
@@ -431,29 +511,28 @@ class TargettingText extends protoText {
     })
     this.text.style = this.style
     this.text.resolution = 3
+    this.attach()
     this.setTargetingText(options.startPos, this.itemType, this.itemName, options.itemSpellLevel)
   }
 
   clear() {
-    if (this.animation) {
-      if (this.text) {
-        gsap.killTweensOf(this.text)
-        gsap.to(this.text, {
-          pixi: { blur: 0, alpha: 0 },
-          duration: 0.5,
-          onComplete: function () {
-            this.animation.kill()
-            if (this.text) {
-              this.text.destroy()
-              this.text = null
-            }
-          }.bind(this),
-        })
-      }
-    }
+    // No `if (this.animation)` gate — a text that never got as far as its float tween still has
+    // to be destroyed. Fades on alpha alone; `pixi: {blur}` attached a BlurFilter for the fade.
+    if (!this.text) return
+    const text = this.text
+    this.text = null
+    gsap.killTweensOf(text)
+    gsap.to(text, {
+      alpha: 0,
+      duration: 0.5,
+      onComplete: () => {
+        this.animation?.kill()
+        text.destroy()
+      },
+    })
   }
   setTargetingText(pos, itemType, itemName, spellLevel) {
-    let offset = !this.useIcon ? 0 : game.settings.get('auto-action-tray', 'useItemIconSize') || 45
+    let offset = !this.useIcon ? 0 : game.settings.get('auto-action-tray', 'useItemIconSize') || 30
     let anchor =
       (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 20 + offset
     let suffix = ''
@@ -497,6 +576,7 @@ class TargetText extends protoText {
     })
     this.text.style = this.style
     this.text.resolution = 3
+    this.attach()
   }
   moveText(endPos) {
     if (this.text) {
@@ -545,52 +625,55 @@ class TargetBoundary {
 
   drawBoundary() {
     if (this.activityRange <= 0) return
+    const x = this.startPos.x - this.tokenSize.x / 2 - this.activityRange
+    const y = this.startPos.y - this.tokenSize.y / 2 - this.activityRange
+    const width = this.activityRange * 2 + this.tokenSize.x
+    const height = this.activityRange * 2 + this.tokenSize.y
+
+    // Baked glow + an alpha-only pulse. The pulse used to animate `pixi: {blur, saturation}`,
+    // which meant a BlurFilter and a ColorMatrixFilter re-rendering this box every frame for as
+    // long as it was on screen — including on every ranged tray item hover.
     this.box.clear()
-    this.box.lineStyle(3, this.color, this.alpha)
-    this.box.drawRect(
-      this.startPos.x - this.tokenSize.x / 2 - this.activityRange,
-      this.startPos.y - this.tokenSize.y / 2 - this.activityRange,
-      this.activityRange * 2 + this.tokenSize.x,
-      this.activityRange * 2 + this.tokenSize.y,
-    )
+    const color = saturateColor(this.color, this.saturation)
+    for (const [width_, alpha] of [
+      [3 + this.blur * 2, 0.08],
+      [3 + this.blur, 0.16],
+      [3, this.alpha],
+    ]) {
+      this.box.lineStyle(width_, color, alpha)
+      this.box.drawRect(x, y, width, height)
+    }
     this.box.endFill()
-    gsap.set(this.box, {
-      pixi: {
-        blur: this.blur,
+
+    // The old pulse animated blur 4->5 alongside alpha, and the blur breathing carried most of
+    // what read as movement. With the filter gone, alpha has to carry the pulse on its own, so it
+    // needs real amplitude — the ±0.05 swing this replaced was imperceptible.
+    this.box.alpha = this.alpha
+    this.animation = gsap.fromTo(
+      this.box,
+      { alpha: this.alpha * 0.5 },
+      {
         alpha: this.alpha,
-        saturation: this.saturation,
+        duration: 1.2,
+        repeat: -1,
+        ease: 'sine.inOut',
+        yoyo: true,
       },
-    })
-    this.animation = gsap.to(this.box, {
-      alpha: 0.7,
-      duration: 2,
-      pixi: {
-        blur: 5,
-        alpha: 0.9,
-        saturation: 3,
-      },
-      repeat: -1,
-      ease: 'sine.inOut',
-      yoyo: true,
-    })
+    )
   }
 
   clear() {
-    if (this.animation) {
-      if (this.box) {
-        gsap.killTweensOf(this.box)
-        gsap.to(this.box, {
-          pixi: { blur: 0, alpha: 0 },
-          duration: 0.5,
-          onComplete: function () {
-            this.animation.kill()
-            if (this.box) {
-              this.box.destroy()
-              this.box = null
-            }
-          }.bind(this),
-        })
-      }
-    }
+    if (!this.box) return
+    const box = this.box
+    this.box = null
+    gsap.killTweensOf(box)
+    gsap.to(box, {
+      alpha: 0,
+      duration: 0.5,
+      onComplete: () => {
+        this.animation?.kill()
+        box.destroy()
+      },
+    })
   }
 }
