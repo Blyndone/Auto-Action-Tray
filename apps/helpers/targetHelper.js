@@ -733,16 +733,22 @@ export class TargetHelper {
     }
   }
 
+  // Chebyshev distance from the token's occupied box to the cursor, in grid squares.
+  //
+  // `token.w`/`token.h`, not `token.shape.width`/`.height`: on any gridded scene Token#getShape()
+  // returns a PIXI.Polygon, which carries only `points` — so those reads were undefined, making
+  // `token.x + undefined` NaN. Both `NaN > range` comparisons are false, so the function fell
+  // through to `return true` and reported *every* point in range. Out-of-range colouring could
+  // only ever have worked on a gridless scene, where getShape() returns a Rectangle.
+  //
+  // The per-axis distance is also clamped at 0 now. Taking the nearest of the two edges meant a
+  // cursor inside the token measured as half its width away instead of zero.
   checkInRange(endPos, range) {
     const token = this.token
     if (!token) return false
     if (range <= 0) return true
-    let dx =
-      Math.min(Math.abs(token.x - endPos.x), Math.abs(token.x + token.shape.width - endPos.x)) /
-      this.gridSize
-    let dy =
-      Math.min(Math.abs(token.y - endPos.y), Math.abs(token.y + token.shape.height - endPos.y)) /
-      this.gridSize
+    const dx = Math.max(0, token.x - endPos.x, endPos.x - (token.x + token.w)) / this.gridSize
+    const dy = Math.max(0, token.y - endPos.y, endPos.y - (token.y + token.h)) / this.gridSize
     if (dx > range || dy > range) return false
     return true
   }
