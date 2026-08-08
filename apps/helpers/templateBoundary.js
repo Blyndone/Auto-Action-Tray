@@ -85,13 +85,19 @@ class protoBoundary {
   pulse() {
     this.animation?.kill()
     this.boundary.alpha = this.alpha
-    this.animation = gsap.to(this.boundary, {
-      alpha: 0.9,
-      duration: 2,
-      repeat: -1,
-      ease: 'sine.inOut',
-      yoyo: true,
-    })
+    // Same amplitude as the range boundary's pulse: with the animated blur gone, alpha has to
+    // carry the breathing on its own to stay visible.
+    this.animation = gsap.fromTo(
+      this.boundary,
+      { alpha: this.alpha * 0.5 },
+      {
+        alpha: this.alpha,
+        duration: 1.2,
+        repeat: -1,
+        ease: 'sine.inOut',
+        yoyo: true,
+      },
+    )
   }
 
   destroyBoundary() {

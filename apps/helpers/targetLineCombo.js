@@ -238,7 +238,7 @@ class ItemImage {
     this.color = this.getRarityColor(options.itemRarity, options.itemSpellLevel)
     this.pos = options.startPos || { x: 0, y: 0 }
     this.alpha = options.alpha || 1
-    this.size = options.size || game.settings.get('auto-action-tray', 'useItemIconSize') || 45
+    this.size = options.size || game.settings.get('auto-action-tray', 'useItemIconSize') || 50
     this.animation
     const actor = game.actors.get(this.actorId)
     this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + this.size / 2 + 5
@@ -263,11 +263,11 @@ class ItemImage {
     this.border.zIndex = 1
 
     // Baked halo instead of a BlurFilter, which cost a render-texture pass every frame for as
-    // long as the icon was on screen. Widths are chosen to reach about as far as the old
-    // BlurFilter(8) did — a stroke only extends half its width past the circle, so matching that
-    // ~16px spread needs an outermost stroke of 4 + 2*16.
+    // long as the icon was on screen. A stroke extends half its width past the circle, so
+    // `spread` is how far the halo reaches beyond the icon's edge — tuned to sit tighter than the
+    // old BlurFilter(8), which bled about 16px and read as more glow than icon.
     this.shadow = new PIXI.Graphics()
-    const spread = 16
+    const spread = 12
     for (const [width, alpha] of [
       [4 + spread * 2, 0.05],
       [4 + spread * 1.4, 0.09],
@@ -515,7 +515,7 @@ class TargettingText extends protoText {
     })
   }
   setTargetingText(pos, itemType, itemName, spellLevel) {
-    let offset = !this.useIcon ? 0 : game.settings.get('auto-action-tray', 'useItemIconSize') || 45
+    let offset = !this.useIcon ? 0 : game.settings.get('auto-action-tray', 'useItemIconSize') || 50
     let anchor =
       (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 20 + offset
     let suffix = ''
@@ -628,14 +628,21 @@ class TargetBoundary {
     }
     this.box.endFill()
 
+    // The old pulse animated blur 4->5 alongside alpha, and the blur breathing carried most of
+    // what read as movement. With the filter gone, alpha has to carry the pulse on its own, so it
+    // needs real amplitude — the ±0.05 swing this replaced was imperceptible.
     this.box.alpha = this.alpha
-    this.animation = gsap.to(this.box, {
-      alpha: 0.9,
-      duration: 2,
-      repeat: -1,
-      ease: 'sine.inOut',
-      yoyo: true,
-    })
+    this.animation = gsap.fromTo(
+      this.box,
+      { alpha: this.alpha * 0.5 },
+      {
+        alpha: this.alpha,
+        duration: 1.2,
+        repeat: -1,
+        ease: 'sine.inOut',
+        yoyo: true,
+      },
+    )
   }
 
   clear() {
