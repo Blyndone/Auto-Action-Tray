@@ -238,7 +238,7 @@ class ItemImage {
     this.color = this.getRarityColor(options.itemRarity, options.itemSpellLevel)
     this.pos = options.startPos || { x: 0, y: 0 }
     this.alpha = options.alpha || 1
-    this.size = options.size || game.settings.get('auto-action-tray', 'useItemIconSize') || 50
+    this.size = options.size || game.settings.get('auto-action-tray', 'useItemIconSize') || 30
     this.animation
     const actor = game.actors.get(this.actorId)
     this.anchor = (actor.prototypeToken.height * canvas.grid.size) / 2 + this.size / 2 + 5
@@ -515,7 +515,7 @@ class TargettingText extends protoText {
     })
   }
   setTargetingText(pos, itemType, itemName, spellLevel) {
-    let offset = !this.useIcon ? 0 : game.settings.get('auto-action-tray', 'useItemIconSize') || 50
+    let offset = !this.useIcon ? 0 : game.settings.get('auto-action-tray', 'useItemIconSize') || 30
     let anchor =
       (game.actors.get(this.actorId).prototypeToken.height * canvas.grid.size) / 2 + 20 + offset
     let suffix = ''
