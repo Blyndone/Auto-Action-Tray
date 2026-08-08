@@ -184,10 +184,14 @@ export class StaticTray extends AbilityTray {
       cachedAbilities: options.cachedAbilities,
     })
 
+    let legendaryItemId = CustomStaticTray.getLegendaryItemId(actor)
+
     let customStaticTraysUuids = new Set([
       ...CustomStaticTray.getCustomStaticTrays(actor),
       ...actor.items.filter(CustomStaticTray.checkOverride).map((e) => e.id),
     ])
+    // Built once below instead, keyed to this item.
+    customStaticTraysUuids.delete(legendaryItemId)
 
     let customStaticTrays = Array.from(
       customStaticTraysUuids,
@@ -202,13 +206,13 @@ export class StaticTray extends AbilityTray {
         }),
     )
 
-    if (actor.system?.resources?.legact?.max > 0) {
+    if (actor.system?.resources?.legact?.max > 0 || legendaryItemId) {
       customStaticTrays.push(
         new CustomStaticTray({
           category: 'customStaticTray',
           actorUuid: actor.uuid,
           label: 'Legendary Actions',
-          keyItemId: null,
+          keyItemId: legendaryItemId ?? null,
           application: options.application,
           cachedAbilities: options.cachedAbilities,
         }),

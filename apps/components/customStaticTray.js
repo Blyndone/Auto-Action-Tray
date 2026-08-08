@@ -143,6 +143,16 @@ export class CustomStaticTray extends AbilityTray {
 
   }
 
+  // The legendary tray is built from the actor's legact resource, not from the override list, so
+  // that an actor with both `legact.max > 0` and an item literally named "Legendary Actions"
+  // produces one tray instead of two. Returns that item's id (used as the tray's key item) if the
+  // actor has one.
+  static getLegendaryItemId(actor) {
+    return actor.items.find((e) =>
+      CustomStaticTray.overrides.legendary.includes(e.name.toLocaleLowerCase()),
+    )?.id
+  }
+
   static checkOverride(keyItem) {
     if (!keyItem?.name) {
       keyItem = fromUuidSync(keyItem)
