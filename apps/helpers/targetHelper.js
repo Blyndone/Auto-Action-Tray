@@ -1,6 +1,7 @@
 import { TargetLineCombo } from './targetLineCombo.js'
 import { AATActivity } from '../items/activity.js'
 import { TemplateBoundary } from './templateBoundary.js'
+import { UseTrace } from './useTrace.js'
 
 export class TargetHelper {
   #state
@@ -325,6 +326,13 @@ export class TargetHelper {
     this.activityRange = this.getActivityRange(item, activity)
     this.activityTargetCount = targetCount
     this.gridSize = game.canvas.scene.grid.size
+
+    UseTrace.step('range', 'Range resolved', {
+      squares: this.activityRange,
+      sceneUnits: canvas?.grid?.units ?? null,
+      scenePerSquare: canvas?.grid?.distance ?? null,
+      itemRangeUnits: activity?.activity?.range?.units ?? item?.item?.system?.range?.units ?? null,
+    })
 
     let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
     this.label = `${prefix} ${item.name}...   `
@@ -654,21 +662,68 @@ export class TargetHelper {
     return true
   }
 
+  // Returns the range in grid squares, or the sentinels 0 (none) / -1 (self), which callers
+  // treat as "no boundary". Scene units and distance-per-square are both read from the canvas
+  // rather than assumed: dnd5e stamps new scenes with metric grids when the metric length
+  // setting is on (see its preCreateScene hook), so a 5ft-per-square world is only the default,
+  // not a guarantee. The item's own range units are independent of the scene's and are
+  // converted first.
   getActivityRange(item, activity) {
     if (!activity) {
       activity = item.defaultActivity
     }
-    item = item.item
-    activity = activity
-    let range =
-      activity.range?.value ??
-      item.system.range?.value ??
-      activity.range?.reach ??
-      item.system.range?.reach ??
-      (activity.range?.units === 'touch' ? 5 : activity.range?.units === 'self' ? -1 : null) ??
-      (item.system.range?.units === 'touch' ? 5 : item.system.range?.units === 'self' ? -1 : 0)
+    item = item?.item
+    // An item with no activities has no range to draw.
+    if (!item || !activity) return 0
 
-    return range > 0 ? range / 5 : range
+    // Callers pass the AATActivity wrapper, which holds the dnd5e activity on `.activity`. The
+    // range lives on the activity in current dnd5e, so unwrap before reading it — otherwise every
+    // lookup below fell through to the item, which for spells often carries no range at all.
+    const act = activity.activity ?? activity
+
+    const gridUnits = canvas?.grid?.units || 'ft'
+    const touch = (units) => TargetHelper.convertLength(5, 'ft', units ?? gridUnits)
+
+    let range =
+      act.range?.value ??
+      item.system.range?.value ??
+      act.range?.reach ??
+      item.system.range?.reach ??
+      (act.range?.units === 'touch'
+        ? touch(act.range?.units)
+        : act.range?.units === 'self'
+          ? -1
+          : null) ??
+      (item.system.range?.units === 'touch'
+        ? touch(item.system.range?.units)
+        : item.system.range?.units === 'self'
+          ? -1
+          : 0)
+
+    if (!(range > 0)) return range
+
+    // Units are taken with the same precedence the value was, so a value read off the item is
+    // measured with the item's units.
+    const rangeUnits = act.range?.units ?? item.system.range?.units ?? gridUnits
+    const inGridUnits = TargetHelper.convertLength(range, rangeUnits, gridUnits)
+
+    // Gridless scenes report a distance of 0; dividing by it would yield Infinity and paint an
+    // unbounded range circle, so fall back to leaving the value in scene units.
+    const perSquare = canvas?.grid?.distance
+    return perSquare > 0 ? inGridUnits / perSquare : inGridUnits
+  }
+
+  // dnd5e owns the unit table, so conversion defers to it. Non-linear units ('touch', 'self',
+  // 'spec', 'any') aren't lengths and are returned untouched, as is anything dnd5e can't map.
+  static convertLength(value, from, to) {
+    if (!Number.isFinite(value)) return value
+    if (!from || !to || from === to) return value
+    try {
+      const converted = dnd5e.utils.convertLength(value, from, to, { strict: false })
+      return Number.isFinite(converted) ? converted : value
+    } catch (e) {
+      return value
+    }
   }
 
   getTargetCount(item, activity, selectedSpellLevel) {
@@ -690,11 +745,20 @@ export class TargetHelper {
         spellLevel = item.pactLevel
       }
 
-      let act = item.activities.find((e) => e.id == activity.id)
+      let act = item.activities.find((e) => e.id == activity.id) ?? activity
 
-      targetCount =
-        act.tooltips?.find((e) => e.spellLevel == spellLevel).targetCount ||
-        act.tooltip?.targetCount
+      // A spell cast at a level with no matching scaled tooltip used to throw here and take the
+      // whole use with it, so the level-specific count falls back to the activity's base count.
+      const scaled = act?.tooltips?.find((e) => e.spellLevel == spellLevel)
+      if (!scaled) {
+        UseTrace.warn(
+          'targetCountLevel',
+          'No target count for the chosen spell level',
+          { spellLevel, activity: act?.name ?? null },
+          'The activity has no tooltip for this level, so the base target count is used instead.',
+        )
+      }
+      targetCount = scaled?.targetCount || act?.tooltip?.targetCount
     }
     return targetCount
   }

@@ -10,7 +10,13 @@ import { CombatHandler } from './handlers/combatHandler.js'
 import { registerHandlebarsHelpers } from './helpers/handlebars.js'
 import { AnimationHandler } from './handlers/animationHandler.js'
 import { DragDropHandler } from './handlers/dragDropHandler.js'
-import { DrawSVGPlugin, Draggable } from '/scripts/greensock/esm/all.js'
+import {
+  gsap,
+  DrawSVGPlugin,
+  Draggable,
+  InertiaPlugin,
+  PixiPlugin,
+} from '/scripts/greensock/esm/all.js'
 import { TrayConfig } from './dialogs/trayConfig.js'
 import { Actions } from './helpers/actions.js'
 import { EffectTray } from './components/effectTray.js'
@@ -21,6 +27,7 @@ import { ConditionTray } from './components/conditionsTray.js'
 import { ReactionPromptTray } from './components/reactionPromptTray.js'
 import { AATItem } from './items/item.js'
 import { ItemConfig } from './dialogs/itemConfig.js'
+import { ItemDoctor } from './dialogs/itemDoctor.js'
 import { DraggableTrayContainer } from './handlers/draggableHandler.js'
 
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
@@ -77,7 +84,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   _configureGsap() {
-    gsap.registerPlugin(DrawSVGPlugin)
+    // GSAP plugins self-register off a global `gsap`, which Foundry v13 does not
+    // define, so every plugin used here has to be registered explicitly.
+    // InertiaPlugin must come before Draggable — Draggable caches gsap.plugins.inertia
+    // when it initializes, and draggableHandler creates Draggables with `inertia: true`.
+    // PixiPlugin picks up the global PIXI that Foundry provides on its own.
+    gsap.registerPlugin(DrawSVGPlugin, PixiPlugin, InertiaPlugin, Draggable)
     gsap.config({
       force3D: false,
       nullTargetWarn: false,
@@ -1254,6 +1266,16 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
           } else {
             this.actor.system.addFavorite({ type: type, id: itemId })
           }
+        },
+      },
+      {
+        name: 'Troubleshoot Item',
+        icon: "<i class='fas fa-stethoscope fa-fw'></i>",
+        callback: (li) => {
+          let item = this.getActorAbilities(this.actor.uuid).find(
+            (e) => e.id == li[0].dataset.itemId,
+          )
+          ItemDoctor.open.bind(this)(item)
         },
       },
       {

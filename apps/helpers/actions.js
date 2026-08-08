@@ -3,6 +3,7 @@ import { ItemConfig } from '../dialogs/itemConfig.js'
 import { ActivityTray } from '../components/activityTray.js'
 import { SpellLevelTray } from '../components/spellLevelTray.js'
 import { CustomTray } from '../components/customTray.js'
+import { UseTrace, SEVERITY } from './useTrace.js'
 
 export class Actions {
   static logToChat(message, alias, actor) {
@@ -331,15 +332,152 @@ export class Actions {
     return spellData
   }
 
+  // Resolves the dnd5e Activity that will actually be used. Both use sites go through this so
+  // they cannot drift apart, and each candidate id is verified against the collection before it
+  // is accepted — an id that looks plausible but resolves to nothing used to win the chain and
+  // silently hand the workflow the item's first activity instead.
+  static resolveActivityForUse(item, activity) {
+    const activities = item?.item?.system?.activities
+    if (!activities) return { activity: null, id: null, source: 'none', fallback: true }
+
+    const candidates = [
+      ['activityId', activity?.activityId],
+      ['itemId', activity?.itemId],
+      ['_id', activity?._id],
+      ['id', activity?.id],
+    ]
+
+    for (const [source, id] of candidates) {
+      if (!id) continue
+      const resolved = activities.get(id)
+      if (resolved) return { activity: resolved, id, source, fallback: false }
+    }
+
+    const first = activities.contents[0] ?? null
+    return {
+      activity: first,
+      id: first?.id ?? null,
+      source: 'firstActivity',
+      fallback: true,
+    }
+  }
+
+  static traceResolvedActivity(item, activity) {
+    const resolved = Actions.resolveActivityForUse(item, activity)
+
+    if (!resolved.activity) {
+      UseTrace.fail('activityResolution', 'No activity could be resolved', {
+        requested: activity?.name ?? null,
+        requestedId: activity?.activityId ?? null,
+      })
+      console.error(`AAT | No usable activity found on "${item?.name}" — nothing was rolled.`)
+      return resolved
+    }
+
+    UseTrace.step(
+      'activityResolution',
+      'Activity resolved for use',
+      {
+        requested: activity?.name ?? null,
+        requestedId: activity?.activityId ?? null,
+        resolved: resolved.activity?.name ?? null,
+        resolvedId: resolved.id,
+        matchedOn: resolved.source,
+      },
+      resolved.fallback
+        ? {
+            severity: SEVERITY.WARN,
+            note: "The chosen activity could not be matched by id, so the item's first activity was used instead. If the wrong thing rolled, this is why.",
+          }
+        : {},
+    )
+
+    return resolved
+  }
+
+  // The arguments handed to Activity#use. Everything downstream of this — attack rolls, damage,
+  // scaling, consumption — belongs to dnd5e, so this object is the boundary worth inspecting
+  // when output is wrong.
+  static buildUsageConfig({ advantage, disadvantage, selectedSpellLevel, consumeSlot }) {
+    return {
+      advantage,
+      disadvantage,
+      midiOptions: {
+        advantage,
+        disadvantage,
+      },
+      spell: selectedSpellLevel,
+      consume: { spellSlot: consumeSlot },
+    }
+  }
+
+  // Single point where the module invokes dnd5e, so an armed dry run can capture the handoff
+  // without rolling. Returns undefined on a dry run; callers only use the result for chat flow.
+  static async invokeActivity(resolved, usageConfig, dialogConfig, messageConfig, target) {
+    UseTrace.payload({
+      activityId: resolved.id,
+      activityName: resolved.activity?.name ?? null,
+      usageConfig,
+      dialogConfig,
+      messageConfig,
+      targetName: target?.name ?? target?.document?.name ?? null,
+    })
+
+    if (UseTrace.isDryRun()) {
+      UseTrace.step('dryRun', 'Dry run — Activity#use not called', {
+        activity: resolved.activity?.name ?? resolved.id,
+      })
+      return undefined
+    }
+
+    return await resolved.activity.use(usageConfig, dialogConfig, messageConfig, target)
+  }
+
   static async getTargets(item, activity, selectedSpellLevel) {
     let targetCount = this.targetHelper.getTargetCount(item, activity, selectedSpellLevel)
     let targets = null
     let itemConfig = item.itemConfig
     let singleRoll = ((itemConfig && !itemConfig?.rollIndividual) || item?.concentration) ?? false
+    const computedCount = targetCount
     targetCount =
       itemConfig && itemConfig['numTargets'] != undefined && !itemConfig['useDefaultTargetCount']
         ? itemConfig['numTargets']
         : targetCount
+
+    const helperEnabledGlobally = this.trayOptions['enableTargetHelper']
+    const helperEnabledForItem = itemConfig
+      ? itemConfig['useTargetHelper']
+      : this.trayOptions['enableTargetHelper']
+
+    UseTrace.step(
+      'targetCount',
+      'Target count resolved',
+      {
+        computed: computedCount,
+        overridden: targetCount !== computedCount ? targetCount : null,
+        singleRoll,
+        helperEnabledGlobally,
+        helperEnabledForItem,
+      },
+      targetCount > 0
+        ? {}
+        : {
+            severity: SEVERITY.WARN,
+            note: 'Count is 0, so the target helper is skipped and the activity fires against whatever tokens are already targeted. Area-of-effect and self-targeted activities report 0 by design.',
+          },
+    )
+
+    if (targetCount > 0 && !(helperEnabledGlobally && helperEnabledForItem)) {
+      UseTrace.warn(
+        'targetHelperSkipped',
+        'Target helper disabled',
+        { helperEnabledGlobally, helperEnabledForItem },
+        helperEnabledGlobally
+          ? 'Disabled for this item in Item Config.'
+          : 'Disabled globally in module settings. A per-item setting cannot re-enable it.',
+      )
+    }
+
     if (
       this.trayOptions['enableTargetHelper'] &&
       targetCount > 0 &&
@@ -356,7 +494,16 @@ export class Actions {
         singleRoll,
         selectedSpellLevel,
       )
-      if (targets == null) return { canceled: true }
+      if (targets == null) {
+        UseTrace.abort('Targeting cancelled')
+        return { canceled: true }
+      }
+
+      UseTrace.step('targetsSelected', 'Targets selected', {
+        requested: targetCount,
+        selected: targets?.targets?.length ?? 0,
+        names: (targets?.targets ?? []).map((t) => t?.name ?? t?.document?.name).filter(Boolean),
+      })
     }
     return { targets, itemConfig }
   }
@@ -399,10 +546,26 @@ export class Actions {
     return endConcentration
   }
 
+  // Thin wrapper so every exit from the workflow closes the trace, including the early returns
+  // for a cancelled dialog or cancelled targeting.
   static async useItem(event, target) {
+    // Opened with the id alone so the press costs no extra lookups; the workflow resolves the item
+    // for its own reasons and labels the trace via UseTrace.identify once it has it.
+    UseTrace.begin(target?.dataset?.itemId, this.actor)
+    try {
+      return await Actions.useItemWorkflow.bind(this)(event, target)
+    } finally {
+      UseTrace.end()
+    }
+  }
+
+  static async useItemWorkflow(event, target) {
     this.targetHelper.destroyRangeBoundary()
     this.useSlot = true
     if (this.targetHelper.getState() > this.targetHelper.STATES.IDLE) {
+      UseTrace.abort('Target helper was already active', {
+        state: this.targetHelper.getState(),
+      })
       return
     }
     let altDown = this.altDown
@@ -419,22 +582,62 @@ export class Actions {
         item = game.macros.get(itemId)
 
         item.execute()
+        UseTrace.identify(item.name, 'macro')
+        UseTrace.step('macroFallback', 'Ran as a macro', { itemId })
         return
       } catch (e) {
+        UseTrace.fail(
+          'itemNotFound',
+          'Item not found on the actor',
+          { itemId },
+          "The tray reads a cached copy of the actor's items. If the item still exists on the sheet, the cache is stale — reselect the token or reload to rebuild it.",
+        )
         console.error(`Item with ID ${itemId} not found in actor's abilities`, e)
         return
       }
     }
 
+    UseTrace.identify(item.name, item.type)
+    UseTrace.step('press', 'Item pressed', {
+      item: item.name,
+      itemType: item.type,
+      requestedActivityId: activityId,
+      ritualCast,
+      advantage: altDown,
+      disadvantage: ctrlDown,
+      trayId: this.currentTray?.id ?? null,
+    })
+
     let options = await Actions.selectActivityWorkflow.bind(this)(item, activityId)
 
-    if (!options?.activity || Object.keys(options.activity).length === 0) return
+    if (!options?.activity || Object.keys(options.activity).length === 0) {
+      UseTrace.abort('No activity selected')
+      return
+    }
     let selectedSpellLevel = options.selectedSpellLevel,
       activity = options.activity
+
+    UseTrace.step(
+      'activitySelected',
+      'Activity chosen',
+      {
+        name: activity?.name ?? null,
+        activityId: activity?.activityId ?? null,
+        activityCount: item.activities?.length ?? 0,
+        spellSlot: selectedSpellLevel?.slot ?? null,
+      },
+      item.type == 'spell' && item.spellLevel > 0 && !selectedSpellLevel?.slot
+        ? {
+            severity: SEVERITY.WARN,
+            note: 'No spell slot resolved for a levelled spell. dnd5e receives no upcast information, so damage rolls at the base level.',
+          }
+        : {},
+    )
 
     //Concentration Check / Prompt
     let endConcentration = await Actions.promptEndConcentration.bind(this)(item)
     if (!endConcentration) {
+      UseTrace.abort('Concentration overwrite declined')
       return
     }
 
@@ -448,14 +651,57 @@ export class Actions {
 
     useSlot = this.useSlot && activity?.useSlot && !ritualCast
 
+    UseTrace.step(
+      'slotConsumption',
+      'Spell slot consumption',
+      {
+        willConsume: useSlot,
+        slot: selectedSpellLevel?.slot ?? null,
+        activityDeclaresSlotConsumption: activity?.useSlot ?? null,
+        ritualCast,
+      },
+      activity?.useSlot === false && item.type == 'spell'
+        ? {
+            severity: SEVERITY.INFO,
+            note: 'This activity does not declare spell slot consumption, so no slot is spent and no upcast scaling is applied.',
+          }
+        : {},
+    )
+
     if (useSlot && this.actor.system.spells[selectedSpellLevel.slot]?.value < 1) {
+      UseTrace.abort('No spell slots available', { slot: selectedSpellLevel.slot })
       ui.notifications.error(`No spell slots available`)
       return
     }
 
+    if (useSlot && this.actor.system.spells[selectedSpellLevel.slot] === undefined) {
+      UseTrace.warn(
+        'unknownSlot',
+        'Spell slot key not found on the actor',
+        { slot: selectedSpellLevel.slot },
+        'The availability check cannot evaluate an unknown slot, so the use proceeds without one being verified or spent.',
+      )
+    }
+
     //Item Use
     if (activity?.tooltip?.actionType) {
-      this.combatHandler.consumeAction(activity.tooltip.actionType, activity.isScaledSpell)
+      // A dry run reports what would be spent without actually spending it.
+      if (!UseTrace.isDryRun()) {
+        this.combatHandler.consumeAction(activity.tooltip.actionType, activity.isScaledSpell)
+      }
+      UseTrace.step('actionEconomy', 'Action economy consumed', {
+        actionType: activity.tooltip.actionType,
+      })
+    } else {
+      UseTrace.step(
+        'actionEconomy',
+        'No action economy consumed',
+        { activationLabel: activity?.tooltip?.activationTimeLabel ?? null },
+        {
+          severity: SEVERITY.INFO,
+          note: 'Only activations labelled Action, Bonus or Reaction consume from the turn tray.',
+        },
+      )
     }
     if (
       targets &&
@@ -469,34 +715,31 @@ export class Actions {
       let slotUse
       slotUse = useSlot === true ? 1 : 0
 
+      const resolved = Actions.traceResolvedActivity(item, activity)
+      if (!resolved.activity) return
+
       for (const target of targets.targets) {
         target.setTarget(true, { releaseOthers: true })
-        const workflow = await item.item.system.activities
-          .get(
-            activity?.activityId ||
-              activity?.itemId ||
-              activity?._id ||
-              item.item.system.activities.contents[0].id,
-          )
-          .use(
-            {
-              advantage: altDown,
-              disadvantage: ctrlDown,
-              midiOptions: {
-                advantage: altDown,
-                disadvantage: ctrlDown,
-              },
-              spell: selectedSpellLevel,
-              consume: { spellSlot: slotUse == 1 ? true : false },
-            },
-            { configure: false },
-            {},
-            target,
-          )
+        const usageConfig = Actions.buildUsageConfig({
+          advantage: altDown,
+          disadvantage: ctrlDown,
+          selectedSpellLevel,
+          consumeSlot: slotUse == 1 ? true : false,
+        })
+        const workflow = await Actions.invokeActivity(
+          resolved,
+          usageConfig,
+          { configure: false },
+          {},
+          target,
+        )
 
-        let workflowComplete = game.modules.get('midi-qol')?.active ? false : true
-        let aaAnimationComplete = game.modules.get('autoanimations')?.active ? false : true
-        let sequencerComplete = game.modules.get('sequencer')?.active ? false : true
+        // Nothing was rolled on a dry run, so no integration will ever report completion and
+        // waiting would just burn the full timeout on every target.
+        const dryRun = UseTrace.isDryRun()
+        let workflowComplete = dryRun || !game.modules.get('midi-qol')?.active
+        let aaAnimationComplete = dryRun || !game.modules.get('autoanimations')?.active
+        let sequencerComplete = dryRun || !game.modules.get('sequencer')?.active
 
         let midiHookId = null
         let aaHookId = null
@@ -537,6 +780,7 @@ export class Actions {
           item?.itemConfig?.animationWaitTime != null
             ? item.itemConfig.animationWaitTime / 100
             : 100
+        const budget = timeout
         while ((!workflowComplete || !aaAnimationComplete || !sequencerComplete) && timeout > 0) {
           await wait(100)
           timeout -= 1
@@ -555,6 +799,25 @@ export class Actions {
           }
         }
 
+        const timedOut = timeout <= 0
+        UseTrace.step(
+          'integrationWait',
+          `Waited for integrations (${target?.name ?? 'target'})`,
+          {
+            waitedMs: (budget - timeout) * 100,
+            budgetMs: budget * 100,
+            midiComplete: workflowComplete,
+            animationsComplete: aaAnimationComplete,
+            sequencerComplete,
+          },
+          timedOut
+            ? {
+                severity: SEVERITY.WARN,
+                note: 'The wait ran out before every integration reported completion, so the full delay was spent on this target. If the tray feels like it stalls between attacks, lower "Multiple Use Animation Wait Time" in Item Config.',
+              }
+            : {},
+        )
+
         slotUse = 0
         await wait(game.settings.get('auto-action-tray', 'multiItemUseDelay'))
       }
@@ -570,28 +833,19 @@ export class Actions {
       const minimumTime = 2000
       const delay = new Promise((resolve) => setTimeout(resolve, minimumTime))
 
-      const usePromise = item.item.system.activities
-        .get(
-          activity?.activityId ||
-            activity?.itemId ||
-            activity?._id ||
-            activity?.id ||
-            item.item.system.activities.contents[0].id,
-        )
-        .use(
-          {
-            advantage: altDown,
-            disadvantage: ctrlDown,
-            midiOptions: {
-              advantage: altDown,
-              disadvantage: ctrlDown,
-            },
-            spell: selectedSpellLevel,
-            consume: { spellSlot: useSlot },
-          },
-          { configure: false },
-          {},
-        )
+      const resolved = Actions.traceResolvedActivity(item, activity)
+      if (!resolved.activity) {
+        if (useNotification) this.targetHelper.clearUseNotification()
+        return
+      }
+
+      const usageConfig = Actions.buildUsageConfig({
+        advantage: altDown,
+        disadvantage: ctrlDown,
+        selectedSpellLevel,
+        consumeSlot: useSlot,
+      })
+      const usePromise = Actions.invokeActivity(resolved, usageConfig, { configure: false }, {})
 
       const [result] = await Promise.all([usePromise, delay])
 

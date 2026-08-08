@@ -47,3 +47,243 @@
     overflow-y: auto;
   }
 }
+
+.aat-item-doctor {
+  --aat-sev-ok: #3f9a54;
+  --aat-sev-info: #4a7ebb;
+  --aat-sev-warn: #c08a2e;
+  --aat-sev-fail: #b3453c;
+
+  .aat-sev-ok {
+    color: var(--aat-sev-ok);
+  }
+  .aat-sev-info {
+    color: var(--aat-sev-info);
+  }
+  .aat-sev-warn {
+    color: var(--aat-sev-warn);
+  }
+  .aat-sev-fail {
+    color: var(--aat-sev-fail);
+  }
+
+  .aat-doctor-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--color-fieldset-border);
+    border-radius: 6px;
+
+    img {
+      width: 48px;
+      height: 48px;
+      flex: none;
+      object-fit: contain;
+    }
+
+    .aat-doctor-header-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .aat-doctor-summary {
+      display: flex;
+      gap: 12px;
+      flex: none;
+      font-weight: bold;
+    }
+  }
+
+  .aat-doctor-recommended {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--color-fieldset-border);
+    border-left: 4px solid var(--aat-sev-warn);
+    border-radius: 4px;
+  }
+
+  .aat-doctor-recommended-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+  }
+
+  .aat-doctor-recommended-list {
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    li {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+  }
+
+  .aat-doctor-recommended-cause {
+    font-size: 0.8em;
+    opacity: 0.6;
+  }
+
+  .aat-doctor-actions {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+
+    button {
+      flex: 1;
+    }
+
+    .aat-armed {
+      border-color: var(--aat-sev-warn);
+      color: var(--aat-sev-warn);
+    }
+  }
+
+  .aat-doctor-armed-hint {
+    margin: -4px 0 10px;
+  }
+
+  .aat-doctor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .aat-doctor-finding {
+    padding: 8px 10px;
+    border: 1px solid var(--color-fieldset-border);
+    border-left-width: 4px;
+    border-radius: 4px;
+
+    &.aat-sev-ok {
+      border-left-color: var(--aat-sev-ok);
+    }
+    &.aat-sev-info {
+      border-left-color: var(--aat-sev-info);
+    }
+    &.aat-sev-warn {
+      border-left-color: var(--aat-sev-warn);
+    }
+    &.aat-sev-fail {
+      border-left-color: var(--aat-sev-fail);
+    }
+  }
+
+  .aat-doctor-finding-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+  }
+
+  .aat-doctor-finding-body {
+    margin-top: 4px;
+    font-size: 0.95em;
+  }
+
+  .aat-doctor-source {
+    margin-top: 4px;
+    font-size: 0.8em;
+    opacity: 0.6;
+  }
+
+  .aat-doctor-evidence,
+  .aat-doctor-json {
+    margin: 6px 0 0;
+    padding: 6px 8px;
+    max-height: 240px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: monospace;
+    font-size: 0.85em;
+    background: var(--input-background-color);
+    border: 1px solid var(--color-fieldset-border);
+    border-radius: 4px;
+  }
+
+  .aat-doctor-badge {
+    padding: 1px 8px;
+    margin-left: 6px;
+    border-radius: 999px;
+    font-size: 0.8em;
+    background: var(--input-background-color);
+    border: 1px solid var(--color-fieldset-border);
+  }
+
+  .aat-doctor-trace-meta {
+    margin-bottom: 10px;
+  }
+
+  .aat-doctor-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    li {
+      padding: 6px 10px;
+      border-left: 3px solid var(--color-fieldset-border);
+
+      &.aat-sev-warn {
+        border-left-color: var(--aat-sev-warn);
+      }
+      &.aat-sev-fail {
+        border-left-color: var(--aat-sev-fail);
+      }
+    }
+  }
+
+  .aat-doctor-step-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+  }
+
+  .aat-doctor-step-note {
+    margin-top: 4px;
+    font-size: 0.9em;
+    opacity: 0.85;
+  }
+
+  .aat-doctor-step-values,
+  .aat-doctor-env {
+    display: grid;
+    grid-template-columns: minmax(120px, max-content) 1fr;
+    gap: 2px 12px;
+    margin: 4px 0 0;
+
+    dt {
+      opacity: 0.7;
+    }
+
+    dd {
+      margin: 0;
+      word-break: break-word;
+    }
+  }
+
+  .aat-doctor-env {
+    grid-template-columns: minmax(160px, max-content) 1fr;
+    gap: 6px 12px;
+  }
+
+  .aat-doctor-payload {
+    margin-bottom: 12px;
+  }
+
+  .aat-doctor-payload-notes {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    font-size: 0.9em;
+  }
+}

@@ -123,6 +123,9 @@ export class AATItemTooltip {
     try {
       if (this.item.isActive) this.#computeDamageLabels(this.item, this.activity)
     } catch (err) {
+      // Kept so the Item Doctor can report the failure; otherwise a blank damage label is the
+      // only symptom the user ever sees.
+      this.damageError = err
       console.error(
         `AAT | Failed to compute damage labels for "${this.item?.name}" — showing no damage.`,
         err,
