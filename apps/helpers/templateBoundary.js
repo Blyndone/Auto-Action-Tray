@@ -1,3 +1,5 @@
+import { gsap } from '/scripts/greensock/esm/all.js'
+
 export class TemplateBoundary {
 
   constructor(options) {

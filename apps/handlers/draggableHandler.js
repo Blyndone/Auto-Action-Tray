@@ -1,4 +1,4 @@
-import { Draggable } from '/scripts/greensock/esm/all.js'
+import { gsap, Draggable } from '/scripts/greensock/esm/all.js'
 
 export class DraggableTrayContainer {
   constructor(options = {}) {

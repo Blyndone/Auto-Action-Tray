@@ -1,3 +1,4 @@
+import { gsap } from '/scripts/greensock/esm/all.js'
 import { Pathfinding } from './pathfinding.js'
 import { TargetHelper } from './targetHelper.js'
 export class QuickActionHelper {

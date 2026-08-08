@@ -1,3 +1,5 @@
+import { gsap } from '/scripts/greensock/esm/all.js'
+
 export class TargetLineCombo {
   constructor(options) {
     this.useName = options.sendName ?? game.settings.get('auto-action-tray', 'enableUseItemName') 
