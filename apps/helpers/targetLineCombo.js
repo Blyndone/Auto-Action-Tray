@@ -26,11 +26,24 @@ export class TargetLineCombo {
       this.text = !this.phantom ? new TargetText(options) : null
     }
     this.firstLine = options.firstLine !== undefined ? options.firstLine : true
-    if (this.useName) {
-      this.targettingText = this.firstLine ? new TargettingText(options) : null
-    }
-    if (this.useIcon) {
-      this.itemImg = this.firstLine ? new ItemImage(options, this.targettingText) : null
+    // Identifies what the icon/label depict, so a later combo for the same item can take them
+    // over instead of rebuilding them. See detachDecorations below.
+    this.decorationKey = options.decorationKey ?? null
+
+    // Adopted as a pair, never mixed: ItemImage wires its hover fades to the TargettingText it
+    // was constructed with, so a new icon paired with an inherited label (or vice versa) would
+    // fade one and not the other.
+    const adopt = options.adopt ?? null
+    if (adopt) {
+      this.targettingText = adopt.targettingText ?? null
+      this.itemImg = adopt.itemImg ?? null
+    } else {
+      if (this.useName) {
+        this.targettingText = this.firstLine ? new TargettingText(options) : null
+      }
+      if (this.useIcon) {
+        this.itemImg = this.firstLine ? new ItemImage(options, this.targettingText) : null
+      }
     }
     this.rangeBoundary = this.firstLine ? new TargetBoundary(options) : null
     this.startPos = options.startPos
@@ -39,6 +52,26 @@ export class TargetLineCombo {
     this.color = options.color || game.user.color.css || 0xffff00
     this.activityRange = options.activityRange || 0
     this.inRange = true
+  }
+
+  /**
+   * Hand the live icon and label to a successor combo. They stay on the stage with their tweens
+   * running; this combo simply stops owning them, so its own teardown leaves them alone.
+   *
+   * Used when a targeting flow turns into a use notification for the same item. Both phases build
+   * the icon and label from identical inputs, so destroying and immediately reconstructing them
+   * only produced a visible blink - the old sprite's half-second fade-out overlapping the new one
+   * at full alpha, with the infinite bob tween restarting from the top.
+   */
+  detachDecorations() {
+    const decorations = { targettingText: this.targettingText, itemImg: this.itemImg }
+    this.targettingText = null
+    this.itemImg = null
+    return decorations
+  }
+
+  hasDecorations() {
+    return !!(this.targettingText || this.itemImg)
   }
 
   clearLines() {

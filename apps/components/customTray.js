@@ -289,7 +289,6 @@ export class CustomTray extends AbilityTray {
     trays.forEach((tray) => {
       tray.addMacrosToTray()
     })
-    AbilityTray.onCompleteGeneration.bind(options.application)()
     return trays
   }
 }

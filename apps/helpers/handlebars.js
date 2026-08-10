@@ -1,3 +1,5 @@
+import { registerTooltipSource } from './tooltipRenderer.js'
+
 export function registerHandlebarsHelpers() {
   Handlebars.registerHelper('indexRange', function (v1, v2, v3, options) {
     if (parseInt(v1) <= v2 && v2 < parseInt(v3)) {
@@ -34,18 +36,38 @@ export function registerHandlebarsHelpers() {
     return actor?.system?.parent?.statuses.filter((e) => e == 'concentrating').size > 0
   })
 
-  Handlebars.registerHelper('selectItemTooltip', function (item, tray) {
-    if (tray.type != 'static' && tray.type != 'activity') {
-      return item.tooltip
+  // Which tooltip object a slot should show. Kept as a plain function rather than a helper: it
+  // is now called from the hover thunk below, not from a template.
+  function selectItemTooltip(item, tray) {
+    if (!tray || (tray.type != 'static' && tray.type != 'activity')) {
+      return item?.tooltip
     }
     if (tray.spellLevel) {
-      let tooltip = item.defaultActivity?.tooltips?.find((e) => e.spellLevel == tray.spellLevel)
+      let tooltip = item?.defaultActivity?.tooltips?.find((e) => e.spellLevel == tray.spellLevel)
       if (tooltip) {
         return tooltip
       }
     } else {
-      return item.tooltip
+      return item?.tooltip
     }
+  }
+
+  /**
+   * Registers how to build this slot's tooltip and returns the key that identifies it. Reading
+   * `item.tooltip` here would build the tooltip for every slot on every render, which is exactly
+   * what this replaces - so the lookup is deferred into a thunk that only runs on hover.
+   */
+  Handlebars.registerHelper('lazyTooltip', function (...args) {
+    // Handlebars always appends its own options object, so pop it rather than trying to tell it
+    // apart from a tray by shape. Called both as {{lazyTooltip item tray}} and {{lazyTooltip x}}.
+    args.pop()
+    const [item, tray = null] = args
+    if (!item) return ''
+    // Captured now, from the tray this item is actually in - not read off the application at
+    // hover time, when the current tray may be something else entirely.
+    return registerTooltipSource(() => selectItemTooltip(item, tray), {
+      ritualTray: tray?.category === 'ritual',
+    })
   })
 
   Handlebars.registerHelper('getDuration', function (duration) {

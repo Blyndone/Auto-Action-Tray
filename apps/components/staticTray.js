@@ -290,7 +290,6 @@ export class StaticTray extends AbilityTray {
     staticTrays.forEach((e) => {
       e.abilities = e.padArray(e.abilities)
     })
-    AbilityTray.onCompleteGeneration.bind(options.application)()
     return staticTrays
   }
 

@@ -91,8 +91,30 @@ export class AATItem {
       }
     }
 
-    this.checkActivities()
+    this.setActionMetrics()
     this.setDescription()
+  }
+
+  /**
+   * Range and action type, hoisted off AATItemTooltip.
+   *
+   * item.hbs and equip-tray.hbs need both for their data-action-range / data-action-type
+   * attributes on every slot. Reading them through `item.tooltip` forced a tooltip to be built
+   * for every item on every render, which defeated the whole point of the lazy tooltip accessor
+   * above. Neither value depends on anything a tooltip computes.
+   *
+   * Mirrors AATItemTooltip.setRangeLabel and .setActivationLabel: range is only meaningful for
+   * an active item (a passive with a range would otherwise pick up the range-boundary hover
+   * binding), and every activation type other than these three maps to no action type.
+   */
+  setActionMetrics() {
+    const activity = this.defaultActivity?.activity
+    this.actionRange =
+      this.isActive && activity
+        ? Math.max(activity.range?.reach ?? 0, activity.range?.value ?? 0)
+        : 0
+    this.actionType =
+      { action: 'action', bonus: 'bonus', reaction: 'reaction' }[activity?.activation?.type] ?? ''
   }
   getActorMaxSpellLevel(actor) {
     let slots = actor.system?.spells ?? {}
@@ -140,27 +162,11 @@ export class AATItem {
         { relativeTo: this.item },
       )
       this.activities.forEach((activity) => activity.setAllDescriptions())
-      this.defaultActivity = this.activities[0]
+      // No `this.defaultActivity = this.activities[0]` here. It was a no-op in every case but
+      // one: a pact-mode item picks a specific activity as its default below, and this callback
+      // fires afterwards, so it reset warlocks back to the base-level activity.
     }
     if (typeof requestIdleCallback === 'function') requestIdleCallback(() => enrich())
     else setTimeout(enrich, 0)
-  }
-  async checkActivities() {
-    for (const activity of this.activities) {
-      if (activity.activity.type === 'cast') {
-        try {
-          const spell = await fromUuid(activity?.activity?.spell?.uuid)
-          if (spell) {
-            const enhancedSpell = { ...spell, actor: this.actor }
-            const newActivity = new AATActivity(enhancedSpell, activity.activity)
-            newActivity.setAllDescriptions()
-          } else {
-            // console.warn('AAT | Activity not found')
-          }
-        } catch (error) {
-          // console.error('Error fetching spell:', error)
-        }
-      }
-    }
   }
 }

@@ -197,6 +197,13 @@ export class TargetHelper {
     // IDLE is what lets the next item be used. (This previously read setState('TARGETTING'), a
     // key that does not exist in STATES, and clearData() reset it to IDLE on the next line
     // regardless.) clearData() also already broadcasts clearAllPhantomLines for this actorId.
+    // Taken over before clearData() tears the old combo down. When this notification follows a
+    // targeting flow for the same item, the icon and label it would build are identical to the
+    // ones already floating over the token, so they are carried across instead of being
+    // destroyed and immediately rebuilt (which read as the icon blinking on target confirmation).
+    const decorationKey = TargetHelper.decorationKey(item, selectedSpellLevel)
+    const adopt = this.detachMatchingDecorations(decorationKey)
+
     this.clearData()
     this.setData(actor, activity)
     this.activityRange = useRangeBoundary ? this.getActivityRange(item, activity) : 0
@@ -213,6 +220,8 @@ export class TargetHelper {
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
       color: this.color,
+      decorationKey,
+      adopt,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
@@ -232,6 +241,24 @@ export class TargetHelper {
       })
     }
   }
+  /** What the floating icon and label depict. Two combos sharing this can share decorations. */
+  static decorationKey(item, selectedSpellLevel) {
+    return [item?.img, item?.name, item?.type, item?.rarity, selectedSpellLevel ?? ''].join('|')
+  }
+
+  /**
+   * Take the icon and label off whichever live combo owns them, if they depict the same thing
+   * the caller is about to draw. Returns null when there is nothing reusable, in which case the
+   * new combo builds its own as before.
+   */
+  detachMatchingDecorations(decorationKey) {
+    if (!decorationKey) return null
+    const owner = [this.currentLine, ...this.targetLines].find(
+      (line) => line?.firstLine && line.decorationKey === decorationKey && line.hasDecorations(),
+    )
+    return owner ? owner.detachDecorations() : null
+  }
+
   clearUseNotification() {
     this.setState('IDLE')
     this.clearData()
@@ -394,6 +421,9 @@ export class TargetHelper {
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
       color: this.color,
+      // Lets the use notification that follows confirmation adopt this icon and label rather
+      // than rebuilding identical ones.
+      decorationKey: TargetHelper.decorationKey(item, selectedSpellLevel),
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {

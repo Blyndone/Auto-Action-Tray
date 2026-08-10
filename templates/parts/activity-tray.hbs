@@ -13,7 +13,7 @@
           data-selectedSpellLevel='{{activity.actorSpellData.level}}'
           data-tooltip-direction='UP'
           data-action='useActivity'
-          data-tooltip="{{> 'AAT.item-tooltip' activity.tooltip}}"
+          data-tooltip="{{activity.name}}" data-tooltip-key="{{lazyTooltip activity}}"
           class='ability-button activity-button'
         >
           <img
