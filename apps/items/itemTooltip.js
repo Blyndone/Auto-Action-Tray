@@ -1,3 +1,5 @@
+import { count } from '../helpers/perfTrace.js'
+
 export class AATItemTooltip {
   // Damage labels are the only expensive part of a tooltip (Roll.parse + term.evaluate +
   // simplifyRollFormula). They are read solely by templates/parts/item-tooltip.hbs, so they
@@ -7,6 +9,7 @@ export class AATItemTooltip {
   #diceLabel = ''
 
   constructor(item, activity, options = {}) {
+    count('tooltips')
     this.spellLevel = options.spellLevel ?? item.item.system.level ?? null
     this.name = this.setName(item, activity)
     this.item = item

@@ -15,10 +15,6 @@ export class AbilityTray {
     this.label = options.label || ''
     this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
-  static onCompleteGeneration() {
-    foundry.utils.throttle(() => this.requestRender('centerTray'), 500)
-  }
-
   padArray(arr, filler = null) {
     // Counts are resolved once by the application in _applyUiSettings, which also writes the
     // --aat-item-tray-item-*-count custom properties the stylesheets actually read. This used to

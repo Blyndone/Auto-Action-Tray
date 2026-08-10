@@ -47,6 +47,10 @@ const SETTING_GROUPS = {
         'interceptMidiReactions',
       ],
     },
+    {
+      legend: 'Diagnostics',
+      keys: ['strictTrayRebuild', 'debugPerf'],
+    },
   ],
 }
 

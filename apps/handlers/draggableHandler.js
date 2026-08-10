@@ -43,16 +43,19 @@ export class DraggableTrayContainer {
   }
 
   createAllDraggables(duration = null) {
-    this.draggableTrays?.forEach((tray, index) => {
-      if (index != 0) {
-        this.createDraggable.bind(this)(tray)
-        tray.setClipPath.bind(this)(tray, tray.position, duration, true)
-      }
-    })
+    if (!this.draggableTrays) return
+    // Two passes on purpose. Draggable.create reads layout (getComputedStyle and
+    // getBoundingClientRect), setClipPath writes it - and this runs immediately after the
+    // centerTray render has replaced every node, so layout is already dirty. Interleaving the
+    // two forced a fresh synchronous layout per tray; batching the reads and then the writes
+    // costs one.
+    const trays = this.draggableTrays.filter((tray, index) => index != 0)
+    trays.forEach((tray) => this.createDraggable(tray))
+    trays.forEach((tray) => tray.setClipPath.call(this, tray, tray.position, duration, true))
   }
   setAllClipPaths(duration) {
     this.draggableTrays?.forEach((tray) => {
-      tray.setClipPath.bind(this)(tray, tray.position, duration, true)
+      tray.setClipPath.call(this, tray, tray.position, duration, true)
     })
   }
 
@@ -60,6 +63,16 @@ export class DraggableTrayContainer {
     const index = tray.index
     const application = this.application
     const container = this
+
+    // The .container-* node is replaced by every centerTray render, so a Draggable bound to the
+    // previous one is dead weight: it keeps the detached node, its listeners and its inertia
+    // registration alive for the rest of the session. Reassigning tray.draggable used to just
+    // drop the reference without killing it, so they accumulated one per tray per render.
+    //
+    // Always recreated rather than reused when the node happens to be the same: `bounds` below
+    // is captured at creation, so a reused Draggable would hold whatever its neighbours were
+    // when it was made.
+    tray.draggable?.forEach((instance) => instance?.kill?.())
 
 
     const getLeftNeighbor = () => container.draggableTrays[index - 1]?.tray
@@ -149,10 +162,16 @@ class DraggableTray {
     this.draggable = null
     this.tray = options.tray || null
     this.element = null
+    // Last clip-path written, and the node it was written to. See setClipPath.
+    this.clipElement = null
+    this.clipValue = null
   }
 
   getElement() {
-    if (!this.element) {
+    // isConnected, not just a null check: every centerTray render replaces this node, so the
+    // cached one goes stale after the first render and this used to hand back a detached
+    // element for the rest of the session.
+    if (!this.element?.isConnected) {
       this.element = document.querySelector(`.container-${this.id}`)
     }
     return this.element
@@ -177,17 +196,26 @@ class DraggableTray {
 
   setClipPath(tray, pos, duration = null, selfOnly = false) {
     function setClip(currentTray, pos, duration = 0) {
-
       const element = currentTray.getElement()
-      const newClipPath = `inset(0px ${pos}px 0px 0px)`
       if (!element) return
 
+      const clipPath = `inset(0px ${pos}px 0px 0px)`
+      // onDrag calls through here every frame, and the clip usually lands on the same value for
+      // several frames running. Keyed on the element as well as the value because a render swaps
+      // in a fresh node that carries no inline style.
+      if (currentTray.clipElement === element && currentTray.clipValue === clipPath) return
+      currentTray.clipElement = element
+      currentTray.clipValue = clipPath
 
-      gsap.to(`.container-${currentTray.id}`, {
-        duration: duration,
-
-        clipPath: `inset(0px ${pos}px 0px 0px)`,
-      })
+      // The element, not `.container-${id}` - a selector string makes gsap re-run
+      // querySelectorAll on every call, twice per tray per frame while dragging. gsap.set rather
+      // than a zero-duration gsap.to for the instant case, which is what every caller but the
+      // snap handler passes.
+      if (duration > 0) {
+        gsap.to(element, { duration, clipPath })
+      } else {
+        gsap.set(element, { clipPath })
+      }
     }
 
     duration = duration ? duration : 0

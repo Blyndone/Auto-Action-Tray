@@ -6,14 +6,14 @@
       data-activity-id="{{item.activityId}}"
       data-index="{{@index}}"
       data-trayid="{{tray.id}}"
-      data-tooltip="{{> 'AAT.item-tooltip' (selectItemTooltip item tray)}}"
+      data-tooltip="{{item.name}}" data-tooltip-key="{{lazyTooltip item tray}}"
       data-tooltip-direction="UP"
-      data-action-range="{{item.tooltip.range}}"
+      data-action-range="{{item.actionRange}}"
       {{#if (eq isActive false)}}
         data-action="viewItem"
         class="ability-button ability-button-passive"
       {{else}}
-        data-action-type='{{item.tooltip.actionType}}'
+        data-action-type='{{item.actionType}}'
         data-action="useItem"
         class="ability-button action-hover"
       {{/if}}

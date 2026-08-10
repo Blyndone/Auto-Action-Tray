@@ -1,6 +1,7 @@
 import { AutoActionTray } from '../apps/autoActionTray.js'
 import { ConditionTray } from '../apps/components/conditionsTray.js'
 import { SettingsConfigApp } from '../apps/dialogs/settingsConfig.js'
+import { refreshPerfTrace } from '../apps/helpers/perfTrace.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -602,6 +603,31 @@ Hooks.once('ready', async function () {
     },
 
     requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'strictTrayRebuild', {
+    name: 'Always Rebuild Trays',
+    hint: 'Rebuilds the static trays on every actor update instead of only when their contents can have changed. Slower. Enable if a tray ever shows stale contents.',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: false,
+  })
+
+  game.settings.register('auto-action-tray', 'debugPerf', {
+    name: 'Log Performance Timings',
+    hint: 'Prints setup and render timings to the console. For diagnosing slowdowns only.',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: false,
+    onChange: () => refreshPerfTrace(),
   })
 
   if (game.settings.get('auto-action-tray', 'customConditionIcons')) {

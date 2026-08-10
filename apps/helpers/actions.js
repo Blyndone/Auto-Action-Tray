@@ -76,8 +76,8 @@ export class Actions {
   }
   static async deleteTrayData(actor) {
     await this.actor.unsetFlag('auto-action-tray', 'data')
-    let token = await actor.getTokenDocument()
-    this.deleteSavedActor(actor, token)
+    // Same keying getSavedActor uses, so the delete targets the entry it is meant to.
+    this.deleteSavedActor(actor, this.getCacheToken(actor))
     this.generateActorItems(actor)
     this.initialTraySetup(this.actor)
     this.targetHelper.clearData()
