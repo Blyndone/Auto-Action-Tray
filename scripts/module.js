@@ -2,6 +2,7 @@ import { AutoActionTray } from '../apps/autoActionTray.js'
 import { ConditionTray } from '../apps/components/conditionsTray.js'
 import { SettingsConfigApp } from '../apps/dialogs/settingsConfig.js'
 import { refreshPerfTrace } from '../apps/helpers/perfTrace.js'
+import { createAATTokenRuler } from '../apps/helpers/tokenRuler.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -61,6 +62,11 @@ Hooks.once('setup', async function () {
 })
 
 Hooks.once('init', async function () {
+  // Subclass the token ruler so the quick-action pathfinder can tint its movement preview.
+  // Assigning `ruler.color` directly, as the pathfinder used to, does nothing - TokenRuler reads
+  // its colours from _getWaypointStyle/_getSegmentStyle.
+  CONFIG.Token.rulerClass = createAATTokenRuler()
+
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'foundry.canvas.placeables.Token.prototype._onClickLeft',
@@ -603,6 +609,16 @@ Hooks.once('ready', async function () {
     },
 
     requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'quickActionPathColor', {
+    name: '(Experimental) Quick Action Path Color',
+    hint: 'Color of the movement preview drawn while a quick action is being aimed.',
+    scope: 'client',
+    config: false,
+
+    type: String,
+    default: '#ff00ff',
   })
 
   game.settings.register('auto-action-tray', 'strictTrayRebuild', {
