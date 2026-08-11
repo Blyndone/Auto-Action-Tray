@@ -237,6 +237,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
     Hooks.on('hoverToken', this._onHoverToken.bind(this))
     Hooks.on('collapseSidebar', this._onCollapseSidebar.bind(this))
+    // The quick-action ring depends on what currently occupies the grid, so any token appearing,
+    // moving or leaving invalidates it.
+    Hooks.on('updateToken', this._onGridOccupancyChanged)
+    Hooks.on('createToken', this._onGridOccupancyChanged)
+    Hooks.on('deleteToken', this._onGridOccupancyChanged)
 
     if (
       game.settings.get('auto-action-tray', 'interceptMidiReactions') &&
@@ -927,6 +932,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     if (this.combatHandler == null) return
     this.combatHandler.updateCombat(this.actor, event)
   }
+  _onGridOccupancyChanged = () => {
+    if (!this.quickActionHelperEnabled) return
+    this.quickActionHelper.invalidateAvailablePositions()
+  }
+
   _onCreateCombatant = (event) => {
     if (this.actor != event.actor) return
     this.combatHandler.setCombat(this.actor, event)
@@ -987,7 +997,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   static _canControl(hotbar, wrapped, ...args) {
-    if (hotbar.quickActionHelper.controllable) {
+    // Set only while the quick-action helper is taking control of a token to move it, so the
+    // targeting interception below does not swallow that call. This flag was previously read but
+    // never assigned, leaving the branch permanently dead.
+    if (hotbar.quickActionHelper?.controllable) {
       return wrapped(...args)
     }
     const [, event] = args
