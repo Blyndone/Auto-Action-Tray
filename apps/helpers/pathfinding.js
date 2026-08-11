@@ -206,17 +206,34 @@ export class Pathfinding {
     }
 
     const start = canvas.grid.getOffset({ x: this.sourceToken.x, y: this.sourceToken.y })
-    const goal = canvas.grid.getOffset({ x: this.targetToken.x, y: this.targetToken.y })
 
     // Reset per-search results so a failed search cannot hand back the previous run's endpoint.
     this.endPos = null
     this.path = []
 
-    const result = this._search(start, goal)
+    // Melee aims at the exact cell the cursor picked, so hovering one side of a target walks the
+    // token to that side. If that cell turns out to be unreachable, fall back to any cell in
+    // range rather than reporting failure.
+    //
+    // Proving a cell unreachable costs a full-depth drain, so skip the exact pass outright when
+    // the cell cannot be stood in at all - that is the common failure and it is an O(1) test.
+    const pickStandable =
+      !this._footprintBlocked(this.goalAnchor.i, this.goalAnchor.j) ||
+      (this.goalAnchor.i === start.i && this.goalAnchor.j === start.j)
+
+    let relaxed = !this.exactGoal || !pickStandable
+    let result = this._search(start, this.goalAnchor, !relaxed)
+    if (!relaxed && !result.path.length) {
+      relaxed = true
+      result = this._search(start, this.goalAnchor, false)
+    }
+
     this.path = result.path
     this.endPos = result.endPos
 
-    endTimer(`${result.expanded} expanded, ${result.path.length} steps`)
+    endTimer(
+      `${result.expanded} expanded, ${result.path.length} steps${relaxed ? ', relaxed' : ''}`,
+    )
 
     this.setRuler(this.path)
     return { path: this.path, endPos: this.endPos }
@@ -258,6 +275,14 @@ export class Pathfinding {
     // Anything without a usable range is treated as melee reach instead.
     const range = Number.isFinite(options.range) ? options.range : 0
     this.rangeSquares = Math.max(1, Math.ceil(range / this.gridUnit))
+
+    // The cell the cursor picked out of the ring around the target. Melee treats it as a hard
+    // goal so that hovering a particular side of a token walks the attacker to that side;
+    // reach and ranged weapons use it only to bias the approach direction, because for them
+    // walking all the way to an adjacent cell would be wrong.
+    const picked = options.targetPosition ?? { x: this.targetToken.x, y: this.targetToken.y }
+    this.goalAnchor = grid.getOffset(picked)
+    this.exactGoal = this.rangeSquares <= 1
 
     this.maxDepth = this._movementBudgetSquares(options)
     this.occupied = this._buildOccupancy()
@@ -422,11 +447,17 @@ export class Pathfinding {
   }
 
   /**
-   * Admissible, consistent heuristic.
+   * Distance from a cell to the cursor-picked goal cell.
    *
    * On square grids every step costs at least 1 square and reduces Chebyshev distance by at most
    * 1, so plain Chebyshev is admissible under *every* diagonal rule. Hex grids have no diagonals
    * and uniform step cost, so the grid's own measurement is exact.
+   *
+   * In exact (melee) mode this is a true admissible heuristic for the goal. In relaxed mode the
+   * goal is "any cell in range" while this still measures to the picked cell, which makes it
+   * inadmissible - deliberately so, because it biases the stopping point toward the side of the
+   * target the cursor indicated. Reachability is unaffected: nodes enter the heap on exact `g`,
+   * so every in-range cell within budget is still explored; only the choice among them shifts.
    */
   _heuristic(i, j, goalI, goalJ) {
     if (canvas.grid.isSquare) {
@@ -552,11 +583,19 @@ export class Pathfinding {
   /*  A*                                          */
   /* -------------------------------------------- */
 
-  _search(start, goal) {
+  /**
+   * @param {{i: number, j: number}} start   Source token's current anchor.
+   * @param {{i: number, j: number}} goal    Cell the cursor picked; also the heuristic target.
+   * @param {boolean} exact                  Require arrival at `goal` rather than merely being in
+   *                                         range. Melee uses this so the cursor decides which
+   *                                         side of the target the attacker ends up on.
+   */
+  _search(start, goal, exact) {
     const empty = { path: [], endPos: null, expanded: 0 }
+    const reached = (i, j) => (exact ? i === goal.i && j === goal.j : this._inRange(i, j))
 
-    // Already in range - no movement required.
-    if (this._inRange(start.i, start.j)) {
+    // Nothing to do: already standing where we want to be (exact), or already in range (relaxed).
+    if (reached(start.i, start.j)) {
       const point = canvas.grid.getTopLeftPoint({ i: start.i, j: start.j })
       return { path: [point], endPos: point, expanded: 0 }
     }
@@ -586,7 +625,7 @@ export class Pathfinding {
       expanded++
       count('nodes expanded')
 
-      if (this._inRange(current.i, current.j)) {
+      if (reached(current.i, current.j)) {
         return {
           path: this._reconstruct(cameFrom, current),
           endPos: canvas.grid.getTopLeftPoint({ i: current.i, j: current.j }),
@@ -615,8 +654,15 @@ export class Pathfinding {
 
         gScore.set(neighborKey, tentativeG)
         cameFrom.set(neighborKey, current)
-        const f = tentativeG + this._heuristic(neighbor.i, neighbor.j, goal.i, goal.j)
-        open.push({ i: neighbor.i, j: neighbor.j, parity: nextParity, key: neighborKey }, f)
+        const h = this._heuristic(neighbor.i, neighbor.j, goal.i, goal.j)
+        // Break ties toward the cell nearest the cursor's pick. The epsilon is far smaller than
+        // any real step cost, so it can only order cells that are otherwise equal - without it,
+        // equally-good stopping cells are chosen arbitrarily and the ghost jitters between them
+        // as the mouse moves.
+        open.push(
+          { i: neighbor.i, j: neighbor.j, parity: nextParity, key: neighborKey },
+          tentativeG + h + h * 1e-6,
+        )
       }
     }
 
