@@ -176,7 +176,14 @@ export class Pathfinding {
     return new Promise((resolve) => {
       // Settle any superseded promise instead of dropping it. Previously the resolver was simply
       // overwritten, so every search abandoned mid-debounce left an `await` that never returned.
-      if (this._pathfindingResolve) this._pathfindingResolve({ path: [], endPos: null })
+      //
+      // The `superseded` marker matters: mouse movement is throttled at the same 50ms as this
+      // debounce, so overlapping calls are routine. Without it the caller cannot tell "a newer
+      // search replaced yours" from "no route exists", and would cancel the quick action and
+      // warn the user on nearly every mouse move.
+      if (this._pathfindingResolve) {
+        this._pathfindingResolve({ path: [], endPos: null, superseded: true })
+      }
       this._pathfindingResolve = resolve
       this._debouncedSearch()
     })

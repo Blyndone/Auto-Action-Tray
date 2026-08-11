@@ -463,15 +463,19 @@ export class QuickActionHelper {
       return
     }
 
-    // The pathfinder now always resolves to a `{path, endPos}` pair - empty path, null endPos on
+    // The pathfinder always resolves to a `{path, endPos}` pair - empty path, null endPos on
     // failure - so this no longer needs a null guard around the destructuring.
-    const { path, endPos } = await this.pathfinding.newPathfinding({
+    const { path, endPos, superseded } = await this.pathfinding.newPathfinding({
       sourceToken: actorTok,
       targetToken: token,
       speed: this.getMovementSpeed(),
       range: this.activeItemRange,
       targetPosition: { x: pos.x, y: pos.y },
     })
+
+    // A newer search replaced this one mid-debounce. That is routine during mouse movement and
+    // says nothing about reachability, so bail out and let the newer search drive the ghost.
+    if (superseded) return
 
     if (endPos) {
       pos = endPos
