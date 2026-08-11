@@ -670,6 +670,19 @@ export class Pathfinding {
     return { ...empty, expanded }
   }
 
+  /**
+   * Rebuild the path as one waypoint per cell travelled.
+   *
+   * Emitting every cell is deliberate. TokenRuler draws its grid highlights from
+   * `#getSnappedIntermediatePath`, which highlights one cell per waypoint and does *not* expand
+   * segments - so collapsing straight runs into corner waypoints leaves the run between corners
+   * unhighlighted.
+   *
+   * The per-cell waypoint markers this might imply are not a problem: waypoints default to
+   * `explicit: false`, and TokenRuler#_getWaypointStyle already returns radius 0 for a
+   * non-explicit waypoint that has both a previous and a next in the same movement action. Dots
+   * therefore appear only at the ends, while every travelled cell stays highlighted.
+   */
   _reconstruct(cameFrom, current) {
     const cells = [current]
     let node = current
@@ -677,33 +690,7 @@ export class Pathfinding {
       node = cameFrom.get(node.key)
       cells.unshift(node)
     }
-    return this._simplify(
-      cells.map((cell) => canvas.grid.getTopLeftPoint({ i: cell.i, j: cell.j })),
-    )
-  }
-
-  /**
-   * Collapse straight runs into single waypoints.
-   *
-   * This used to be dead code - the function returned on its first line. Enabling it removes the
-   * per-cell waypoint markers from the ruler; `Token#move` handles multi-cell segments fine.
-   */
-  _simplify(path) {
-    if (!path || path.length <= 2) return path
-
-    const simplified = [path[0]]
-    for (let n = 1; n < path.length - 1; n++) {
-      const prev = path[n - 1]
-      const curr = path[n]
-      const next = path[n + 1]
-      const inX = Math.sign(curr.x - prev.x)
-      const inY = Math.sign(curr.y - prev.y)
-      const outX = Math.sign(next.x - curr.x)
-      const outY = Math.sign(next.y - curr.y)
-      if (inX !== outX || inY !== outY) simplified.push(curr)
-    }
-    simplified.push(path[path.length - 1])
-    return simplified
+    return cells.map((cell) => canvas.grid.getTopLeftPoint({ i: cell.i, j: cell.j }))
   }
 
   /** Gridless scenes have no cells to search; move in a straight line instead. */
