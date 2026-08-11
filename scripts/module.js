@@ -581,9 +581,12 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  // Setting key kept as-is so existing client configs are not reset, but the name and hint no
+  // longer claim to remove the limit: this chooses between a fixed cap and one derived from the
+  // actor's remaining movement. Both are still capped by Quick Action Depth.
   game.settings.register('auto-action-tray', 'unboundPathfindingDepth', {
-    name: '(Experimental) Unbounded Pathfinding Depth',
-    hint: 'Enable Unbounded Pathfinding Depth for Quick Actions.  May impact performance.  Bound Depth is determined by Actor Speed.',
+    name: '(Experimental) Ignore Actor Speed Limit',
+    hint: "Path up to the full Quick Action Depth instead of stopping at the actor's remaining movement for the turn. Longer searches cost more performance.",
     scope: 'client',
     config: false,
 
@@ -595,7 +598,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'quickActionDepth', {
     name: '(Experimental) Quick Action Depth',
-    hint: 'Maximum Distance for Quick Action Pathfinding.  Larger distances may impact performance.',
+    hint: 'Maximum pathfinding distance in grid squares. Larger distances may impact performance.',
     scope: 'client',
     config: false,
 
