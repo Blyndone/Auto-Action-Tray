@@ -46,6 +46,21 @@ function offsetKey(i, j) {
 }
 
 /**
+ * Are two path costs the same? Costs are not always integral - the EXACT diagonal rule uses
+ * sqrt(2) and APPROXIMATE uses 1.5 - so equality needs a tolerance.
+ */
+const COST_EPSILON = 1e-9
+
+/**
+ * Tie-break weights, applied to the heap ordering only. Both are orders of magnitude below the
+ * smallest real step cost, so neither can promote a genuinely more expensive path.
+ *
+ * PREFER_PICK outranks PREFER_STRAIGHT deliberately - see the comment at the push site.
+ */
+const PREFER_PICK = 1e-6
+const PREFER_STRAIGHT = 1e-9
+
+/**
  * Binary min-heap keyed on fScore.
  *
  * Replaces the previous `openSet.sort()`-on-every-pop, which made the search O(n^2 log n) and
@@ -613,8 +628,8 @@ export class Pathfinding {
 
     const startParity = this.initialDiagonalParity
     const startKey = stateKey(start.i, start.j, startParity)
-    gScore.set(startKey, 0)
-    open.push({ i: start.i, j: start.j, parity: startParity, key: startKey }, 0)
+    gScore.set(startKey, { g: 0, diag: 0 })
+    open.push({ i: start.i, j: start.j, parity: startParity, key: startKey, diag: 0 }, 0)
 
     let expanded = 0
 
@@ -633,12 +648,13 @@ export class Pathfinding {
         }
       }
 
-      const currentG = gScore.get(current.key)
+      const currentScore = gScore.get(current.key)
 
       for (const neighbor of this._neighbors(current.i, current.j)) {
         const stepParity = this.alternatingDiagonals && neighbor.isDiagonal ? current.parity : 0
         const step = this._stepCost(neighbor.isDiagonal, stepParity)
-        const tentativeG = currentG + step
+        const tentativeG = currentScore.g + step
+        const tentativeDiag = currentScore.diag + (neighbor.isDiagonal ? 1 : 0)
 
         // Reject over-budget nodes before they enter the heap. Previously they were pushed and
         // only discarded on pop, inflating every heap operation.
@@ -649,19 +665,34 @@ export class Pathfinding {
         const neighborKey = stateKey(neighbor.i, neighbor.j, nextParity)
         if (closed.has(neighborKey)) continue
 
+        // Dominance is lexicographic on (cost, diagonals). Under the 5-5-5 default a diagonal
+        // costs exactly as much as an orthogonal step, so a zigzag ties with a straight run on
+        // cost alone and whichever route arrived first would win. Comparing diagonal count second
+        // keeps the straighter route.
         const known = gScore.get(neighborKey)
-        if (known !== undefined && tentativeG >= known) continue
+        if (known !== undefined) {
+          if (tentativeG > known.g + COST_EPSILON) continue
+          if (tentativeG > known.g - COST_EPSILON && tentativeDiag >= known.diag) continue
+        }
 
-        gScore.set(neighborKey, tentativeG)
+        gScore.set(neighborKey, { g: tentativeG, diag: tentativeDiag })
         cameFrom.set(neighborKey, current)
+
         const h = this._heuristic(neighbor.i, neighbor.j, goal.i, goal.j)
-        // Break ties toward the cell nearest the cursor's pick. The epsilon is far smaller than
-        // any real step cost, so it can only order cells that are otherwise equal - without it,
-        // equally-good stopping cells are chosen arbitrarily and the ghost jitters between them
-        // as the mouse moves.
+        // Both tie-breakers are far smaller than any real step cost, so they can only order
+        // nodes that are otherwise equal. Distance to the cursor's pick outranks straightness
+        // because it depends only on the cell: routes to the *same* cell share it, leaving
+        // straightness to decide between them, while different candidate stopping cells are
+        // still resolved in favour of the side the cursor indicated.
         open.push(
-          { i: neighbor.i, j: neighbor.j, parity: nextParity, key: neighborKey },
-          tentativeG + h + h * 1e-6,
+          {
+            i: neighbor.i,
+            j: neighbor.j,
+            parity: nextParity,
+            key: neighborKey,
+            diag: tentativeDiag,
+          },
+          tentativeG + h + h * PREFER_PICK + tentativeDiag * PREFER_STRAIGHT,
         )
       }
     }
