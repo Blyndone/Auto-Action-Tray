@@ -1,4 +1,5 @@
 import { count } from '../helpers/perfTrace.js'
+import { toSceneDistance, NON_NUMERIC_RANGES } from '../helpers/distance.js'
 
 export class AATItemTooltip {
   // Damage labels are the only expensive part of a tooltip (Roll.parse + term.evaluate +
@@ -20,7 +21,9 @@ export class AATItemTooltip {
     this.actionType = ''
     this.ritualActivationTimeLabel = ''
     this.rangeLabel = ''
-    this.range = ''
+    // Numeric, in scene distance units. Was previously initialised to a string, which meant
+    // consumers relied on `|| 0` to recover a number.
+    this.range = 0
     this.targetCount = options.targetCount ?? null
     this.saveLabel = ''
     this.concentrationLabel = ''
@@ -225,20 +228,42 @@ export class AATItemTooltip {
     let range = 0
     const icon = (type) => (type === 'spell' ? 'fa-wand-sparkles' : 'fa-bow-arrow')
 
+    // The activity carries its own units (ft/mi/m/km, or one of the non-numeric range types).
+    // These used to be ignored entirely, so a spell with `units: 'mi'` and `value: 1` was read as
+    // a range of 1 foot and labelled "1 ft.".
+    const units = activity.range.units
+    const isNumeric = units && !NON_NUMERIC_RANGES.has(units)
+    const unitLabel = isNumeric
+      ? game.i18n.localize(CONFIG.DND5E.movementUnits[units]?.abbreviation ?? '') || units
+      : ''
+    const toRange = (value) => (isNumeric ? toSceneDistance(value, units) : value)
+
     let label = ''
 
     if (activity.range.reach) {
-      label += `<span class='range-icon'><i class='fa-solid fa-swords'></i></span> ${activity.range.reach} ft. Melee`
-      range = Math.max(range, activity.range.reach)
+      label += `<span class='range-icon'><i class='fa-solid fa-swords'></i></span> ${activity.range.reach} ${unitLabel} Melee`
+      range = Math.max(range, toRange(activity.range.reach))
     }
 
     if (activity.range.value) {
       label += `<span class='range-icon'><i class='fa-solid ${icon(this.item.type)}'></i></span> ${
         activity.range.value
-      } ${activity.range.long ? ` / ${activity.range.long}` : ''} ft.
+      } ${activity.range.long ? ` / ${activity.range.long}` : ''} ${unitLabel}
     `
-      range = Math.max(range, activity.range.value)
+      range = Math.max(range, toRange(activity.range.value))
     }
+
+    // `touch` and `self` carry no number. Reporting 0 previously made the pathfinder treat them
+    // as "occupy the target's square", which is unreachable - they are adjacency instead.
+    if (!range && (units === 'touch' || units === 'self')) {
+      range = units === 'touch' ? (canvas?.grid?.distance ?? 5) : 0
+      if (!label) {
+        label = `<span class='range-icon'><i class='fa-solid fa-hand'></i></span> ${game.i18n.localize(
+          CONFIG.DND5E.rangeTypes[units] ?? '',
+        )}`
+      }
+    }
+
     this.range = range
     this.rangeLabel = label
   }
