@@ -1,5 +1,23 @@
 import { AbilityTray } from './abilityTray.js'
 
+// styles/components/item.scss defines .multi-group0..2. Group indexes cycle through them so a
+// monster that names four or more attack groups (every lycanthrope) still gets a highlight ring
+// instead of an unstyled class name.
+const MULTI_GROUP_STYLES = 3
+
+const NUMBER_WORDS = {
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
+}
+
 export class CustomNpcTray extends AbilityTray {
   constructor(options = {}) {
     super(options)
@@ -7,23 +25,31 @@ export class CustomNpcTray extends AbilityTray {
     this.category = options.category
     this.id = options.id
     this.type = 'custom'
-    this.multiattackIndexGroups = []
+    // itemId -> { group, wildcard }. Keyed by id rather than written onto the AATItem itself:
+    // getActorAbilities hands back the shared savedActors cache, so tagging the item leaked the
+    // highlight into every other tray showing it and could not survive an item rebuild.
+    this.multiattackTags = {}
     this.trayLabel = options.trayLabel
     this.application = options.application
 
-    if (!this.savedData && !this.checkSavedData(this.id)) {
+    if (!this.savedData && !this.checkSavedData()) {
       this.generateNpcTray()
     } else {
       this.getSavedData()
+      // The tags are derived from the description and keyed by item id, so they can be rebuilt
+      // for a saved tray without touching its layout. Without this, multiattack highlighting
+      // disappeared for good the first time a user dragged anything into the tray.
+      this.tagMultiattack()
     }
   }
+
   getMatch(pattern, string) {
     let regex = new RegExp(pattern, 'g')
     let matches = []
     let match
 
     while ((match = regex.exec(string)) !== null) {
-      matches.push({ match: match[0], index: match.index })
+      matches.push({ match: match[0], groups: match.slice(1), index: match.index })
     }
 
     return matches
