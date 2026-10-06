@@ -1,4 +1,4 @@
-<li class="{{item.multigroup}}">
+<li class="{{multiTag tray item 'group'}}">
   {{#if item}}
     <div
       data-drag="true"
@@ -58,12 +58,12 @@
           </div>
         {{/if}}
 
-        {{#if item.wildcard}}
+        {{#if (multiTag tray item 'wildcard')}}
           <div class="wildcard-icon">
             <i class="fa-solid fa-asterisk"></i>
           </div>
         {{/if}}
-        {{#if (eq item.multigroup 'multi-additional')}}
+        {{#if (eq (multiTag tray item 'group') 'multi-additional')}}
           <div class="wildcard-icon">
             <i class="fa-solid fa-sparkles"></i>
           </div>

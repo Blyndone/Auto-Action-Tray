@@ -83,7 +83,7 @@ Hooks.once('init', async function () {
     'foundry.canvas.placeables.Token.prototype._onClickLeft2',
     function (wrapped, ...args) {
       if (hotbar) {
-        AutoActionTray._onTokenSelect2(hotbar, wrapped, ...args)
+        AutoActionTray._onTokenDoubleClick(hotbar, wrapped, ...args)
       } else return wrapped(...args)
     },
     'MIXED',

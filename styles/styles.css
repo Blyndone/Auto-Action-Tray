@@ -115,7 +115,7 @@
   z-index: 10;
 }
 
-.modifier-highlight.modifier-active {
+#auto-action-tray.modifiers-active .modifier-highlight {
   border: var(--aat-modifier-highlight-color) solid 5px;
 }
 

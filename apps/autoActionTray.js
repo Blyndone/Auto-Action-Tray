@@ -26,13 +26,84 @@ import { QuickActionHelper } from './helpers/quickActionHelper.js'
 import { ConditionTray } from './components/conditionsTray.js'
 import { ReactionPromptTray } from './components/reactionPromptTray.js'
 import { AATItem } from './items/item.js'
-import { ItemConfig } from './dialogs/itemConfig.js'
-import { ItemDoctor } from './dialogs/itemDoctor.js'
 import { DraggableTrayContainer } from './handlers/draggableHandler.js'
-import { mark, time, drainCounts, warnUnexpected } from './helpers/perfTrace.js'
+import { ActorAbilityCache } from './helpers/abilityCache.js'
+import { attachContextMenus } from './handlers/contextMenus.js'
+import { mark, time, drainCounts } from './helpers/perfTrace.js'
 import { activateTooltipListener, pruneTooltipSources } from './helpers/tooltipRenderer.js'
 
+/**
+ * Pass-throughs to the identically named `Actions` helper, called with the application as `this`.
+ *
+ * The number is how many arguments reach the helper. Foundry invokes every action as
+ * `(event, target)` and most of these take none, so forwarding blindly would pass
+ * `Actions.toggleRangeBoundary` the target element as its `force` argument.
+ */
+const DELEGATED_ACTIONS = {
+  openSheet: 2,
+  endTurn: 2,
+  setTray: 2,
+  useItem: 2,
+  useSkillSave: 2,
+  toggleUseSlot: 2,
+  viewItem: 2,
+  selectWeapon: 2,
+  toggleLock: 0,
+  toggleSkillTrayPage: 0,
+  toggleFastForward: 0,
+  toggleTargetHelper: 0,
+  toggleRangeBoundary: 0,
+  toggleHpText: 0,
+  minimizeTray: 0,
+  rollDice: 0,
+  rollDeathSave: 0,
+  increaseButtonAction: 0,
+  decreaseButtonAction: 0,
+  increaseTargetCount: 0,
+  decreaseTargetCount: 0,
+  confirmTargets: 0,
+}
+
+/** The same arrangement for instance methods rather than static action handlers. */
+const DELEGATED_METHODS = {
+  setDefaultTray: 0,
+  getTrayConfig: 0,
+  getTray: 1,
+  deleteData: 1,
+  deleteTrayData: 1,
+  updateActorHealthPercent: 1,
+  updateHp: 1,
+}
+
+/** One delegate, named so it appears in stack traces, returning the helper's result. */
+function makeDelegate(name, arity) {
+  const fn = function (...args) {
+    return Actions[name].apply(this, args.slice(0, arity))
+  }
+  Object.defineProperty(fn, 'name', { value: name, configurable: true })
+  return fn
+}
+
 export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2) {
+  // Runs before the static fields below, so DEFAULT_OPTIONS.actions can reference these by
+  // name. Defined rather than assigned, to keep them non-enumerable like real class methods.
+  static {
+    for (const [name, arity] of Object.entries(DELEGATED_ACTIONS)) {
+      Object.defineProperty(this, name, {
+        value: makeDelegate(name, arity),
+        writable: true,
+        configurable: true,
+      })
+    }
+    for (const [name, arity] of Object.entries(DELEGATED_METHODS)) {
+      Object.defineProperty(this.prototype, name, {
+        value: makeDelegate(name, arity),
+        writable: true,
+        configurable: true,
+      })
+    }
+  }
+
   //#region Initialization
   constructor(options = {}) {
     super(options)
@@ -72,9 +143,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     activateTooltipListener()
     if (!game.user.isGM) {
       this.actor = game.user.character
-      let event = null
-      this.generateActorItems(this.actor, event)
-      this.initialTraySetup(this.actor, event)
+      this.generateActorItems(this.actor)
+      this.initialTraySetup(this.actor)
       this.render(true)
     } else {
       this.render(true)
@@ -86,12 +156,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  /** Register the GSAP plugins this module uses. */
   _configureGsap() {
-    // GSAP plugins self-register off a global `gsap`, which Foundry v13 does not
-    // define, so every plugin used here has to be registered explicitly.
-    // InertiaPlugin must come before Draggable — Draggable caches gsap.plugins.inertia
-    // when it initializes, and draggableHandler creates Draggables with `inertia: true`.
-    // PixiPlugin picks up the global PIXI that Foundry provides on its own.
+    // Foundry v13 defines no global `gsap`, so plugins cannot self-register.
+    // InertiaPlugin must precede Draggable: Draggable caches gsap.plugins.inertia on init, and
+    // draggableHandler creates Draggables with `inertia: true`. PixiPlugin finds PIXI itself.
     gsap.registerPlugin(DrawSVGPlugin, PixiPlugin, InertiaPlugin, Draggable)
     gsap.config({
       force3D: false,
@@ -99,16 +168,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })
   }
 
+  /** Set every instance field to its starting value. Runs before any tray or hook exists. */
   _initializeState() {
     this.animating = false
     this.tokenDeleted = false
     this.trayMinimized = false
     this.completeAnimation = null
-    this.renderQueue = []
+    // A Set, so the queue is inherently deduped. ApplicationV2 renders one part per entry in
+    // `parts`, and a repeated id builds that part twice in the same pass.
+    this.renderQueue = new Set()
     this.pendingRender = false
     this.suspendRenders = false
 
-    this.throttledRender = foundry.utils.throttle(async () => await this.completeRender(), 500)
+    // Resolved by completeRender once the queue it drains has actually rendered. See
+    // #nextRenderPromise.
+    this._nextRender = null
+    this._resolveNextRender = null
+
+    this.throttledRender = foundry.utils.throttle(() => this.completeRender(), 500)
     this.throttledHover = foundry.utils.throttle((...args) => this.handleHoverToken(...args), 100)
 
     this.#dragDrop = this.#createDragDropHandlers()
@@ -130,7 +207,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.activityTray = null
     this.equipmentTray = null
 
-    this.savedActors = []
+    this.abilityCache = new ActorAbilityCache()
 
     this.itemConfigItem = null
     this.skillTray = null
@@ -143,7 +220,15 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.currentDice = 0
     this.dice = ['20', '12', '10', '8', '6', '4', '100']
     this.trayInformation = ''
-    this.trayOptions = {
+    this.trayOptions = AutoActionTray.defaultTrayOptions()
+  }
+
+  /**
+   * Per-actor defaults, before the saved `config` flag merges over them. Fresh each call:
+   * `customStaticTrays` is mutable and must not be shared between actors.
+   */
+  static defaultTrayOptions() {
+    return {
       locked: false,
       skillTrayPage: 0,
       currentTray: 'stacked',
@@ -157,10 +242,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       autoAddItems: true,
       enableTargetHelper: true,
       concentrationColor: '#9600d1',
+      rowCount: game.settings.get('auto-action-tray', 'rowCount'),
       rangeBoundaryEnabled: game.settings.get('auto-action-tray', 'defaultRangeBoundary'),
     }
   }
 
+  /** Construct the trays and helpers that live for the whole session, not per actor. */
   _initializeTraysAndHelpers() {
     this.targetHelper = new TargetHelper({ hotbar: this, socket: this.socket })
     this.stackedTray = new StackedTray({
@@ -182,15 +269,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.reactionPromptTray = new ReactionPromptTray({ application: this })
   }
 
+  /**
+   * Read the layout settings and publish them as CSS custom properties on the document root.
+   *
+   * @returns {{rowCount: number, columnCount: number, scale: number}} the values the caller needs
+   *   to size the tray before its first render.
+   */
   _applyUiSettings() {
     const scale = game.settings.get('auto-action-tray', 'scale') ?? 0.6
     const rowCount = game.settings.get('auto-action-tray', 'rowCount') ?? 2
     const columnCount = game.settings.get('auto-action-tray', 'columnCount') ?? 10
     const bgOpacity = game.settings.get('auto-action-tray', 'bgOpacity')
-
-    this.styleSheet = Array.from(document.styleSheets).find(
-      (sheet) => sheet.href && sheet.href.includes('auto-action-tray/styles/styles.css'),
-    )
 
     document.documentElement.style.setProperty('--aat-scale', scale)
     document.documentElement.style.setProperty('--aat-item-tray-item-height-count', rowCount)
@@ -206,52 +295,86 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.quickActionHelperEnabled = game.settings.get('auto-action-tray', 'quickActionHelper')
     this.rowCount = rowCount
     this.columnCount = columnCount
-    this.totalabilities = rowCount * columnCount
+    this.totalAbilities = rowCount * columnCount
     this.iconSize = 100
 
     return { rowCount, columnCount, scale }
   }
 
+  /**
+   * Registered through #on so the ids can be released in destroy(). Some hooks are intentionally
+   * bound twice: 'deleteToken' drives both tray minimise and the quick-action grid cache.
+   */
   _registerHooks() {
-    Hooks.on('controlToken', this._onControlToken.bind(this))
-    Hooks.on('deleteToken', this._onDeleteToken.bind(this))
-    Hooks.on('updateActor', this._onUpdateActor.bind(this))
-    Hooks.on('updateItem', this._onUpdateItem.bind(this))
-    Hooks.on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
-    Hooks.on('dnd5e.beginConcentrating', (actor) => {
+    this.#on('controlToken', this._onControlToken.bind(this))
+    this.#on('deleteToken', this._onDeleteToken.bind(this))
+    this.#on('updateActor', this._onUpdateActor.bind(this))
+    this.#on('updateItem', this._onUpdateItem.bind(this))
+    this.#on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
+    this.#on('dnd5e.beginConcentrating', (actor) => {
       if (actor == this.actor) this.requestRender('characterImage')
     })
-    Hooks.on('dnd5e.endConcentration', (actor) => {
+    this.#on('dnd5e.endConcentration', (actor) => {
       if (actor == this.actor) this.requestRender('characterImage')
     })
-    Hooks.on('updateCombat', this._onUpdateCombat.bind(this))
-    Hooks.on('deleteCombatant', this._onUpdateCombat.bind(this))
-    Hooks.on('createCombatant', this._onCreateCombatant.bind(this))
-    Hooks.on('updateCombatant', this._onUpdateCombat.bind(this))
-    Hooks.on('combatStart', this._onUpdateCombat.bind(this))
-    Hooks.on('deleteCombat', this._onCombatDelete.bind(this))
-    Hooks.on('createItem', CustomTray._onCreateItem.bind(this))
-    Hooks.on('deleteItem', CustomTray._onDeleteItem.bind(this))
-    Hooks.on('createActiveEffect', this._onCreateActiveEffect.bind(this))
-    Hooks.on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
-    Hooks.on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
-    Hooks.on('hoverToken', this._onHoverToken.bind(this))
-    Hooks.on('collapseSidebar', this._onCollapseSidebar.bind(this))
+    this.#on('updateCombat', this._onUpdateCombat.bind(this))
+    this.#on('deleteCombatant', this._onUpdateCombat.bind(this))
+    this.#on('createCombatant', this._onCreateCombatant.bind(this))
+    this.#on('updateCombatant', this._onUpdateCombat.bind(this))
+    this.#on('combatStart', this._onUpdateCombat.bind(this))
+    this.#on('deleteCombat', this._onCombatDelete.bind(this))
+    this.#on('createItem', CustomTray._onCreateItem.bind(this))
+    this.#on('deleteItem', CustomTray._onDeleteItem.bind(this))
+    this.#on('createActiveEffect', this._onCreateActiveEffect.bind(this))
+    this.#on('deleteActiveEffect', this._onDeleteActiveEffect.bind(this))
+    this.#on('updateActiveEffect', this._onUpdateActiveEffect.bind(this))
+    this.#on('hoverToken', this._onHoverToken.bind(this))
+    this.#on('collapseSidebar', this._onCollapseSidebar.bind(this))
     // The quick-action ring depends on what currently occupies the grid, so any token appearing,
     // moving or leaving invalidates it.
-    Hooks.on('updateToken', this._onGridOccupancyChanged)
-    Hooks.on('createToken', this._onGridOccupancyChanged)
-    Hooks.on('deleteToken', this._onGridOccupancyChanged)
+    this.#on('updateToken', this._onGridOccupancyChanged)
+    this.#on('createToken', this._onGridOccupancyChanged)
+    this.#on('deleteToken', this._onGridOccupancyChanged)
 
     if (
       game.settings.get('auto-action-tray', 'interceptMidiReactions') &&
       game.modules.get('midi-qol')?.active
     ) {
-      Hooks.on('renderReactionDialog', this._onRenderReactionDialog.bind(this))
-      Hooks.on('closeReactionDialog', this._onCloseReactionDialog.bind(this))
+      this.#on('renderReactionDialog', this._onRenderReactionDialog.bind(this))
+      this.#on('closeReactionDialog', this._onCloseReactionDialog.bind(this))
     }
   }
 
+  /** Hooks.on, remembering the id so destroy() can unregister it. */
+  #on(hook, handler) {
+    this.#hookIds.push([hook, Hooks.on(hook, handler)])
+  }
+
+  #hookIds = []
+  #windowListeners = []
+
+  /**
+   * Release the hooks and window listeners. Nothing calls this today - the tray is a session-long
+   * singleton - but it must never be wired to _onClose: close() means "hide" here (minimizeTray
+   * closes, then re-renders the same instance), so releasing 'controlToken' there leaves the tray
+   * unable to notice the next token selection.
+   */
+  destroy() {
+    for (const [hook, id] of this.#hookIds) Hooks.off(hook, id)
+    this.#hookIds = []
+    for (const [type, handler] of this.#windowListeners) {
+      window.removeEventListener(type, handler)
+    }
+    this.#windowListeners = []
+    clearTimeout(this._animationSafetyTimer)
+  }
+
+  /**
+   * Replace midi-qol's reaction popup with the tray's own prompt row.
+   *
+   * ReactionDialog is internal to midi-qol and never exported, so this relies on undocumented
+   * internals and bails out to the native popup whenever the shape is not what we expect.
+   */
   _onRenderReactionDialog(dialogApp, element) {
     // ReactionDialog is internal to midi-qol and never exported, so this relies on undocumented
     // internals. Bail out and let the native popup show if the shape is not what we expect.
@@ -265,10 +388,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     // Only intercept reactions for the actor currently shown in this client's tray.
     if (dialogApp.data.actor?.uuid !== this.actor?.uuid) return
 
-    // ApplicationV2 windows with position.height: 'auto' (like midi's ReactionDialog) re-render
-    // once to measure/settle their height, firing this hook twice for one logical popup. Without
-    // this guard, intercept()/pushTray() would run twice and stack a second entrance tween on
-    // top of the first mid-flight.
+    // ApplicationV2 with height:'auto' re-renders once to settle its height, firing this hook
+    // twice per popup. Without the guard, pushTray() stacks a second entrance tween.
     if (this.reactionPromptTray.dialogApp === dialogApp) {
       element.style.display = 'none'
       return
@@ -286,20 +407,18 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })()
   }
 
+  /** Hook entry point for a reaction dialog closing. */
   _onCloseReactionDialog(dialogApp) {
-    // Fallback path only: covers timeouts, GM force-closes and any other close we did not
-    // initiate ourselves. A user click starts the animation directly (see closeReactionPrompt)
-    // because Foundry only fires this hook after ApplicationV2.close() finishes its own window
-    // close-out transition, which added a visible delay before our tray began animating.
+    // Fallback only: timeouts, GM force-closes. A user click animates directly via
+    // closeReactionPrompt, because this hook fires only after ApplicationV2.close() completes.
     return this.closeReactionPrompt(dialogApp)
   }
 
+  /** Retract the reaction prompt row, waiting out any entrance tween still in flight. */
   async closeReactionPrompt(dialogApp) {
     if (this.reactionPromptTray.dialogApp !== dialogApp) return
-    // midi-qol's own ReactionDialog.submit() calls dialog.close() twice for a normal selection
-    // (once inside the button callback when the activity starts, again after it resolves) -
-    // without this guard both close events run popTray() concurrently, producing two competing
-    // GSAP tweens on the same element.
+    // midi's ReactionDialog.submit() calls close() twice per selection; without this guard both
+    // run popTray() concurrently, producing competing tweens on one element.
     if (this.reactionPromptTray.closing) return
     this.reactionPromptTray.closing = true
 
@@ -308,57 +427,64 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     // reverse/kill it mid-flight, which is a second source of glitchy animation.
     if (this.reactionPromptTray.enterPromise) await this.reactionPromptTray.enterPromise
     await this.animationHandler.popTray()
-    // animateTrays() (animationHandler.js) doesn't await its own tween Promise.all before
-    // resolving - it only resolves the tray/animating state once the tweens truly finish via
-    // endAnimation(), which is what this.completeAnimation tracks. Forcing a render before that
-    // resolves rips the DOM out from under the still-running GSAP tween mid-slide.
+    // animateTrays() resolves tray state only once endAnimation() fires, which completeAnimation
+    // tracks. Rendering before that rips the DOM out from under a running tween.
     await this.completeAnimation
-    // No render here. animateTrays() already calls trayOut.setInactive() on this tray and renders,
-    // then re-applies the stacked containers' positions via setStackedTrayPos() - every render
-    // replaces the .container-* nodes and wipes their inline GSAP transforms, so a render issued
-    // after that compensation leaves the stacked trays sitting at their default positions with
-    // nothing to restore them. That extra render is what made the stacked tray jump on the way
-    // back in; the activity tray has no equivalent render, which is why it never stuttered.
+    // No render here: animateTrays() already renders and then re-applies the stacked containers'
+    // GSAP transforms via setStackedTrayPos(). A render after that compensation resets them.
     this.reactionPromptTray.reset()
   }
 
+  /**
+   * Alt/Ctrl highlight, driven by one class on the tray root (`.modifiers-active` in core.scss)
+   * rather than a class per node - keydown repeats at the OS key-repeat rate while a key is held.
+   *
+   * Both modifiers together leave the current highlight in place; any keyup clears it.
+   */
   _registerModifierListeners() {
-    window.addEventListener('keydown', (e) => {
+    this.#onWindow('keydown', (e) => {
       if (e.altKey) this.altDown = true
       if (e.ctrlKey) this.ctrlDown = true
       if ((this.altDown && this.ctrlDown) || (!this.altDown && !this.ctrlDown)) {
         return
       }
-      const color = this.altDown ? 'rgb(0, 173, 0)' : this.ctrlDown ? 'rgb(173, 0, 0)' : ''
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty('--aat-modifier-highlight-color', color)
-      const elements = document.querySelectorAll('.modifier-highlight')
-      elements.forEach((el) => {
-        el.classList.add('modifier-active')
-      })
+      // Exactly one modifier is down by this point, so ctrl is the only remaining alternative.
+      this.#applyModifierHighlight(this.altDown ? 'rgb(0, 173, 0)' : 'rgb(173, 0, 0)')
     })
 
-    window.addEventListener('keyup', (e) => {
+    this.#onWindow('keyup', (e) => {
       if (!e.altKey) this.altDown = false
       if (!e.ctrlKey) this.ctrlDown = false
-
-      const elements = document.querySelectorAll('.modifier-highlight')
-      document
-        .getElementById('auto-action-tray')
-        ?.style.setProperty('--aat-modifier-highlight-color', '')
-      elements.forEach((el) => {
-        el.classList.remove('modifier-active')
-      })
+      this.#applyModifierHighlight('')
     })
   }
+
+  /** window.addEventListener, remembering the handler so destroy() can remove it. */
+  #onWindow(type, handler) {
+    this.#windowListeners.push([type, handler])
+    window.addEventListener(type, handler)
+  }
+
+  /** Empty string clears the highlight. No-ops when the requested state is already applied. */
+  #applyModifierHighlight(color) {
+    if (this.#modifierHighlight === color) return
+    this.#modifierHighlight = color
+    // Not this.element: these listeners are registered in the constructor, before the first
+    // render, and the root element is the one node that survives every part render.
+    const root = document.getElementById('auto-action-tray')
+    if (!root) return
+    root.style.setProperty('--aat-modifier-highlight-color', color)
+    root.classList.toggle('modifiers-active', color !== '')
+  }
+
+  #modifierHighlight = ''
 
   //#region Appv2 Configuration
   static DEFAULT_OPTIONS = {
     tag: 'form',
     dragDrop: [{ dragSelector: '[data-drag]', dropSelector: null }],
     form: {
-      handler: AutoActionTray.myFormHandler,
+      handler: AutoActionTray.onHpSubmit,
       submitOnChange: true,
       closeOnSubmit: false,
       id: 'AutoActionTray',
@@ -408,7 +534,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       template: 'modules/auto-action-tray/templates/topParts/character-image.hbs',
       id: 'character-image',
       forms: {
-        '.hpinput': AutoActionTray.myFormHandler,
+        '.hpinput': AutoActionTray.onHpSubmit,
       },
     },
     equipmentMiscTray: {
@@ -439,173 +565,117 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       Actions.minimizeTray.bind(this)()
       this.tokenDeleted = false
     }
-    if (event?.actor.type == 'vehicle' || event?.actor.type == 'group') return
+    if (event?.actor?.type === 'vehicle' || event?.actor?.type === 'group') return
     if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING) return
     this.hpTextActive = false
-    switch (true) {
-      case event == null || controlled == false || this.actor == event.actor:
-        return
-      case controlled == true && this.actor != event.actor:
-        this.actor = event.actor ? event.actor : event
-        this.token = event
-        this.initialTraySetup(this.actor, event).catch((err) => {
-          console.error('AAT | Failed to set up tray for the selected token.', err)
-          ui.notifications?.error(
-            'Auto Action Tray: failed to load actions for this token — see console (F12).',
-          )
-        })
+    if (event == null || controlled == false || this.actor == event.actor) return
+    if (controlled == true && this.actor != event.actor) {
+      this.actor = event.actor ? event.actor : event
+      this.token = event
+      this.initialTraySetup(this.actor, event).catch((err) => {
+        console.error('AAT | Failed to set up tray for the selected token.', err)
+        ui.notifications?.error(
+          'Auto Action Tray: failed to load actions for this token — see console (F12).',
+        )
+      })
     }
   }
 
+  /** Minimise the tray when the token it is showing is removed from the scene. */
   _onDeleteToken = (event) => {
-    if (event.id == this.actor.token?.id && this.trayMinimized == false) {
+    // `this.actor` is null until the first token is controlled (the GM path never assigns it up
+    // front), so both links have to be optional or deleting any token before that throws.
+    if (event.id === this.actor?.token?.id && this.trayMinimized === false) {
       this.tokenDeleted = true
       Actions.minimizeTray.bind(this)()
     }
   }
 
+  /** Re-measure the tray when the sidebar collapses, since it changes the available height. */
   _onCollapseSidebar(sidebar, collapsed) {
     this.animationHandler.animateSidebarHeight()
   }
 
   //#region Actor/Item Management
+  // Thin forwarders onto ActorAbilityCache, which owns the savedActors LRU and its keying rules.
+  // They stay here because trays, dialogs and drag handlers reach the cache via the hotbar.
 
-  async generateActorItems(actor, event) {
-    let token = event == null ? this.getCacheToken(actor) : event.document
-    let savedActor = this.getSavedActor(actor, token)
+  /** The cache entries, for callers that still read the list directly. */
+  get savedActors() {
+    return this.abilityCache.entries
+  }
+
+  /**
+   * Ensure the cache holds a current ability list for this actor.
+   *
+   * @param {Actor5e} actor
+   * @param {Token|null} token  The Token placeable just selected (callers pass `event.target`),
+   *                            or null to fall back to the actor's own token document.
+   */
+  async generateActorItems(actor, token = null) {
+    const cacheToken = token == null ? this.abilityCache.getCacheToken(actor) : token.document
+    const savedActor = this.abilityCache.find(actor, cacheToken)
 
     if (savedActor) {
-      this.syncSavedAbilities(savedActor, actor)
+      this.abilityCache.sync(savedActor, actor)
       this.checkTrayDiff()
       return
     }
 
-    if (this.savedActors.length > 10) {
-      this.savedActors.shift()
-    }
-    let items
-    if (token?.actorLink || actor.token == null) {
-      items = actor.items
-    } else {
-      items = actor.token.delta.items
-    }
-
-    let urls = items.map((e) => e.img)
-
-    function preloadImage(src) {
-      return new Promise((resolve, reject) => {
-        const img = new Image()
-        img.src = src
-        img.onload = () => resolve(src)
-        img.onerror = reject
-      })
-    }
-    // allSettled rather than a bare forEach: preloadImage rejects on a missing icon, which would
-    // otherwise surface as an unhandled promise rejection per broken image.
-    Promise.allSettled(urls.map((url) => preloadImage(url)))
-
-    this.savedActors.push({
-      name: actor.name,
-      id: actor.id,
-      tokenId: actor?.token?.id,
-      type: actor.type,
-      abilities: AutoActionTray.sortAbilities(
-        items.map((i) => AATItem.safeCreate(i, actor)).filter(Boolean),
-      ),
-    })
+    this.abilityCache.populate(actor, cacheToken)
   }
 
-  // The cached ability list is shared by reference with every tray, so it is sorted once here
-  // instead of being re-sorted in place by each tray's generateTray.
-  static sortAbilities(abilities) {
-    return abilities.sort((a, b) => (a?.item?.sort ?? -Infinity) - (b?.item?.sort ?? -Infinity))
-  }
-
-  /**
-   * Reconcile a cached actor's AATItem wrappers against the actor's current items. Wrappers for
-   * items that still exist are reused, so only genuinely new items pay construction cost and
-   * trays keep their existing object references.
-   */
-  syncSavedAbilities(savedActor, actor) {
-    const existing = new Map(savedActor.abilities.map((a) => [a?.id, a]))
-    const abilities = []
-    for (const item of actor.items) {
-      const cached = existing.get(item.id)
-      if (cached) {
-        abilities.push(cached)
-        continue
-      }
-      const created = AATItem.safeCreate(item, actor)
-      if (created) abilities.push(created)
-    }
-    savedActor.abilities = AutoActionTray.sortAbilities(abilities)
-  }
-
-  /**
-   * The token document the savedActors cache is keyed against. Only `actorLink` and `id` are
-   * ever read off it.
-   *
-   * This used to be `actor.getTokenDocument()`, which is async and builds a throwaway
-   * TokenDocument out of `prototypeToken.toObject()` on every call - getActorAbilities alone
-   * calls it dozens of times per render. Worse, the Promise it returned was passed straight
-   * into getSavedActor, where `actorLink` read as undefined so every lookup took the unlinked
-   * branch and compared `undefined == undefined`; linked actors matched by accident.
-   *
-   * `actor.token` is the real TokenDocument for a synthetic (unlinked) actor and null for a
-   * linked one, whose prototypeToken carries the same actorLink flag.
-   */
+  /** The token document the cache keys this actor against. */
   getCacheToken(actor) {
-    return actor?.token ?? actor?.prototypeToken ?? null
+    return this.abilityCache.getCacheToken(actor)
   }
 
+  /** The cache entry for this actor/token pair, or undefined. */
   getSavedActor(actor, token) {
-    if (!token) return undefined
-    if (token.actorLink) {
-      return this.savedActors.find((a) => a.id == actor.id)
-    } else {
-      if (!token.id) {
-        // An unlinked token with no id cannot be told apart from another copy of the same NPC,
-        // so the cache would hand both tokens the same tray. Should not be reachable.
-        warnUnexpected('getSavedActor: unlinked token has no id', actor?.name)
-      }
-      return this.savedActors.find((a) => a.id == actor.id && a.tokenId == token.id)
-    }
+    return this.abilityCache.find(actor, token)
   }
 
+  /** Drop this actor's cache entry, so the next selection rebuilds it from scratch. */
   deleteSavedActor(actor, token) {
-    if (!token) return
-    if (token.actorLink) {
-      this.savedActors = this.savedActors.filter((a) => a.id !== actor.id)
-    } else {
-      this.savedActors = this.savedActors.filter(
-        (a) => !(a.id === actor.id && a.tokenId === token.id),
-      )
-    }
+    this.abilityCache.delete(actor, token)
   }
 
+  /** The cached AATItem list for an actor uuid. Shared by reference with every tray. */
   getActorAbilities(actorUuid) {
-    const actor = fromUuidSync(actorUuid)
-    if (!actor) {
-      // Previously this threw a TypeError here (it called getTokenDocument() on null), so a
-      // stale uuid took out whichever render was in flight. Now it degrades to an empty tray.
-      warnUnexpected('getActorAbilities: no actor for uuid', actorUuid)
-      return []
-    }
-    const token = this.getCacheToken(actor)
-    if (!token) return []
-
-    return this.getSavedActor(actor, token)?.abilities ?? []
+    return this.abilityCache.abilitiesForUuid(actorUuid)
   }
 
+  /** Remove one ability from the current actor's cache entry. */
   deleteActorAbility(itemId) {
-    const actor = this.savedActors.find((a) => a.id === this.actor.id)
-    if (actor) {
-      actor.abilities = actor.abilities.filter((e) => e.id !== itemId)
-    }
+    // Keyed the same way as getSavedActor/deleteSavedActor. Matching on actor id alone picked
+    // the first cache entry, so with two unlinked copies of one NPC on the scene the ability was
+    // dropped from whichever copy happened to be cached first rather than the selected one.
+    this.abilityCache.deleteAbility(this.actor, itemId)
   }
 
   //#region Themes
-  setTheme(actor) {
+  /** The theme applied to an NPC, by its dnd5e creature type. */
+  static THEME_BY_CREATURE_TYPE = {
+    aberration: 'theme-warlock',
+    beast: 'theme-ranger',
+    celestial: 'theme-cleric',
+    construct: 'theme-fighter',
+    dragon: 'theme-barbarian',
+    elemental: 'theme-bard',
+    fey: 'theme-sorcerer',
+    fiend: 'theme-ember',
+    giant: 'theme-titan',
+    humanoid: 'theme-slate',
+    monstrosity: 'theme-rogue',
+    ooze: 'theme-artificer',
+    plant: 'theme-druid',
+    undead: 'theme-subterfuge',
+  }
+
+  static DEFAULT_CREATURE_THEME = 'theme-slate'
+
+  /** Work out which theme an actor should use, without applying it. */
+  #themeForActor(actor) {
     if (actor.type == 'character') {
       const highestLevelClass = Object.keys(actor.classes).reduce(
         (highest, e) => {
@@ -617,55 +687,33 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         },
         { level: -Infinity },
       )
-      if (highestLevelClass.name) {
-        game.settings.set(
-          'auto-action-tray',
-          'tempTheme',
-          'theme-' + highestLevelClass.name.toLowerCase(),
-        )
-      } else {
-        game.settings.set(
-          'auto-action-tray',
-          'tempTheme',
-          game.settings.get('auto-action-tray', 'theme'),
-        )
-      }
-    } else {
-      let creatureType = actor.system.details.type.value
-      const themeMap = {
-        aberration: 'theme-warlock',
-        beast: 'theme-ranger',
-        celestial: 'theme-cleric',
-        construct: 'theme-fighter',
-        dragon: 'theme-barbarian',
-        elemental: 'theme-bard',
-        fey: 'theme-sorcerer',
-        fiend: 'theme-ember',
-        giant: 'theme-titan',
-        humanoid: 'theme-slate',
-        monstrosity: 'theme-rogue',
-        ooze: 'theme-artificer',
-        plant: 'theme-druid',
-        undead: 'theme-subterfuge',
-      }
-
-      let theme = themeMap[creatureType] ?? 'theme-slate'
-
-      if (creatureType === 'humanoid') {
-        theme = actor.system.details.type.subtype === 'Goblinoid' ? 'theme-monk' : 'theme-slate'
-      }
-
-      game.settings.set('auto-action-tray', 'tempTheme', theme)
+      return highestLevelClass.name
+        ? 'theme-' + highestLevelClass.name.toLowerCase()
+        : game.settings.get('auto-action-tray', 'theme')
     }
+
+    const details = actor.system.details.type
+    // Goblinoids are the one subtype that overrides its creature type; every other humanoid
+    // falls through to the map's own 'theme-slate'.
+    if (details.value === 'humanoid' && details.subtype === 'Goblinoid') return 'theme-monk'
+    return (
+      AutoActionTray.THEME_BY_CREATURE_TYPE[details.value] ?? AutoActionTray.DEFAULT_CREATURE_THEME
+    )
+  }
+
+  /** Apply the actor's theme, skipping the write when it is already the active one. */
+  setTheme(actor) {
+    const theme = this.#themeForActor(actor)
+    // game.settings.set is async and fires the setting's onChange even when the value is
+    // identical, so an unguarded write re-applied the theme on every single token select.
+    if (game.settings.get('auto-action-tray', 'tempTheme') === theme) return
+    game.settings.set('auto-action-tray', 'tempTheme', theme)
   }
 
   //#region Tray Setup
   async initialTraySetup(actor, token = null, currentTrayId = null) {
-    // Everything below rebuilds the whole tray, and half a dozen things along the way
-    // (setActor -> setEffects, combat setup, favourites, delayed items) each ask for a render of
-    // their own. Those used to land as two extra full renders around this function's own - three
-    // renders of centerTray per token select. They are collected into renderQueue instead and
-    // flushed once at the end.
+    // Setup rebuilds the whole tray, and several steps along the way each request a render of
+    // their own. They are collected into renderQueue and flushed once at the end instead.
     this.suspendRenders = true
     try {
       return await this.#runInitialTraySetup(actor, token, currentTrayId)
@@ -675,10 +723,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       // something else happens to ask.
       const missedFlush = this.suspendRenders
       this.suspendRenders = false
-      if (missedFlush && this.renderQueue.length > 0) this.throttledRender()
+      if (missedFlush && this.renderQueue.size > 0) this.throttledRender()
     }
   }
 
+  /**
+   * Rebuild every tray for `actor` and render once at the end.
+   *
+   * Renders stay suspended for the duration - see initialTraySetup, which owns that flag and
+   * releases it if this throws. `currentTrayId` reopens the tray that was showing before, which is
+   * how re-selecting the same token keeps your place.
+   */
   async #runInitialTraySetup(actor, token = null, currentTrayId = null) {
     if (this.selectingActivity == true) {
       this.activityTray.rejectActivity(new Error('User canceled activity selection'))
@@ -691,12 +746,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (config?.rowCount && this.rowCount != config.rowCount) {
       this.rowCount = config.rowCount
-      this.totalabilities = this.rowCount * this.columnCount
-      const root = document.getElementById('auto-action-tray')
+      this.totalAbilities = this.rowCount * this.columnCount
     }
     if (!config?.rowCount) {
       this.rowCount = game.settings.get('auto-action-tray', 'rowCount')
-      this.totalabilities = this.rowCount * this.columnCount
+      this.totalAbilities = this.rowCount * this.columnCount
     }
 
     const endSetup = time(`setup "${actor.name}" (${actor.items.size} items)`)
@@ -737,23 +791,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     this.trayInformation = this.currentTray.label
-    this.trayOptions = {
-      locked: false,
-      skillTrayPage: 0,
-      currentTray: 'stacked',
-      fastForward: true,
-      imageType: 'portrait',
-      imageScale: 1,
-      imageX: 0,
-      imageY: 0,
-      healthIndicator: true,
-      customStaticTrays: [],
-      autoAddItems: true,
-      enableTargetHelper: true,
-      concentrationColor: '#9600d1',
-      rowCount: game.settings.get('auto-action-tray', 'rowCount'),
-      rangeBoundaryEnabled: game.settings.get('auto-action-tray', 'defaultRangeBoundary'),
-    }
+    this.trayOptions = AutoActionTray.defaultTrayOptions()
 
     if (config?.theme && config?.theme != '') {
       game.settings.set('auto-action-tray', 'tempTheme', config.theme)
@@ -773,7 +811,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     // One render for the whole setup: the parts this function is responsible for, unioned with
     // whatever queued up while renders were suspended. completeRender() drains renderQueue, so
     // nothing that was requested along the way is lost.
-    this.renderQueue.push('characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray')
+    for (const part of ['characterImage', 'centerTray', 'equipmentMiscTray', 'skillTray']) {
+      this.renderQueue.add(part)
+    }
     this.suspendRenders = false
     await mark('  setup render', () => this.completeRender())
     if (firstsetup) {
@@ -781,6 +821,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  /**
+   * Build every tray from the actor's cached abilities.
+   *
+   * The ability list is fetched once and passed into each generator as `cachedAbilities`, so the
+   * trays share one array rather than each re-reading and re-sorting the cache.
+   */
   generateTrays(actor) {
     let abilities = this.getActorAbilities(actor.uuid)
     this.staticTrays = StaticTray.generateStaticTrays(actor, {
@@ -820,6 +866,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.customTrays = [this.stackedTray, ...this.customTrays]
   }
 
+  /** Point the long-lived helpers at a new actor. */
   setActor(actor) {
     this.actorHealthPercent = this.updateActorHealthPercent(actor)
     this.effectsTray.setActor(actor, this)
@@ -828,6 +875,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.stackedTray.setActor(actor)
   }
 
+  /**
+   * Reconcile every tray against the actor's current items, dropping slots whose item is gone and
+   * refreshing those whose wrapper was rebuilt.
+   */
   checkTrayDiff() {
     const allItems = this.getActorAbilities(this.actor.uuid)
     const itemMap = new Map(allItems.map((item) => [item.id, item]))
@@ -840,6 +891,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     })
   }
 
+  /**
+   * Refresh the tray when one of the actor's items changes.
+   *
+   * Rebuilds the static trays unconditionally: an edited item changes what a tray contains without
+   * moving any of the actor-level state the fingerprint covers.
+   */
   _onUpdateItem(item, change, options, userId) {
     if (item.actor != this.actor) return
 
@@ -847,11 +904,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     const index = abilities.findIndex((e) => e.id === item.id)
 
     if (index !== -1) {
-      let newItem = new AATItem(item)
-      if (abilities[index]?.multigroup) {
-        newItem.multigroup = abilities[index].multigroup
+      // safeCreate, as in ActorAbilityCache: a malformed item would otherwise put a half-built
+      // wrapper into the shared cache. No multigroup carry-over needed - multiattack highlighting
+      // lives on the tray (CustomNpcTray.multiattackTags) and survives an item rebuild.
+      const newItem = AATItem.safeCreate(item, this.actor)
+      if (newItem) {
+        abilities[index] = newItem
       }
-      abilities[index] = newItem
     }
 
     // force: an edited item changes what a tray contains without changing any of the actor-level
@@ -864,10 +923,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   /**
-   * A signature over exactly the actor state StaticTray.generateStaticTrays reads: spell slot
-   * levels/values/maxes (staticTray.js setSpellTrays + the per-level max guard), the legendary
-   * action resource, and the identity of the ability list. Anything outside this cannot change
-   * what the static trays contain.
+   * Signature over exactly the actor state generateStaticTrays reads: spell slot
+   * levels/values/maxes, the legendary action resource, and the identity of the ability list.
    */
   staticTrayFingerprint(actor, abilities) {
     const spells = actor.system?.spells ?? {}
@@ -883,9 +940,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   /**
-   * Rebuild the static trays, skipping the work when nothing they depend on has moved.
-   * `updateActor` fires on every point of damage, and rebuilding ~10 trays (each a full filter
-   * and double sort over every ability) per HP tick was the bulk of that handler's cost.
+   * Rebuild the static trays, skipping the work when nothing they depend on moved. `updateActor`
+   * fires on every point of damage, and rebuilding ~10 trays per HP tick dominated that handler.
    */
   rebuildStaticTrays(actor, abilities, { force = false } = {}) {
     const fingerprint = this.staticTrayFingerprint(actor, abilities)
@@ -924,53 +980,71 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.requestRender(['centerTray', 'characterImage'])
   }
 
+  /** Forward combat changes to the combat handler, but only while the actor is in combat. */
   _onUpdateCombat = (event) => {
     if (this.combatHandler == null || this.combatHandler.inCombat == false) return
     this.combatHandler.updateCombat(this.actor, event)
   }
+  /** Tear down combat state when the encounter itself is deleted. */
   _onCombatDelete = (event) => {
     if (this.combatHandler == null) return
     this.combatHandler.updateCombat(this.actor, event)
   }
+  /** Invalidate the quick-action reachability cache when anything moves on the grid. */
   _onGridOccupancyChanged = () => {
     if (!this.quickActionHelperEnabled) return
     this.quickActionHelper.invalidateAvailablePositions()
   }
 
+  /** Start tracking combat when this actor is the one added to the encounter. */
   _onCreateCombatant = (event) => {
     if (this.actor != event.actor) return
     this.combatHandler.setCombat(this.actor, event)
   }
 
-  _onCreateActiveEffect = (effect) => {
+  /**
+   * Shared by the create/delete/update activeEffect hooks, which differ only in what they redraw.
+   *
+   * `parts` must be an array: requestRender's signature is (partID, force), so a second string
+   * argument reads as a truthy force flag. Null means "redraw only if the condition tray is open".
+   */
+  #onActiveEffectChanged(effect, parts) {
     if (effect.parent != this.actor) return
     this.effectsTray.setEffects()
-    if (this.currentTray.id == 'condition') {
-      this.conditionTray.setConditions()
-    }
-    // Array, not two positional args: the signature is (partID, force), so 'characterImage' was
-    // being read as a truthy force flag and never actually rendered.
-    this.requestRender(['centerTray', 'characterImage'])
-  }
-  _onDeleteActiveEffect = (effect) => {
-    if (effect.parent != this.actor) return
-    this.effectsTray.setEffects()
-    if (this.currentTray.id == 'condition') {
-      this.conditionTray.setConditions()
-    }
-    // Array, not two positional args: the signature is (partID, force), so 'characterImage' was
-    // being read as a truthy force flag and never actually rendered.
-    this.requestRender(['centerTray', 'characterImage'])
-  }
-  _onUpdateActiveEffect = (effect) => {
-    if (effect.parent != this.actor) return
-    this.effectsTray.setEffects()
-    if (this.currentTray.id == 'condition') {
-      this.conditionTray.setConditions()
-      this.requestRender('centerTray')
-    }
+    const onConditionTray = this.currentTray.id == 'condition'
+    if (onConditionTray) this.conditionTray.setConditions()
+
+    if (parts) this.requestRender(parts)
+    else if (onConditionTray) this.requestRender('centerTray')
   }
 
+  // The three activeEffect hooks, differing only in what each redraws.
+  _onCreateActiveEffect = (effect) => {
+    this.#onActiveEffectChanged(effect, ['centerTray', 'characterImage'])
+  }
+  _onDeleteActiveEffect = (effect) => {
+    this.#onActiveEffectChanged(effect, ['centerTray', 'characterImage'])
+  }
+  _onUpdateActiveEffect = (effect) => {
+    this.#onActiveEffectChanged(effect, null)
+  }
+
+  /**
+   * The not-targeting tail shared by _onTokenSelect and _canControl. Clicking the token already
+   * shown rebinds the tray to it - one actor can sit behind several unlinked tokens - keeping the
+   * open tray. Core's handler always runs afterwards.
+   */
+  static #resumeTraySetup(hotbar, event, wrapped, args) {
+    if (event.target.actor == hotbar.actor && hotbar.currentTray) {
+      hotbar.initialTraySetup(hotbar.actor, event.target, hotbar.currentTray.id)
+    }
+    return wrapped(...args)
+  }
+
+  /**
+   * Wraps Token.prototype._onClickLeft. While targeting, a click picks a target instead of
+   * selecting; otherwise it falls through to core selection.
+   */
   static _onTokenSelect(hotbar, wrapped, ...args) {
     const [, event] = args
 
@@ -979,27 +1053,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
+      // Clicking your own token while targeting falls through to normal selection rather than
+      // targeting yourself.
       if (event.target.actor == hotbar.actor) {
         return wrapped(...args)
       }
-      let token = event.currentTarget
-
-      hotbar.targetHelper.selectTarget(token)
+      hotbar.targetHelper.selectTarget(event.currentTarget)
       return event.stopPropagation()
-    } else {
-      if (event.target.actor == hotbar.actor && hotbar.currentTray) {
-        let currentTrayId = hotbar.currentTray.id
-
-        hotbar.initialTraySetup(hotbar.actor, event.target, currentTrayId)
-      }
-      return wrapped(...args)
     }
+    return AutoActionTray.#resumeTraySetup(hotbar, event, wrapped, args)
   }
 
+  /**
+   * Wraps Token.prototype._canControl, which fires for clicks that never reach _onClickLeft.
+   * Same targeting interception, minus the click-your-own-token exemption.
+   */
   static _canControl(hotbar, wrapped, ...args) {
     // Set only while the quick-action helper is taking control of a token to move it, so the
-    // targeting interception below does not swallow that call. This flag was previously read but
-    // never assigned, leaving the branch permanently dead.
+    // targeting interception below does not swallow that call.
     if (hotbar.quickActionHelper?.controllable) {
       return wrapped(...args)
     }
@@ -1010,24 +1081,21 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
-      let token = event.currentTarget
-
-      hotbar.targetHelper.selectTarget(token)
+      hotbar.targetHelper.selectTarget(event.currentTarget)
       return event.stopPropagation()
-    } else {
-      if (event.target.actor == hotbar.actor && hotbar.currentTray) {
-        let currentTrayId = hotbar.currentTray.id
-
-        hotbar.initialTraySetup(hotbar.actor, event.target, currentTrayId)
-      }
-      return wrapped(...args)
     }
+    return AutoActionTray.#resumeTraySetup(hotbar, event, wrapped, args)
   }
 
+  /** Hook entry point for token hover. Throttled, because hover fires at pointer rate. */
   _onHoverToken(token, hovered) {
     this.throttledHover(token, hovered)
   }
 
+  /** Trays whose contents are not quick-actionable, so hovering a token must not arm one. */
+  static QUICK_ACTION_INVALID_TRAYS = new Set(['target-helper', 'activity', 'spellLevel'])
+
+  /** Update targeting state, the quick-action ring and the in-range pips for a hovered token. */
   handleHoverToken(token, hovered) {
     if (!this.actor) return
     if (this.targetHelper.getState() >= this.targetHelper.STATES.TARGETING && hovered) {
@@ -1036,45 +1104,56 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.targetHelper.setState('TARGETING')
     }
 
-    if (this.quickActionHelperEnabled) {
-      if (this.quickActionHelper.getState() !== this.quickActionHelper.STATES.ATTACKING) {
-        const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
-        const dis2 = token?.document?.disposition
+    this.#updateQuickActionOnHover(token, hovered)
+    this.#updateRangeHighlightOnHover(token, hovered)
+  }
 
-        const { currentTray, quickActionHelper, combatHandler } = this
+  /** Arm or disarm the quick-action ring for the hovered token. */
+  #updateQuickActionOnHover(token, hovered) {
+    if (!this.quickActionHelperEnabled) return
 
-        const invalidTrays = new Set(['target-helper', 'activity', 'spellLevel'])
-        const trayId = currentTray?.id
+    const { quickActionHelper, combatHandler, currentTray } = this
+    if (quickActionHelper.getState() === quickActionHelper.STATES.ATTACKING) return
 
-        const quickState = quickActionHelper.getState()
-        const isValidQuickState =
-          quickState === quickActionHelper.STATES.ACTIVE ||
-          quickState === quickActionHelper.STATES.TARGETTING
+    const dis1 = this.actor?.token?.disposition ?? this.actor?.prototypeToken?.disposition
+    const dis2 = token?.document?.disposition
 
-        const canQuickAct =
-          !invalidTrays.has(trayId) &&
-          quickActionHelper.hasActiveSlot() &&
-          dis1 !== dis2 &&
-          isValidQuickState &&
-          combatHandler.inCombat &&
-          combatHandler.isTurn
+    const quickState = quickActionHelper.getState()
+    const isValidQuickState =
+      quickState === quickActionHelper.STATES.ACTIVE ||
+      quickState === quickActionHelper.STATES.TARGETTING
 
-        if (canQuickAct) {
-          if (hovered) {
-            this.quickActionHelper.startQuickAction()
-            this.quickActionHelper.displayTokenGhost(token)
-          } else {
-            this.quickActionHelper.cancelQuickAction()
-            this.quickActionHelper.removeTokenGhost()
-          }
-        }
-      }
+    const canQuickAct =
+      !AutoActionTray.QUICK_ACTION_INVALID_TRAYS.has(currentTray?.id) &&
+      quickActionHelper.hasActiveSlot() &&
+      dis1 !== dis2 &&
+      isValidQuickState &&
+      combatHandler.inCombat &&
+      combatHandler.isTurn
+
+    if (!canQuickAct) return
+
+    if (hovered) {
+      quickActionHelper.startQuickAction()
+      quickActionHelper.displayTokenGhost(token)
+    } else {
+      quickActionHelper.cancelQuickAction()
+      quickActionHelper.removeTokenGhost()
     }
+  }
 
+  /** Fade the "in range" pips in or out for the hovered token. */
+  #updateRangeHighlightOnHover(token, hovered) {
+    // Read live rather than cached: enableRangeHover is registered with requiresReload: false,
+    // so it can be toggled mid-session.
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
+
+    const root = this.element
+    if (!root) return
+
     if (!hovered) {
-      const allItems = document.querySelectorAll('.in-range')
+      const allItems = root.querySelectorAll('.in-range')
       if (allItems.length > 0) {
         gsap.to(allItems, {
           opacity: 0,
@@ -1085,22 +1164,24 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return
     }
 
-    let xDist = Math.abs(this.token.x - token.x) / canvas.grid.size
-    let yDist = Math.abs(this.token.y - token.y) / canvas.grid.size
-    let distance = Math.ceil(Math.abs(Math.max(xDist, yDist))) * 5
+    const xDist = Math.abs(this.token.x - token.x) / canvas.grid.size
+    const yDist = Math.abs(this.token.y - token.y) / canvas.grid.size
+    const distance = Math.ceil(Math.abs(Math.max(xDist, yDist))) * 5
 
-    const allItems = document.querySelectorAll('[data-action-range]')
-    const filteredItems = Array.from(allItems).filter((el) => {
-      let range = parseFloat(el.getAttribute('data-action-range'))
-      return range != 0 && !isNaN(range) && range >= distance
-    })
-    const targetElements = filteredItems.map((el) => el.querySelector('.in-range')).filter(Boolean)
+    const targetElements = []
+    for (const el of root.querySelectorAll('[data-action-range]')) {
+      const range = parseFloat(el.getAttribute('data-action-range'))
+      if (range == 0 || isNaN(range) || range < distance) continue
+      const pip = el.querySelector('.in-range')
+      if (pip) targetElements.push(pip)
+    }
     if (targetElements.length != 0) {
       gsap.to(targetElements, { opacity: 0.9, overwrite: true })
     }
   }
 
-  static _onTokenSelect2(hotbar, wrapped, ...args) {
+  /** Wraps Token.prototype._onClickLeft2 (double-click). */
+  static _onTokenDoubleClick(hotbar, wrapped, ...args) {
     const [event] = args
 
     if (!event) {
@@ -1114,18 +1195,13 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return event.stopPropagation()
     } else return wrapped(...args)
   }
-  // PIXI calls setCursor on every pointer move, so this runs at pointer-move rate for the whole
-  // targeting session. Only the #board lookup is cached.
-  //
-  // The style write below deliberately runs every call and must stay that way. PIXI's own
-  // setCursor early-returns when the requested mode matches its currentCursor, and this wrapper
-  // always hands it the same crosshair string - so after the first call PIXI stops touching the
-  // cursor entirely, while something else keeps resetting board.style.cursor between moves.
-  // Re-writing it unconditionally is what keeps the crosshair on screen; caching it behind an
-  // "already applied" flag makes the crosshair disappear.
+  // Runs at pointer-move rate for the whole targeting session; only the #board lookup is cached.
+  // The style write must stay unconditional: PIXI's setCursor early-returns on an unchanged mode,
+  // and something else resets board.style.cursor between moves, so caching loses the crosshair.
   static #CROSSHAIR = "url('modules/auto-action-tray/icons/cursors/Crosshair.cur') 16 16, auto"
   static #boardEl = null
 
+  /** Wraps PIXI.EventSystem.prototype.setCursor to force a crosshair while targeting. */
   static _onCursorChange(hotbar, wrapped, ...args) {
     if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
       if (!AutoActionTray.#boardEl?.isConnected) {
@@ -1139,6 +1215,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       return wrapped(...args)
     }
   }
+  /** Right-click removes a target while targeting, rather than opening the usual menu. */
   static _onTokenCancel(hotbar, wrapped, ...args) {
     const event = args[0]
     if (hotbar.targetHelper.getState() >= hotbar.targetHelper.STATES.TARGETING) {
@@ -1148,19 +1225,23 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     } else return wrapped(...args)
   }
 
-  static async myFormHandler(event, form, formData) {
+  /** Submit handler for the inline HP field on the character portrait. */
+  static async onHpSubmit(event, form, formData) {
     let data = foundry.utils.expandObject(formData.object)
     this.updateHp(data.hpinputText)
     this.hpTextActive = false
   }
 
   //#region Rendering
-  async _preparePartContext(partId, context) {
-    context = {
-      partId: `${this.id}-${partId}`,
+  /**
+   * Built once per render. ApplicationV2 calls _preparePartContext once per entry in `parts`, so
+   * assembling this there rebuilt all 35 fields for every part.
+   */
+  async _prepareContext(options) {
+    return {
       actor: this.actor,
       animating: this.animating,
-      totalabilities: this.totalabilities,
+      totalAbilities: this.totalAbilities,
       meleeWeapon: this.meleeWeapon,
       rangedWeapon: this.rangedWeapon,
       currentTray: this.currentTray,
@@ -1192,10 +1273,21 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       concentrationItem: this.concentrationItem,
       reactionPromptTray: this.reactionPromptTray,
     }
-
-    return context
   }
 
+  /** Give each part its own partId over a shallow copy of the shared context. */
+  async _preparePartContext(partId, context, options) {
+    // Shallow copy: parts must not see each other's partId, but every value below it is shared
+    // state the templates only read.
+    return { ...context, partId: `${this.id}-${partId}` }
+  }
+
+  /**
+   * Take the animation lock and open `completeAnimation` for callers that need to wait it out.
+   *
+   * A safety timer force-releases the lock after 4s: a tween that never resolves would otherwise
+   * leave the tray permanently frozen, since renders defer while `animating` is set.
+   */
   startAnimation() {
     this.animating = true
     this.completeAnimation = new Promise((resolve) => {
@@ -1212,6 +1304,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }, 4000)
   }
 
+  /** Release the animation lock and resolve `completeAnimation`. */
   endAnimation() {
     this.animating = false
     clearTimeout(this._animationSafetyTimer)
@@ -1222,16 +1315,19 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  /**
+   * Queue parts for rendering. The returned promise settles when the render covering this call
+   * finishes: the throttled one (up to 500ms out, possibly another caller's) unless `force`.
+   */
   async requestRender(partID, force = false) {
     const arr = Array.isArray(partID) ? partID : [partID]
-    this.renderQueue.push(...arr)
-    this.renderQueue = [...new Set(this.renderQueue)]
+    for (const part of arr) this.renderQueue.add(part)
 
     // initialTraySetup is mid-flight and will flush this queue itself. Rendering now would draw
     // a half-built tray and then immediately be superseded.
     if (this.suspendRenders) return
 
-    if (this.pendingRender && !force) return
+    if (this.pendingRender && !force) return this.#nextRenderPromise()
 
     if (this.animating && !force) {
       this.pendingRender = true
@@ -1240,48 +1336,69 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
     if (force) {
       await this.completeRender()
-      return Promise.resolve()
-    } else {
-      return await this.throttledRender()
+      return
     }
+    // Captured before scheduling: foundry.utils.throttle defers the callback behind a setTimeout
+    // and returns undefined, so there is nothing to await at this point. The deferred below is
+    // what lets a caller wait for the render this request will be folded into.
+    const settled = this.#nextRenderPromise()
+    this.throttledRender()
+    return settled
   }
 
+  /**
+   * Promise for the next completed render, shared by every waiter. completeRender resolves and
+   * clears it after draining the queue, so the next request starts a fresh one.
+   */
+  #nextRenderPromise() {
+    this._nextRender ??= new Promise((resolve) => {
+      this._resolveNextRender = resolve
+    })
+    return this._nextRender
+  }
+
+  /** Drain the render queue and render exactly those parts. */
   async completeRender() {
-    // Deduped here rather than trusting every producer: ApplicationV2 renders one part per entry
-    // in `parts`, so a repeated id builds that part twice in the same pass. requestRender dedupes
-    // its own additions, but callers that push onto renderQueue directly (initialTraySetup's
-    // flush) would otherwise slip duplicates of the most expensive part through.
-    const tmp = [...new Set(this.renderQueue)]
-    this.renderQueue = []
+    const tmp = [...this.renderQueue]
+    this.renderQueue.clear()
+    const resolveWaiters = this._resolveNextRender
+    this._nextRender = null
+    this._resolveNextRender = null
     const endRender = time(`render [${tmp.join(', ')}]`)
-    await this.render({ parts: tmp })
+    try {
+      await this.render({ parts: tmp })
+    } finally {
+      // Settled even if the render throws: a waiter blocked here would otherwise hang forever.
+      resolveWaiters?.()
+    }
     endRender(drainCounts())
     this.pendingRender = false
-    return Promise.resolve()
   }
 
+  /**
+   * Rebind everything that a re-rendered part throws away: drag/drop, range-boundary hovers and
+   * action-type highlights, plus the stacked tray's GSAP positions.
+   *
+   * Listeners are marked with data-aat-*-bound so nodes that survived the render are not bound a
+   * second time.
+   */
   _onRender(context, options) {
     this.#dragDrop.forEach((d) => d.bind(this.element))
     pruneTooltipSources()
 
     if (options.parts.includes('characterImage')) {
       if (this.hpTextActive) {
-        setTimeout(() => {
-          const inputField = document.querySelector('.hpinput')
-          inputField.focus()
-        }, 100)
+        // Optional: another render landing inside this 100ms window replaces the part, and the
+        // resulting TypeError would be thrown from a timer where nothing can catch it.
+        setTimeout(() => this.element?.querySelector('.hpinput')?.focus(), 100)
       }
     }
 
-    // Deliberately outside the centerTray gate. Ranged items live in two different parts —
-    // item.hbs renders under centerTray, equip-tray.hbs under equipmentMiscTray — so binding only
-    // on a centerTray render left the equipment tray unbound whenever it re-rendered on its own,
-    // and gave it a *second* listener pair on every centerTray render (its DOM survives those).
-    // Duplicates were visible: one hover fired createRangeBoundary N times, and each call faded
-    // out the box the previous call had just made, flashing once at hover start. The marker keeps
-    // already-bound nodes from binding again; freshly rendered DOM never carries it.
+    // Outside the centerTray gate: [data-action-range] nodes render under both centerTray
+    // (item.hbs) and equipmentMiscTray (equip-tray.hbs). The marker stops nodes that survived a
+    // render from being bound twice.
     if (this.trayOptions['rangeBoundaryEnabled']) {
-      document.querySelectorAll('[data-action-range]').forEach((node) => {
+      this.element.querySelectorAll('[data-action-range]').forEach((node) => {
         if (node.dataset.aatRangeBound || !(parseInt(node.dataset.actionRange) > 0)) return
         node.dataset.aatRangeBound = '1'
         node.addEventListener('mouseenter', () => {
@@ -1294,18 +1411,12 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
 
     if (options.parts.includes('centerTray')) {
-      // A node removed mid-hover never gets its mouseleave, which used to be masked by the
-      // listeners being rebound every render. Now that they bind once, clear any pip left lit.
-      document
-        .querySelectorAll('#auto-action-tray .highlight')
-        .forEach((el) => el.classList.remove('highlight'))
+      // A node removed mid-hover never fires its mouseleave, so clear any pip left lit.
+      this.element.querySelectorAll('.highlight').forEach((el) => el.classList.remove('highlight'))
 
-      // Same marker the range block above uses, and for the same reason: .action-hover is on
-      // item.hbs (centerTray) *and* equip-tray.hbs (equipmentMiscTray), but this query is
-      // document-wide. The equip-tray nodes survive a centerTray render, so every one of those
-      // renders used to hand them another mouseenter/mouseleave pair - unbounded growth for the
-      // life of the session.
-      document.querySelectorAll('.action-hover').forEach((source) => {
+      // Same marker, same reason: .action-hover is in both item.hbs and equip-tray.hbs, and this
+      // query spans the whole tray, so equip-tray nodes would gain a listener pair every render.
+      this.element.querySelectorAll('.action-hover').forEach((source) => {
         if (source.dataset.aatActionBound) return
 
         let targetSelector = source.getAttribute('data-action-type')
@@ -1329,11 +1440,11 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
         // renders, and the pip node they point at is replaced by every centerTray render - a
         // captured reference would go stale and silently stop highlighting.
         source.addEventListener('mouseenter', () => {
-          document.querySelector(targetSelector)?.classList.add('highlight')
+          this.element?.querySelector(targetSelector)?.classList.add('highlight')
         })
 
         source.addEventListener('mouseleave', () => {
-          document.querySelector(targetSelector)?.classList.remove('highlight')
+          this.element?.querySelector(targetSelector)?.classList.remove('highlight')
         })
       })
     }
@@ -1366,171 +1477,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
 
   //#region Frame Listeners
-  _configureRenderOptions(options) {
-    super._configureRenderOptions(options)
-  }
-
   _attachFrameListeners() {
     super._attachFrameListeners()
-
-    let itemContextMenu = [
-      {
-        name: 'DND5E.ItemView',
-        icon: '<i class="fas fa-eye"></i>',
-        callback: (li) => {
-          this._onAction(li[0], 'view')
-        },
-      },
-      {
-        name: 'Configure Item',
-        icon: "<i class='fas fa-cog fa-fw'></i>",
-        callback: (li) => {
-          let item = this.getActorAbilities(this.actor.uuid).find(
-            (e) => e.id == li[0].dataset.itemId,
-          ).item
-          ItemConfig.itemConfig.bind(this)(item)
-        },
-      },
-      {
-        name: 'Display in Chat',
-        icon: "<i class='fas fa-comment-dots fa-fw'></i>",
-        callback: (li) => {
-          let item = this.getActorAbilities(this.actor.uuid).find(
-            (e) => e.id == li[0].dataset.itemId,
-          ).item
-          item.displayCard()
-        },
-      },
-      {
-        name: 'Toggle Favorite',
-        icon: "<i class='fas fa-star fa-fw'></i>",
-        callback: (li) => {
-          const item = this.getActorAbilities(this.actor.uuid).find(
-            (e) => e.id == li[0].dataset.itemId,
-          ).item
-          let itemId = item.getRelativeUUID(this.actor)
-          let type = 'item'
-          if (li[0].dataset.activityId) {
-            itemId += `.Activity.${li[0].dataset.activityId}`
-            type = 'activity'
-          }
-          if (this.actor.system.hasFavorite(itemId)) {
-            this.actor.system.removeFavorite(itemId)
-          } else {
-            this.actor.system.addFavorite({ type: type, id: itemId })
-          }
-        },
-      },
-      {
-        name: 'Troubleshoot Item',
-        icon: "<i class='fas fa-stethoscope fa-fw'></i>",
-        callback: (li) => {
-          let item = this.getActorAbilities(this.actor.uuid).find(
-            (e) => e.id == li[0].dataset.itemId,
-          )
-          ItemDoctor.open.bind(this)(item)
-        },
-      },
-      {
-        name: 'Remove',
-        icon: "<i class='fas fa-trash fa-fw'></i>",
-        callback: (li) => this._onAction(li[0], 'remove'),
-      },
-    ]
-
-    let characterContextMenu = [
-      {
-        name: 'View Sheet',
-        icon: '<i class="fas fa-eye"></i>',
-        callback: () => {
-          this.actor.sheet.render(true)
-        },
-      },
-      {
-        name: 'Macro Directory',
-        icon: '<i class="fas fa-folder-open"></i>',
-        callback: () => {
-          game.macros.directory.activate()
-        },
-      },
-
-      {
-        name: 'Reset Data',
-        icon: '<i class="fa-solid fa-delete-right"></i>',
-        callback: () => {
-          this.deleteData(this.actor)
-        },
-      },
-
-      {
-        name: 'Reset Tray Data',
-        icon: '<i class="fa-solid fa-delete-right"></i>',
-        callback: () => {
-          this.deleteTrayData(this.actor)
-        },
-      },
-    ]
-    new foundry.applications.ux.ContextMenu(
-      this.element,
-      '.character-image',
-      characterContextMenu,
-      {
-        onOpen: this._onOpenContextMenu(),
-        jQuery: true,
-        _expandUp: true,
-      },
-    )
-
-    new AltContextMenu(
-      this.element,
-      '.ability-button',
-      itemContextMenu,
-      {
-        onOpen: (target) => {
-          this._onOpenContextMenu(target)
-        },
-        jQuery: true,
-      },
-      'auto-action-tray',
-    )
-    new foundry.applications.ux.ContextMenu(this.element, '.effect-tray-icon', [], {
-      onOpen: EffectTray.removeEffect.bind(this),
-      jQuery: true,
-    })
-
-    new foundry.applications.ux.ContextMenu(this.element, '.end-turn-btn-dice', [], {
-      onOpen: Actions.changeDice.bind(this),
-      jQuery: true,
-    })
-
-    if (this.quickActionHelperEnabled) {
-      new foundry.applications.ux.ContextMenu(this.element, '.quick-slot-1', [], {
-        onOpen: () => this.quickActionHelper.toggleSlot(1),
-        jQuery: true,
-      })
-      new foundry.applications.ux.ContextMenu(this.element, '.quick-slot-2', [], {
-        onOpen: () => this.quickActionHelper.toggleSlot(2),
-        jQuery: true,
-      })
-    }
+    attachContextMenus(this)
   }
 
-  _onOpenContextMenu(target) {
-    // if (!target) return
-    // console.log(target)
-    // const rect = target.getBoundingClientRect()
-
-    return
-  }
-
+  /** Context-menu actions that need the clicked element rather than the tray's own state. */
   _onAction(li, action) {
     switch (action) {
       case 'view':
         this.actor.items.get(li.dataset.itemId).sheet.render(true)
         break
-      // case "edit":
-      //   this.actor.items.get(li.dataset.itemId).sheet.render(true);
-      //   break;
       case 'remove':
         this.currentTray.deleteItem(li.dataset.itemId)
         this.render(true)
@@ -1538,131 +1495,20 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
   //#region Actions
-
-  setDefaultTray() {
-    Actions.setDefaultTray.bind(this)()
-  }
+  // Mostly thin delegations. The generated pass-throughs to Actions are declared in
+  // DELEGATED_ACTIONS at the top of this file; only the ones that target something other than
+  // Actions, or need their own guard, are written out here.
 
   setTrayConfig(config) {
     this.actor.setFlag('auto-action-tray', 'config', config)
   }
 
-  async deleteData(actor) {
-    Actions.deleteData.bind(this)(actor)
-  }
-
-  async deleteTrayData(actor) {
-    Actions.deleteTrayData.bind(this)(actor)
-  }
-
-  getTrayConfig() {
-    return Actions.getTrayConfig.bind(this)()
-  }
-
-  getTray(trayId) {
-    return Actions.getTray.bind(this)(trayId)
-  }
   static removeConcentration(event, element) {
     EffectTray.removeConcentration.bind(this)(event, element)
   }
 
-  static openSheet(event, target) {
-    Actions.openSheet.bind(this)(event, target)
-  }
-
-  updateActorHealthPercent(actor) {
-    // The return was missing, so `this.actorHealthPercent = this.updateActorHealthPercent(...)`
-    // at both call sites was always assigning undefined.
-    return Actions.updateActorHealthPercent.bind(this)(actor)
-  }
-
-  static async endTurn(event, target) {
-    Actions.endTurn.bind(this)(event, target)
-  }
-
-  static async setTray(event, target) {
-    Actions.setTray.bind(this)(event, target)
-  }
-  static toggleLock() {
-    Actions.toggleLock.bind(this)()
-  }
-  static toggleSkillTrayPage() {
-    Actions.toggleSkillTrayPage.bind(this)()
-  }
-  static toggleFastForward() {
-    Actions.toggleFastForward.bind(this)()
-  }
-  static toggleTargetHelper() {
-    Actions.toggleTargetHelper.bind(this)()
-  }
-
-  static toggleRangeBoundary() {
-    Actions.toggleRangeBoundary.bind(this)()
-  }
-
-  static minimizeTray() {
-    Actions.minimizeTray.bind(this)()
-  }
-
   static async trayConfig() {
     TrayConfig.trayConfig.bind(this)()
-    return
-  }
-
-  static toggleHpText() {
-    Actions.toggleHpText.bind(this)()
-  }
-
-  async updateHp(data) {
-    Actions.updateHp.bind(this)(data)
-  }
-
-  static async useItem(event, target) {
-    Actions.useItem.bind(this)(event, target)
-  }
-
-  static useSkillSave(event, target) {
-    Actions.useSkillSave.bind(this)(event, target)
-  }
-
-  static toggleUseSlot(event, target) {
-    Actions.toggleUseSlot.bind(this)(event, target)
-  }
-
-  static async rollDice() {
-    Actions.rollDice.bind(this)()
-  }
-  static async rollDeathSave() {
-    Actions.rollDeathSave.bind(this)()
-  }
-
-  static async increaseButtonAction() {
-    Actions.increaseButtonAction.bind(this)()
-  }
-  static async decreaseButtonAction() {
-    Actions.decreaseButtonAction.bind(this)()
-  }
-
-  static changeDice() {
-    Actions.changeDice.bind(this)()
-  }
-
-  static viewItem(event, target) {
-    Actions.viewItem.bind(this)(event, target)
-  }
-
-  static selectWeapon(event, target) {
-    Actions.selectWeapon.bind(this)(event, target)
-  }
-
-  static increaseTargetCount() {
-    Actions.increaseTargetCount.bind(this)()
-  }
-  static decreaseTargetCount() {
-    Actions.decreaseTargetCount.bind(this)()
-  }
-  static confirmTargets() {
-    Actions.confirmTargets.bind(this)()
   }
 
   static async toggleCondition(event, target) {
@@ -1677,6 +1523,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     this.reactionPromptTray.decline()
   }
 
+  /**
+   * Slide the condition tray in or out. Ignored mid-animation, mid-activity-selection or while
+   * targeting, any of which would leave the tray stack inconsistent.
+   */
   static toggleConditionTray(event, target) {
     if (
       this.animating ||
@@ -1691,9 +1541,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
-  static toggleActionHover(type) {}
-
   //#region DragDrop
+  // The handlers themselves live in DragDropHandler; these are the ApplicationV2 hook points.
+
   #createDragDropHandlers() {
     return this.options.dragDrop.map((d) => {
       d.permissions = {
@@ -1711,16 +1561,17 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
 
   #dragDrop
 
+  /** ApplicationV2 reads this to bind the drag handlers on each render. */
   get dragDrop() {
     return this.#dragDrop
   }
 
-  createDraggable(trayId, index) {}
-
+  /** Dragging out of a slot is blocked while the tray is locked. */
   _canDragStart(selector) {
     return this.isEditable && !this.trayOptions['locked']
   }
 
+  /** Dropping into a slot only needs the tray to be editable. */
   _canDragDrop(selector) {
     return this.isEditable
   }
@@ -1738,50 +1589,5 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   }
   _onDropCanvas(data) {
     DragDropHandler._onDropCanvas(data, this)
-  }
-}
-
-class AltContextMenu extends foundry.applications.ux.ContextMenu {
-  constructor(element, selector, menuItems, options, parentSelector) {
-    super(element, selector, menuItems, options)
-    this.parentSelector = parentSelector
-  }
-  async _animate(open = true) {
-    if (!open) {
-      await super._animate(open)
-      return
-    }
-    const menu = this.menu
-    const newParent = document.getElementById(this.parentSelector)
-    const scale = 1 / game.settings.get('auto-action-tray', 'scale')
-    const menuEl = menu[0]
-
-    const triggerRect = menuEl.parentElement.getBoundingClientRect()
-    const parentRect = newParent.getBoundingClientRect()
-    const menuRect = menuEl.getBoundingClientRect()
-
-    let top = (triggerRect.top - parentRect.top) * scale
-    let left = (triggerRect.left - parentRect.left + triggerRect.width + 5) * scale
-
-    newParent.appendChild(menuEl)
-    menuEl.style.position = 'absolute'
-    menuEl.style.visibility = 'hidden'
-    menuEl.style.top = '0px'
-    menuEl.style.left = '0px'
-    const measuredMenuRect = menuEl.getBoundingClientRect()
-    const menuHeight = measuredMenuRect.height * scale
-    const menuWidth = measuredMenuRect.width * scale
-    menuEl.style.visibility = 'visible'
-
-    const maxTop = parentRect.height * scale - menuHeight
-    const maxLeft = parentRect.width * scale - menuWidth
-
-    top = Math.min(top, Math.max(0, maxTop))
-    left = Math.min(left, Math.max(0, maxLeft))
-
-    menuEl.style.top = `${top}px`
-    menuEl.style.left = `${left}px`
-    menuEl.style.transformOrigin = 'top left'
-    await super._animate(open)
   }
 }

@@ -11,8 +11,8 @@
   --aat-main-tray-padding: 7px;
   --aat-main-tray-gap: 2px;
   --aat-main-tray-total-height: calc(
-    var(--aat-item-tray-item-height-count) * var(--aat-item-size) + var(--aat-main-tray-padding) * 5 +
-      var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1) +
+    var(--aat-item-tray-item-height-count) * var(--aat-item-size) + var(--aat-main-tray-padding) *
+      5 + var(--aat-main-tray-gap) * (var(--aat-item-tray-item-height-count) - 1) +
       var(--aat-border-width) * 2
   );
   --aat-static-tray-size: 80px;
@@ -127,7 +127,11 @@
 .modifier-highlight {
 }
 
-.modifier-highlight.modifier-active {
+/* Toggled by a single class on the tray root rather than a class per node, so holding a
+   modifier key does not walk the DOM at the OS key-repeat rate. Every .modifier-highlight
+   lives inside #auto-action-tray (center-tray.hbs, skill-tray.hbs), so this descendant
+   selector matches exactly what the per-node class used to. */
+#auto-action-tray.modifiers-active .modifier-highlight {
   border: var(--aat-modifier-highlight-color) solid 5px;
 }
 @keyframes rotate {

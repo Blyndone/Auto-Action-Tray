@@ -9,7 +9,7 @@
 
   <ol class="ability-ol">
     {{#each tray.abilities as |item|}}
-      {{#indexRange '0' @index @root.totalabilities}}
+      {{#indexRange '0' @index @root.totalAbilities}}
         {{> AAT.item item=item tray=../tray index=@index}}
       {{/indexRange}}
     {{/each}}
