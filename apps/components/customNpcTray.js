@@ -1,5 +1,23 @@
 import { AbilityTray } from './abilityTray.js'
 
+// styles/components/item.scss defines .multi-group0..2. Group indexes cycle through them so a
+// monster that names four or more attack groups (every lycanthrope) still gets a highlight ring
+// instead of an unstyled class name.
+const MULTI_GROUP_STYLES = 3
+
+const NUMBER_WORDS = {
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
+}
+
 export class CustomNpcTray extends AbilityTray {
   constructor(options = {}) {
     super(options)
@@ -7,23 +25,34 @@ export class CustomNpcTray extends AbilityTray {
     this.category = options.category
     this.id = options.id
     this.type = 'custom'
+    // itemId -> { group, wildcard }. Keyed by id rather than written onto the AATItem itself:
+    // getActorAbilities hands back the shared savedActors cache, so tagging the item leaked the
+    // highlight into every other tray showing it and could not survive an item rebuild.
+    this.multiattackTags = {}
+    // Initialised for every path, not just generateNpcTray: the saved path never calls it, and
+    // an undefined array here throws inside the parse's catch, silently disabling grouping.
     this.multiattackIndexGroups = []
     this.trayLabel = options.trayLabel
     this.application = options.application
 
-    if (!this.savedData && !this.checkSavedData(this.id)) {
+    if (!this.savedData && !this.checkSavedData()) {
       this.generateNpcTray()
     } else {
       this.getSavedData()
+      // The tags are derived from the description and keyed by item id, so they can be rebuilt
+      // for a saved tray without touching its layout. Without this, multiattack highlighting
+      // disappeared for good the first time a user dragged anything into the tray.
+      this.tagMultiattack()
     }
   }
+
   getMatch(pattern, string) {
     let regex = new RegExp(pattern, 'g')
     let matches = []
     let match
 
     while ((match = regex.exec(string)) !== null) {
-      matches.push({ match: match[0], index: match.index })
+      matches.push({ match: match[0], groups: match.slice(1), index: match.index })
     }
 
     return matches
@@ -76,146 +105,192 @@ export class CustomNpcTray extends AbilityTray {
     return desc
   }
 
+  /** Strip the parenthetical qualifiers dnd5e adds ("Bite (Wolf Form)"); descriptions omit them. */
+  stripNameQualifiers(allItems) {
+    allItems.forEach((e) => {
+      e.name = e.name.replace(/\s*\([^)]*\)/g, '')
+    })
+  }
+
+  /** The actor's Multiattack item, if it has one. */
+  findMultiattack(allItems) {
+    return allItems.find((e) => e.name === 'Multiattack' || e.name.startsWith('Multiattack'))
+  }
+
+  /**
+   * Cycle through the highlight styles item.scss defines (.multi-group0..2), so a monster naming
+   * four or more groups still gets a ring rather than an unstyled `multi-group3`.
+   */
+  static groupClass(index) {
+    return 'multi-group' + (index % MULTI_GROUP_STYLES)
+  }
+
+  /**
+   * Parse a Multiattack description into the attack groups it describes.
+   *
+   * Must stay side-effect free: it writes nothing onto `this` or onto the items, so both
+   * generateNpcTray (layout + tags) and tagMultiattack (tags only) can run it.
+   *
+   * @returns {{groups: {items: object[], wildcard: boolean}[], additional: object[]}}
+   *   `groups` are the "one bite and two claws" clusters in order, so a group's position is its
+   *   highlight index. `additional` are named items no group claimed.
+   */
+  parseMultiattack(allItems, multiattack) {
+    const groups = []
+    const additional = []
+
+    let desc = this.cleanDesc(multiattack.description, allItems)
+
+    const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const itemNames = allItems.map((e) => escapeRegExp(e.name.toLowerCase()))
+    const num = NUMBER_WORDS
+
+    desc = desc.replaceAll('with its ', '').toLowerCase()
+    desc = desc.replaceAll('its ', '').toLowerCase()
+
+    const orMatches = this.getMatch(`\\b(or)\\b `, desc)
+    const split = orMatches ? desc.split(' or ') : [desc]
+
+    const basicAttackPattern = `\\b(${Object.keys(num).join('|')})\\b (${itemNames.join('|')})`
+    const combinationAttackPattern = `\\b(${Object.keys(num).join(
+      '|',
+    )})\\s(attack|attacks)\\b.*?(${itemNames.join('|')}).*?(in any combination)`
+
+    // "makes three attacks with its claws and bite in any combination" - each named attack
+    // becomes its own group that may be taken up to `count` times, hence the wildcard marker.
+    const combinationMatches = this.getMatch(combinationAttackPattern, desc)
+    if (combinationMatches.length > 0) {
+      const count =
+        num[
+          this.getMatch(`\\b(${Object.keys(num).join('|')})\\b`, combinationMatches[0].match)[0]
+            .match
+        ]
+      const items = this.getMatch(`(${itemNames.join('|')})`, combinationMatches[0].match).map(
+        (e) => e.match,
+      )
+
+      items.forEach((item) => {
+        const attack = allItems.find((e) => e.name.toLowerCase() === item)
+        if (!attack) return
+        groups.push({ items: Array.from({ length: count }, () => attack), wildcard: true })
+      })
+    }
+
+    // Each "or" branch is one alternative group: "one bite and two claws" / "two slams".
+    split.forEach((e) => {
+      const combinedMatches = []
+      combinedMatches.push(...this.getMatch(basicAttackPattern, e))
+      combinedMatches.push(...this.getMatch(`\\b(uses|use)\\b (${itemNames.join('|')})`, e))
+
+      combinedMatches.sort((a, b) => a.index - b.index)
+
+      if (combinedMatches.length === 0) return
+
+      // Pushed even when nothing resolves, which preserves the original index numbering: a
+      // branch that matched text but no known item still consumed a group index.
+      const items = []
+      combinedMatches.forEach((obj) => {
+        const parts = obj.match.split(' ')
+        const name = parts.slice(1).join(' ')
+        const repeat = num[parts[0]] !== undefined ? num[parts[0]] : 1
+        for (let i = 0; i < repeat; i++) {
+          const attack = allItems.find((e) => e.name.toLowerCase() === name)
+          if (!attack) continue
+          items.push(attack)
+        }
+      })
+      groups.push({ items, wildcard: false })
+    })
+
+    // Anything the description names that no group claimed - "and uses Spellcasting".
+    const nonMatchedItems = this.getMatch(`(${itemNames.join('|')})`, desc).map((e) => e.match)
+    if (nonMatchedItems.length > 0) {
+      const claimed = new Set(groups.flatMap((g) => g.items).map((a) => a?.name.toLowerCase()))
+      let newItems = nonMatchedItems.filter((a) => !claimed.has(a))
+      newItems = [...new Set(newItems)].filter((e) => e != 'spellcasting')
+      newItems.forEach((item) => {
+        const attack = allItems.find((e) => e.name.toLowerCase() === item)
+        if (attack) additional.push(attack)
+      })
+    }
+
+    return { groups, additional }
+  }
+
+  /**
+   * Record one item's highlight, keyed by item id. Never write this onto the AATItem itself -
+   * those come from the shared savedActors cache, so the tag would leak into every other tray
+   * showing the item. templates/parts/item.hbs reads this map off the tray instead.
+   */
+  recordMultiattackTag(attack, group, wildcard) {
+    if (!attack?.id) return
+    this.multiattackTags[attack.id] = { group, wildcard }
+  }
+
+  /**
+   * Re-derive multiattack highlighting for a tray whose layout came from saved data. The tags are
+   * keyed by item id and carry no layout, so rebuilding them leaves the saved arrangement alone.
+   */
+  tagMultiattack() {
+    this.multiattackTags = {}
+    if (this.category !== 'common') return
+
+    const allItems = this.application.getActorAbilities(this.actorUuid)
+    this.stripNameQualifiers(allItems)
+    const multiattack = this.findMultiattack(allItems)
+    if (!multiattack) return
+
+    try {
+      const { groups, additional } = this.parseMultiattack(allItems, multiattack)
+      groups.forEach((group, index) => {
+        const groupClass = CustomNpcTray.groupClass(index)
+        group.items.forEach((attack) =>
+          this.recordMultiattackTag(attack, groupClass, group.wildcard),
+        )
+      })
+      additional.forEach((attack) => this.recordMultiattackTag(attack, 'multi-additional', false))
+    } catch (err) {
+      console.warn(
+        'AAT | Failed to re-tag Multiattack for a saved tray — highlighting will be absent.',
+        err,
+      )
+      this.multiattackTags = {}
+    }
+  }
+
   generateNpcTray() {
     let actor = fromUuidSync(this.actorUuid)
 
     this.abilities = []
-    let allItems = this.application.getActorAbilities(this.actorUuid)
-    allItems.forEach((e) => {
-      e.name = e.name.replace(/\s*\([^)]*\)/g, '')
-    })
+    this.multiattackIndexGroups = []
+    this.multiattackTags = {}
 
-    let multiattack = allItems.find(
-      (e) => e.name === 'Multiattack' || e.name.startsWith('Multiattack'),
-    )
+    let allItems = this.application.getActorAbilities(this.actorUuid)
+    this.stripNameQualifiers(allItems)
+
+    let multiattack = this.findMultiattack(allItems)
     if (multiattack && this.category === 'common') {
       try {
-        let multigroupIndex = 0
-        let desc = multiattack.description
-        let options = {
-          documents: false,
-          links: false,
-          rolls: false,
-          embeds: false,
-          secrets: false,
-        }
+        const { groups, additional } = this.parseMultiattack(allItems, multiattack)
 
-        desc = this.cleanDesc(desc, allItems)
-
-        const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        let itemNames = allItems.map((e) => escapeRegExp(e.name.toLowerCase()))
-
-        let regex
-        let basicAttackPattern
-        let numberMatches
-        let useMatches
-        let split
-
-        let num = {
-          one: 1,
-          two: 2,
-          three: 3,
-          four: 4,
-          five: 5,
-          six: 6,
-          seven: 7,
-          eight: 8,
-          nine: 9,
-          ten: 10,
-        }
-
-        desc = desc.replaceAll('with its ', '').toLowerCase()
-        desc = desc.replaceAll('its ', '').toLowerCase()
-
-        let orMatches = this.getMatch(`\\b(or)\\b `, desc)
-
-        if (orMatches) {
-          split = desc.split(' or ')
-        } else {
-          split = [desc]
-        }
-        basicAttackPattern = `\\b(${Object.keys(num).join('|')})\\b (${itemNames.join('|')})`
-        const combinationAttackPattern = `\\b(${Object.keys(num).join(
-          '|',
-        )})\\s(attack|attacks)\\b.*?(${itemNames.join('|')}).*?(in any combination)`
-
-        let combinationMatches = this.getMatch(combinationAttackPattern, desc)
-        if (combinationMatches.length > 0) {
-          let count =
-            num[
-              this.getMatch(`\\b(${Object.keys(num).join('|')})\\b`, combinationMatches[0].match)[0]
-                .match
-            ]
-          let items = this.getMatch(`(${itemNames.join('|')})`, combinationMatches[0].match).map(
-            (e) => e.match,
-          )
-
-          items.forEach((item) => {
-            let tmpIndexes = []
-            let attack = allItems.find((e) => e.name.toLowerCase() === item)
-            if (!attack) return
-            for (let i = 0; i < count; i++) {
-              attack['wildcard'] = true
-              attack['multigroup'] = 'multi-group' + multigroupIndex
-              this.abilities.push(attack)
-              tmpIndexes.push(this.abilities.length - 1)
-            }
-            this.multiattackIndexGroups.push(tmpIndexes)
-            multigroupIndex++
-            this.padNewRow()
+        groups.forEach((group, index) => {
+          const groupClass = CustomNpcTray.groupClass(index)
+          const tmpIndexes = []
+          group.items.forEach((attack) => {
+            this.recordMultiattackTag(attack, groupClass, group.wildcard)
+            this.abilities.push(attack)
+            tmpIndexes.push(this.abilities.length - 1)
           })
-        }
-
-        split.forEach((e) => {
-          let combinedMatches = []
-          combinedMatches.push(...this.getMatch(basicAttackPattern, e))
-          combinedMatches.push(...this.getMatch(`\\b(uses|use)\\b (${itemNames.join('|')})`, e))
-
-          combinedMatches.sort((a, b) => a.index - b.index)
-
-          if (combinedMatches.length > 0) {
-            let tmpIndexes = []
-            combinedMatches.forEach((obj) => {
-              let parts = obj.match.split(' ')
-              if (num[parts[0]] !== undefined) {
-                for (let i = 0; i < num[parts[0]]; i++) {
-                  let attack = allItems.find(
-                    (e) => e.name.toLowerCase() === parts.slice(1).join(' '),
-                  )
-                  if (!attack) continue
-                  attack['multigroup'] = 'multi-group' + multigroupIndex
-                  this.abilities.push(attack)
-                  tmpIndexes.push(this.abilities.length - 1)
-                }
-              } else {
-                let attack = allItems.find((e) => e.name.toLowerCase() === parts.slice(1).join(' '))
-                if (!attack) return
-                attack['multigroup'] = 'multi-group' + multigroupIndex
-                this.abilities.push(attack)
-                tmpIndexes.push(this.abilities.length - 1)
-              }
-            })
-            multigroupIndex++
-            this.multiattackIndexGroups.push(tmpIndexes)
-            this.padNewRow()
-          }
+          this.multiattackIndexGroups.push(tmpIndexes)
+          this.padNewRow()
         })
 
-        let nonMatchedItems = this.getMatch(`(${itemNames.join('|')})`, desc).map((e) => e.match)
-        if (nonMatchedItems.length > 0) {
-          let newItems = nonMatchedItems.filter(
-            (a) => !this.abilities.some((ability) => ability?.name.toLowerCase() === a),
-          )
-          newItems = [...new Set(newItems)].filter((e) => e != 'spellcasting')
-          newItems.forEach((item) => {
-            let attack = allItems.find((e) => e.name.toLowerCase() === item)
-            if (attack) {
-              this.abilities.push(attack)
-              attack['multigroup'] = 'multi-additional'
-              this.padNewRow()
-            }
-          })
-        }
+        additional.forEach((attack) => {
+          this.recordMultiattackTag(attack, 'multi-additional', false)
+          this.abilities.push(attack)
+          this.padNewRow()
+        })
+
         if (this.abilities.length > 0) {
           this.abilities.push(multiattack)
           this.padNewRow()
@@ -227,6 +302,7 @@ export class CustomNpcTray extends AbilityTray {
         )
         this.abilities = []
         this.multiattackIndexGroups = []
+        this.multiattackTags = {}
       }
     }
 

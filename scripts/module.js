@@ -2,6 +2,7 @@ import { AutoActionTray } from '../apps/autoActionTray.js'
 import { ConditionTray } from '../apps/components/conditionsTray.js'
 import { SettingsConfigApp } from '../apps/dialogs/settingsConfig.js'
 import { refreshPerfTrace } from '../apps/helpers/perfTrace.js'
+import { createAATTokenRuler } from '../apps/helpers/tokenRuler.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -61,6 +62,11 @@ Hooks.once('setup', async function () {
 })
 
 Hooks.once('init', async function () {
+  // Subclass the token ruler so the quick-action pathfinder can tint its movement preview.
+  // Assigning `ruler.color` directly, as the pathfinder used to, does nothing - TokenRuler reads
+  // its colours from _getWaypointStyle/_getSegmentStyle.
+  CONFIG.Token.rulerClass = createAATTokenRuler()
+
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'foundry.canvas.placeables.Token.prototype._onClickLeft',
@@ -77,7 +83,7 @@ Hooks.once('init', async function () {
     'foundry.canvas.placeables.Token.prototype._onClickLeft2',
     function (wrapped, ...args) {
       if (hotbar) {
-        AutoActionTray._onTokenSelect2(hotbar, wrapped, ...args)
+        AutoActionTray._onTokenDoubleClick(hotbar, wrapped, ...args)
       } else return wrapped(...args)
     },
     'MIXED',
@@ -575,9 +581,12 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  // Setting key kept as-is so existing client configs are not reset, but the name and hint no
+  // longer claim to remove the limit: this chooses between a fixed cap and one derived from the
+  // actor's remaining movement. Both are still capped by Quick Action Depth.
   game.settings.register('auto-action-tray', 'unboundPathfindingDepth', {
-    name: '(Experimental) Unbounded Pathfinding Depth',
-    hint: 'Enable Unbounded Pathfinding Depth for Quick Actions.  May impact performance.  Bound Depth is determined by Actor Speed.',
+    name: '(Experimental) Ignore Actor Speed Limit',
+    hint: "Path up to the full Quick Action Depth instead of stopping at the actor's remaining movement for the turn. Longer searches cost more performance.",
     scope: 'client',
     config: false,
 
@@ -589,7 +598,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'quickActionDepth', {
     name: '(Experimental) Quick Action Depth',
-    hint: 'Maximum Distance for Quick Action Pathfinding.  Larger distances may impact performance.',
+    hint: 'Maximum pathfinding distance in grid squares. Larger distances may impact performance.',
     scope: 'client',
     config: false,
 
@@ -603,6 +612,16 @@ Hooks.once('ready', async function () {
     },
 
     requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'quickActionPathColor', {
+    name: '(Experimental) Quick Action Path Color',
+    hint: 'Color of the movement preview drawn while a quick action is being aimed.',
+    scope: 'client',
+    config: false,
+
+    type: String,
+    default: '#ff00ff',
   })
 
   game.settings.register('auto-action-tray', 'strictTrayRebuild', {

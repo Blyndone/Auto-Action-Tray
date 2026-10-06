@@ -260,8 +260,9 @@ Open **Game Settings → Configure Settings → Auto Action Tray → Configure S
 | Setting | Scope | Default | Reload | Description |
 | --- | --- | --- | --- | --- |
 | Quick Attack Automation | Client | Off | ✔ | Enable move-and-attack automation for the quick slots |
-| Unbounded Pathfinding Depth | Client | Off | ✔ | Ignore the actor-speed pathfinding bound |
-| Quick Action Depth | Client | 6 | ✔ | Max pathfinding distance (1 – 50); larger values cost performance |
+| Ignore Actor Speed Limit | Client | Off | ✔ | Path the full Quick Action Depth instead of stopping at remaining movement |
+| Quick Action Depth | Client | 6 | ✔ | Max pathfinding distance in squares (1 – 50); larger values cost performance |
+| Quick Action Path Color | Client | `#ff00ff` | | Color of the movement preview drawn while aiming a quick action |
 | Intercept Midi-QOL Reaction Prompts | Client | On | ✔ | Show Midi-QOL reactions on the tray instead of in a popup |
 
 ## Themes
@@ -295,7 +296,11 @@ Temporary active effects appear in their own tray with enriched tooltips. At 0 H
 
 > ⚠️ Disabled by default. This feature is under active development and may change or misbehave.
 
-When enabled, the melee and ranged quick slots can path your token toward a target and attack in one action. Pathfinding depth is bounded by the actor's speed unless **Unbounded Pathfinding Depth** is enabled; **Quick Action Depth** caps the search distance. Larger values cost performance.
+When enabled, the melee and ranged quick slots can path your token toward a target and attack in one action.
+
+The pathfinder routes around other tokens and walls, honours the scene's grid distance and diagonal movement rule, and works on square and hex grids. Tokens larger than one square are supported on both ends: the whole footprint has to fit, and weapon range is measured footprint-to-footprint. Tokens you cannot see do not affect the route, and tokens on a different elevation do not block it.
+
+By default the search is bounded by the actor's **remaining** movement for the turn, capped by **Quick Action Depth**. Enable **Ignore Actor Speed Limit** to always search the full depth. Larger depths cost performance. Gridless scenes fall back to a direct line.
 
 ## For GMs
 

@@ -1,339 +1,825 @@
-export class Pathfinding {
-  constructor(options) {
-    this.active = true;
-    this.maxDepth =
-      game.settings.get("auto-action-tray", "quickActionDepth") || 6;
+import { count, note, time } from './perfTrace.js'
+import { gridDistance } from './distance.js'
+import { markRulerPreview, clearRulerPreview } from './tokenRuler.js'
 
-    this.tokens = null;
-    this.gridSize = canvas.grid.size;
-    this.sourceToken = null;
-    this.targetPosition = null;
-    this.actualTargetPosition = null;
-    this.activeItemRange = null;
+/**
+ * A* pathfinding for the quick-action helper.
+ *
+ * Works in grid *offsets* (`{i, j}`) rather than pixel coordinates. Everything the search touches
+ * goes through `canvas.grid`, so square, hex-row and hex-column scenes all work; gridless scenes
+ * have no discrete cells to search and fall back to a direct path.
+ *
+ * Core's `Token#findMovementPath` is not a router - it constrains a direct path and resolves
+ * synchronously - so the actual obstacle avoidance has to live here. What core *is* used for is
+ * turning the resulting cell list into movement waypoints, which is why `MOVEMENT_OPTIONS` is
+ * shared between the preview ruler and the real move: if the two disagree, the ruler shows one
+ * route and the token walks another.
+ */
 
-    this.occupiedSquares = null;
+const { GRID_DIAGONALS, GRID_TYPES } = CONST
 
-    this.path = null;
-    this.endPos = null;
+/**
+ * Options used both to preview the path on the ruler and to execute the move. These must stay
+ * identical or the preview lies. Walls are deliberately *not* ignored - the search already routes
+ * around them, so letting core constrain against them as well is a consistency check rather than
+ * a second opinion.
+ */
+export const MOVEMENT_OPTIONS = Object.freeze({
+  ignoreWalls: false,
+  ignoreCost: true,
+  history: false,
+  // `preview: true` would make core discard collisions the user has not seen through fog. The
+  // search has no fog model - every wall blocks it - so previewing that way would let the ruler
+  // draw through a wall the search already refused to cross.
+  preview: false,
+})
 
-    this._pathfindingResolve = null;
+/**
+ * Offset keys are packed into a single integer so the open/closed sets and score maps can use
+ * numeric keys instead of strings. Grid offsets comfortably fit the +/-16k range this allows.
+ */
+const KEY_ORIGIN = 1 << 14
+const KEY_STRIDE = 1 << 15
 
-    this.debouncedPathfinding = foundry.utils.debounce(async (start, goal) => {
-      const result = await this.throttledFindPath(start, goal);
-      if (this._pathfindingResolve) {
-        this._pathfindingResolve(result);
-        this._pathfindingResolve = null;
+function offsetKey(i, j) {
+  return (i + KEY_ORIGIN) * KEY_STRIDE + (j + KEY_ORIGIN)
+}
+
+/**
+ * Are two path costs the same? Costs are not always integral - the EXACT diagonal rule uses
+ * sqrt(2) and APPROXIMATE uses 1.5 - so equality needs a tolerance.
+ */
+const COST_EPSILON = 1e-9
+
+/**
+ * Tie-break weights, applied to the heap ordering only. Both are orders of magnitude below the
+ * smallest real step cost, so neither can promote a genuinely more expensive path.
+ *
+ * PREFER_PICK outranks PREFER_STRAIGHT deliberately - see the comment at the push site.
+ */
+const PREFER_PICK = 1e-6
+const PREFER_STRAIGHT = 1e-9
+
+/**
+ * Binary min-heap keyed on fScore.
+ *
+ * Replaces the previous `openSet.sort()`-on-every-pop, which made the search O(n^2 log n) and
+ * turned a depth-50 search into a multi-second freeze.
+ */
+class MinHeap {
+  constructor() {
+    this.items = []
+    this.scores = []
+  }
+
+  get size() {
+    return this.items.length
+  }
+
+  push(item, score) {
+    const { items, scores } = this
+    let n = items.length
+    items.push(item)
+    scores.push(score)
+    while (n > 0) {
+      const parent = (n - 1) >> 1
+      if (scores[parent] <= scores[n]) break
+      ;[items[parent], items[n]] = [items[n], items[parent]]
+      ;[scores[parent], scores[n]] = [scores[n], scores[parent]]
+      n = parent
+    }
+  }
+
+  pop() {
+    const { items, scores } = this
+    const top = items[0]
+    const lastItem = items.pop()
+    const lastScore = scores.pop()
+    if (items.length > 0) {
+      items[0] = lastItem
+      scores[0] = lastScore
+      let n = 0
+      for (;;) {
+        const left = 2 * n + 1
+        const right = left + 1
+        let smallest = n
+        if (left < scores.length && scores[left] < scores[smallest]) smallest = left
+        if (right < scores.length && scores[right] < scores[smallest]) smallest = right
+        if (smallest === n) break
+        ;[items[smallest], items[n]] = [items[n], items[smallest]]
+        ;[scores[smallest], scores[n]] = [scores[n], scores[smallest]]
+        n = smallest
       }
-    }, 50);
+    }
+    return top
+  }
+}
+
+export class Pathfinding {
+  constructor() {
+    this.active = true
+
+    // Session state - set once when the source token changes.
+    this.sourceToken = null
+    this.ruler = null
+
+    // Volatile state - rebuilt on every search, because tokens move between searches and the
+    // previous implementation froze this after the first call of a hover session.
+    this.occupied = new Set()
+    this.bounds = null
+    this.sourceFootprint = [{ di: 0, dj: 0 }]
+    this.targetFootprint = []
+    this.gridSize = 100
+    this.gridUnit = 5
+    this.maxDepth = 6
+    this.rangeSquares = 1
+    this.wallCache = new Map()
+
+    this.targetToken = null
+    this.path = null
+    this.endPos = null
+
+    this.diagonalRule = GRID_DIAGONALS.EQUIDISTANT
+    this.alternatingDiagonals = false
+    this.initialDiagonalParity = 0
+
+    this._pathfindingResolve = null
+
+    this._debouncedSearch = foundry.utils.debounce(() => {
+      const resolve = this._pathfindingResolve
+      this._pathfindingResolve = null
+      if (!resolve) return
+      resolve(this._runSearch())
+    }, 50)
   }
 
   setActive() {
-    this.active = true;
-  }
-  setInactive() {
-    this.active = false;
-    this.clearRuler();
+    this.active = true
   }
 
-  setMaxDepth(depth) {
-    if (game.settings.get("auto-action-tray", "unboundPathfindingDepth")) {
-      this.maxDepth = game.settings.get("auto-action-tray", "quickActionDepth");
-    } else {
-      this.maxDepth = depth;
-    }
+  setInactive() {
+    this.active = false
+    this.clearRuler()
   }
 
   getPath() {
-    return this.path;
+    return this.path
   }
 
-  setData(options) {
-    this.ruler = canvas.controls.getRulerForUser(game.user.id);
-    this.tokens = canvas.tokens.placeables;
-    this.gridSize = canvas.grid.size;
-    this.sourceToken = options.sourceToken;
-    this.targetPosition = options.targetPosition;
-    this.actualTargetPosition = options.actualTarget;
-    this.activeItemRange = options.range;
+  /* -------------------------------------------- */
+  /*  Entry points                                */
+  /* -------------------------------------------- */
 
-    this.setMaxDepth(options.speed / 5);
-    this.occupiedSquares = this.generateOccupiedSquares();
-  }
-
-  updateTargetPosition(options) {
-    this.targetPosition = options.targetPosition;
-    this.actualTargetPosition = options.actualTarget;
-  }
-
-  clearData() {
-    this.tokens = null;
-    this.sourceToken = null;
-    this.targetPosition = null;
-    this.activeItemRange = null;
-    this.occupiedSquares = null;
-    this.path = null;
-    this.clearRuler();
-  }
-
+  /**
+   * Run a search for the given source/target pair. Always resolves to a `{path, endPos}` pair -
+   * never null - so callers can destructure it without a guard.
+   */
   async newPathfinding(options) {
-    if (options.sourceToken == this.sourceToken) {
-      return await this.updatePathfinding(options);
-    }
-    this.setData(options);
-    this.path = await this.findPath(
-      { x: this.sourceToken.x, y: this.sourceToken.y },
-      { x: this.targetPosition.x, y: this.targetPosition.y }
-    );
-    this.setRuler(this.path);
-
-    return this.path ? { path: this.path, endPos: this.endPos } : null;
+    this._pendingOptions = options
+    return await this._schedule()
   }
 
+  /**
+   * Kept for API compatibility with the previous two-entry-point shape. Both paths now refresh
+   * volatile state, so there is no longer a "cheap" variant that reuses a stale occupancy grid.
+   */
   async updatePathfinding(options) {
-    this.clearRuler();
-    this.activeItemRange = options.range;
-
-    this.updateTargetPosition(options);
-
-    this.path = await this.findPath(
-      { x: this.sourceToken.x, y: this.sourceToken.y },
-      { x: this.targetPosition.x, y: this.targetPosition.y }
-    );
-    this.setRuler(this.path);
-    return this.path ? { path: this.path, endPos: this.endPos } : null;
+    return await this.newPathfinding(options)
   }
 
-  heuristic(a, b) {
-    return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
-  }
-
-  generateOccupiedSquares() {
-    const occupiedSquares = this.tokens.flatMap(token => {
-      const squares = [];
-
-      for (let dx = 0; dx < token.w / this.gridSize; dx++) {
-        for (let dy = 0; dy < token.h / this.gridSize; dy++) {
-          squares.push({
-            x: token.x + dx * this.gridSize,
-            y: token.y + dy * this.gridSize,
-            name: token.name,
-            disposition: token.document.disposition
-          });
-        }
+  _schedule() {
+    return new Promise((resolve) => {
+      // Settle any superseded promise instead of dropping it. Previously the resolver was simply
+      // overwritten, so every search abandoned mid-debounce left an `await` that never returned.
+      //
+      // The `superseded` marker matters: mouse movement is throttled at the same 50ms as this
+      // debounce, so overlapping calls are routine. Without it the caller cannot tell "a newer
+      // search replaced yours" from "no route exists", and would cancel the quick action and
+      // warn the user on nearly every mouse move.
+      if (this._pathfindingResolve) {
+        this._pathfindingResolve({ path: [], endPos: null, superseded: true })
       }
-
-      return squares;
-    });
-
-    return occupiedSquares;
-  }
-  isOccupied(square) {
-    return this.occupiedSquares.some(
-      sq => sq.x === square.x && sq.y === square.y
-    );
+      this._pathfindingResolve = resolve
+      this._debouncedSearch()
+    })
   }
 
-  debugDisplayValue(value, position) {
-    const text = new PIXI.Text(value, {
-      fontFamily: "Arial",
-      fontSize: 12,
-      fill: 0xffffff,
-      stroke: 0x000000,
-      strokeThickness: 4
-    });
-    text.anchor.set(0.5);
-    text.position.set(position.x, position.y);
-    canvas.stage.addChild(text);
+  /* -------------------------------------------- */
+  /*  Search setup                                */
+  /* -------------------------------------------- */
 
-    setTimeout(() => {
-      canvas.stage.removeChild(text);
-    }, 1000);
+  _runSearch() {
+    const options = this._pendingOptions
+    if (!options?.sourceToken || !options?.targetToken) return { path: [], endPos: null }
+
+    const endTimer = time('pathfinding search')
+
+    this._beginSession(options.sourceToken)
+    if (!this._refreshVolatile(options)) {
+      endTimer('unsupported grid')
+      return this._directPath(options)
+    }
+
+    const start = canvas.grid.getOffset({ x: this.sourceToken.x, y: this.sourceToken.y })
+
+    // Reset per-search results so a failed search cannot hand back the previous run's endpoint.
+    this.endPos = null
+    this.path = []
+
+    // Melee aims at the exact cell the cursor picked, so hovering one side of a target walks the
+    // token to that side. If that cell turns out to be unreachable, fall back to any cell in
+    // range rather than reporting failure.
+    //
+    // Proving a cell unreachable costs a full-depth drain, so skip the exact pass outright when
+    // the cell cannot be stood in at all - that is the common failure and it is an O(1) test.
+    const pickStandable =
+      !this._footprintBlocked(this.goalAnchor.i, this.goalAnchor.j) ||
+      (this.goalAnchor.i === start.i && this.goalAnchor.j === start.j)
+
+    let relaxed = !this.exactGoal || !pickStandable
+    let result = this._search(start, this.goalAnchor, !relaxed)
+    if (!relaxed && !result.path.length) {
+      relaxed = true
+      result = this._search(start, this.goalAnchor, false)
+    }
+
+    this.path = result.path
+    this.endPos = result.endPos
+
+    endTimer(
+      `${result.expanded} expanded, ${result.path.length} steps${relaxed ? ', relaxed' : ''}`,
+    )
+
+    this.setRuler(this.path)
+    return { path: this.path, endPos: this.endPos }
   }
 
-  adjacentSquares(square) {
-    const g = this.gridSize;
-    const directions = [
-      { x: -g, y: 0 },
-      { x: g, y: 0 },
-      { x: 0, y: -g },
-      { x: 0, y: g },
-      { x: -g, y: -g },
-      { x: g, y: -g },
-      { x: -g, y: g },
-      { x: g, y: g }
-    ];
+  _beginSession(sourceToken) {
+    if (this.sourceToken !== sourceToken) {
+      this.clearRuler()
+      this.sourceToken = sourceToken
+    }
+    this.ruler = sourceToken?.ruler ?? null
+  }
 
-    const results = [];
+  /**
+   * Rebuild everything that can change between two searches: grid metrics, token occupancy,
+   * footprints, movement budget and weapon range. Returns false when the grid cannot be searched
+   * (gridless), in which case the caller falls back to a direct path.
+   */
+  _refreshVolatile(options) {
+    const grid = canvas.grid
+    this.gridSize = grid.size
+    this.gridUnit = gridDistance()
+    this.wallCache.clear()
+    this.targetToken = options.targetToken
 
-    for (const dir of directions) {
-      const next = { x: square.x + dir.x, y: square.y + dir.y };
+    if (grid.type === GRID_TYPES.GRIDLESS) return false
 
-      if (this.isOccupied(next)) continue;
+    this.diagonalRule = grid.diagonals ?? GRID_DIAGONALS.EQUIDISTANT
+    this.alternatingDiagonals =
+      this.diagonalRule === GRID_DIAGONALS.ALTERNATING_1 ||
+      this.diagonalRule === GRID_DIAGONALS.ALTERNATING_2
+    this.initialDiagonalParity = this.diagonalRule === GRID_DIAGONALS.ALTERNATING_2 ? 1 : 0
 
-      // For diagonals, prevent cutting corners
-      const isDiagonal = dir.x !== 0 && dir.y !== 0;
+    this.sourceFootprint = this._footprintDeltas(this.sourceToken)
+    this.targetFootprint = this._footprintDeltas(this.targetToken)
+
+    // Range 0 used to mean "stand on top of the target", which is unreachable because the target
+    // occupies those cells - so the search drained the entire frontier and silently gave up.
+    // Anything without a usable range is treated as melee reach instead.
+    const range = Number.isFinite(options.range) ? options.range : 0
+    this.rangeSquares = Math.max(1, Math.ceil(range / this.gridUnit))
+
+    // The cell the cursor picked out of the ring around the target. Melee treats it as a hard
+    // goal so that hovering a particular side of a token walks the attacker to that side;
+    // reach and ranged weapons use it only to bias the approach direction, because for them
+    // walking all the way to an adjacent cell would be wrong.
+    const picked = options.targetPosition ?? { x: this.targetToken.x, y: this.targetToken.y }
+    this.goalAnchor = grid.getOffset(picked)
+    this.exactGoal = this.rangeSquares <= 1
+
+    this.maxDepth = this._movementBudgetSquares(options)
+    this.occupied = this._buildOccupancy()
+    this.bounds = this._canvasBounds()
+
+    return true
+  }
+
+  /**
+   * Offset range the token may occupy, taken from the padded canvas rect rather than the scene
+   * rect, since tokens can legitimately sit in the padding.
+   *
+   * Without this the grid is infinite, and the search happily routes around a wall by leaving the
+   * map entirely.
+   */
+  _canvasBounds() {
+    const rect = canvas.dimensions?.rect
+    if (!rect) return null
+    const [i0, j0, i1, j1] = canvas.grid.getOffsetRange({
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+    })
+    return { i0, j0, i1, j1 }
+  }
+
+  /** Cell offsets a token covers, relative to its own anchor offset. */
+  _footprintDeltas(token) {
+    if (!token) return [{ di: 0, dj: 0 }]
+    const grid = canvas.grid
+    const anchor = grid.getOffset({ x: token.x, y: token.y })
+    const [i0, j0, i1, j1] = grid.getOffsetRange({
+      x: token.x,
+      y: token.y,
+      width: token.w,
+      height: token.h,
+    })
+
+    const deltas = []
+    for (let i = i0; i < i1; i++) {
+      for (let j = j0; j < j1; j++) {
+        deltas.push({ di: i - anchor.i, dj: j - anchor.j })
+      }
+    }
+    return deltas.length ? deltas : [{ di: 0, dj: 0 }]
+  }
+
+  /**
+   * Cells that block movement.
+   *
+   * Excludes the source token itself (a Large token was previously blocked by its own footprint),
+   * tokens the user cannot see (their positions used to leak through path deflection), and tokens
+   * on a clearly different elevation band.
+   */
+  _buildOccupancy() {
+    const grid = canvas.grid
+    const occupied = new Set()
+    const sourceElevation = this.sourceToken?.document?.elevation ?? 0
+    const band = this.gridUnit
+
+    for (const token of canvas.tokens.placeables) {
+      if (token === this.sourceToken) continue
+      if (!token.visible) continue
+
+      const elevation = token.document?.elevation ?? 0
+      if (Math.abs(elevation - sourceElevation) >= band) continue
+
+      const [i0, j0, i1, j1] = grid.getOffsetRange({
+        x: token.x,
+        y: token.y,
+        width: token.w,
+        height: token.h,
+      })
+      for (let i = i0; i < i1; i++) {
+        for (let j = j0; j < j1; j++) occupied.add(offsetKey(i, j))
+      }
+    }
+
+    return occupied
+  }
+
+  /**
+   * Search depth in squares.
+   *
+   * `unboundPathfindingDepth` selects between a fixed configured cap and one derived from the
+   * actor's remaining movement - it has never meant "no limit".
+   */
+  _movementBudgetSquares(options) {
+    const configured = game.settings.get('auto-action-tray', 'quickActionDepth') || 6
+    if (game.settings.get('auto-action-tray', 'unboundPathfindingDepth')) return configured
+
+    const speed = Number.isFinite(options.speed) ? options.speed : 30
+    const remaining = Math.max(0, speed - this._movementUsed())
+    return Math.max(0, Math.min(configured, Math.floor(remaining / this.gridUnit)))
+  }
+
+  /**
+   * Distance already spent this turn, read from the token's movement history.
+   *
+   * This only works because the module no longer calls `clearMovementHistory()` on every hover -
+   * that used to destroy the very record core and dnd5e use to track movement.
+   */
+  _movementUsed() {
+    const document = this.sourceToken?.document
+    const history = document?.movementHistory
+    if (!history?.length) return 0
+    try {
+      const measured = this.sourceToken.measureMovementPath(history)
+      const used = measured?.cost ?? measured?.distance ?? 0
+      return Number.isFinite(used) ? used : 0
+    } catch {
+      return 0
+    }
+  }
+
+  /* -------------------------------------------- */
+  /*  Grid geometry                               */
+  /* -------------------------------------------- */
+
+  /** Cost in squares of a single step, given whether it is diagonal and the alternation parity. */
+  _stepCost(isDiagonal, parity) {
+    if (!isDiagonal) return 1
+    switch (this.diagonalRule) {
+      case GRID_DIAGONALS.EXACT:
+        return Math.SQRT2
+      case GRID_DIAGONALS.APPROXIMATE:
+        return 1.5
+      case GRID_DIAGONALS.RECTILINEAR:
+        return 2
+      case GRID_DIAGONALS.ALTERNATING_1:
+      case GRID_DIAGONALS.ALTERNATING_2:
+        return parity === 0 ? 1 : 2
+      default:
+        return 1
+    }
+  }
+
+  /**
+   * Grid distance in squares between two offsets, matching core's single-segment measurement.
+   * Used for range checks and for the heuristic on square grids.
+   */
+  _distanceSquares(iA, jA, iB, jB) {
+    let di = Math.abs(iA - iB)
+    let dj = Math.abs(jA - jB)
+    if (di < dj) [di, dj] = [dj, di]
+
+    switch (this.diagonalRule) {
+      case GRID_DIAGONALS.EXACT:
+        return di + (Math.SQRT2 - 1) * dj
+      case GRID_DIAGONALS.APPROXIMATE:
+        return di + 0.5 * dj
+      case GRID_DIAGONALS.RECTILINEAR:
+      case GRID_DIAGONALS.ILLEGAL:
+        return di + dj
+      case GRID_DIAGONALS.ALTERNATING_1:
+      case GRID_DIAGONALS.ALTERNATING_2:
+        return di + Math.floor(dj / 2)
+      default:
+        return di
+    }
+  }
+
+  /**
+   * Distance from a cell to the cursor-picked goal cell.
+   *
+   * On square grids every step costs at least 1 square and reduces Chebyshev distance by at most
+   * 1, so plain Chebyshev is admissible under *every* diagonal rule. Hex grids have no diagonals
+   * and uniform step cost, so the grid's own measurement is exact.
+   *
+   * In exact (melee) mode this is a true admissible heuristic for the goal. In relaxed mode the
+   * goal is "any cell in range" while this still measures to the picked cell, which makes it
+   * inadmissible - deliberately so, because it biases the stopping point toward the side of the
+   * target the cursor indicated. Reachability is unaffected: nodes enter the heap on exact `g`,
+   * so every in-range cell within budget is still explored; only the choice among them shifts.
+   */
+  _heuristic(i, j, goalI, goalJ) {
+    if (canvas.grid.isSquare) {
+      return Math.max(Math.abs(i - goalI), Math.abs(j - goalJ))
+    }
+    const measured = canvas.grid.measurePath([
+      canvas.grid.getCenterPoint({ i, j }),
+      canvas.grid.getCenterPoint({ i: goalI, j: goalJ }),
+    ])
+    return (measured?.distance ?? 0) / this.gridUnit
+  }
+
+  /**
+   * True when placing the source token's footprint at this anchor overlaps a blocked cell or
+   * leaves the canvas.
+   */
+  _footprintBlocked(i, j) {
+    const bounds = this.bounds
+    for (const { di, dj } of this.sourceFootprint) {
+      const ci = i + di
+      const cj = j + dj
+      if (bounds && (ci < bounds.i0 || ci >= bounds.i1 || cj < bounds.j0 || cj >= bounds.j1)) {
+        return true
+      }
+      if (this.occupied.has(offsetKey(ci, cj))) return true
+    }
+    return false
+  }
+
+  /**
+   * Wall check between two anchors, testing every cell of the source footprint so a Large token
+   * cannot squeeze part of itself through a wall. Results are cached because diagonal
+   * corner-checks re-test the same edges repeatedly.
+   */
+  _blockedByWall(fromI, fromJ, toI, toJ) {
+    // `to` is always adjacent to `from`, so the edge can be keyed as origin + direction index
+    // (0-8). Packing two full offset keys instead would overflow the safe-integer range.
+    const direction = (toI - fromI + 1) * 3 + (toJ - fromJ + 1)
+    const cacheKey = offsetKey(fromI, fromJ) * 9 + direction
+    const cached = this.wallCache.get(cacheKey)
+    if (cached !== undefined) return cached
+
+    const backend = CONFIG.Canvas.polygonBackends.move
+    let blocked = false
+
+    for (const { di, dj } of this.sourceFootprint) {
+      const from = canvas.grid.getCenterPoint({ i: fromI + di, j: fromJ + dj })
+      const to = canvas.grid.getCenterPoint({ i: toI + di, j: toJ + dj })
+      count('wall tests')
+      if (backend.testCollision(from, to, { type: 'move', mode: 'any' })) {
+        blocked = true
+        break
+      }
+    }
+
+    this.wallCache.set(cacheKey, blocked)
+    return blocked
+  }
+
+  /** Legal neighbours of an anchor, honouring occupancy, walls and corner-cutting. */
+  _neighbors(i, j) {
+    const results = []
+    for (const adjacent of canvas.grid.getAdjacentOffsets({ i, j })) {
+      const ni = adjacent.i
+      const nj = adjacent.j
+
+      if (this._footprintBlocked(ni, nj)) continue
+
+      const di = ni - i
+      const dj = nj - j
+      const isDiagonal = canvas.grid.isSquare && di !== 0 && dj !== 0
+
+      // Do not cut corners around blocked cells.
       if (isDiagonal) {
-        const horiz = { x: square.x + dir.x, y: square.y };
-        const vert = { x: square.x, y: square.y + dir.y };
-
-        if (this.isOccupied(horiz) || this.isOccupied(vert)) continue;
+        if (this._footprintBlocked(i + di, j)) continue
+        if (this._footprintBlocked(i, j + dj)) continue
+        if (this._blockedByWall(i, j, i + di, j)) continue
+        if (this._blockedByWall(i, j, i, j + dj)) continue
       }
 
-      results.push(next);
+      if (this._blockedByWall(i, j, ni, nj)) continue
+
+      results.push({ i: ni, j: nj, isDiagonal })
+    }
+    return results
+  }
+
+  /* -------------------------------------------- */
+  /*  Goal test                                   */
+  /* -------------------------------------------- */
+
+  /**
+   * Is the target attackable with the source token's footprint anchored here?
+   *
+   * Measures footprint-to-footprint rather than to the target's top-left corner, which is what
+   * previously made reach weapons and any non-1x1 token measure from the wrong cell.
+   */
+  _inRange(i, j) {
+    const target = this.targetToken
+    if (!target) return false
+    const targetAnchor = canvas.grid.getOffset({ x: target.x, y: target.y })
+
+    // Fast path: both tokens are a single cell.
+    if (this.sourceFootprint.length === 1 && this.targetFootprint.length === 1) {
+      return this._distanceSquares(i, j, targetAnchor.i, targetAnchor.j) <= this.rangeSquares
     }
 
-    return results;
-  }
-
-  checkInRange(current, goal) {
-    if (this.activeItemRange == null) return false;
-
-    const dx = Math.abs(current.x - goal.x);
-    const dy = Math.abs(current.y - goal.y);
-
-    const dxActual = Math.abs(current.x - this.actualTargetPosition.x);
-    const dyActual = Math.abs(current.y - this.actualTargetPosition.y);
-
-    const distanceGoal = Math.max(dx, dy) / this.gridSize;
-    const distanceActual = Math.max(dxActual, dyActual) / this.gridSize;
-
-    const range = this.activeItemRange / 5;
-    // this.debugDisplayValue(
-    //   `DG:${distanceGoal} DA:${distanceActual} R:${range}`,
-    //   {
-    //     x: current.x + this.gridSize / 2,
-    //     y: current.y + this.gridSize / 2
-    //   }
-    // );
-    // this.debugDisplayValue(`G:${goal.x},${goal.y}`, {
-    //   x: goal.x + this.gridSize / 2,
-    //   y: goal.y + this.gridSize / 2
-    // });
-    if (this.activeItemRange > 5) {
-      return distanceActual <= range;
-    }
-    return distanceGoal <= 0 && distanceActual <= range;
-  }
-
-  async findPath(start, goal) {
-    return new Promise(resolve => {
-      this._pathfindingResolve = resolve;
-      this.debouncedPathfinding(start, goal);
-    });
-  }
-
-  throttledFindPath(start, goal) {
-    const openSet = [start];
-    const cameFrom = new Map();
-    const gScore = new Map([[this.key(start), 0]]);
-    const fScore = new Map([[this.key(start), this.heuristic(start, goal)]]);
-
-    while (openSet.length > 0) {
-      openSet.sort((a, b) => fScore.get(this.key(a)) - fScore.get(this.key(b)));
-      const current = openSet.shift();
-      const currentDepth = gScore.get(this.key(current)) / this.gridSize;
-
-      // Limit search by number of squares added (depth)
-      if (currentDepth > this.maxDepth) continue;
-
-      if (
-        // (current.x === goal.x && current.y === goal.y) ||
-        this.checkInRange(current, goal)
-      ) {
-        this.endPos = current;
-        return this.reconstructPath(cameFrom, current);
+    for (const source of this.sourceFootprint) {
+      for (const cell of this.targetFootprint) {
+        const distance = this._distanceSquares(
+          i + source.di,
+          j + source.dj,
+          targetAnchor.i + cell.di,
+          targetAnchor.j + cell.dj,
+        )
+        if (distance <= this.rangeSquares) return true
       }
+    }
+    return false
+  }
 
-      for (const neighbor of this.adjacentSquares(current)) {
-        if (this.isOccupied(neighbor)) continue;
+  /* -------------------------------------------- */
+  /*  A*                                          */
+  /* -------------------------------------------- */
 
-        const tentative_g = gScore.get(this.key(current)) + this.gridSize;
-        const keyN = this.key(neighbor);
+  /**
+   * @param {{i: number, j: number}} start   Source token's current anchor.
+   * @param {{i: number, j: number}} goal    Cell the cursor picked; also the heuristic target.
+   * @param {boolean} exact                  Require arrival at `goal` rather than merely being in
+   *                                         range. Melee uses this so the cursor decides which
+   *                                         side of the target the attacker ends up on.
+   */
+  _search(start, goal, exact) {
+    const empty = { path: [], endPos: null, expanded: 0 }
+    const reached = (i, j) => (exact ? i === goal.i && j === goal.j : this._inRange(i, j))
 
-        if (!gScore.has(keyN) || tentative_g < gScore.get(keyN)) {
-          cameFrom.set(keyN, current);
-          gScore.set(keyN, tentative_g);
-          fScore.set(keyN, tentative_g + this.heuristic(neighbor, goal));
+    // Nothing to do: already standing where we want to be (exact), or already in range (relaxed).
+    if (reached(start.i, start.j)) {
+      const point = canvas.grid.getTopLeftPoint({ i: start.i, j: start.j })
+      return { path: [point], endPos: point, expanded: 0 }
+    }
+    if (this.maxDepth <= 0) return empty
 
-          if (!openSet.find(n => n.x === neighbor.x && n.y === neighbor.y))
-            openSet.push(neighbor);
+    const open = new MinHeap()
+    const gScore = new Map()
+    const cameFrom = new Map()
+    const closed = new Set()
+
+    // Alternating diagonal rules make step cost depend on how many diagonals have been taken, so
+    // the parity becomes part of the node identity. Other rules keep a single parity.
+    const stateKey = (i, j, parity) =>
+      this.alternatingDiagonals ? offsetKey(i, j) * 2 + parity : offsetKey(i, j)
+
+    const startParity = this.initialDiagonalParity
+    const startKey = stateKey(start.i, start.j, startParity)
+    gScore.set(startKey, { g: 0, diag: 0 })
+    open.push({ i: start.i, j: start.j, parity: startParity, key: startKey, diag: 0 }, 0)
+
+    let expanded = 0
+
+    while (open.size > 0) {
+      const current = open.pop()
+      if (closed.has(current.key)) continue
+      closed.add(current.key)
+      expanded++
+      count('nodes expanded')
+
+      if (reached(current.i, current.j)) {
+        return {
+          path: this._reconstruct(cameFrom, current),
+          endPos: canvas.grid.getTopLeftPoint({ i: current.i, j: current.j }),
+          expanded,
         }
       }
-    }
 
-    return [];
-  }
+      const currentScore = gScore.get(current.key)
 
-  key(sq) {
-    return `${sq.x},${sq.y}`;
-  }
+      for (const neighbor of this._neighbors(current.i, current.j)) {
+        const stepParity = this.alternatingDiagonals && neighbor.isDiagonal ? current.parity : 0
+        const step = this._stepCost(neighbor.isDiagonal, stepParity)
+        const tentativeG = currentScore.g + step
+        const tentativeDiag = currentScore.diag + (neighbor.isDiagonal ? 1 : 0)
 
-  reconstructPath(cameFrom, current) {
-    const path = [current];
-    while (cameFrom.has(this.key(current))) {
-      current = cameFrom.get(this.key(current));
-      path.unshift(current);
-    }
+        // Reject over-budget nodes before they enter the heap. Previously they were pushed and
+        // only discarded on pop, inflating every heap operation.
+        if (tentativeG > this.maxDepth) continue
 
-    return this.simplifyPath(path);
-  }
+        const nextParity =
+          this.alternatingDiagonals && neighbor.isDiagonal ? 1 - current.parity : current.parity
+        const neighborKey = stateKey(neighbor.i, neighbor.j, nextParity)
+        if (closed.has(neighborKey)) continue
 
-  simplifyPath(path) {
-    return path;
-    if (!path || path.length <= 2) return path;
+        // Dominance is lexicographic on (cost, diagonals). Under the 5-5-5 default a diagonal
+        // costs exactly as much as an orthogonal step, so a zigzag ties with a straight run on
+        // cost alone and whichever route arrived first would win. Comparing diagonal count second
+        // keeps the straighter route.
+        const known = gScore.get(neighborKey)
+        if (known !== undefined) {
+          if (tentativeG > known.g + COST_EPSILON) continue
+          if (tentativeG > known.g - COST_EPSILON && tentativeDiag >= known.diag) continue
+        }
 
-    const simplified = [path[0]];
-    let prevDir = null;
+        gScore.set(neighborKey, { g: tentativeG, diag: tentativeDiag })
+        cameFrom.set(neighborKey, current)
 
-    for (let i = 1; i < path.length; i++) {
-      const dx = path[i].x - path[i - 1].x;
-      const dy = path[i].y - path[i - 1].y;
-      const dir = { x: Math.sign(dx), y: Math.sign(dy) };
-
-      if (!prevDir || dir.x !== prevDir.x || dir.y !== prevDir.y) {
-        simplified.push(path[i - 1]);
-        prevDir = dir;
+        const h = this._heuristic(neighbor.i, neighbor.j, goal.i, goal.j)
+        // Both tie-breakers are far smaller than any real step cost, so they can only order
+        // nodes that are otherwise equal. Distance to the cursor's pick outranks straightness
+        // because it depends only on the cell: routes to the *same* cell share it, leaving
+        // straightness to decide between them, while different candidate stopping cells are
+        // still resolved in favour of the side the cursor indicated.
+        open.push(
+          {
+            i: neighbor.i,
+            j: neighbor.j,
+            parity: nextParity,
+            key: neighborKey,
+            diag: tentativeDiag,
+          },
+          tentativeG + h + h * PREFER_PICK + tentativeDiag * PREFER_STRAIGHT,
+        )
       }
     }
 
-    simplified.push(path[path.length - 1]);
-
-    return simplified;
+    note('pathfinding: no route within budget', { maxDepth: this.maxDepth, expanded })
+    return { ...empty, expanded }
   }
+
+  /**
+   * Rebuild the path as one waypoint per cell travelled.
+   *
+   * Emitting every cell is deliberate. TokenRuler draws its grid highlights from
+   * `#getSnappedIntermediatePath`, which highlights one cell per waypoint and does *not* expand
+   * segments - so collapsing straight runs into corner waypoints leaves the run between corners
+   * unhighlighted.
+   *
+   * The per-cell waypoint markers this might imply are not a problem: waypoints default to
+   * `explicit: false`, and TokenRuler#_getWaypointStyle already returns radius 0 for a
+   * non-explicit waypoint that has both a previous and a next in the same movement action. Dots
+   * therefore appear only at the ends, while every travelled cell stays highlighted.
+   */
+  _reconstruct(cameFrom, current) {
+    const cells = [current]
+    let node = current
+    while (cameFrom.has(node.key)) {
+      node = cameFrom.get(node.key)
+      cells.unshift(node)
+    }
+    return cells.map((cell) => canvas.grid.getTopLeftPoint({ i: cell.i, j: cell.j }))
+  }
+
+  /** Gridless scenes have no cells to search; move in a straight line instead. */
+  _directPath(options) {
+    const source = options.sourceToken
+    const target = options.targetPosition
+    if (!source || !target) return { path: [], endPos: null }
+    const path = [
+      { x: source.x, y: source.y },
+      { x: target.x, y: target.y },
+    ]
+    this.path = path
+    this.endPos = path[1]
+    this.setRuler(path)
+    return { path, endPos: this.endPos }
+  }
+
+  /* -------------------------------------------- */
+  /*  Ruler                                       */
+  /* -------------------------------------------- */
 
   setRuler(path) {
-    if (!path || path.length === 0) return;
+    const token = this.sourceToken
+    // A single-cell path means the token is already in range and does not move - nothing to draw.
+    if (!token?.ruler || !path || path.length < 2) return
 
-    const ruler = this.sourceToken.ruler;
+    const movement = token.findMovementPath(path, MOVEMENT_OPTIONS)
 
-    const movement = this.sourceToken.findMovementPath(path, {});
-    const foundPath = movement.result;
-
-    const plannedMovement = {
-      [game.user.id]: {
-        foundPath: foundPath,
-        unreachableWaypoints: [],
-        history: [],
-        hidden: false,
-        searching: false
-      }
-    };
-
-    this.sourceToken.document.clearMovementHistory();
-
-    ruler.refresh({
+    markRulerPreview(token)
+    token.ruler.refresh({
       passedWaypoints: [],
       pendingWaypoints: [],
-      plannedMovement
-    });
-
-    ruler.visible = true;
-    ruler.color = Color.fromString("#FF00FF");
+      plannedMovement: {
+        [game.user.id]: {
+          foundPath: movement.result ?? [],
+          unreachableWaypoints: [],
+          // Empty history here keeps stale segments off the preview without destroying the
+          // token's real movement record, which is what `clearMovementHistory()` used to do.
+          history: [],
+          hidden: false,
+          searching: false,
+        },
+      },
+    })
+    token.ruler.visible = true
   }
 
   clearRuler() {
-    this.sourceToken.document.clearMovementHistory();
-    const ruler = canvas.controls.getRulerForUser(game.user.id);
-    ruler.clear();
+    const token = this.sourceToken
+    if (!token) return
+    clearRulerPreview(token)
+
+    // Clear the ruler that was actually drawn on. The previous implementation cleared
+    // `canvas.controls.getRulerForUser(...)`, a different object entirely, so the drawn path was
+    // never removed and callers had to clean up by hand.
+    const ruler = token.ruler
+    if (!ruler) return
+    ruler.refresh({ passedWaypoints: [], pendingWaypoints: [], plannedMovement: {} })
+    ruler.clear()
+    ruler.visible = false
+  }
+
+  clearData() {
+    this.clearRuler()
+    this.sourceToken = null
+    this.targetToken = null
+    this.ruler = null
+    this.occupied = new Set()
+    this.wallCache.clear()
+    this.path = null
+    this.endPos = null
+  }
+
+  /* -------------------------------------------- */
+  /*  Debug                                       */
+  /* -------------------------------------------- */
+
+  /**
+   * Draw a transient value on the canvas. Gated behind the `debugPerf` setting via `note()` so it
+   * cannot be left on accidentally, and the text is destroyed rather than merely detached.
+   */
+  debugDisplayValue(value, position) {
+    if (!game.settings.get('auto-action-tray', 'debugPerf')) return
+    const text = new PIXI.Text(String(value), {
+      fontFamily: 'Arial',
+      fontSize: 12,
+      fill: 0xffffff,
+      stroke: 0x000000,
+      strokeThickness: 4,
+    })
+    text.anchor.set(0.5)
+    text.position.set(position.x, position.y)
+    canvas.stage.addChild(text)
+
+    setTimeout(() => {
+      if (text.destroyed) return
+      canvas.stage.removeChild(text)
+      text.destroy()
+    }, 1000)
   }
 }

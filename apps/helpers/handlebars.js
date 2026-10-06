@@ -53,9 +53,8 @@ export function registerHandlebarsHelpers() {
   }
 
   /**
-   * Registers how to build this slot's tooltip and returns the key that identifies it. Reading
-   * `item.tooltip` here would build the tooltip for every slot on every render, which is exactly
-   * what this replaces - so the lookup is deferred into a thunk that only runs on hover.
+   * Register how to build this slot's tooltip and return its key. Deferred into a thunk that runs
+   * on hover: reading `item.tooltip` here would build a tooltip for every slot on every render.
    */
   Handlebars.registerHelper('lazyTooltip', function (...args) {
     // Handlebars always appends its own options object, so pop it rather than trying to tell it
@@ -137,10 +136,10 @@ export function registerHandlebarsHelpers() {
       tray.id == 'spell-0'
         ? 'cantrip'
         : tray.id.startsWith('spell-')
-        ? 'slot'
-        : tray.id.startsWith('customStaticTray')
-        ? 'customStaticTray'
-        : tray.id
+          ? 'slot'
+          : tray.id.startsWith('customStaticTray')
+            ? 'customStaticTray'
+            : tray.id
 
     switch (trayIcon) {
       case 'slot':
@@ -152,7 +151,11 @@ export function registerHandlebarsHelpers() {
             icons.spellUseSpentSlot.repeat(tray.availableSlots) +
             icons.spellUseSpentSlotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
           )
-        } else return icons.slot.repeat(tray.availableSlots) + icons.slotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
+        } else
+          return (
+            icons.slot.repeat(tray.availableSlots) +
+            icons.slotSpent.repeat(Math.max(0, tray.totalSlots - tray.availableSlots))
+          )
       case 'action':
         return this.application.combatHandler.actions.action == 0 ? icons.actionSpent : icons.action
       case 'bonus':
@@ -169,7 +172,11 @@ export function registerHandlebarsHelpers() {
             icons.spellUseSpentPact.repeat(tray.availableSlots) +
             icons.spellUseSpentPactSpent.repeat(tray.totalSlots - tray.availableSlots)
           )
-        } else return icons.pact.repeat(tray.availableSlots) + icons.pactSpent.repeat(tray.totalSlots - tray.availableSlots)
+        } else
+          return (
+            icons.pact.repeat(tray.availableSlots) +
+            icons.pactSpent.repeat(tray.totalSlots - tray.availableSlots)
+          )
       case 'ritual':
         return icons.ritual
 
@@ -178,15 +185,15 @@ export function registerHandlebarsHelpers() {
     }
   })
 
-Handlebars.registerHelper('diceIcon', function (currentDice) {
-  const diceIcons = [
-    '<i class="fa-solid fa-dice-d20"></i>',
-    '<i class="fa-solid fa-dice-d12"></i>',
-    '<i class="fa-solid fa-dice-d10"></i>',
-    '<i class="fa-solid fa-dice-d8"></i>',
-    '<i class="fa-solid fa-dice-d6"></i>',
-    '<i class="fa-solid fa-dice-d4"></i>',
-    `
+  Handlebars.registerHelper('diceIcon', function (currentDice) {
+    const diceIcons = [
+      '<i class="fa-solid fa-dice-d20"></i>',
+      '<i class="fa-solid fa-dice-d12"></i>',
+      '<i class="fa-solid fa-dice-d10"></i>',
+      '<i class="fa-solid fa-dice-d8"></i>',
+      '<i class="fa-solid fa-dice-d6"></i>',
+      '<i class="fa-solid fa-dice-d4"></i>',
+      `
     <span style="
       display:inline-flex;
       align-items:center;
@@ -216,15 +223,21 @@ Handlebars.registerHelper('diceIcon', function (currentDice) {
            "></i>
       </span>
     </span>
-    `
-  ]
+    `,
+    ]
 
-  return new Handlebars.SafeString(diceIcons[currentDice])
-})
+    return new Handlebars.SafeString(diceIcons[currentDice])
+  })
 
-
-
-
+  /**
+   * One item's multiattack highlight, read off the tray rather than the item (see
+   * CustomNpcTray.recordMultiattackTag). Returns '' for trays that carry no tags.
+   *
+   * @param {'group'|'wildcard'} key
+   */
+  Handlebars.registerHelper('multiTag', function (tray, item, key) {
+    return tray?.multiattackTags?.[item?.id]?.[key] ?? ''
+  })
 
   Handlebars.registerHelper('setConcentrationColor', function (color) {
     document.getElementById('auto-action-tray')?.style.setProperty('--concentration-color', color)

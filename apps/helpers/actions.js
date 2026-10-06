@@ -932,7 +932,7 @@ export class Actions {
 
     this.rowCount = next
 
-    this.totalabilities = this.rowCount * this.columnCount
+    this.totalAbilities = this.rowCount * this.columnCount
     this.trayOptions['rowCount'] = this.rowCount
     await Actions.setTrayConfig.bind(this)({ rowCount: this.rowCount })
     this.initialTraySetup(this.actor)
@@ -957,7 +957,7 @@ export class Actions {
 
     this.rowCount = next
     root.style.setProperty('--aat-item-tray-item-height-count', this.rowCount)
-    this.totalabilities = this.rowCount * this.columnCount
+    this.totalAbilities = this.rowCount * this.columnCount
     this.trayOptions['rowCount'] = this.rowCount
     await Actions.setTrayConfig.bind(this)({ rowCount: this.rowCount })
     this.initialTraySetup(this.actor)

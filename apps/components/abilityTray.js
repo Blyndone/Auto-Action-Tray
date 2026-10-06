@@ -22,10 +22,10 @@ export class AbilityTray {
     // tray built; no stylesheet references those, so the writes were dead.
     const rowCount = this.rowCount || 2
     const columnCount = this.application?.columnCount || 10
-    const totalabilities = (rowCount + 1) * columnCount
+    const totalAbilities = (rowCount + 1) * columnCount
 
-    if (arr == null) return new Array(totalabilities).fill(filler)
-    return [...arr, ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)]
+    if (arr == null) return new Array(totalAbilities).fill(filler)
+    return [...arr, ...Array(Math.max(0, totalAbilities - arr.length)).fill(filler)]
   }
 
   padNewRow() {
