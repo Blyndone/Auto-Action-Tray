@@ -150,7 +150,8 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
       this.render(true)
       Actions.minimizeTray.bind(this)()
       Hooks.once('controlToken', () => {
-        document.getElementById('aat-maximize-button').remove()
+        // Gone already if the GM maximized the tray before selecting a token.
+        document.getElementById('aat-maximize-button')?.remove()
         this.render(true)
       })
     }
@@ -308,6 +309,7 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
   _registerHooks() {
     this.#on('controlToken', this._onControlToken.bind(this))
     this.#on('deleteToken', this._onDeleteToken.bind(this))
+    this.#on('deleteActor', this._onDeleteActor.bind(this))
     this.#on('updateActor', this._onUpdateActor.bind(this))
     this.#on('updateItem', this._onUpdateItem.bind(this))
     this.#on('dropCanvasData', (canvas, data) => this._onDropCanvas(data))
@@ -591,6 +593,27 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     }
   }
 
+  /**
+   * Drop the tray's hold on an actor that was just deleted - e.g. the temporary actor dnd5e
+   * creates for Wild Shape / Polymorph and removes when the creature reverts. Left in place, every
+   * later tray rebuild, hover and flag write goes through a dead document. The controlled token
+   * (now pointing at the original actor) is then re-selected so the tray follows it.
+   */
+  _onDeleteActor = (actor) => {
+    if (!this.actor || actor.uuid !== this.actor.uuid) return
+    const token = this.token
+    this.actor = null
+    this.token = null
+    this._traysActorUuid = null
+    this.combatHandler.actor = null
+    // Deferred: the token's own update back to the original actor may land after this hook.
+    setTimeout(() => {
+      if (this.actor) return
+      const next = canvas.tokens?.controlled?.[0] ?? (token?.destroyed ? null : token)
+      if (next?.actor && fromUuidSync(next.actor.uuid)) this._onControlToken(next, true)
+    }, 0)
+  }
+
   /** Re-measure the tray when the sidebar collapses, since it changes the available height. */
   _onCollapseSidebar(sidebar, collapsed) {
     this.animationHandler.animateSidebarHeight()
@@ -829,6 +852,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
    */
   generateTrays(actor) {
     let abilities = this.getActorAbilities(actor.uuid)
+    // Which actor the trays below belong to, so checkTrayDiff never reconciles them against a
+    // different one.
+    this._traysActorUuid = actor.uuid
     this.staticTrays = StaticTray.generateStaticTrays(actor, {
       application: this,
       cachedAbilities: abilities,
@@ -880,6 +906,10 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
    * refreshing those whose wrapper was rebuilt.
    */
   checkTrayDiff() {
+    // On a token switch the cache-hit path runs this before generateTrays, while the trays still
+    // belong to the previous actor. That actor may be gone (a reverted Wild Shape), and the trays
+    // are about to be rebuilt anyway, so skip.
+    if (!this.actor || this._traysActorUuid !== this.actor.uuid) return
     const allItems = this.getActorAbilities(this.actor.uuid)
     const itemMap = new Map(allItems.map((item) => [item.id, item]))
     this.stackedTray.checkDiff(itemMap)
@@ -1148,6 +1178,9 @@ export class AutoActionTray extends api.HandlebarsApplicationMixin(ApplicationV2
     // so it can be toggled mid-session.
     const hoverEnabled = game.settings.get('auto-action-tray', 'enableRangeHover')
     if (!hoverEnabled || !token || token == this.token || !this.token) return
+    // A token redrawn by a transform (Wild Shape, Polymorph) leaves a destroyed placeable behind,
+    // whose x/y getters throw.
+    if (this.token.destroyed || token.destroyed) return
 
     const root = this.element
     if (!root) return

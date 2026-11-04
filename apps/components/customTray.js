@@ -20,6 +20,12 @@ export class CustomTray extends AbilityTray {
 
   generateTray(cachedAbilities) {
     const actor = fromUuidSync(this.actorUuid)
+    // The actor can be gone while the tray still points at it (a reverted Wild Shape deletes its
+    // temporary actor). Leave the tray empty; it is rebuilt when the next token is selected.
+    if (!actor) {
+      this.abilities = []
+      return
+    }
     let allItems = cachedAbilities || this.application.getActorAbilities(this.actorUuid)
     switch (this.category) {
       case 'common':
