@@ -437,6 +437,18 @@ Hooks.once('ready', async function () {
     requiresReload: false,
   })
 
+  game.settings.register('auto-action-tray', 'templateBoundary', {
+    name: 'Template Boundary',
+    hint: 'Draw a glowing outline around area templates placed by your actions',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: true,
+  })
+
   game.settings.register('auto-action-tray', 'receiveTargetLines', {
     name: 'Receive Target Lines',
     hint: 'Receive Target Lines from other players',

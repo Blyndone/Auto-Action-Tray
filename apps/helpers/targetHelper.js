@@ -37,7 +37,6 @@ export class TargetHelper {
     this.currentLine = null
     this.rangeBoundary = null
     this.templateBoundary = new TemplateBoundary(options)
-    this.templateBoundaryUuid = null
     this.startPos
     this.startLinePos
     this.item = null
@@ -63,13 +62,24 @@ export class TargetHelper {
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
     this.receiveTargetLines = game.settings.get('auto-action-tray', 'receiveTargetLines')
     this.gridSize = game.canvas.scene.grid.size
+    this.showTemplateBoundary = game.settings.get('auto-action-tray', 'templateBoundary')
 
     Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
-      if (!(activity.actor.id == this.actor.id)) return
+      if (!this.actor || activity.actor?.id !== this.actor.id) return
       this._HookCreateMeasuredTemplate(activity, created)
     })
-    this.refreshHook = null
-    this.destroyHook = null
+    // Registered once here. They used to be added per cast and only removed when a destroy
+    // matched, so every cast whose template went away some other way leaked a hook pair.
+    Hooks.on('createMeasuredTemplate', (...args) =>
+      this._HookCreateMeasuredTemplateDocument(...args),
+    )
+    Hooks.on('refreshMeasuredTemplate', (template) => this._HookRefreshMeasuredTemplate(template))
+    Hooks.on('destroyMeasuredTemplate', (template) => this._HookDestroyMeasuredTemplate(template))
+    // The document hook as well as the placeable one: it fires even when the template is deleted
+    // on a scene this client is not viewing, where no placeable exists to be destroyed.
+    Hooks.on('deleteMeasuredTemplate', (document) => this._HookDeleteMeasuredTemplate(document))
+    Hooks.on('userConnected', (user, connected) => this._HookUserConnected(user, connected))
+    Hooks.on('canvasTearDown', () => this._HookCanvasTearDown())
     this.active = false
     this.STATES = {
       IDLE: 0,
@@ -144,6 +154,8 @@ export class TargetHelper {
     // `phantom: true` was never set by the senders, so remote lines were building a TargetText
     // that can never be populated (the counter is not broadcast) and moving it on every sample.
     let line = new TargetLineCombo({ ...options, phantom: true })
+    // Kept so the line can be dropped if its sender disconnects mid-targeting.
+    line.senderId = options.senderId ?? null
     this.phantomLines.push(line)
     return line
   }
@@ -225,6 +237,7 @@ export class TargetHelper {
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
+        senderId: game.user.id,
         useLines: false,
         sendName: game.settings.get('auto-action-tray', 'enableUseItemName'),
         sendIcon: game.settings.get('auto-action-tray', 'enableUseItemIcon'),
@@ -427,6 +440,7 @@ export class TargetHelper {
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
+        senderId: game.user.id,
         id: this.currentLine.id,
         actorId: this.actorId,
         startPos: this.startPos,
@@ -634,6 +648,7 @@ export class TargetHelper {
     this.lastSentInRange = null
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
+        senderId: game.user.id,
         id: this.currentLine.id,
         actorId: this.actorId,
         startLinePos: this.startLinePos,
@@ -884,76 +899,168 @@ export class TargetHelper {
     return targetCount
   }
 
+  // dnd5e only sets `.activity` on its preview AbilityTemplate. Modules that skip the preview and
+  // save the template directly (midi-qol emanations) leave a placed template without it, so the
+  // placed one is matched through the origin flag dnd5e writes into the template data instead.
+  static templateActivityUuid(template) {
+    return template?.activity?.uuid ?? template?.document?.flags?.dnd5e?.origin ?? null
+  }
+
+  // How long a new outline may wait for its template to be saved before it is treated as
+  // abandoned (midi creates the document asynchronously; a preview may be held while aiming).
+  static TEMPLATE_GRACE_MS = 10000
+
+  // The caster's outline for a given preview or placed template, if any. Matched on the exact
+  // object/document rather than the activity, so an older template of the same spell still on
+  // the scene can neither remove nor keep alive the outline of a new cast.
+  _ownBoundaryFor(template) {
+    const id = template?.document?.id
+    return this.templateBoundary
+      .own()
+      .find((b) => b.preview === template || (id && b.templateId === id))
+  }
+
   _HookCreateMeasuredTemplate(activity, created) {
-    this.templateBoundaryUuid = activity.uuid
+    if (!this.showTemplateBoundary || !created?.[0]?.document) return
+
+    // A new cast of the same activity replaces any outline still waiting on a template.
+    for (const b of this.templateBoundary.own()) {
+      if (b.activityUuid === activity.uuid && !b.templateId) this._removeOwnBoundary(b)
+    }
 
     const options = {
-      color: this.color || themeColor || game.user.color.css,
+      color: this.color || game.user.color.css,
       activityUuid: activity.uuid,
       document: created[0].document,
     }
-    if (!this.createTemplateBoundary.bind(this)(options)) {
-      return
-    }
+    const boundary = this.templateBoundary.createBoundary(options)
+    if (!boundary) return
+    boundary.preview = created[0]
+    // One check per outline, not a poll: covers a preview that is never drawn and never saved
+    // (a module that builds the template data and then fails or declines to create it), which
+    // fires no destroy or delete hook at all.
+    setTimeout(() => this._checkAbandonedBoundary(boundary), TargetHelper.TEMPLATE_GRACE_MS)
 
     if (this.sendTargetLines) {
-      this.socket.executeForOthers('createTemplateBoundary', { ...options, phantom: true })
+      this.socket.executeForOthers('createTemplateBoundary', {
+        ...options,
+        phantom: true,
+        senderId: game.user.id,
+      })
     }
-
-    this.refreshHook = Hooks.on('refreshMeasuredTemplate', (template, state) => {
-      this._HookRefreshMeasuredTemplate(template, state)
-    })
-    this.destroyHook = Hooks.on('destroyMeasuredTemplate', (template) => {
-      this._HookDestroyMeasuredTemplate(template)
-    })
   }
-  _HookRefreshMeasuredTemplate(template, state) {
-    if (
-      !template?.activity ||
-      !template?.activity.uuid ||
-      this.templateBoundaryUuid != template.activity.uuid
-    )
-      return
 
-    let options = {
-      activityUuid: template.activity.uuid,
-      document: template.document,
-    }
-    this.updateTemplateBoundary.bind(this)(options)
+  // Binds the outline to the template document its preview became (or, for midi emanations,
+  // the document saved straight from the never-drawn preview).
+  _HookCreateMeasuredTemplateDocument(document, options, userId) {
+    if (userId !== game.user.id) return
+    const activityUuid = document.flags?.dnd5e?.origin
+    if (!activityUuid) return
+    const boundary = this.templateBoundary
+      .own()
+      .find((b) => b.activityUuid === activityUuid && !b.templateId)
+    if (boundary) boundary.templateId = document.id
+  }
+
+  _HookRefreshMeasuredTemplate(template) {
+    // Phantom copies follow the caster's broadcasts rather than this client's hooks.
+    const boundary = this._ownBoundaryFor(template)
+    if (!boundary) return
+    boundary.updateBoundary(template.document)
     if (this.sendTargetLines) {
-      this.socket.executeForOthers('updateTemplateBoundary', { ...options, phantom: true })
+      this.socket.executeForOthers('updateTemplateBoundary', {
+        activityUuid: boundary.activityUuid,
+        document: template.document,
+        phantom: true,
+        senderId: game.user.id,
+      })
     }
   }
+
   _HookDestroyMeasuredTemplate(template) {
-    if (
-      !template?.activity ||
-      !template?.activity.uuid ||
-      this.templateBoundaryUuid != template.activity.uuid
-    )
+    const boundary = this._ownBoundaryFor(template)
+    if (boundary) {
+      this._removeOwnBoundary(boundary)
       return
-    let options = {
-      activityUuid: template.activity.uuid,
-      document: template.document,
     }
-    this.destroyTemplateBoundary.bind(this)(options)
-    this.templateBoundaryUuid = null
+    // A phantom copy is cleared locally too, in case the caster's broadcast never arrives.
+    const activityUuid = TargetHelper.templateActivityUuid(template)
+    if (activityUuid && !template.activity) {
+      this.templateBoundary.destroyPhantoms({
+        activityUuid,
+        senderId: template.document?.author?.id ?? template.document?.user?.id,
+      })
+    }
+  }
+
+  _removeOwnBoundary(boundary) {
+    this.templateBoundary.remove(boundary)
     if (this.sendTargetLines) {
-      this.socket.executeForOthers('destroyTemplateBoundary', { ...options, phantom: true })
+      this.socket.executeForOthers('destroyTemplateBoundary', {
+        activityUuid: boundary.activityUuid,
+        phantom: true,
+        senderId: game.user.id,
+      })
     }
-    Hooks.off('refreshMeasuredTemplate', this.refreshHook)
-    Hooks.off('destroyMeasuredTemplate', this.destroyHook)
   }
 
+  _checkAbandonedBoundary(boundary) {
+    if (!this.templateBoundary.boundaries.includes(boundary) || boundary.templateId) return
+    // Still being aimed: its destroy hook removes it when placement ends.
+    const preview = boundary.preview
+    if (preview && !preview.destroyed && preview.parent) return
+    this._removeOwnBoundary(boundary)
+  }
+
+  _HookDeleteMeasuredTemplate(document) {
+    const boundary = this.templateBoundary.own().find((b) => b.templateId === document.id)
+    if (boundary) {
+      this._removeOwnBoundary(boundary)
+      return
+    }
+    const activityUuid = document.flags?.dnd5e?.origin
+    if (activityUuid) {
+      this.templateBoundary.destroyPhantoms({
+        activityUuid,
+        senderId: document.author?.id ?? document.user?.id,
+      })
+    }
+  }
+
+  // Phantom lines and outlines from a user who has left can never be cleared by that user.
+  _HookUserConnected(user, connected) {
+    if (connected) return
+    this.templateBoundary.removeWhere((b) => b.phantom && b.senderId === user.id, true)
+    this.phantomLines = this.phantomLines.filter((line) => {
+      if (line.senderId !== user.id) return true
+      line.destroyLines()
+      return false
+    })
+  }
+
+  _HookCanvasTearDown() {
+    // Own outlines first, so other clients drop their copies of them too.
+    for (const b of this.templateBoundary.own()) this._removeOwnBoundary(b)
+    this.templateBoundary.destroyAll()
+    for (const line of this.phantomLines) line.destroyLines()
+    this.phantomLines = []
+  }
+
+  // Socket handlers: these only ever act on phantom copies from another client.
   createTemplateBoundary(options) {
-    if (!this.receiveTargetLines && options.phantom) return
-    return this.templateBoundary?.createBoundary(options)
+    if (!this.receiveTargetLines || !options.phantom) return
+    // A repeat create from the same caster replaces its earlier copy rather than stacking.
+    this.templateBoundary.destroyPhantoms(options)
+    this.templateBoundary.createBoundary(options)
   }
 
-  updateTemplateBoundary(template) {
-    this.templateBoundary?.updateBoundary(template)
+  updateTemplateBoundary(options) {
+    if (!options.phantom) return
+    this.templateBoundary.updatePhantoms(options)
   }
 
-  destroyTemplateBoundary(template) {
-    this.templateBoundary?.destroyBoundary(template)
+  destroyTemplateBoundary(options) {
+    if (!options.phantom) return
+    this.templateBoundary.destroyPhantoms(options)
   }
 }

@@ -19,7 +19,10 @@ const SETTING_GROUPS = {
     { legend: 'Icons & Cursors', keys: ['customConditionIcons', 'customTargetingCursors'] },
   ],
   targeting: [
-    { legend: 'Range', keys: ['enableRangeHover', 'defaultRangeBoundary', 'enableRangeBoundary'] },
+    {
+      legend: 'Range',
+      keys: ['enableRangeHover', 'defaultRangeBoundary', 'enableRangeBoundary', 'templateBoundary'],
+    },
     {
       legend: 'Target Lines',
       keys: [

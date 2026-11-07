@@ -1,55 +1,72 @@
 import { gsap } from '/scripts/greensock/esm/all.js'
 import { saturateColor } from './targetLineCombo.js'
 
+// Owns every template outline drawn on the stage, the caster's own and phantom copies received
+// from other clients. Each outline is one entry here: nothing is drawn that is not in this list,
+// and nothing leaves the list without its graphics being destroyed.
 export class TemplateBoundary {
   constructor(options) {
     this.boundaries = []
   }
+
+  // Returns the new boundary, or null for a template shape with no outline.
   createBoundary(options) {
-    let type = options.document.t
-    switch (type) {
-      case 'circle':
-        this.boundaries.push(new CircleBoundary(options))
-        break
-      case 'ray':
-        this.boundaries.push(new RayBoundary(options))
-        break
-      case 'cone':
-        this.boundaries.push(new ConeBoundary(options))
-        break
-      case 'rect':
-        this.boundaries.push(new RectangleBoundary(options))
-        break
-      default:
-        return false
+    const types = {
+      circle: CircleBoundary,
+      ray: RayBoundary,
+      cone: ConeBoundary,
+      rect: RectangleBoundary,
     }
-    return true
+    const BoundaryClass = types[options.document?.t]
+    if (!BoundaryClass) return null
+    const boundary = new BoundaryClass(options)
+    this.boundaries.push(boundary)
+    return boundary
   }
 
-  updateBoundary(options) {
-    let boundary = this.boundaries.find((b) => b.activityUuid === options.activityUuid)
-    if (boundary) {
-      boundary.updateBoundary(options.document)
-    } else {
-      console.error('Boundary not initialized for template:', this.template)
-      throw new Error('Boundary not initialized')
+  // Phantom copies are addressed by the caster's activity and user, the only ids both ends share.
+  findPhantoms(activityUuid, senderId) {
+    return this.boundaries.filter(
+      (b) => b.phantom && b.activityUuid === activityUuid && (!senderId || b.senderId === senderId),
+    )
+  }
+  updatePhantoms(options) {
+    for (const b of this.findPhantoms(options.activityUuid, options.senderId)) {
+      b.updateBoundary(options.document)
     }
   }
-  destroyBoundary(options) {
-    let boundary = this.boundaries.find((b) => b.activityUuid === options.activityUuid)
-    if (boundary) {
-      boundary.destroyBoundary()
-      this.boundaries = this.boundaries.filter((b) => b.activityUuid !== options.activityUuid)
-    } else {
-      console.warn('Boundary already destroyed or not initialized.')
-    }
+  destroyPhantoms(options) {
+    for (const b of this.findPhantoms(options.activityUuid, options.senderId)) this.remove(b)
+  }
+
+  own() {
+    return this.boundaries.filter((b) => !b.phantom)
+  }
+
+  remove(boundary, immediate = false) {
+    boundary.destroyBoundary(immediate)
+    this.boundaries = this.boundaries.filter((b) => b !== boundary)
+  }
+
+  removeWhere(predicate, immediate = false) {
+    for (const b of this.boundaries.filter(predicate)) this.remove(b, immediate)
+  }
+
+  // Boundaries live on canvas.app.stage, which survives a scene change.
+  destroyAll() {
+    this.removeWhere(() => true, true)
   }
 }
 
 class protoBoundary {
   constructor(options) {
-    this.phantom = false
+    this.phantom = !!options.phantom
+    this.senderId = options.senderId ?? null
     this.activityUuid = options?.activity?.uuid || options.activityUuid
+    // Set by TargetHelper on the caster's own outline: the preview object it was drawn for and,
+    // once placed, the id of the template document it now follows.
+    this.preview = null
+    this.templateId = null
     this.boundary = new PIXI.Graphics()
     this.gridSize = game.canvas.scene.grid.size
     this.x = options.document.x || 0
@@ -100,15 +117,16 @@ class protoBoundary {
     )
   }
 
-  destroyBoundary() {
-    if (!this.boundary) {
-      console.warn('Boundary already destroyed or not initialized.')
-      return
-    }
+  destroyBoundary(immediate = false) {
+    if (!this.boundary) return
     const boundary = this.boundary
     this.boundary = null
     this.animation?.kill()
     this.animation = null
+    if (immediate) {
+      boundary.destroy()
+      return
+    }
     gsap.to(boundary, {
       alpha: 0,
       duration: 0.5,
