@@ -13,7 +13,7 @@ export class AbilityTray {
     this.type = ''
     this.application = options.application || null
     this.label = options.label || ''
-    this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
+    this.rowCount = this.application?.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
   padArray(arr, filler = null) {
     // Counts are resolved once by the application in _applyUiSettings, which also writes the
@@ -58,6 +58,7 @@ export class AbilityTray {
               category: 'passive',
               id: 'passiveItems',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(passiveTray)
           }
@@ -72,6 +73,7 @@ export class AbilityTray {
               category: 'reaction',
               id: 'reaction',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(reactionTray)
           }
@@ -86,6 +88,7 @@ export class AbilityTray {
               category: 'items',
               id: 'items',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(consumableTray)
           }
@@ -101,6 +104,7 @@ export class AbilityTray {
               category: 'classFeatures',
               id: 'classFeatures',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(classFeatureTray)
           }
@@ -114,7 +118,8 @@ export class AbilityTray {
             let commonTray = new CustomTray({
               category: 'common',
               id: 'common',
-              actorUuid: actor.uuid,
+              actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(commonTray)
           }
