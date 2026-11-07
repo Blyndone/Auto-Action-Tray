@@ -414,6 +414,8 @@ export class Actions {
   // Single point where the module invokes dnd5e, so an armed dry run can capture the handoff
   // without rolling. Returns undefined on a dry run; callers only use the result for chat flow.
   static async invokeActivity(resolved, usageConfig, dialogConfig, messageConfig, target) {
+    if (!(await Actions.castSourceAvailable(resolved.activity))) return null
+
     UseTrace.payload({
       activityId: resolved.id,
       activityName: resolved.activity?.name ?? null,
@@ -431,6 +433,27 @@ export class Actions {
     }
 
     return await resolved.activity.use(usageConfig, dialogConfig, messageConfig, target)
+  }
+
+  // A Cast activity with no cached spell on the actor makes dnd5e copy its linked spell by UUID.
+  // If that UUID no longer resolves (spell deleted, compendium missing), dnd5e creates an item
+  // from `undefined` and throws deep inside document migration. Catch it here with a clear message.
+  static async castSourceAvailable(activity) {
+    if (activity?.type !== 'cast' || activity.cachedSpell) return true
+    const uuid = activity.spell?.uuid ?? null
+    const source = uuid ? await fromUuid(uuid).catch(() => null) : null
+    if (source) return true
+
+    UseTrace.fail(
+      'castSpellMissing',
+      'Linked spell for Cast activity not found',
+      { activity: activity.name, spellUuid: uuid },
+      'The Cast activity points at a spell that does not exist in this world (deleted, or from a compendium that is not installed). Relink the spell in the activity settings.',
+    )
+    ui.notifications.error(
+      `${activity.item?.name ?? 'Item'}: the spell linked to "${activity.name}" could not be found (${uuid ?? 'no spell linked'}). Relink it in the activity's settings.`,
+    )
+    return false
   }
 
   static async getTargets(item, activity, selectedSpellLevel) {
@@ -733,6 +756,8 @@ export class Actions {
           {},
           target,
         )
+        // null means the use was refused before reaching dnd5e; don't wait on integrations.
+        if (workflow === null) break
 
         // Nothing was rolled on a dry run, so no integration will ever report completion and
         // waiting would just burn the full timeout on every target.
