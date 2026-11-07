@@ -119,14 +119,18 @@ export class StaticTray extends AbilityTray {
 
         break
       case 'extraSpells':
-        this.abilities = allItems.filter((e) => e.type === 'spell' && !e.isScaledSpell)
+        this.abilities = allItems.filter(
+          (e) => e.type === 'spell' && !e.isScaledSpell && !e.isHiddenGrant,
+        )
 
         this.id = 'extraSpells'
         break
 
       case 'spell':
         if (this.spellLevel == 0) {
-          this.abilities = allItems.filter((e) => e.spellLevel == this.spellLevel && e.isPrepared)
+          this.abilities = allItems.filter(
+            (e) => e.spellLevel == this.spellLevel && e.isPrepared && !e.isHiddenGrant,
+          )
           this.id = 'spell-' + this.spellLevel
           break
         }

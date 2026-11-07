@@ -80,6 +80,7 @@ export class AATItem {
             ? `${this.item.system.uses.value} / ${this.item.system.uses.max}`
             : ''
     }
+    if (this.isCastGranted) this.useGrantingItemUses()
     if (this.preparationMode == 'pact') {
       this.pactLevel = this.actor.system?.spells?.pact?.level
       // hasTooltipForLevel answers from the level range, so this no longer builds every
@@ -116,6 +117,31 @@ export class AATItem {
     this.actionType =
       { action: 'action', bonus: 'bonus', reaction: 'reaction' }[activity?.activation?.type] ?? ''
   }
+  /** The Cast activity that granted this spell, or null (missing, or not a granted copy). */
+  get linkedActivity() {
+    return this.isCastGranted ? (this.item.system?.linkedActivity ?? null) : null
+  }
+
+  /** Hidden where the sheet hides it: the granting activity is gone, unusable, or set to stay
+   *  out of the spellbook. Read live, since toggling it updates the granting item, not the copy. */
+  get isHiddenGrant() {
+    return this.isCastGranted && !this.linkedActivity?.displayInSpellbook
+  }
+
+  // The copy's own uses are empty; what limits it is the granting item (Star Map's free casts).
+  // Read live for the same reason as above. The setter keeps later assignments from throwing.
+  useGrantingItemUses() {
+    Object.defineProperty(this, 'uses', {
+      get: () => {
+        const uses = this.linkedActivity?.item?.system?.uses
+        return uses?.max ? `${uses.value} / ${uses.max}` : ''
+      },
+      set: () => {},
+      enumerable: true,
+      configurable: true,
+    })
+  }
+
   getActorMaxSpellLevel(actor) {
     let slots = actor.system?.spells ?? {}
     let pactLevel = slots.pact?.level ?? 0
@@ -130,7 +156,14 @@ export class AATItem {
   }
 
   setValues() {
+    // A Cast activity makes an actor copy of its spell, flagged cachedFor (the sheet's
+    // "Additional Spells"). dnd5e charges that copy to the granting item's uses at its set level,
+    // so it is never upcast from a slot tray and belongs in Extra Spells.
+    this.isCastGranted =
+      this.item.type == 'spell' && !!this.item.getFlag?.('dnd5e', 'cachedFor')
+
     this.isScaledSpell =
+      !this.isCastGranted &&
       this.item.type == 'spell' &&
       this.item.system?.uses?.max == '' &&
       this.preparationMode != 'innate' &&

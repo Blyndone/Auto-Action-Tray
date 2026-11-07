@@ -416,6 +416,14 @@ export class Actions {
   static async invokeActivity(resolved, usageConfig, dialogConfig, messageConfig, target) {
     if (!(await Actions.castSourceAvailable(resolved.activity))) return null
 
+    // dnd5e charges a Cast activity's spell (and the actor copy it makes) to the granting item's
+    // uses and spends no slot unless told to. The tray always says whether to spend one, which
+    // would charge a slot on top of the free cast, so leave that choice to dnd5e here.
+    if (Actions.usesLinkedConsumption(resolved.activity) && usageConfig?.consume) {
+      usageConfig = { ...usageConfig, consume: { ...usageConfig.consume } }
+      delete usageConfig.consume.spellSlot
+    }
+
     UseTrace.payload({
       activityId: resolved.id,
       activityName: resolved.activity?.name ?? null,
@@ -433,6 +441,10 @@ export class Actions {
     }
 
     return await resolved.activity.use(usageConfig, dialogConfig, messageConfig, target)
+  }
+
+  static usesLinkedConsumption(activity) {
+    return activity?.type === 'cast' || !!activity?.item?.getFlag?.('dnd5e', 'cachedFor')
   }
 
   // A Cast activity with no cached spell on the actor makes dnd5e copy its linked spell by UUID.
