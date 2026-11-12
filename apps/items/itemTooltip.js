@@ -585,6 +585,13 @@ export class AATItemTooltip {
       case activity?.target?.template?.count > 0:
         targetCount = 0
         break
+      // A counted individual target type ("creature", "ally", ...) with a blank count and no
+      // template means one target — dnd5e's own statblock label reads it as `count || 1`.
+      case !!activity?.target?.affects?.type &&
+        activity?.target?.affects?.scalar !== false &&
+        !activity?.target?.template?.type:
+        targetCount = Number(activity.target.affects.count) || 1
+        break
       default:
         targetCount = activity?.target?.affects?.count || 0
         break
