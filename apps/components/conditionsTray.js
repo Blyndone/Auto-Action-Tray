@@ -20,11 +20,12 @@ export class ConditionTray {
       img.src = condition.icon
       CONFIG.statusEffects.find((e) => e.id == condition.id).img = condition.icon
       if (CONFIG.DND5E.conditionTypes[condition.id]) {
-        CONFIG.DND5E.conditionTypes[condition.id].icon = condition.icon
+        CONFIG.DND5E.conditionTypes[condition.id].img = condition.icon
       }
     })
-    CONFIG.DND5E.bloodied.icon = 'modules/auto-action-tray/icons/base/Bloodied.svg'
-    CONFIG.DND5E.statusEffects.concentrating.icon =
+    // dnd5e reads `img` here (not `icon`) when it auto-applies Bloodied
+    CONFIG.DND5E.bloodied.img = 'modules/auto-action-tray/icons/base/Bloodied.svg'
+    CONFIG.DND5E.statusEffects.concentrating.img =
       'modules/auto-action-tray/icons/base/Concentrating.svg'
   }
 
