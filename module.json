@@ -37,9 +37,6 @@
   "esmodules": [
     "/scripts/module.js"
   ],
-  "scripts": [
-    "greensock/dist/gsap.min.js"
-  ],
   "styles": [
     "/styles/styles.css"
   ],

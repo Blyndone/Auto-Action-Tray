@@ -1,6 +1,8 @@
 import { AutoActionTray } from '../apps/autoActionTray.js'
 import { ConditionTray } from '../apps/components/conditionsTray.js'
 import { SettingsConfigApp } from '../apps/dialogs/settingsConfig.js'
+import { refreshPerfTrace } from '../apps/helpers/perfTrace.js'
+import { createAATTokenRuler } from '../apps/helpers/tokenRuler.js'
 const AUTOACTIONTRAY_MODULE_NAME = 'auto-action-tray'
 let hotbar
 let socket
@@ -60,6 +62,11 @@ Hooks.once('setup', async function () {
 })
 
 Hooks.once('init', async function () {
+  // Subclass the token ruler so the quick-action pathfinder can tint its movement preview.
+  // Assigning `ruler.color` directly, as the pathfinder used to, does nothing - TokenRuler reads
+  // its colours from _getWaypointStyle/_getSegmentStyle.
+  CONFIG.Token.rulerClass = createAATTokenRuler()
+
   libWrapper.register(
     AUTOACTIONTRAY_MODULE_NAME,
     'foundry.canvas.placeables.Token.prototype._onClickLeft',
@@ -76,7 +83,7 @@ Hooks.once('init', async function () {
     'foundry.canvas.placeables.Token.prototype._onClickLeft2',
     function (wrapped, ...args) {
       if (hotbar) {
-        AutoActionTray._onTokenSelect2(hotbar, wrapped, ...args)
+        AutoActionTray._onTokenDoubleClick(hotbar, wrapped, ...args)
       } else return wrapped(...args)
     },
     'MIXED',
@@ -350,7 +357,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'defaultRangeBoundary', {
     name: 'Default Range Boundary',
-    hint: 'Deafault Tray Range Boundaryy for Hovering Items',
+    hint: 'Default Tray Range Boundary for Hovering Items',
     scope: 'client',
     config: false,
 
@@ -402,7 +409,7 @@ Hooks.once('ready', async function () {
     config: false,
 
     type: Number,
-    default: 45,
+    default: 30,
 
     range: {
       min: 20,
@@ -430,9 +437,21 @@ Hooks.once('ready', async function () {
     requiresReload: false,
   })
 
-  game.settings.register('auto-action-tray', 'recieveTargetLines', {
-    name: 'Recieve Target Lines',
-    hint: 'Recieve Target Lines from other players',
+  game.settings.register('auto-action-tray', 'templateBoundary', {
+    name: 'Template Boundary',
+    hint: 'Draw a glowing outline around area templates placed by your actions',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: true,
+
+    requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'receiveTargetLines', {
+    name: 'Receive Target Lines',
+    hint: 'Receive Target Lines from other players',
     scope: 'client',
     config: false,
 
@@ -444,7 +463,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'sendTargetLines', {
     name: 'Send Target Lines',
-    hint: 'Send Target Lines from other players',
+    hint: 'Send your Target Lines to other players',
     scope: 'client',
     config: false,
 
@@ -468,7 +487,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'targetLinePollRate', {
     name: 'Target Line Poll Rate',
-    hint: 'Number of Miliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
+    hint: 'Number of Milliseconds between sending Target Lines to other connected users.  Lower values may affect performance.',
     scope: 'world',
     config: false,
 
@@ -484,9 +503,9 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-  game.settings.register('auto-action-tray', 'muliItemUseDelay', {
+  game.settings.register('auto-action-tray', 'multiItemUseDelay', {
     name: 'Multi Item Use Delay',
-    hint: 'Delay in miliseconds between using multiple items.',
+    hint: 'Delay in milliseconds between using multiple items.',
     scope: 'client',
     config: false,
 
@@ -502,9 +521,9 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
-  game.settings.register('auto-action-tray', 'customTargettingCursors', {
-    name: 'Custom Targetting Cursors',
-    hint: 'Use Custom Targetting Cursors',
+  game.settings.register('auto-action-tray', 'customTargetingCursors', {
+    name: 'Custom Targeting Cursors',
+    hint: 'Use Custom Targeting Cursors',
     scope: 'client',
     config: false,
 
@@ -540,7 +559,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'saveNpcData', {
     name: 'Save Npc Data',
-    hint: 'Save Confioguration for Npc Tokens',
+    hint: 'Save Configuration for Npc Tokens',
     scope: 'world',
     config: false,
 
@@ -574,9 +593,12 @@ Hooks.once('ready', async function () {
     requiresReload: true,
   })
 
+  // Setting key kept as-is so existing client configs are not reset, but the name and hint no
+  // longer claim to remove the limit: this chooses between a fixed cap and one derived from the
+  // actor's remaining movement. Both are still capped by Quick Action Depth.
   game.settings.register('auto-action-tray', 'unboundPathfindingDepth', {
-    name: '(Experimental) Unbounded Pathfinding Depth',
-    hint: 'Enable Unbounded Pathfinding Depth for Quick Actions.  May impact performance.  Bound Depth is determined by Actor Speed.',
+    name: '(Experimental) Ignore Actor Speed Limit',
+    hint: "Path up to the full Quick Action Depth instead of stopping at the actor's remaining movement for the turn. Longer searches cost more performance.",
     scope: 'client',
     config: false,
 
@@ -588,7 +610,7 @@ Hooks.once('ready', async function () {
 
   game.settings.register('auto-action-tray', 'quickActionDepth', {
     name: '(Experimental) Quick Action Depth',
-    hint: 'Maximum Distance for Quick Action Pathfinding.  Larger distances may impact performance.',
+    hint: 'Maximum pathfinding distance in grid squares. Larger distances may impact performance.',
     scope: 'client',
     config: false,
 
@@ -602,6 +624,41 @@ Hooks.once('ready', async function () {
     },
 
     requiresReload: true,
+  })
+
+  game.settings.register('auto-action-tray', 'quickActionPathColor', {
+    name: '(Experimental) Quick Action Path Color',
+    hint: 'Color of the movement preview drawn while a quick action is being aimed.',
+    scope: 'client',
+    config: false,
+
+    type: String,
+    default: '#ff00ff',
+  })
+
+  game.settings.register('auto-action-tray', 'strictTrayRebuild', {
+    name: 'Always Rebuild Trays',
+    hint: 'Rebuilds the static trays on every actor update instead of only when their contents can have changed. Slower. Enable if a tray ever shows stale contents.',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: false,
+  })
+
+  game.settings.register('auto-action-tray', 'debugPerf', {
+    name: 'Log Performance Timings',
+    hint: 'Prints setup and render timings to the console. For diagnosing slowdowns only.',
+    scope: 'client',
+    config: false,
+
+    type: Boolean,
+    default: false,
+
+    requiresReload: false,
+    onChange: () => refreshPerfTrace(),
   })
 
   if (game.settings.get('auto-action-tray', 'customConditionIcons')) {

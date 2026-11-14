@@ -9,7 +9,8 @@
         data-concentration="true"
       >
         <img
-          data-tooltip="{{> 'AAT.item-tooltip' @root.concentrationItem.tooltip}}"
+          data-tooltip="{{@root.concentrationItem.name}}"
+          data-tooltip-key="{{lazyTooltip @root.concentrationItem}}"
           data-tooltip-direction="UP"
           src="{{@root.concentrationItem.img}}"
           alt="{{@root.concentrationItem.name}}"

@@ -6,6 +6,9 @@ const fields = foundry.applications.fields
 
 const MODULE_NAME = 'auto-action-tray'
 
+/** Settings stored as strings that should render as a colour picker rather than a text field. */
+const COLOR_SETTINGS = new Set(['quickActionPathColor'])
+
 const SETTING_GROUPS = {
   general: [
     { legend: 'Hotbar', keys: ['enable', 'scale', 'bgOpacity', 'quickElevation'] },
@@ -13,14 +16,17 @@ const SETTING_GROUPS = {
   ],
   appearance: [
     { legend: 'Theme', keys: ['autoTheme', 'autoThemeTargetingColor', 'theme'] },
-    { legend: 'Icons & Cursors', keys: ['customConditionIcons', 'customTargettingCursors'] },
+    { legend: 'Icons & Cursors', keys: ['customConditionIcons', 'customTargetingCursors'] },
   ],
   targeting: [
-    { legend: 'Range', keys: ['enableRangeHover', 'defaultRangeBoundary', 'enableRangeBoundary'] },
+    {
+      legend: 'Range',
+      keys: ['enableRangeHover', 'defaultRangeBoundary', 'enableRangeBoundary', 'templateBoundary'],
+    },
     {
       legend: 'Target Lines',
       keys: [
-        'recieveTargetLines',
+        'receiveTargetLines',
         'sendTargetLines',
         'enableTargetingChatMessage',
         'targetLinePollRate',
@@ -34,7 +40,7 @@ const SETTING_GROUPS = {
     },
     {
       legend: 'Behavior',
-      keys: ['muliItemUseDelay', 'promptConcentrationOverwrite', 'saveNpcData'],
+      keys: ['multiItemUseDelay', 'promptConcentrationOverwrite', 'saveNpcData'],
     },
   ],
   experimental: [
@@ -44,8 +50,13 @@ const SETTING_GROUPS = {
         'quickActionHelper',
         'unboundPathfindingDepth',
         'quickActionDepth',
+        'quickActionPathColor',
         'interceptMidiReactions',
       ],
+    },
+    {
+      legend: 'Diagnostics',
+      keys: ['strictTrayRebuild', 'debugPerf'],
     },
   ],
 }
@@ -77,6 +88,13 @@ function buildSettingField(key) {
       max: config.range.max,
       step: config.range.step,
     })
+  } else if (COLOR_SETTINGS.has(key)) {
+    // v13 ships a <color-picker> custom element but no matching factory in
+    // foundry.applications.fields, so it is constructed directly.
+    input = document.createElement('color-picker')
+    input.name = key
+    input.setAttribute('value', value ?? '')
+    if (disabled) input.setAttribute('disabled', '')
   } else {
     input = fields.createNumberInput({ name: key, value, disabled })
   }

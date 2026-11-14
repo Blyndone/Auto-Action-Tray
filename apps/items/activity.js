@@ -10,7 +10,10 @@ export class AATActivity {
     }
     this.item = item
 
-    this.img = activity.type == 'attack' ? item.img : activity.img
+    // dnd5e fills an unset activity img with its type's generic icon. For attacks show the item
+    // instead of that generic sword, but keep an icon the activity was given on purpose.
+    const genericAttackImg = activity.type == 'attack' && activity.img == activity.metadata?.img
+    this.img = genericAttackImg || !activity.img ? item.img : activity.img
     this.activityId = activity.id
     this.id = item.id
     this.activity = activity

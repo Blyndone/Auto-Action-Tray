@@ -119,14 +119,18 @@ export class StaticTray extends AbilityTray {
 
         break
       case 'extraSpells':
-        this.abilities = allItems.filter((e) => e.type === 'spell' && !e.isScaledSpell)
+        this.abilities = allItems.filter(
+          (e) => e.type === 'spell' && !e.isScaledSpell && !e.isHiddenGrant,
+        )
 
         this.id = 'extraSpells'
         break
 
       case 'spell':
         if (this.spellLevel == 0) {
-          this.abilities = allItems.filter((e) => e.spellLevel == this.spellLevel && e.isPrepared)
+          this.abilities = allItems.filter(
+            (e) => e.spellLevel == this.spellLevel && e.isPrepared && !e.isHiddenGrant,
+          )
           this.id = 'spell-' + this.spellLevel
           break
         }
@@ -184,10 +188,14 @@ export class StaticTray extends AbilityTray {
       cachedAbilities: options.cachedAbilities,
     })
 
+    let legendaryItemId = CustomStaticTray.getLegendaryItemId(actor)
+
     let customStaticTraysUuids = new Set([
       ...CustomStaticTray.getCustomStaticTrays(actor),
       ...actor.items.filter(CustomStaticTray.checkOverride).map((e) => e.id),
     ])
+    // Built once below instead, keyed to this item.
+    customStaticTraysUuids.delete(legendaryItemId)
 
     let customStaticTrays = Array.from(
       customStaticTraysUuids,
@@ -202,13 +210,13 @@ export class StaticTray extends AbilityTray {
         }),
     )
 
-    if (actor.system?.resources?.legact?.max > 0) {
+    if (actor.system?.resources?.legact?.max > 0 || legendaryItemId) {
       customStaticTrays.push(
         new CustomStaticTray({
           category: 'customStaticTray',
           actorUuid: actor.uuid,
           label: 'Legendary Actions',
-          keyItemId: null,
+          keyItemId: legendaryItemId ?? null,
           application: options.application,
           cachedAbilities: options.cachedAbilities,
         }),
@@ -286,7 +294,6 @@ export class StaticTray extends AbilityTray {
     staticTrays.forEach((e) => {
       e.abilities = e.padArray(e.abilities)
     })
-    AbilityTray.onCompleteGeneration.bind(options.application)()
     return staticTrays
   }
 

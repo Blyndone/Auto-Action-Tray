@@ -13,12 +13,8 @@ export class AbilityTray {
     this.type = ''
     this.application = options.application || null
     this.label = options.label || ''
-    this.rowCount = this.application.rowCount || game.settings.get('auto-action-tray', 'rowCount')
+    this.rowCount = this.application?.rowCount || game.settings.get('auto-action-tray', 'rowCount')
   }
-  static onCompleteGeneration() {
-    foundry.utils.throttle(() => this.requestRender('centerTray'), 500)
-  }
-
   padArray(arr, filler = null) {
     // Counts are resolved once by the application in _applyUiSettings, which also writes the
     // --aat-item-tray-item-*-count custom properties the stylesheets actually read. This used to
@@ -26,10 +22,10 @@ export class AbilityTray {
     // tray built; no stylesheet references those, so the writes were dead.
     const rowCount = this.rowCount || 2
     const columnCount = this.application?.columnCount || 10
-    const totalabilities = (rowCount + 1) * columnCount
+    const totalAbilities = (rowCount + 1) * columnCount
 
-    if (arr == null) return new Array(totalabilities).fill(filler)
-    return [...arr, ...Array(Math.max(0, totalabilities - arr.length)).fill(filler)]
+    if (arr == null) return new Array(totalAbilities).fill(filler)
+    return [...arr, ...Array(Math.max(0, totalAbilities - arr.length)).fill(filler)]
   }
 
   padNewRow() {
@@ -62,6 +58,7 @@ export class AbilityTray {
               category: 'passive',
               id: 'passiveItems',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(passiveTray)
           }
@@ -76,6 +73,7 @@ export class AbilityTray {
               category: 'reaction',
               id: 'reaction',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(reactionTray)
           }
@@ -90,6 +88,7 @@ export class AbilityTray {
               category: 'items',
               id: 'items',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(consumableTray)
           }
@@ -105,6 +104,7 @@ export class AbilityTray {
               category: 'classFeatures',
               id: 'classFeatures',
               actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(classFeatureTray)
           }
@@ -118,7 +118,8 @@ export class AbilityTray {
             let commonTray = new CustomTray({
               category: 'common',
               id: 'common',
-              actorUuid: actor.uuid,
+              actorUuid: this.actor.uuid,
+              application: this,
             })
             this.customTrays.push(commonTray)
           }

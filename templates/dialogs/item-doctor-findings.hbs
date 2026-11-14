@@ -1,0 +1,64 @@
+<section class="tab{{#if tab.active}} active{{/if}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  <div class="aat-doctor-header">
+    <img src="{{item.img}}" alt="{{item.name}}" />
+    <div class="aat-doctor-header-text">
+      <strong>{{item.name}}</strong>
+      <div class="hint">{{item.type}}</div>
+    </div>
+    <div class="aat-doctor-summary">
+      {{#if summary.fail}}<span class="aat-sev-fail"><i class="fa-solid fa-circle-xmark"></i> {{summary.fail}}</span>{{/if}}
+      {{#if summary.warn}}<span class="aat-sev-warn"><i class="fa-solid fa-triangle-exclamation"></i> {{summary.warn}}</span>{{/if}}
+      {{#unless hasProblems}}<span class="aat-sev-ok"><i class="fa-solid fa-circle-check"></i> No problems</span>{{/unless}}
+    </div>
+  </div>
+
+  {{#if recommendations}}
+    <div class="aat-doctor-recommended">
+      <div class="aat-doctor-recommended-title">
+        <i class="fa-solid fa-screwdriver-wrench"></i>
+        <span>Recommended actions</span>
+      </div>
+      <ol class="aat-doctor-recommended-list">
+        {{#each recommendations}}
+          <li>
+            <i class="{{this.meta.icon}} aat-sev-{{this.severity}}"></i>
+            <div>
+              <div class="aat-doctor-recommended-remedy">{{this.remedy}}</div>
+              <div class="aat-doctor-recommended-cause">{{this.title}}</div>
+            </div>
+          </li>
+        {{/each}}
+      </ol>
+    </div>
+  {{/if}}
+
+  <div class="aat-doctor-actions">
+    <button type="button" data-action="armDryRun" class="{{#if armed}}aat-armed{{/if}}">
+      <i class="fa-solid fa-flask"></i>
+      {{#if armed}}Cancel dry run{{else}}Trace next use (dry run){{/if}}
+    </button>
+    <button type="button" data-action="refresh"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    <button type="button" data-action="copyReport"><i class="fa-solid fa-copy"></i> Copy report</button>
+  </div>
+  {{#if armed}}
+    <p class="hint aat-doctor-armed-hint">
+      Use this item once. Targeting runs as normal, but the roll is captured instead of made.
+    </p>
+  {{/if}}
+
+  <div class="aat-doctor-list">
+    {{#each findings}}
+      <div class="aat-doctor-finding aat-sev-{{this.severity}}">
+        <div class="aat-doctor-finding-title">
+          <i class="{{this.meta.icon}}"></i>
+          <span>{{this.title}}</span>
+        </div>
+        {{#if this.explanation}}<div class="aat-doctor-finding-body">{{this.explanation}}</div>{{/if}}
+        {{#if this.evidence}}<pre class="aat-doctor-evidence">{{this.evidence}}</pre>{{/if}}
+        {{#if this.source}}<div class="aat-doctor-source">{{this.source}}</div>{{/if}}
+      </div>
+    {{else}}
+      <p class="hint">Nothing to report. If this item still misbehaves, run a dry run and check the Timeline tab.</p>
+    {{/each}}
+  </div>
+</section>

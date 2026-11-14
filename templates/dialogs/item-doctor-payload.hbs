@@ -1,0 +1,29 @@
+<section class="tab{{#if tab.active}} active{{/if}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  {{#if payloads.length}}
+    <p class="hint">
+      These are the arguments handed to the dnd5e system. Everything after this point — attack rolls,
+      damage, scaling, consumption — belongs to dnd5e, so if this looks right the problem lies outside
+      the tray.
+    </p>
+
+    {{#each payloads}}
+      <div class="aat-doctor-payload">
+        <div class="aat-doctor-payload-title">
+          <strong>{{this.activityName}}</strong>
+          {{#if this.targetName}}<span class="aat-doctor-badge">→ {{this.targetName}}</span>{{/if}}
+        </div>
+        {{#if this.notes.length}}
+          <ul class="aat-doctor-payload-notes">
+            {{#each this.notes}}<li>{{this}}</li>{{/each}}
+          </ul>
+        {{/if}}
+        <pre class="aat-doctor-json">{{this.json}}</pre>
+      </div>
+    {{/each}}
+  {{else}}
+    <p class="hint">
+      No recorded payload. Arm a dry run from the Findings tab and use the item once — the arguments
+      are captured without anything being rolled.
+    </p>
+  {{/if}}
+</section>

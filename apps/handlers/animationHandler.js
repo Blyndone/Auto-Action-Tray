@@ -1,3 +1,5 @@
+import { gsap } from '/scripts/greensock/esm/all.js'
+
 export class AnimationHandler {
   constructor(options = {}) {
     this.hotbar = options.hotbar

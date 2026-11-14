@@ -1,6 +1,7 @@
 import { TargetLineCombo } from './targetLineCombo.js'
 import { AATActivity } from '../items/activity.js'
 import { TemplateBoundary } from './templateBoundary.js'
+import { UseTrace } from './useTrace.js'
 
 export class TargetHelper {
   #state
@@ -36,7 +37,6 @@ export class TargetHelper {
     this.currentLine = null
     this.rangeBoundary = null
     this.templateBoundary = new TemplateBoundary(options)
-    this.templateBoundaryUuid = null
     this.startPos
     this.startLinePos
     this.item = null
@@ -47,17 +47,39 @@ export class TargetHelper {
     this.chatMessage = null
     this.finalTargetPause = 500
 
+    // Drawing is driven off the canvas ticker from the last known cursor position; only the
+    // socket broadcast is throttled. Previously both shared the poll-rate throttle, so the local
+    // line stepped at 20Hz against a 60fps canvas and the network rate could not be lowered
+    // without making your own line choppier.
+    this.token = null
+    this.cursorScreen = null
+    this.lineTick = null
+    this.broadcastLine = null
+    this.lastSentInRange = null
+    this.colorCache = null
+
     this.throttleSpeed = game.settings.get('auto-action-tray', 'targetLinePollRate')
     this.sendTargetLines = game.settings.get('auto-action-tray', 'sendTargetLines')
-    this.recieveTargetLines = game.settings.get('auto-action-tray', 'recieveTargetLines')
+    this.receiveTargetLines = game.settings.get('auto-action-tray', 'receiveTargetLines')
     this.gridSize = game.canvas.scene.grid.size
+    this.showTemplateBoundary = game.settings.get('auto-action-tray', 'templateBoundary')
 
     Hooks.on('dnd5e.createActivityTemplate', (activity, created) => {
-      if (!(activity.actor.id == this.actor.id)) return
+      if (!this.actor || activity.actor?.id !== this.actor.id) return
       this._HookCreateMeasuredTemplate(activity, created)
     })
-    this.refreshHook = null
-    this.destroyHook = null
+    // Registered once here. They used to be added per cast and only removed when a destroy
+    // matched, so every cast whose template went away some other way leaked a hook pair.
+    Hooks.on('createMeasuredTemplate', (...args) =>
+      this._HookCreateMeasuredTemplateDocument(...args),
+    )
+    Hooks.on('refreshMeasuredTemplate', (template) => this._HookRefreshMeasuredTemplate(template))
+    Hooks.on('destroyMeasuredTemplate', (template) => this._HookDestroyMeasuredTemplate(template))
+    // The document hook as well as the placeable one: it fires even when the template is deleted
+    // on a scene this client is not viewing, where no placeable exists to be destroyed.
+    Hooks.on('deleteMeasuredTemplate', (document) => this._HookDeleteMeasuredTemplate(document))
+    Hooks.on('userConnected', (user, connected) => this._HookUserConnected(user, connected))
+    Hooks.on('canvasTearDown', () => this._HookCanvasTearDown())
     this.active = false
     this.STATES = {
       IDLE: 0,
@@ -69,19 +91,34 @@ export class TargetHelper {
 
   setActor(actor) {
     this.actor = actor
-    let themeColor = null
-    if (game.settings.get('auto-action-tray', 'autoThemeTargetingColor')) {
-      themeColor = getComputedStyle(
-        document.querySelector('.' + game.settings.get('auto-action-tray', 'tempTheme')),
-      )
-        .getPropertyValue('--aat-hover-color')
-        .trim()
-    }
-
-    this.color = this.hotbar.trayOptions.targetColor || themeColor || game.user.color.css
+    this.color = this.resolveColor()
     this.actorId = actor.id
-    this.startPos = TargetHelper.getPositionFromActor(actor)
-    this.startLinePos = TargetHelper.getLinePositionFromActor(actor)
+    // One token lookup for both anchors, and kept for checkInRange — getActiveTokens() walks the
+    // actor's dependent tokens and was being called again on every cursor sample.
+    this.token = actor.getActiveTokens()[0]
+    this.startPos = TargetHelper.getPositionFromToken(this.token)
+    this.startLinePos = TargetHelper.getLinePositionFromToken(this.token)
+  }
+
+  // Memoized on the inputs it actually depends on: this runs on every ranged tray item hover via
+  // createRangeBoundary(), and getComputedStyle() there forces a synchronous style recalc.
+  resolveColor() {
+    const custom = this.hotbar.trayOptions.targetColor
+    const autoTheme = game.settings.get('auto-action-tray', 'autoThemeTargetingColor')
+    const theme = autoTheme ? game.settings.get('auto-action-tray', 'tempTheme') : null
+    const cache = this.colorCache
+    if (cache && cache.custom === custom && cache.theme === theme) return cache.color
+
+    let themeColor = null
+    if (theme) {
+      const themeElement = document.querySelector('.' + theme)
+      if (themeElement) {
+        themeColor = getComputedStyle(themeElement).getPropertyValue('--aat-hover-color').trim()
+      }
+    }
+    const color = custom || themeColor || game.user.color.css
+    this.colorCache = { custom, theme, color }
+    return color
   }
   setActivity(activity) {
     this.item = activity.item
@@ -113,40 +150,50 @@ export class TargetHelper {
   }
 
   newPhantomLine(options) {
-    if (!this.recieveTargetLines) return
-    let line = new TargetLineCombo(options)
+    if (!this.receiveTargetLines) return
+    // `phantom: true` was never set by the senders, so remote lines were building a TargetText
+    // that can never be populated (the counter is not broadcast) and moving it on every sample.
+    let line = new TargetLineCombo({ ...options, phantom: true })
+    // Kept so the line can be dropped if its sender disconnects mid-targeting.
+    line.senderId = options.senderId ?? null
     this.phantomLines.push(line)
     return line
   }
+  // Every handler below tolerates an unknown id: socket messages can outlive the line they refer
+  // to (a clearAll racing an in-flight draw), and an uncaught throw here is a console error per
+  // sample, at the sample rate.
+  getPhantomLine(id) {
+    return this.phantomLines.find((line) => line.id == id)
+  }
   drawPhantomLine(id, endPos) {
-    if (!this.recieveTargetLines) return
-    let line = this.phantomLines.find((line) => line.id == id)
-    line.drawLines(endPos)
+    if (!this.receiveTargetLines) return
+    this.getPhantomLine(id)?.drawLines(endPos)
   }
   setPhantomInRange(id, inRange) {
-    if (!this.recieveTargetLines) return
-    let line = this.phantomLines.find((line) => line.id == id)
-    line.setInRange(inRange)
+    if (!this.receiveTargetLines) return
+    this.getPhantomLine(id)?.setInRange(inRange)
   }
 
   setPhantomYOffset(id, yOffset) {
-    if (!this.recieveTargetLines) return
-    let line = this.phantomLines.find((line) => line.id == id)
-    line.setYOffset(yOffset)
+    if (!this.receiveTargetLines) return
+    this.getPhantomLine(id)?.setYOffset(yOffset)
   }
 
   clearPhantomLine(id) {
-    if (!this.recieveTargetLines) return
-    let line = this.phantomLines.find((line) => line.id == id)
-    line.clearLines()
+    if (!this.receiveTargetLines) return
+    this.getPhantomLine(id)?.clearLines()
   }
   destroyPhantomLine(id) {
-    if (!this.recieveTargetLines) return
-    let line = this.phantomLines.find((line) => line.id == id)
-    line.destroyLines()
+    if (!this.receiveTargetLines) return
+    const index = this.phantomLines.findIndex((line) => line.id == id)
+    if (index === -1) return
+    // Drop the entry as well as its graphics; only clearAllPhantomLines used to prune the array,
+    // so ids for actors that never acted again accumulated for the session.
+    this.phantomLines[index].destroyLines()
+    this.phantomLines.splice(index, 1)
   }
   clearAllPhantomLines(actorId) {
-    if (!this.recieveTargetLines) return
+    if (!this.receiveTargetLines) return
     this.phantomLines = this.phantomLines.filter((line) => {
       if (line.actorId === actorId) {
         line.destroyLines()
@@ -157,11 +204,19 @@ export class TargetHelper {
   }
 
   createUseNotification(item, activity, actor, selectedSpellLevel, useRangeBoundary = true) {
-    this.state = this.setState('TARGETTING')
+    // Deliberately no setState here: a use notification draws a label, it does not run a target
+    // flow, and useItemWorkflow() refuses to start while the helper is above IDLE — so leaving it
+    // IDLE is what lets the next item be used. (This previously read setState('TARGETTING'), a
+    // key that does not exist in STATES, and clearData() reset it to IDLE on the next line
+    // regardless.) clearData() also already broadcasts clearAllPhantomLines for this actorId.
+    // Taken over before clearData() tears the old combo down. When this notification follows a
+    // targeting flow for the same item, the icon and label it would build are identical to the
+    // ones already floating over the token, so they are carried across instead of being
+    // destroyed and immediately rebuilt (which read as the icon blinking on target confirmation).
+    const decorationKey = TargetHelper.decorationKey(item, selectedSpellLevel)
+    const adopt = this.detachMatchingDecorations(decorationKey)
+
     this.clearData()
-    if (this.sendTargetLines) {
-      this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
-    }
     this.setData(actor, activity)
     this.activityRange = useRangeBoundary ? this.getActivityRange(item, activity) : 0
 
@@ -177,9 +232,12 @@ export class TargetHelper {
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
       color: this.color,
+      decorationKey,
+      adopt,
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
+        senderId: game.user.id,
         useLines: false,
         sendName: game.settings.get('auto-action-tray', 'enableUseItemName'),
         sendIcon: game.settings.get('auto-action-tray', 'enableUseItemIcon'),
@@ -196,16 +254,37 @@ export class TargetHelper {
       })
     }
   }
+  /** What the floating icon and label depict. Two combos sharing this can share decorations. */
+  static decorationKey(item, selectedSpellLevel) {
+    return [item?.img, item?.name, item?.type, item?.rarity, selectedSpellLevel ?? ''].join('|')
+  }
+
+  /**
+   * Take the icon and label off whichever live combo owns them, if they depict the same thing
+   * the caller is about to draw. Returns null when there is nothing reusable, in which case the
+   * new combo builds its own as before.
+   */
+  detachMatchingDecorations(decorationKey) {
+    if (!decorationKey) return null
+    const owner = [this.currentLine, ...this.targetLines].find(
+      (line) => line?.firstLine && line.decorationKey === decorationKey && line.hasDecorations(),
+    )
+    return owner ? owner.detachDecorations() : null
+  }
+
   clearUseNotification() {
     this.setState('IDLE')
     this.clearData()
   }
   createRangeBoundary(range, actor) {
     this.setActor(actor)
-    this.rangeBoundary?.clearRangeBoundary()
+    this.destroyRangeBoundary()
     this.rangeBoundary = new TargetLineCombo({
       useLines: false,
       sendIcon: false,
+      // Nothing to label on a bare range box; without this the combo built a PIXI.Text that
+      // immediately bailed out of its own setup and was left parented to the stage.
+      sendName: false,
       startPos: this.startPos,
       startLinePos: this.startLinePos,
       actorId: actor.id,
@@ -219,13 +298,18 @@ export class TargetHelper {
     })
   }
   destroyRangeBoundary() {
+    // destroyLines() as well as clearRangeBoundary(): the combo owns a label and (before the
+    // useLines fix) line graphics too, and clearing only the box orphaned the rest on the stage
+    // once per ranged-item hover.
     this.rangeBoundary?.clearRangeBoundary()
+    this.rangeBoundary?.destroyLines()
     this.rangeBoundary = null
   }
 
   clearData() {
     this.setState('IDLE')
     this.actor = null
+    this.token = null
     this.item = null
     this.singleRoll = false
     this.targets = []
@@ -238,9 +322,7 @@ export class TargetHelper {
     this.itemRange = 0
     this.itemTargetCount = 0
     this.deleteTargetingMessage()
-    try {
-      document.removeEventListener('mousemove', this.mouseMoveHandler)
-    } catch (error) {}
+    this.stopLineTracking()
   }
 
   targetingChatMessageEnabled() {
@@ -315,16 +397,22 @@ export class TargetHelper {
     animate = true,
   ) {
     this.useSlot = false
+    // clearData() broadcasts clearAllPhantomLines for the outgoing actorId; the duplicate that
+    // used to follow it here was the same message with the same (still pre-setData) id.
     this.clearData()
-    this.state = this.setState('TARGETING')
+    this.setState('TARGETING')
     this.setSingleRoll(singleRoll)
-    if (this.sendTargetLines) {
-      this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
-    }
     this.setData(actor, activity)
     this.activityRange = this.getActivityRange(item, activity)
     this.activityTargetCount = targetCount
     this.gridSize = game.canvas.scene.grid.size
+
+    UseTrace.step('range', 'Range resolved', {
+      squares: this.activityRange,
+      sceneUnits: canvas?.grid?.units ?? null,
+      scenePerSquare: canvas?.grid?.distance ?? null,
+      itemRangeUnits: activity?.activity?.range?.units ?? item?.item?.system?.range?.units ?? null,
+    })
 
     let prefix = item.type === 'spell' ? 'Casting ' : 'Using '
     this.label = `${prefix} ${item.name}...   `
@@ -346,9 +434,13 @@ export class TargetHelper {
       itemSpellLevel: selectedSpellLevel,
       activityRange: this.activityRange,
       color: this.color,
+      // Lets the use notification that follows confirmation adopt this icon and label rather
+      // than rebuilding identical ones.
+      decorationKey: TargetHelper.decorationKey(item, selectedSpellLevel),
     })
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
+        senderId: game.user.id,
         id: this.currentLine.id,
         actorId: this.actorId,
         startPos: this.startPos,
@@ -364,12 +456,7 @@ export class TargetHelper {
       })
     }
     this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
-    this.mouseMoveHandler = foundry.utils.throttle(
-      (event) => this._onMouseMove(event),
-      this.throttleSpeed,
-    )
-
-    document.addEventListener('mousemove', this.mouseMoveHandler)
+    this.startLineTracking()
 
     let targets
     try {
@@ -395,16 +482,12 @@ export class TargetHelper {
     this.setTargetLine(token)
 
     if (this.targets.length < this.activityTargetCount) {
+      // newTargetLine() already broadcasts newPhantomLine for the line it creates. The second
+      // broadcast that used to sit here re-sent the *same* id, so every remote client built a
+      // duplicate combo that find() could never return: never drawn, never destroyed, and —
+      // because it omitted `firstLine` — carrying a label and an icon sprite with an infinite
+      // tween. One orphan per target selected, for the rest of the session.
       this.newTargetLine()
-      if (this.sendTargetLines) {
-        this.socket.executeForOthers('newPhantomLine', {
-          id: this.currentLine.id,
-          actorId: this.actorId,
-          startPos: this.startPos,
-          startLinePos: this.startLinePos,
-          color: this.currentLine.color,
-        })
-      }
       this.currentLine.setText(`   ${this.targets.length}/${this.activityTargetCount}   `)
       this.updateTargetingMessage()
     } else {
@@ -414,14 +497,14 @@ export class TargetHelper {
       // state on screen (line anchored on the last target) instead of it tracking the cursor
       // or letting another click sneak in a target before confirmTargets() runs.
       this.setState('IDLE')
-      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      this.stopLineTracking()
       setTimeout(() => this.confirmTargets(), this.finalTargetPause)
     }
   }
 
   confirmTargets() {
     this.setState('IDLE')
-    document.removeEventListener('mousemove', this.mouseMoveHandler)
+    this.stopLineTracking()
     this.deleteTargetingMessage()
     this.currentLine.clearText()
     this.clearRangeBoundary()
@@ -444,15 +527,19 @@ export class TargetHelper {
       this.currentLine.forceDestroyLines()
     }
 
+    const line = this.currentLine
+    const actorId = this.actorId
     setTimeout(() => {
-      if (this.state >= this.STATES.TARGETING) return
-      this.currentLine.destroyLines()
-      if (this.sendTargetLines) {
-        this.socket.executeForOthers('destroyPhantomLine', this.currentLine.id)
-      }
+      // getState(), not `this.state`: the public property was only ever assigned the return of
+      // setState() (undefined), so this guard never fired and the deferred cleanup would tear
+      // down whatever targeting had started in the meantime. The line and actor are captured for
+      // the same reason — by now `this.currentLine` may belong to a newer action.
+      if (this.getState() >= this.STATES.TARGETING) return
+      line?.destroyLines()
       this.clearTargetLines()
       if (this.sendTargetLines) {
-        this.socket.executeForOthers('clearAllPhantomLines', this.actorId)
+        // Covers the line above as well, so no separate destroyPhantomLine is needed.
+        this.socket.executeForOthers('clearAllPhantomLines', actorId)
       }
     }, 3000)
   }
@@ -479,7 +566,7 @@ export class TargetHelper {
       const canvas = document.getElementById('board')
       canvas.style.cursor = ''
       this.setState('IDLE')
-      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      this.stopLineTracking()
       this.rejectTargets(new Error('No targets to remove'))
       this.clearData()
       this.hotbar.animationHandler.popTray()
@@ -513,7 +600,9 @@ export class TargetHelper {
     const helper = this?.targetHelper
     const animation = this?.animationHandler
     helper?.setState('IDLE')
-    document.removeEventListener('mousemove', this.mouseMoveHandler)
+    // `this` is the hotbar here, not the helper — this used to pass `undefined` as the listener
+    // and remove nothing. clearData() below reaches the real handler either way.
+    helper?.stopLineTracking()
     try {
       helper?.rejectTargets?.(new Error('User canceled Target selection'))
     } catch {}
@@ -535,16 +624,12 @@ export class TargetHelper {
   }
 
   clearTargetLines() {
-    try {
-      this.targetLines.forEach((lineCombo) => lineCombo.destroyLines())
-      this.targetLines = []
-      this.currentLine.destroyLines()
-    } catch (error) {}
+    this.targetLines.forEach((lineCombo) => lineCombo?.destroyLines())
+    this.targetLines = []
+    this.currentLine?.destroyLines()
   }
   clearRangeBoundary() {
-    try {
-      this.targetLines.forEach((lineCombo) => lineCombo.clearRangeBoundary())
-    } catch (error) {}
+    this.targetLines.forEach((lineCombo) => lineCombo?.clearRangeBoundary())
   }
   newTargetLine() {
     let endPos = this.startPos
@@ -558,8 +643,12 @@ export class TargetHelper {
       firstLine: this.targetLines.length == 0,
       color: this.color,
     })
+    // in-range state is tracked per line on the receiving end, so the new line needs its first
+    // value sent even if it matches what the previous line last reported.
+    this.lastSentInRange = null
     if (this.sendTargetLines) {
       this.socket.executeForOthers('newPhantomLine', {
+        senderId: game.user.id,
         id: this.currentLine.id,
         actorId: this.actorId,
         startLinePos: this.startLinePos,
@@ -593,13 +682,19 @@ export class TargetHelper {
   }
 
   static getPositionFromActor(actor) {
-    let token = actor.getActiveTokens()[0]
-    const pos = token.getCenterPoint()
-    return pos
+    return TargetHelper.getPositionFromToken(actor.getActiveTokens()[0])
   }
 
   static getLinePositionFromActor(actor) {
-    let token = actor.getActiveTokens()[0]
+    return TargetHelper.getLinePositionFromToken(actor.getActiveTokens()[0])
+  }
+
+  static getPositionFromToken(token) {
+    return token?.getCenterPoint()
+  }
+
+  static getLinePositionFromToken(token) {
+    if (!token) return undefined
     const pos = token.getCenterPoint()
     return {
       x: pos.x,
@@ -607,68 +702,164 @@ export class TargetHelper {
     }
   }
 
-  async _onMouseMove(event) {
+  // Records the cursor only. All drawing happens in _onLineTick, so a fast mouse costs one object
+  // write per event instead of a full redraw plus two socket broadcasts.
+  _onMouseMove(event) {
     if (
       event.target.closest('#auto-action-tray') &&
       !event.target.closest('.effect-tray-container') &&
       event.target.checkVisibility()
     )
       if (this.getState() <= this.STATES.IDLE) {
-        document.removeEventListener('mousemove', this.mouseMoveHandler)
+        this.stopLineTracking()
         return
       }
-    let endPos = await TargetHelper.getCursorCoordinates(event)
-    this.currentLine.setInRange(this.checkInRange(this.actor, endPos, this.activityRange))
+    this.cursorScreen = { x: event.clientX, y: event.clientY }
+  }
+
+  startLineTracking() {
+    this.stopLineTracking()
+    this.cursorScreen = null
+    this.lastSentInRange = null
+
+    this.mouseMoveHandler = (event) => this._onMouseMove(event)
+    document.addEventListener('mousemove', this.mouseMoveHandler)
+
+    this.broadcastLine = foundry.utils.throttle((id, endPos, inRange) => {
+      // inRange flips a handful of times per action; it used to be broadcast on every sample,
+      // which was half of all target-line traffic.
+      if (inRange !== this.lastSentInRange) {
+        this.lastSentInRange = inRange
+        this.socket.executeForOthers('setPhantomInRange', id, inRange)
+      }
+      this.socket.executeForOthers('drawPhantomLine', id, endPos)
+    }, this.throttleSpeed)
+
+    this.lineTick = () => this._onLineTick()
+    canvas.app.ticker.add(this.lineTick)
+  }
+
+  stopLineTracking() {
+    if (this.lineTick) {
+      canvas.app?.ticker.remove(this.lineTick)
+      this.lineTick = null
+    }
+    if (this.mouseMoveHandler) {
+      document.removeEventListener('mousemove', this.mouseMoveHandler)
+      this.mouseMoveHandler = null
+    }
+    this.cursorScreen = null
+  }
+
+  _onLineTick() {
+    if (!this.cursorScreen || !this.currentLine || !canvas?.ready) return
+    if (this.getState() <= this.STATES.IDLE) return
+
+    // Converted per tick rather than per mousemove so the line also follows canvas pan and zoom
+    // while the mouse is still.
+    const endPos = TargetHelper.getCursorCoordinates(this.cursorScreen)
+    const last = this.currentLine.lastPos
+    if (last && last.x === endPos.x && last.y === endPos.y) return
+
+    const inRange = this.checkInRange(endPos, this.activityRange)
+    this.currentLine.setInRange(inRange)
     this.currentLine.drawLines(endPos)
     if (this.sendTargetLines) {
-      this.socket.executeForOthers(
-        'setPhantomInRange',
-        this.currentLine.id,
-        this.currentLine.inRange,
-      )
-      this.socket.executeForOthers('drawPhantomLine', this.currentLine.id, endPos)
+      this.broadcastLine(this.currentLine.id, endPos, inRange)
     }
   }
 
-  static async getCursorCoordinates(onClickEvent) {
-    const [x, y] = [onClickEvent.clientX, onClickEvent.clientY]
-    const t = canvas.app.stage.worldTransform
-
+  static getCursorCoordinates(point) {
+    const stage = canvas.app.stage
+    const t = stage.worldTransform
     return {
-      x: (x - t.tx) / canvas.app.stage.scale.x,
-      y: (y - t.ty) / canvas.app.stage.scale.y,
+      x: (point.x - t.tx) / stage.scale.x,
+      y: (point.y - t.ty) / stage.scale.y,
     }
   }
 
-  checkInRange(actor, endPos, range) {
-    if (!actor) return false
-    let token = actor.getActiveTokens()[0]
+  // Chebyshev distance from the token's occupied box to the cursor, in grid squares.
+  //
+  // `token.w`/`token.h`, not `token.shape.width`/`.height`: on any gridded scene Token#getShape()
+  // returns a PIXI.Polygon, which carries only `points` — so those reads were undefined, making
+  // `token.x + undefined` NaN. Both `NaN > range` comparisons are false, so the function fell
+  // through to `return true` and reported *every* point in range. Out-of-range colouring could
+  // only ever have worked on a gridless scene, where getShape() returns a Rectangle.
+  //
+  // The per-axis distance is also clamped at 0 now. Taking the nearest of the two edges meant a
+  // cursor inside the token measured as half its width away instead of zero.
+  checkInRange(endPos, range) {
+    const token = this.token
+    if (!token) return false
     if (range <= 0) return true
-    let dx =
-      Math.min(Math.abs(token.x - endPos.x), Math.abs(token.x + token.shape.width - endPos.x)) /
-      this.gridSize
-    let dy =
-      Math.min(Math.abs(token.y - endPos.y), Math.abs(token.y + token.shape.height - endPos.y)) /
-      this.gridSize
+    const dx = Math.max(0, token.x - endPos.x, endPos.x - (token.x + token.w)) / this.gridSize
+    const dy = Math.max(0, token.y - endPos.y, endPos.y - (token.y + token.h)) / this.gridSize
     if (dx > range || dy > range) return false
     return true
   }
 
+  // Returns the range in grid squares, or the sentinels 0 (none) / -1 (self), which callers
+  // treat as "no boundary". Scene units and distance-per-square are both read from the canvas
+  // rather than assumed: dnd5e stamps new scenes with metric grids when the metric length
+  // setting is on (see its preCreateScene hook), so a 5ft-per-square world is only the default,
+  // not a guarantee. The item's own range units are independent of the scene's and are
+  // converted first.
   getActivityRange(item, activity) {
     if (!activity) {
       activity = item.defaultActivity
     }
-    item = item.item
-    activity = activity
-    let range =
-      activity.range?.value ??
-      item.system.range?.value ??
-      activity.range?.reach ??
-      item.system.range?.reach ??
-      (activity.range?.units === 'touch' ? 5 : activity.range?.units === 'self' ? -1 : null) ??
-      (item.system.range?.units === 'touch' ? 5 : item.system.range?.units === 'self' ? -1 : 0)
+    item = item?.item
+    // An item with no activities has no range to draw.
+    if (!item || !activity) return 0
 
-    return range > 0 ? range / 5 : range
+    // Callers pass the AATActivity wrapper, which holds the dnd5e activity on `.activity`. The
+    // range lives on the activity in current dnd5e, so unwrap before reading it — otherwise every
+    // lookup below fell through to the item, which for spells often carries no range at all.
+    const act = activity.activity ?? activity
+
+    const gridUnits = canvas?.grid?.units || 'ft'
+    const touch = (units) => TargetHelper.convertLength(5, 'ft', units ?? gridUnits)
+
+    let range =
+      act.range?.value ??
+      item.system.range?.value ??
+      act.range?.reach ??
+      item.system.range?.reach ??
+      (act.range?.units === 'touch'
+        ? touch(act.range?.units)
+        : act.range?.units === 'self'
+          ? -1
+          : null) ??
+      (item.system.range?.units === 'touch'
+        ? touch(item.system.range?.units)
+        : item.system.range?.units === 'self'
+          ? -1
+          : 0)
+
+    if (!(range > 0)) return range
+
+    // Units are taken with the same precedence the value was, so a value read off the item is
+    // measured with the item's units.
+    const rangeUnits = act.range?.units ?? item.system.range?.units ?? gridUnits
+    const inGridUnits = TargetHelper.convertLength(range, rangeUnits, gridUnits)
+
+    // Gridless scenes report a distance of 0; dividing by it would yield Infinity and paint an
+    // unbounded range circle, so fall back to leaving the value in scene units.
+    const perSquare = canvas?.grid?.distance
+    return perSquare > 0 ? inGridUnits / perSquare : inGridUnits
+  }
+
+  // dnd5e owns the unit table, so conversion defers to it. Non-linear units ('touch', 'self',
+  // 'spec', 'any') aren't lengths and are returned untouched, as is anything dnd5e can't map.
+  static convertLength(value, from, to) {
+    if (!Number.isFinite(value)) return value
+    if (!from || !to || from === to) return value
+    try {
+      const converted = dnd5e.utils.convertLength(value, from, to, { strict: false })
+      return Number.isFinite(converted) ? converted : value
+    } catch (e) {
+      return value
+    }
   }
 
   getTargetCount(item, activity, selectedSpellLevel) {
@@ -690,85 +881,186 @@ export class TargetHelper {
         spellLevel = item.pactLevel
       }
 
-      let act = item.activities.find((e) => e.id == activity.id)
+      let act = item.activities.find((e) => e.id == activity.id) ?? activity
 
-      targetCount =
-        act.tooltips?.find((e) => e.spellLevel == spellLevel).targetCount ||
-        act.tooltip?.targetCount
+      // A spell cast at a level with no matching scaled tooltip used to throw here and take the
+      // whole use with it, so the level-specific count falls back to the activity's base count.
+      const scaled = act?.tooltips?.find((e) => e.spellLevel == spellLevel)
+      if (!scaled) {
+        UseTrace.warn(
+          'targetCountLevel',
+          'No target count for the chosen spell level',
+          { spellLevel, activity: act?.name ?? null },
+          'The activity has no tooltip for this level, so the base target count is used instead.',
+        )
+      }
+      targetCount = scaled?.targetCount || act?.tooltip?.targetCount
     }
     return targetCount
   }
 
+  // dnd5e only sets `.activity` on its preview AbilityTemplate. Modules that skip the preview and
+  // save the template directly (midi-qol emanations) leave a placed template without it, so the
+  // placed one is matched through the origin flag dnd5e writes into the template data instead.
+  static templateActivityUuid(template) {
+    return template?.activity?.uuid ?? template?.document?.flags?.dnd5e?.origin ?? null
+  }
+
+  // How long a new outline may wait for its template to be saved before it is treated as
+  // abandoned (midi creates the document asynchronously; a preview may be held while aiming).
+  static TEMPLATE_GRACE_MS = 10000
+
+  // The caster's outline for a given preview or placed template, if any. Matched on the exact
+  // object/document rather than the activity, so an older template of the same spell still on
+  // the scene can neither remove nor keep alive the outline of a new cast.
+  _ownBoundaryFor(template) {
+    const id = template?.document?.id
+    return this.templateBoundary
+      .own()
+      .find((b) => b.preview === template || (id && b.templateId === id))
+  }
+
   _HookCreateMeasuredTemplate(activity, created) {
-    this.templateBoundaryUuid = activity.uuid
+    if (!this.showTemplateBoundary || !created?.[0]?.document) return
+
+    // A new cast of the same activity replaces any outline still waiting on a template.
+    for (const b of this.templateBoundary.own()) {
+      if (b.activityUuid === activity.uuid && !b.templateId) this._removeOwnBoundary(b)
+    }
 
     const options = {
-      color: this.color || themeColor || game.user.color.css,
+      color: this.color || game.user.color.css,
       activityUuid: activity.uuid,
       document: created[0].document,
     }
-    if (!this.createTemplateBoundary.bind(this)(options)) {
-      return
-    }
+    const boundary = this.templateBoundary.createBoundary(options)
+    if (!boundary) return
+    boundary.preview = created[0]
+    // One check per outline, not a poll: covers a preview that is never drawn and never saved
+    // (a module that builds the template data and then fails or declines to create it), which
+    // fires no destroy or delete hook at all.
+    setTimeout(() => this._checkAbandonedBoundary(boundary), TargetHelper.TEMPLATE_GRACE_MS)
 
     if (this.sendTargetLines) {
-      this.socket.executeForOthers('createTemplateBoundary', { ...options, phantom: true })
+      this.socket.executeForOthers('createTemplateBoundary', {
+        ...options,
+        phantom: true,
+        senderId: game.user.id,
+      })
     }
-
-    this.refreshHook = Hooks.on('refreshMeasuredTemplate', (template, state) => {
-      this._HookRefreshMeasuredTemplate(template, state)
-    })
-    this.destroyHook = Hooks.on('destroyMeasuredTemplate', (template) => {
-      this._HookDestroyMeasuredTemplate(template)
-    })
   }
-  _HookRefreshMeasuredTemplate(template, state) {
-    if (
-      !template?.activity ||
-      !template?.activity.uuid ||
-      this.templateBoundaryUuid != template.activity.uuid
-    )
-      return
 
-    let options = {
-      activityUuid: template.activity.uuid,
-      document: template.document,
-    }
-    this.updateTemplateBoundary.bind(this)(options)
+  // Binds the outline to the template document its preview became (or, for midi emanations,
+  // the document saved straight from the never-drawn preview).
+  _HookCreateMeasuredTemplateDocument(document, options, userId) {
+    if (userId !== game.user.id) return
+    const activityUuid = document.flags?.dnd5e?.origin
+    if (!activityUuid) return
+    const boundary = this.templateBoundary
+      .own()
+      .find((b) => b.activityUuid === activityUuid && !b.templateId)
+    if (boundary) boundary.templateId = document.id
+  }
+
+  _HookRefreshMeasuredTemplate(template) {
+    // Phantom copies follow the caster's broadcasts rather than this client's hooks.
+    const boundary = this._ownBoundaryFor(template)
+    if (!boundary) return
+    boundary.updateBoundary(template.document)
     if (this.sendTargetLines) {
-      this.socket.executeForOthers('updateTemplateBoundary', { ...options, phantom: true })
+      this.socket.executeForOthers('updateTemplateBoundary', {
+        activityUuid: boundary.activityUuid,
+        document: template.document,
+        phantom: true,
+        senderId: game.user.id,
+      })
     }
   }
+
   _HookDestroyMeasuredTemplate(template) {
-    if (
-      !template?.activity ||
-      !template?.activity.uuid ||
-      this.templateBoundaryUuid != template.activity.uuid
-    )
+    const boundary = this._ownBoundaryFor(template)
+    if (boundary) {
+      this._removeOwnBoundary(boundary)
       return
-    let options = {
-      activityUuid: template.activity.uuid,
-      document: template.document,
     }
-    this.destroyTemplateBoundary.bind(this)(options)
-    this.templateBoundaryUuid = null
+    // A phantom copy is cleared locally too, in case the caster's broadcast never arrives.
+    const activityUuid = TargetHelper.templateActivityUuid(template)
+    if (activityUuid && !template.activity) {
+      this.templateBoundary.destroyPhantoms({
+        activityUuid,
+        senderId: template.document?.author?.id ?? template.document?.user?.id,
+      })
+    }
+  }
+
+  _removeOwnBoundary(boundary) {
+    this.templateBoundary.remove(boundary)
     if (this.sendTargetLines) {
-      this.socket.executeForOthers('destroyTemplateBoundary', { ...options, phantom: true })
+      this.socket.executeForOthers('destroyTemplateBoundary', {
+        activityUuid: boundary.activityUuid,
+        phantom: true,
+        senderId: game.user.id,
+      })
     }
-    Hooks.off('refreshMeasuredTemplate', this.refreshHook)
-    Hooks.off('destroyMeasuredTemplate', this.destroyHook)
   }
 
+  _checkAbandonedBoundary(boundary) {
+    if (!this.templateBoundary.boundaries.includes(boundary) || boundary.templateId) return
+    // Still being aimed: its destroy hook removes it when placement ends.
+    const preview = boundary.preview
+    if (preview && !preview.destroyed && preview.parent) return
+    this._removeOwnBoundary(boundary)
+  }
+
+  _HookDeleteMeasuredTemplate(document) {
+    const boundary = this.templateBoundary.own().find((b) => b.templateId === document.id)
+    if (boundary) {
+      this._removeOwnBoundary(boundary)
+      return
+    }
+    const activityUuid = document.flags?.dnd5e?.origin
+    if (activityUuid) {
+      this.templateBoundary.destroyPhantoms({
+        activityUuid,
+        senderId: document.author?.id ?? document.user?.id,
+      })
+    }
+  }
+
+  // Phantom lines and outlines from a user who has left can never be cleared by that user.
+  _HookUserConnected(user, connected) {
+    if (connected) return
+    this.templateBoundary.removeWhere((b) => b.phantom && b.senderId === user.id, true)
+    this.phantomLines = this.phantomLines.filter((line) => {
+      if (line.senderId !== user.id) return true
+      line.destroyLines()
+      return false
+    })
+  }
+
+  _HookCanvasTearDown() {
+    // Own outlines first, so other clients drop their copies of them too.
+    for (const b of this.templateBoundary.own()) this._removeOwnBoundary(b)
+    this.templateBoundary.destroyAll()
+    for (const line of this.phantomLines) line.destroyLines()
+    this.phantomLines = []
+  }
+
+  // Socket handlers: these only ever act on phantom copies from another client.
   createTemplateBoundary(options) {
-    if (!this.recieveTargetLines && options.phantom) return
-    return this.templateBoundary?.createBoundary(options)
+    if (!this.receiveTargetLines || !options.phantom) return
+    // A repeat create from the same caster replaces its earlier copy rather than stacking.
+    this.templateBoundary.destroyPhantoms(options)
+    this.templateBoundary.createBoundary(options)
   }
 
-  updateTemplateBoundary(template) {
-    this.templateBoundary?.updateBoundary(template)
+  updateTemplateBoundary(options) {
+    if (!options.phantom) return
+    this.templateBoundary.updatePhantoms(options)
   }
 
-  destroyTemplateBoundary(template) {
-    this.templateBoundary?.destroyBoundary(template)
+  destroyTemplateBoundary(options) {
+    if (!options.phantom) return
+    this.templateBoundary.destroyPhantoms(options)
   }
 }

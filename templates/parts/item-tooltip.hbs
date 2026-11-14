@@ -23,7 +23,7 @@
 
     <span class='action-tag'>
 
-      {{#if (eq @root.currentTray.category 'ritual')}}
+      {{#if useRitualTime}}
         {{ritualActivationTimeLabel}}
       {{else}}
         {{activationTimeLabel}}

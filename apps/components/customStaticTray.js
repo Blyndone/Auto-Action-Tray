@@ -70,7 +70,6 @@ export class CustomStaticTray extends AbilityTray {
       this.id = 'customStaticTray' + '-' + this.keyItemId
       
       this.icon = this.getIcon(this.keyItem, actor)
-      AbilityTray.onCompleteGeneration.bind(this.application)()
     }
   }
   
@@ -95,7 +94,6 @@ export class CustomStaticTray extends AbilityTray {
     this.id = this.keyItemId ? 'customStaticTray-legendary' + '-' + this.keyItemId : 'customStaticTray-legendary'
 
     this.icon = '<i class="fa-solid fa-crown icon-custom"></i>'
-    AbilityTray.onCompleteGeneration.bind(this.application)()
   }
   
   static setCustomStaticTray(itemUuid, actor) {
@@ -141,6 +139,16 @@ export class CustomStaticTray extends AbilityTray {
     let primaryclass = classarr[0]
     return CustomStaticTray.classIcons[primaryclass]
 
+  }
+
+  // The legendary tray is built from the actor's legact resource, not from the override list, so
+  // that an actor with both `legact.max > 0` and an item literally named "Legendary Actions"
+  // produces one tray instead of two. Returns that item's id (used as the tray's key item) if the
+  // actor has one.
+  static getLegendaryItemId(actor) {
+    return actor.items.find((e) =>
+      CustomStaticTray.overrides.legendary.includes(e.name.toLocaleLowerCase()),
+    )?.id
   }
 
   static checkOverride(keyItem) {

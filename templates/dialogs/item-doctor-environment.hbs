@@ -1,0 +1,14 @@
+<section class="tab{{#if tab.active}} active{{/if}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  <p class="hint">
+    Ranges are measured in grid squares, converted from the item's own units using the scene's grid.
+    A scene that is not 5 ft per square, or an item whose range is not in the scene's units, is
+    handled here — but it is the first thing to check when a range boundary looks wrong.
+  </p>
+
+  <dl class="aat-doctor-env">
+    {{#each environment}}
+      <dt>{{this.label}}</dt>
+      <dd>{{this.value}}</dd>
+    {{/each}}
+  </dl>
+</section>

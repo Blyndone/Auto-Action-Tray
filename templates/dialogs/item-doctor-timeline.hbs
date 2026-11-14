@@ -1,0 +1,34 @@
+<section class="tab{{#if tab.active}} active{{/if}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  {{#if trace}}
+    <div class="aat-doctor-trace-meta">
+      Recorded {{trace.when}}
+      {{#if trace.dryRun}}<span class="aat-doctor-badge">dry run</span>{{/if}}
+      {{#if trace.aborted}}<span class="aat-doctor-badge aat-sev-warn">stopped: {{trace.aborted}}</span>{{/if}}
+    </div>
+
+    <ol class="aat-doctor-timeline">
+      {{#each trace.steps}}
+        <li class="aat-sev-{{this.severity}}">
+          <div class="aat-doctor-step-title">
+            <i class="{{this.meta.icon}}"></i>
+            <span>{{this.label}}</span>
+          </div>
+          {{#if this.rows.length}}
+            <dl class="aat-doctor-step-values">
+              {{#each this.rows}}
+                <dt>{{this.key}}</dt>
+                <dd>{{this.value}}</dd>
+              {{/each}}
+            </dl>
+          {{/if}}
+          {{#if this.note}}<div class="aat-doctor-step-note">{{this.note}}</div>{{/if}}
+        </li>
+      {{/each}}
+    </ol>
+  {{else}}
+    <p class="hint">
+      No recorded use of this item yet. Use it once and reopen this window, or arm a dry run from the
+      Findings tab to capture the workflow without rolling.
+    </p>
+  {{/if}}
+</section>

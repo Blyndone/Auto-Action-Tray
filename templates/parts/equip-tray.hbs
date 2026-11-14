@@ -5,12 +5,12 @@
     data-drag='true'
     data-action='useItem'
     data-index='meleeWeapon'
-    data-action-type='{{equipmentTray.meleeWeapon.tooltip.actionType}}'
-    data-action-range='{{equipmentTray.meleeWeapon.tooltip.range}}'
+    data-action-type='{{equipmentTray.meleeWeapon.actionType}}'
+    data-action-range='{{equipmentTray.meleeWeapon.actionRange}}'
     src='{{equipmentTray.meleeWeapon.img}}'
     alt='{{equipmentTray.meleeWeapon.name}}'
     {{#with equipmentTray.meleeWeapon}}
-      data-tooltip="{{> 'AAT.item-tooltip' this.tooltip}}"
+      data-tooltip="{{this.name}}" data-tooltip-key="{{lazyTooltip this}}"
     {{/with}}
     data-tooltip-direction='UP'
   />
@@ -25,12 +25,12 @@
     data-item-id='{{equipmentTray.rangedWeapon.id}}'
     data-action='useItem'
     data-index='rangedWeapon'
-    data-action-type='{{equipmentTray.rangedWeapon.tooltip.actionType}}'
-    data-action-range='{{equipmentTray.rangedWeapon.tooltip.range}}'
+    data-action-type='{{equipmentTray.rangedWeapon.actionType}}'
+    data-action-range='{{equipmentTray.rangedWeapon.actionRange}}'
     src='{{equipmentTray.rangedWeapon.img}}'
     alt='{{equipmentTray.rangedWeapon.name}}'
     {{#with equipmentTray.rangedWeapon}}
-      data-tooltip="{{> 'AAT.item-tooltip' this.tooltip}}"
+      data-tooltip="{{this.name}}" data-tooltip-key="{{lazyTooltip this}}"
     {{/with}}
     data-tooltip-direction='UP'
   />
